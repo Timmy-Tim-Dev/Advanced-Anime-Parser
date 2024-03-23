@@ -273,10 +273,48 @@
 		
 		$update_fields['title'] = $title_en;
 		$update_fields['title_ru'] = $title_ru;
-		if ( $last_episode_k ) $update_fields['episode'] = $last_episode_k;
-		else $update_fields['episode'] = '';
-		if ( $last_season_k ) $update_fields['season'] = $last_season_k;
-		else $update_fields['season'] = '';
+		if ( $last_episode_k ) {
+			$update_fields['episode'] = $last_episode_k;
+			$update_fields['episode_1'] = generate_numbers($last_episode_k, 1);
+			$update_fields['episode_2'] = generate_numbers($last_episode_k, 2);
+			$update_fields['episode_3'] = generate_numbers($last_episode_k, 3);
+			$update_fields['episode_4'] = generate_numbers($last_episode_k, 4);
+			$update_fields['episode_5'] = generate_numbers($last_episode_k, 5);
+			$update_fields['episode_6'] = generate_numbers($last_episode_k, 6);
+			$update_fields['episode_7'] = generate_numbers($last_episode_k, 7);
+			$update_fields['episode_8'] = generate_numbers($last_episode_k, 8);
+		} else {
+			$update_fields['episode'] = '';
+			$update_fields['episode_1'] = '';
+			$update_fields['episode_2'] = '';
+			$update_fields['episode_3'] = '';
+			$update_fields['episode_4'] = '';
+			$update_fields['episode_5'] = '';
+			$update_fields['episode_6'] = '';
+			$update_fields['episode_7'] = '';
+			$update_fields['episode_8'] = '';
+		}
+		if ( $last_season_k ) {
+			$update_fields['season'] = $last_season_k;
+			$update_fields['season_1'] = generate_numbers($last_season_k, 1);
+			$update_fields['season_2'] = generate_numbers($last_season_k, 2);
+			$update_fields['season_3'] = generate_numbers($last_season_k, 3);
+			$update_fields['season_4'] = generate_numbers($last_season_k, 4);
+			$update_fields['season_5'] = generate_numbers($last_season_k, 5);
+			$update_fields['season_6'] = generate_numbers($last_season_k, 6);
+			$update_fields['season_7'] = generate_numbers($last_season_k, 7);
+			$update_fields['season_8'] = generate_numbers($last_season_k, 8);
+		} else {
+			$update_fields['season'] = '';
+			$update_fields['season_1'] = '';
+			$update_fields['season_2'] = '';
+			$update_fields['season_3'] = '';
+			$update_fields['season_4'] = '';
+			$update_fields['season_5'] = '';
+			$update_fields['season_6'] = '';
+			$update_fields['season_7'] = '';
+			$update_fields['season_8'] = '';
+		}
 		if ( $serial_status_k ) $update_fields['status'] = $serial_status_k;
 		else $update_fields['status'] = '';
 		if ( $serial_status_ru_k ) $update_fields['status_ru'] = $serial_status_ru_k;

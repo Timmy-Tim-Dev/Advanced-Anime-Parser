@@ -116,8 +116,12 @@ elseif ( $action == 'update' && $kind == 'anime' ) {
 elseif ( $action == 'update' && $kind == 'dorama' ) {
     include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/update_dorama.php'));
 }
-elseif ( $action == 'add' ) {
-    include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/add_material.php'));
+elseif ( $action == 'add') {
+	if (isset($aaparser_config['settings']['grab_on'])) {
+		include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/add_material.php'));
+	} else {
+		echo "Функционал граббинга отключен, пожалуйста включите это в настройках модуля!";
+	}
 }
 elseif ( $action == 'category_updating' ) {
     include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/category_updating.php'));

@@ -278,6 +278,9 @@ elseif ($parse_action == 'parse') {
 		if ( isset($playlist_alt['autosubtitles'][$last_autosubtitled_season]['episodes']) && $playlist_alt['autosubtitles'][$last_autosubtitled_season]['episodes'] ) {
 		    $xfields_data['kodik_last_season_autosubtitles'] = $last_autosubtitled_season;
 		    $xfields_data['kodik_last_episode_autosubtitles'] = max($playlist_alt['autosubtitles'][$last_autosubtitled_season]['episodes']);
+		} else {
+			$xfields_data['kodik_last_season_autosubtitles'] = '';
+			$xfields_data['kodik_last_episode_autosubtitles'] = '';
 		}
 	}
 	

@@ -79,8 +79,8 @@ echo <<<HTML
                         <td style="width:100%">
                             8. <b>Далее не обязательные пункты</b>, проделайте их если вы хотите добавить страницу всех аниме, на которые подписан пользователь. Данная страница удобна тем, что можно визуально увидеть свои подписки и отписаться от того, на что не хочется больше получать уведомления. Приступим<br>Если у вас apache, то открываем .htaccess в корне сайта и ниже строчки <b>RewriteEngine On</b> вставляем правила<br>
                             <textarea style="width:100%;height:80px;" disabled>
-RewriteRule ^subscribes/page/([0-9]+)(/?)+$ index.php?do=notifications_news&cstart=$1 [L]
-RewriteRule ^subscribes(/?)+$ index.php?do=notifications_news [L]
+RewriteRule ^subscribes/page/([0-9]+)(/?)+$ index.php?do=subscribe_page&cstart=$1 [L]
+RewriteRule ^subscribes(/?)+$ index.php?do=subscribe_page [L]
                             </textarea>
                             <br>Если у вас сайт работает на nginx то правила такие<br>
                             <textarea style="width:100%;height:80px;" disabled>
@@ -98,7 +98,7 @@ rewrite ^/subscribes/*$ /index.php?do=subscribe_page last;
                     </tr>
                     <tr>
                         <td style="width:100%">
-                            10. Страница всех подписок доступна по ссылке вашсайт.ру/subscribes/ для авторизованного пользователя. Разместите данную ссылку в нужном вам месте, не забудьте обернуть в тег [not-group=5]...[/not-group]. Для визуального оформления страницы в main.tpl используйте тег [available=subscribe_page]...[/available]
+                            10. Страница всех подписок доступна по ссылке <a href="{$config["http_home_url"]}subscribes/" target="_blank">{$config["http_home_url"]}subscribes/</a> для авторизованного пользователя. Разместите данную ссылку в нужном вам месте, не забудьте обернуть в тег [not-group=5]...[/not-group]. Для визуального оформления страницы в main.tpl используйте тег [available=subscribe_page]...[/available]
                         </td>
                     </tr>
                     <tr>

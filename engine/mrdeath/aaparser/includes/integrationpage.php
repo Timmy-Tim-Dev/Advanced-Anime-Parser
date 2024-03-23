@@ -20,7 +20,7 @@ echo <<<HTML
 		<div class="table-responsive">
 			<table class="table table-striped">
 HTML;
-showRow('Включить функционал расписания выхода серий аниме?', 'Включив, модуль будет собирать данные про расписание выхода онгоингов аниме с Shikimori и выводить его на отдельной странице ввашсайт.ком/schedule/. Инструкция по настройке находится ниже', makeCheckBox('calendar_settings[enable_schedule]', $aaparser_config_push['calendar_settings']['enable_schedule']));
+showRow('Включить функционал расписания выхода серий аниме?', 'Включив, модуль будет собирать данные про расписание выхода онгоингов аниме с Shikimori и выводить его на отдельной странице <a href="'. $config["http_home_url"] .'schedule/" target="_blank">'. $config["http_home_url"] .'schedule/</a>. Инструкция по настройке находится ниже', makeCheckBox('calendar_settings[enable_schedule]', $aaparser_config_push['calendar_settings']['enable_schedule']));
 showRow('Доп. поле с постером', 'Выберите дополнительное поле, в котором содержится постер', makeDropDown( $xfields_all_list, "settings[poster]", $aaparser_config['settings']['poster']));
 echo <<<HTML
             </table>
