@@ -1,0 +1,59 @@
+.pretimer {
+    display: table;
+    width: 100%;
+    overflow: hidden;
+    padding: 0;
+    background: linear-gradient(120deg,#FFF 0%,#FFF 50%,#F9F9F9 50%,#FFF 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff',endColorstr='#ffffff',GradientType=1);
+    border-bottom: 1px solid #E9E9E9;
+    margin: 0 0 20px;
+    border-top: 1px solid #E9E9E9;
+}
+.pretimer .lt {
+    vertical-align: top;
+    width: 55%;
+    display: table-cell;
+    padding: 20px 0;
+}
+.pretimer .countdown_title {
+    margin: 0px;
+    text-transform: uppercase;
+    font-size: 15px;
+    display: inline-block;
+    padding: 0 0 5px;
+    line-height: 22px;
+    color: #47CB65;
+}
+.pretimer .countdown_text {
+    font-size: 13px;
+    color: #344960;
+    line-height: 16px;
+}
+.pretimer .countdown_text span {
+    font-weight: bold;
+}
+.pretimer .rt {
+    vertical-align: top;
+    width: 45%;
+    display: table-cell;
+    padding: 22px 0;
+}
+.pretimer li, .pretimer ul {
+    padding: 0px;
+    margin: 0px;
+}
+.countdown_wrp li {
+    display: inline-block;
+    text-align: center;
+}
+.countdown_wrp li:first-child .value {
+    color: #47CB65;
+}
+.countdown_wrp .value {
+    font-size: 32px;
+    width: 60px;
+    line-height: 30px;
+}
+.countdown_wrp .unit {
+    margin: 8px 0 0;
+}

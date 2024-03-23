@@ -1,0 +1,1121 @@
+/* Push notifications
+----------------------------------------------- */
+
+.js-toggle-fav:not(:hover) {
+    background-color: #435878;
+}
+.js-toggle-fav {
+    width: 100%;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+    font-weight: 300;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.poster_subscribes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 7;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -ms-flex-direction: row;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+.poster_subscribes-item:last-child {
+    border-radius: 0 0 4px 0;
+}
+.poster_subscribes-item:first-child {
+    border-radius: 0 0 0 4px;
+}
+.poster_subscribes-item {
+    line-height: 28px;
+    padding: 0 8px;
+    background: #283d5e;
+    color: #fff;
+}
+
+/* Kodik Playlist
+----------------------------------------------- */
+#lesc{overflow:hidden;padding:0 0 0 3px;cursor:pointer;width:13px;height:13px;top:2px;position:relative;border:none;margin: 0 !important}
+#player{background:#000;min-height:460px}
+.b-player{background:#000;padding-top:10px;position:relative}
+.b-player iframe{overflow:hidden;width: 100% !important}
+.b-player iframe::-webkit-scrollbar{display:block}
+.b-player__restricted{background:#000;height:360px;position:relative}
+.b-player__restricted_string{color:#fff;display:block;font-size:14px;font-weight:bold;margin-top:-30px;position:absolute;top:50%;left:0;text-align:center;text-transform:uppercase;width:100%}
+.b-player__restricted_string a{text-decoration:underline}
+.b-post__lastepisodeout{background:#ccc no-repeat 13px 50%;overflow:hidden;padding: 10px 7px 10px 5px;}
+.b-post__lastepisodeout h2{color:#222;font-size: 14px !important;font-weight:bold;line-height:16px;margin:0 0 0 0}
+#player-loader-overlay{background:#000 url(../images/ajax-loader-big-black.gif) no-repeat 50% 50%;display:none;height: calc(100% - 50px);position:absolute;width:100%}
+.b-translators__block{background:#151515;padding-top:10px;padding-left:10px;padding-bottom:10px;text-align:left !important}
+.b-translators__title{color:#fff;font-size:15px;font-weight:bold}
+.b-translators__title h2,.b-translators__title h3{display:inline}
+.b-translators__list{overflow:hidden;-moz-padding-start:0px;padding-start:0px;-webkit-padding-start:0px;margin:0 0 0 0}
+.b-translator__item{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;background:#2d2d2d;color:#fff;cursor:pointer;float:left;font-size:14px;margin-left: 3px !important;margin-top:3px;overflow:hidden;padding:5px 0 5px 10px;text-overflow:ellipsis;white-space:nowrap;width:32.5%}
+.b-translator__item.single{float:none;display:inline-block;margin-left:0;padding:5px 10px;width:auto}
+.b-translator__item:nth-child(3n +1){margin-left:0px}
+.b-translator__item.active,.b-simple_season__item.active,.b-simple_episode__item.active{background:#5d5d5d !important;cursor:default}
+.b-translator__item:hover,.b-changeplayer__list li:hover,.b-simple_season__item:hover,.b-simple_episode__item:hover{background:#4d4d4d}
+.b-changeplayer__list{overflow:hidden}
+.b-changeplayer__list li{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;background:#2d2d2d;color:#fff;cursor:pointer;float:left;font-size:14px;margin-top:5px;overflow:hidden;padding:5px 10px}
+.b-changeplayer__list li.active{background:#000 !important;cursor:default}
+.b-episodes__wrapper{border-bottom:1px solid #dcdcdc;margin-bottom:18px;-webkit-transition:opacity 0.5s ease;-moz-transition:opacity 0.5s ease;-o-transition:opacity 0.5s ease;transition:opacity 0.5s ease}
+.b-episodes__list{margin-left:-16px;padding:32px 0 15px;-webkit-transition:opacity 0.5s ease;-moz-transition:opacity 0.5s ease;-o-transition:opacity 0.5s ease;transition:opacity 0.5s ease}
+.b-episodes__list li{float:left;margin:0 0 17px 17px}
+.b-episodes__list .resume-main img{background-position:50% 0;background-size:166px}
+.b-episodes__list .string{z-index:1}
+.b-episodes__list .string span{background:#000;padding:2px 4px}
+.b-episodes__list .play{z-index:2}
+.b-simple_seasons__list{margin:0 auto;padding:10px;padding:4px 10px 12px 13px;list-style:none}
+.b-simple_seasons__title{color:#fff;font-size:15px;font-weight:bold;padding-top:10px;padding-left:11px;text-align:left}
+.b-simple_season__item{background:#2d2d2d;color:#fff;cursor:pointer;float:left;font-size:13px;margin: 0 2px 2px 0 !important;min-width:11.8%;padding:5px 7px;text-align:left;list-style: none !important}
+.b-simple_episodes__list{margin:0 auto;padding:10px 10px 12px 13px;text-align:left}
+.b-simple_episode__item{background:#2d2d2d;color:#fff;cursor:pointer;display:inline-block;font-size:13px;margin: 0 2px 2px 0 !important;min-width:11.8%;padding:5px 7px;text-align:left}
+#kodik_player_ajax{min-height:460px}
+#simple-episodes-tabs{white-space:nowrap;overflow:hidden;margin:0 30px 0 30px;display:block;position:relative}
+@media only screen and (max-width: 590px) {
+    #simple-episodes-tabs {-webkit-overflow-scrolling: touch;overflow-x:scroll}
+    #kodik_player_ajax{min-height:300px}
+    #player{background:#000;min-height:300px}
+}
+.b-simple_episodes__list{-moz-padding-start:0px;padding-start:0px;-webkit-padding-start:0px;text-align:left}
+.b-simple_episode__item{display:inline-block;font-size:11px;background:#242424;color:#F0F0F0;cursor:pointer;padding:5px;margin:0 3px;-webkit-transition:background .3s ease;-moz-transition:-moz-background .3s ease;-o-transition:-o-background .3s ease;transition:background .3s ease;text-align:left}
+.b-simple_episode__item.active{background:#525252 !important;cursor:default}
+.prenext{position:relative}
+.prevpl,.nextpl{position:absolute;top:0px;font-size:xx-large;width:25px;height:20px;color:#D5D9D9;cursor:pointer;font-weight:bold;z-index:999}
+.prevpl{left:0px}
+.nextpl{right:0px}
+#player_wrap.premact{width:100%}
+
+
+/* Room create button
+----------------------------------------------- */
+.switch {
+    position: unset;
+    display: unset;
+    cursor: unset;
+    width: unset;
+    height: unset;
+    background: unset;
+    -webkit-border-radius: unset;
+    border-radius: unset;
+    -webkit-transition: unset;
+    -o-transition: unset;
+    transition: unset;
+}
+.rooms-invite {
+    display: flex;
+    align-items: center;
+    border: 1px solid #efefef;
+    padding: 10px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.rooms-invite:hover {
+    background-color: #f4f4f4;
+}
+.room-invite__image {
+    width: 55px;
+    height: 60px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+.room-invite__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+}
+.room-invite__title {
+    font-size: 1.15em;
+    font-weight: 500;
+}
+.room-invite__label {
+    transform: rotate(45deg);
+    position: absolute;
+    top: 17px;
+    right: -55px;
+    background: #4683d9;
+    color: white;
+    width: 155px;
+    text-align: center;
+    font-size: 11px;
+    opacity: 0.9;
+}
+@media only screen and (max-width: 500px) {
+    .room-invite__desc span {
+        display: none;
+    }
+}
+/* Room page
+----------------------------------------------- */
+@media only screen and (min-width: 993px) {
+.row .col.l9 {
+    width: 75%!important;
+    margin-left: auto;
+    left: auto;
+    right: auto;
+}
+}
+.row .col.s12 {
+    width: 100%;
+    margin-left: auto;
+    left: auto;
+    right: auto;
+}
+.row .col {
+    float: left;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0 0.75rem;
+    min-height: 1px;
+}
+@media only screen and (min-width: 993px) {
+.row .col.sidebar {
+    padding-left: 25px;
+}
+}
+@media only screen and (min-width: 993px) {
+.row .col.l3 {
+    width: 25%!important;
+    margin-left: auto;
+    left: auto;
+    right: auto;
+}
+}
+.row .col.s12 {
+    width: 100%;
+    margin-left: auto;
+    left: auto;
+    right: auto;
+}
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.anime-player__controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    background: #f4f4f4;
+    padding: 10px;
+}
+.anime-player__controls button, .anime-player__current-series-number, .anime-player__fullscreen-btn-close, .anime-player__info2-btn {
+    border: solid 1px rgba(0,0,0,0.1);
+    padding: 8px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #fff;
+    height: 33px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+}
+.anime-player__controls button:disabled,
+.anime-player__controls button[disabled] {
+    opacity: 0.5;
+    cursor: default;
+}
+.anime-player__current-series-number {
+    margin: 0 2px;
+}
+.anime-player__current-series-number span {
+    margin-right: 3px;
+}
+.anime-player__controls button i {
+    color: #333;
+    opacity: 0.8;
+    font-size: 13px;
+}
+.anime-player__report-series i,
+.anime-player__fullscreen-btn i,
+.anime-player__fullscreen-btn-close i,
+.anime-player__info-btn i,
+.anime-player__info2-btn i {
+    margin-right: 7px;
+}
+.anime-player__next-series {
+    margin-right: auto;
+}
+.iframe-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    margin-top: 20px;
+    overflow: hidden;
+}
+.iframe-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.rooms {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px;
+}
+.rooms__item {
+    position: relative;
+    padding: 0 10px;
+    width: 25%;
+    margin-bottom: 20px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+@media only screen and (max-width: 800px) {
+    .rooms__item {
+        width: 33%;
+    }
+}
+@media only screen and (max-width: 650px) {
+    .rooms__item {
+        width: 50%;
+    }
+}
+@media only screen and (max-width: 400px) {
+    .rooms__item {
+        width: 100%;
+    }
+}
+.rooms__item:hover .rooms__poster {
+    opacity: 0.7;
+}
+.rooms__poster {
+    height: 190px;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+}
+.room__search {
+    display: none;
+}
+.rooms__name {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding-right: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+.rooms__info {
+    position: relative;
+    padding: 10px 0;
+}
+.rooms__item--private .rooms__info::after {
+    font-family: "Font Awesome\ 5 Free";
+    position: absolute;
+    right: 4px;
+    top: 16px;
+    content: "\f023";
+    display: inline-block;
+    padding-right: 5px;
+    vertical-align: middle;
+    font-weight: 900;
+    color: #1f1f1f;
+    opacity: 0.4;
+    font-size: 12px;
+}
+.rooms__episode {
+    position: absolute;
+    right: -2px;
+    top: 10px;
+    display: inline-flex;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 20px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 700;
+    font-style: normal;
+    text-align: center;
+    margin-top: 0;
+    text-transform: lowercase;
+    letter-spacing: 0;
+    color: white;
+    z-index: 2;
+    transition: all 0.4s;
+    background-color: #00a5ff;
+    box-shadow: 0 4px 12px rgb(0 165 255 / 40%);
+}
+.rooms__episode,
+.rooms__time {
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+.rooms__time {
+    margin-bottom: 0;
+    color: #1f1f1f;
+    opacity: 0.4;
+}
+.rooms__users {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+.rooms__users-list {
+    display: flex;
+}
+.rooms__user {
+    width: 22px;
+    height: 22px;
+    margin-right: 5px;
+}
+.rooms__user img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+.rooms__header {
+    display: flex;
+    color: white;
+    border-radius: 6px;
+    align-items: center;
+    position: relative;
+    height: 165px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 -1.75rem 20px;
+}
+.rooms__header p {
+    z-index: 3;
+    font-size: 14px;
+    text-align: center;
+    line-height: 23px;
+    width: 75%;
+    margin-bottom: 10px;
+}
+@media only screen and (max-width: 768px) {
+    .rooms__header {
+        margin-left: -1rem;
+        margin-right: -1rem;
+    }
+}
+@media only screen and (max-width: 1170px) {
+    .rooms__header {
+        height: 180px;
+    }
+}
+@media only screen and (max-width: 900px) {
+    .rooms__header {
+        height: 200px;
+    }
+}
+@media only screen and (max-width: 700px) {
+    .rooms__header {
+        height: 230px;
+    }
+}
+@media only screen and (max-width: 600px) {
+    .rooms__header {
+        height: 250px;
+    }
+    .rooms__header p {
+        width: 90%;
+    }
+}
+@media only screen and (max-width: 500px) {
+    .rooms__header {
+        height: 300px;
+    }
+}
+@media only screen and (max-width: 400px) {
+    .rooms__header {
+        height: 320px;
+    }
+}
+.rooms__header::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,.55);
+}
+.rooms__create-btn {
+    z-index: 3;
+    height: 35px;
+    font-size: 13px;
+    line-height: 14px;
+}
+.room-chat {
+    margin-bottom: 20px;
+}
+.room-chat__send-form {
+    position: relative;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+}
+.room-chat__send-form textarea {
+    resize: none;
+    border: none;
+    padding: 10px 15px;
+    outline: none;
+    min-height: 50px;
+    color: #222;
+    border-radius: 4px;
+    line-height: 20px;
+    overflow: hidden;
+    width: 100%!important;
+    height: 3rem!important;
+    background-color: transparent!important;
+}
+.room-chat__send-form textarea::placeholder {
+    color: rgba(31,31,31,.5);
+    line-height: 26px;
+    font-size: 14px;
+}
+.room-chat__messages {
+    position: relative;
+    height: 300px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    background: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+.room-chat__message {
+    color: #222;
+    margin-bottom: 5px;
+    overflow-wrap: break-word;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    margin-top: 7px;
+}
+.room-chat__avatar {
+    display: flex;
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    margin-right: 6px;
+}
+.room-chat__avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 25px;
+}
+.room-chat__user {
+    display: flex;
+}
+.room-chat__time {
+    font-size: 11px;
+    color: #1f1f1f;
+    opacity: 0.4;
+    margin-left: auto;
+    padding: 7px 0;
+}
+.room-chat__name,
+.room-user__name {
+    color: #1f1f1f;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.room-chat__message.system {
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid hsla(0,0%,87.1%,.4);
+}
+.room-chat__message.system .room-chat__text {
+    color: #1f1f1f;
+    opacity: 0.4;
+    background: none;
+    padding: 0;
+    margin: 0 7px 0 5px;
+}
+.room-chat__text {
+    background: #f4f4f4;
+    padding: 7px 15px;
+    border-radius: 25px;
+    margin-right: 10px;
+    word-break: break-all;
+}
+.room-user {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    background: white;
+    padding: 10px 15px;
+    border-radius: 15px;
+}
+.room-user__avatar {
+    width: 45px;
+    height: 45px;
+    margin-right: 10px;
+}
+.room-user__avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+}
+.room-chat__send-message-btn i {
+    font-size: 11px;
+}
+.room-user__role {
+    margin-left: auto;
+}
+.room__player .no-series {
+    flex-direction: row;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    z-index: 0;
+}
+.room__player .no-series span {
+    color: #f60;
+    display: block;
+    margin: 0 4px;
+}
+.room-anime {
+    /*display: flex;*/
+    align-items: center;
+    display: none;
+    transition: display 0.3s;
+}
+.room-anime__img {
+    width: 175px;
+    margin-right: 10px;
+    height: 100px;
+    display: flex;
+    flex-shrink: 0;
+}
+.room-anime__img img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    object-fit: cover;
+}
+.room-anime__name {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 24px;
+}
+.room-anime__info {
+    font-size: 13px;
+}
+.room-anime__change,
+.room-anime__episode,
+.room-anime__status {
+    height: 30px;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 13px;
+}
+.room-anime__episode,
+.room-anime__status {
+    display: inline-flex;
+    -ms-flex-align: center;
+    align-items: center;
+    white-space: nowrap;
+    -ms-flex-pack: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 0;
+    outline: 0;
+    line-height: 40px;
+    background: #181818;
+    font-weight: 500;
+    color: white;
+    margin-right: 10px;
+}
+.room-anime__controls {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+.room-anime__status i {
+    margin-right: 4px;
+    font-size: 11px;
+}
+.room-anime__episode span,
+.room-anime__info a {
+    margin-left: 4px;
+}
+.room--visible {
+    display: flex;
+}
+@media only screen and (max-width: 700px) {
+    .room--visible {
+        flex-direction: column;
+    }
+    .room-anime__controls {
+        margin-left: 0;
+    }
+    .room-anime__info,
+    .room-anime__name {
+        margin-bottom: 5px;
+        display: block;
+    }
+    .room-anime__img {
+        margin-bottom: 5px;
+    }
+
+}
+
+@media(min-width: 720px) {
+    .scroll::-webkit-scrollbar {
+        width:10px;
+        height: 10px;
+        background: hsla(0deg,0%,55%,0.2)
+    }
+
+    .scroll::-webkit-scrollbar-thumb {
+        background: hsla(0deg,0%,55%,0.7);
+        border-radius: 10px
+    }
+
+    .scroll::-webkit-scrollbar-track {
+        border-radius: 10px
+    }
+}
+.room .top-search__form {
+    border: none;
+}
+.room__search .top-search__form input {
+    border-radius: 8px;
+    border: none;
+}
+.anime-player__fullscreen-btn, .anime-player__info-btn {
+    margin-right: 5px;
+}
+.room__search.room--visible {
+    display: flex;
+    flex-direction: column;
+}
+.room-section .row {
+    position: relative;
+}
+.lds-ring {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+}
+.lds-ring div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border: 8px solid #4683d9;
+    border-radius: 50%;
+    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: #4683d9 transparent transparent transparent;
+}
+.lds-ring div:nth-child(1) {
+    animation-delay: -0.45s;
+}
+.lds-ring div:nth-child(2) {
+    animation-delay: -0.3s;
+}
+.lds-ring div:nth-child(3) {
+    animation-delay: -0.15s;
+}
+@keyframes lds-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loader-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    display: none;
+}
+.loader-wrapper .lds-ring {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+.room--loading .room,
+.room--loading .breadcrumbs,
+.room--loading .sidebar {
+    display: none;
+}
+.room-section.room--loading .row {
+    min-height: 300px;
+}
+.room--loading .loader-wrapper  {
+    display: block;
+}
+.room--full {
+    overflow: hidden;
+}
+.room--full .room-chat {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 20%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 100;
+    background-color: #1f1f1f;
+    color: #ddd;
+}
+.room--full .room__player {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 80%;
+    z-index: 100;
+}
+.room--full .iframe-container {
+     position: unset;
+     padding-bottom: 0;
+     height: 0;
+     margin-top: 0;
+     overflow: unset;
+}
+.anime-player__fullscreen-btn-close, .anime-player__info2-btn {
+    display: none;
+}
+.room--full .anime-player__fullscreen-btn-close, .room--full .anime-player__info2-btn {
+    display: flex;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+.room--full .room-chat__messages, .room--full .room-chat__send-form, .room--full .anime-player__fullscreen-btn-close, .room--full .anime-player__info2-btn {
+    background-color: #1a1a1a;
+    color: #ddd;
+}
+.room--full .room-chat {
+    padding: 0 10px;
+}
+.room--full .room-chat__text,
+.room--full .room-chat__time {
+    color: #868e96;
+    opacity: 1;
+}
+.room--full .room-chat__message.system .room-chat__text {
+    border-color: #2d3236 !important;
+    background: transparent;
+    color: #868e96;
+    opacity: 1;
+}
+.room--full .room-chat__message.system {
+    border-color: #2d3236 !important;
+}
+.room--full .room-chat__send-form textarea::placeholder {
+    color: #868e96;
+}
+.room--full .room-chat__send-form textarea {
+    color: #ddd;
+}
+.room--full .room-chat__send-message-btn {
+    background: #f60;
+}
+.room--full .room-chat__text {
+    background-color: #1f1f1f;
+    color: #ddd;
+}
+.room--full .room-chat .small-title {
+    color: #ddd;
+}
+@media only screen and (max-width: 900px) {
+    .room--full .room__player {
+        width: 100%;
+        height: 60%;
+        top: 0;
+    }
+    .room--full .room-chat {
+        width: 100%;
+        height: 40%;
+        bottom: 0;
+        top: unset;
+        margin-bottom: 0;
+    }
+    .room--full .room-chat__messages {
+        height: 150px;
+    }
+    .room--full .room-chat .small-title {
+        display: none;
+    }
+}
+.room-settings {
+    margin-bottom: 20px;
+}
+.room-settings__item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background: white;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+.room-settings__item:first-of-type {
+    display: flex;
+    flex-direction: column;
+}
+.room-settings__item-title {
+    font-size: 13px;
+    color: #1f1f1f;
+    opacity: 0.4;
+}
+.room-settings__item-title:first-of-type {
+    padding-bottom: 5px;
+    opacity: 1;
+    color: #222;
+}
+.room-settings__item:first-of-type button {
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    border-radius: 8px;
+    background-color: #f4f4f4;
+    color: #447;
+    font-size: 0.8em;
+    transition: all 0.5s;
+}
+.room-settings__item:first-of-type i {
+    color: #868e96;
+}
+.room-settings__item-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 5px;
+    border-top: 1px solid hsla(0,0%,87.1%,.4);
+}
+.switch {
+    width: 35px;
+}
+.switch-for {
+    cursor: pointer;
+    font-size: 12px;
+    position: relative;
+}
+label.switch-for {
+    color: #1f1f1f;
+}
+.switch-for::after {
+    content: "";
+    width: 30px;
+    height: 8px;
+    border-radius: 15px;
+    position: absolute;
+    top: 6px;
+    right: -40px;
+    background: #f4f4f4;
+    transition-duration: 300ms;
+}
+.switch-for::before {
+    content: "";
+    width: 15px;
+    height: 15px;
+    background: #4683d9;
+    border-radius: 50%;
+    position: absolute;
+    right: -24px;
+    top: 3px;
+    z-index: 1;
+    transition-duration: 300ms;
+}
+.switch-input {
+    display: none;
+}
+.switch-input:checked + .switch-for::before {
+    transform: translateX(18px);
+}
+.switch-input:checked + .switch-for::after {
+    background-color: #4683d9;
+}
+.room__dub-select {
+    width: 300px;
+}
+.rooms .no-info {
+    color: #868e96;
+    font-size: 13px;
+    margin: 0 10px;
+}
+.rooms-invite {
+    display: flex;
+    align-items: center;
+    border: 1px solid #efefef;
+    padding: 10px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.rooms-invite:hover {
+    background-color: #f4f4f4;
+}
+.room-invite__image {
+    width: 55px;
+    height: 60px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+.room-invite__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+}
+.room-invite__title {
+    font-size: 1.15em;
+    font-weight: 500;
+}
+.room-invite__label {
+    transform: rotate(45deg);
+    position: absolute;
+    top: 17px;
+    right: -55px;
+    background: #4683d9;
+    color: white;
+    width: 155px;
+    text-align: center;
+    font-size: 11px;
+    opacity: 0.9;
+}
+@media only screen and (max-width: 500px) {
+    .room-invite__desc span {
+        display: none;
+    }
+}
+.anime-player__fullscreen-btn, .anime-player__info-btn,
+.anime-player__report-series,
+.anime-player__show-popular-dubs-btn {
+    color: #222;
+}
+.anime-player__fullscreen-btn:hover, .anime-player__info-btn:hover {
+    opacity: 0.7;
+}
+.room-chat__send-message-btn {
+    height: 27px!important;
+    padding: 0 8px!important;
+    margin-right: 15px!important;
+    border-radius: 15px!important;
+    width: 45px!important;
+}
+body[data-theme=dark] .rooms__header p,
+body[data-theme=dark] .rooms__name,
+body[data-theme=dark] .room-user__name {
+    color: #ddd;
+}
+body[data-theme=dark] .room-chat__text {
+    background-color: #141414;
+}
+body[data-theme=dark] .room-chat__text {
+    color: #ddd;
+}
+body[data-theme=dark] .room-settings__item-title {
+    color: #ddd;
+}
+body[data-theme=dark] .room-user,
+body[data-theme=dark] .room-settings__item {
+    color: #ddd;
+    background-color: #1a1a1a;
+}
+body[data-theme=dark] .room-settings__item-link {
+    border-color: #2d3236;
+}
+body[data-theme=dark] .room__select-episodes p,
+body[data-theme=dark] .rooms__users span {
+    color: #ddd;
+}
+body[data-theme=dark] .room-settings__item-link a {
+    color: #f60;
+}
+body[data-theme=dark] .rooms-invite {
+    background-color: #1f1f1f;
+    border-color: #2d3236;
+    color: #ddd;
+}
+body[data-theme=dark] .room-select-episodes {
+    color: #ddd;
+    background-color: hsla(240,5%,48%,.1);
+    border: none;
+}
+body[data-theme=dark] .select-series-number-style__item.select-series-active,
+body[data-theme=dark] .room-select-episodes--active {
+    background-color: hsla(240,5%,48%,.02);
+    color: #f60;
+}
+body[data-theme=dark] .room-chat__message.system .room-chat__text,
+body[data-theme=dark] .room-chat__time,
+body[data-theme=dark] .room-anime__info,
+body[data-theme=dark] .rooms__time,
+body[data-theme=dark] .rooms__item--private .rooms__info::after {
+    color: #868e96;
+    opacity: 1;
+}
+body[data-theme=dark] .room-settings__item-link button,
+body[data-theme=dark] .switch-for::after {
+    background-color: #1f1f1f;
+}
+body[data-theme=dark] .message__send-form,
+body[data-theme=dark] .message__user,
+body[data-theme=dark] .room-chat__message.system {
+    border-color: #2d3236;
+}
+body[data-theme=dark] .room-chat__messages,
+body[data-theme=dark] .room-chat__send-form {
+    background-color: #1a1a1a;
+    color: #ddd;
+}
+body[data-theme=dark] .room-chat__send-form textarea::placeholder {
+    color: #868e96;
+}
+body[data-theme=dark] .anime-player__controls, body[data-theme=dark] .rooms-invite:hover {
+    background-color: #1a1a1a;
+}
+body[data-theme=dark] .main-title,
+body[data-theme=dark] .anime__title,
+body[data-theme=dark] .small-title,
+body[data-theme=dark] .anime__marks-textarea textarea,
+body[data-theme=dark] .transactions__balance .blue-btn {
+    color: #fff;
+}
+body[data-theme=dark] .anime-player__controls button,
+body[data-theme=dark] .anime-player__current-series-number,
+body[data-theme=dark] .select-series-number-style__item,
+body[data-theme=dark] .room-select-episodes {
+    color: #ddd;
+    background-color: hsla(240,5%,48%,.1);
+    border: none;
+}

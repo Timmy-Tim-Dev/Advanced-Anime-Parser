@@ -1,0 +1,1960 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dleplugin>
+	<name>Advanced Kodik Parser</name>
+	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, обновления новостей, с собственным ajax плейлистом аниме, push уведомлениями и комнатами совместного просмотра</description>
+	<icon>uploads/advanced-anime-parser-icon.png</icon>
+	<version>3.4.0</version>
+	<dleversion>15.0</dleversion>
+	<versioncompare>greater</versioncompare>
+	<upgradeurl>https://storage.kodik.biz/files/advanced-anime-parser/last_version.json</upgradeurl>
+	<filedelete>0</filedelete>
+	<needplugin></needplugin>
+	<mnotice>0</mnotice>
+	<mysqlinstall><![CDATA[DROP TABLE IF EXISTS `{prefix}_shikimori_posts`;
+CREATE TABLE `{prefix}_shikimori_posts` (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  post_id int(11) not null default 0,
+  shiki_id int(11) not null default 0,
+  PRIMARY KEY (id)
+) ENGINE={engine} AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `{prefix}_anime_list`;
+CREATE TABLE `{prefix}_anime_list` (
+  `material_id` int(12) NOT NULL,
+  `shikimori_id` varchar(100) NOT NULL,
+  `mdl_id` varchar(255) NOT NULL,
+  `year` int(6) UNSIGNED NOT NULL,
+  `type` varchar(100) NOT NULL,
+  `news_id` int(12) UNSIGNED NOT NULL DEFAULT '0',
+  `tv_status` varchar(20) NOT NULL,
+  `error` int(12) UNSIGNED NOT NULL DEFAULT '0',
+  `started` tinyint(1) NOT NULL DEFAULT '0',
+  `cat_check` tinyint(1) NOT NULL DEFAULT '0',
+  `news_update` tinyint(1) NOT NULL DEFAULT '0',
+  `skipped` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`material_id`),
+  KEY `shikimori_id` (`shikimori_id`),
+  KEY `mdl_id` (`mdl_id`),
+  KEY `year` (`year`),
+  KEY `type` (`type`),
+  KEY `news_id` (`news_id`),
+  KEY `tv_status` (`tv_status`),
+  KEY `error` (`error`)
+) ENGINE=InnoDB DEFAULT CHARSET={charset} COMMENT='База модуля';
+
+ALTER TABLE `{prefix}_anime_list`
+  MODIFY `material_id` int(12) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `{prefix}_post`
+  MODIFY `tags` text NOT NULL;
+
+ALTER TABLE `{prefix}_users` ADD `watched_series` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE `{prefix}_users` ADD `push_subscribe` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+
+DROP TABLE IF EXISTS `{prefix}_rooms_list`;
+CREATE TABLE `{prefix}_rooms_list` (
+  `id` int(12) NOT NULL AUTO_INCREMENT,
+  `url` varchar(200) NOT NULL,
+  `leader` varchar(200) NOT NULL,
+  `leader_last_login` int(12) UNSIGNED NOT NULL DEFAULT '0',
+  `news_id` int(12) NOT NULL,
+  `poster` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `iframe` varchar(255) NOT NULL,
+  `public` tinyint(1) NOT NULL DEFAULT '0',
+  `pause` tinyint(1) NOT NULL DEFAULT '1',
+  `time` int(5) NOT NULL DEFAULT '0',
+  `created` int(12) NOT NULL DEFAULT '0',
+  `episode_num` int(5) NOT NULL DEFAULT '0',
+  `season_num` int(5) NOT NULL DEFAULT '0',
+  `translation` int(5) NOT NULL DEFAULT '0',
+  `shikimori_id` varchar(100) NOT NULL,
+  `mdl_id` varchar(255) NOT NULL,
+  `visitors_iframe` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={charset} COMMENT='Комнаты совместного просмотра';
+
+DROP TABLE IF EXISTS `{prefix}_rooms_chat`;
+CREATE TABLE `{prefix}_rooms_chat` (
+  `id` int(12) NOT NULL AUTO_INCREMENT,
+  `room_url` varchar(200) NOT NULL,
+  `login` varchar(40) NOT NULL,
+  `avatar` varchar(255) NOT NULL,
+  `time` int(11) NOT NULL,
+  `message` varchar(500) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={charset} COMMENT='Чаты комнат совместного просмотра';
+
+DROP TABLE IF EXISTS `{prefix}_rooms_visitors`;
+CREATE TABLE `{prefix}_rooms_visitors` (
+  `id` int(12) NOT NULL AUTO_INCREMENT,
+  `room_url` varchar(200) NOT NULL,
+  `login` varchar(40) NOT NULL,
+  `avatar` varchar(255) NOT NULL,
+  `time` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={charset} COMMENT='Посетители комнат совместного просмотра';
+
+DROP TABLE IF EXISTS `{prefix}_raspisanie_ongoingov`;
+CREATE TABLE `{prefix}_raspisanie_ongoingov` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `day_name` varchar(255) NOT NULL,
+  `date` varchar(255) NOT NULL,
+  `last_update` varchar(255) NOT NULL,
+  `anime_list` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `day_name` (`day_name`)
+) ENGINE={engine} DEFAULT CHARSET={charset};
+
+INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('monday');
+INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('tuesday');
+INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('wednesday');
+INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('thursday');
+INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('friday');
+INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('saturday');
+INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('sunday');]]></mysqlinstall>
+	<mysqlupgrade><![CDATA[DROP TABLE IF EXISTS `{prefix}_raspisanie_ongoingov`;
+CREATE TABLE `{prefix}_raspisanie_ongoingov` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `day_name` varchar(255) NOT NULL,
+  `date` varchar(255) NOT NULL,
+  `last_update` varchar(255) NOT NULL,
+  `anime_list` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `day_name` (`day_name`)
+) ENGINE={engine} DEFAULT CHARSET={charset};
+
+INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('monday');
+INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('tuesday');
+INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('wednesday');
+INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('thursday');
+INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('friday');
+INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('saturday');
+INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('sunday');
+
+CREATE TABLE IF NOT EXISTS `{prefix}_shikimori_posts` (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  post_id int(11) not null default 0,
+  shiki_id int(11) not null default 0,
+  PRIMARY KEY (id)
+) ENGINE={engine} AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;]]></mysqlupgrade>
+	<mysqlenable><![CDATA[INSERT IGNORE INTO `{prefix}_admin_sections` (`name`, `title`, `descr`, `icon`, `allow_groups`) VALUES ('aap', 'Advanced Kodik Parser', 'Парсер-граббер аниме/дорам с базы Kodik, а так же сайтов Shikimori, World-art', 'uploads/advanced-anime-parser-icon.png', '1');]]></mysqlenable>
+	<mysqldisable><![CDATA[DELETE FROM `{prefix}_admin_sections` WHERE `name` = 'aap';]]></mysqldisable>
+	<mysqldelete><![CDATA[DELETE FROM `{prefix}_admin_sections` WHERE `name` = 'aap';
+DROP TABLE IF EXISTS `{prefix}_anime_list`;
+ALTER TABLE `{prefix}_users` DROP `watched_series`;
+ALTER TABLE `{prefix}_users` DROP `push_subscribe`;
+ALTER TABLE `{prefix}_post` DROP `franchise_aap`;
+DROP TABLE IF EXISTS `{prefix}_rooms_list`;
+DROP TABLE IF EXISTS `{prefix}_rooms_chat`;
+DROP TABLE IF EXISTS `{prefix}_rooms_visitors`;
+DROP TABLE IF EXISTS `{prefix}_raspisanie_ongoingov`;
+DROP TABLE IF EXISTS `{prefix}_shikimori_posts`;]]></mysqldelete>
+	<phpinstall><![CDATA[include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
+	$fran_name = $aaparser_config['fields']['xf_shikimori_id'];
+
+	$chekering = $db->query("SHOW COLUMNS FROM ".PREFIX."_post LIKE 'franchise_aap'");
+	if ($chekering->num_rows == "0") {
+		$db->query("ALTER TABLE ".PREFIX."_post add `franchise_aap` varchar(700) NOT NULL DEFAULT ''");
+	}
+
+	if ($fran_name != "") {
+      $res = $db->query("SELECT * FROM ".PREFIX."_post WHERE xfields like '%$fran_name%'");
+      while ( $row = $db->get_row($res) ) {
+          $xfieldsdata = xfieldsdataload( $row['xfields'] );
+
+          $data = $xfieldsdata[$fran_name];
+          $db->query("update ".PREFIX."_post set franchise_aap='$data'  where id=".$row['id']);
+      }
+    }]]></phpinstall>
+	<phpupgrade><![CDATA[include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
+	$fran_name = $aaparser_config['fields']['xf_shikimori_id'];
+
+	$chekering = $db->query("SHOW COLUMNS FROM ".PREFIX."_post LIKE 'franchise_aap'");
+	if ($chekering->num_rows == "0") {
+		$db->query("ALTER TABLE ".PREFIX."_post add `franchise_aap` varchar(700) NOT NULL DEFAULT ''");
+	}
+
+	if ($fran_name != "") {
+      $res = $db->query("SELECT * FROM ".PREFIX."_post WHERE xfields like '%$fran_name%'");
+      while ( $row = $db->get_row($res) ) {
+          $xfieldsdata = xfieldsdataload( $row['xfields'] );
+
+          $data = $xfieldsdata[$fran_name];
+          $db->query("update ".PREFIX."_post set franchise_aap='$data'  where id=".$row['id']);
+      }
+    }]]></phpupgrade>
+	<phpenable><![CDATA[]]></phpenable>
+	<phpdisable><![CDATA[]]></phpdisable>
+	<phpdelete><![CDATA[]]></phpdelete>
+	<notice><![CDATA[]]></notice>
+	<file name="engine/inc/addnews.php">
+		<operation action="after">
+			<searchcode><![CDATA[name="title" id="title" maxlength="250" >]]></searchcode>
+			<replacecode><![CDATA[<button onClick="parser_search(); return false;" class="btn bg-info-800 btn-sm btn-raised legitRipple position-left">Поиск на Kodik</button>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="after">
+			<searchcode><![CDATA[echo $categoryfilter;]]></searchcode>
+			<replacecode><![CDATA[require_once ENGINE_DIR . '/mrdeath/aaparser/inc/addnews.php';
+
+$kodik_xf_field = $aaparser_config['updates']['xf_player'];
+$xf_shikimori_id = $aaparser_config['fields']['xf_shikimori_id'];]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="after">
+			<searchcode><![CDATA[<span id="related_news"></span>]]></searchcode>
+			<replacecode><![CDATA[<div id="parser_result" style="width: 100%;"></div>
+
+<script type="text/javascript">
+$(function(){
+	var iframe_xf = '{$kodik_xf_field}';
+	$('#xf_'+iframe_xf).after('<br><button type="button" onclick="updateKodikPlayer(\'' + iframe_xf + '\');" class="btn bg-slate-600 btn-sm btn-raised position-left legitRipple">Обновить плеер kodik</button>');
+});
+function updateKodikPlayer(xf)
+{
+
+  var shiki_id = $("#xf_{$xf_shikimori_id}").val();
+  if (shiki_id == "")
+  {
+    alert('Заполните поле с shikimori ID');
+  }
+  else
+  {
+	$.post('/engine/ajax/controller.php?mod=anime_parser&action=parser_kodikplayer', { shiki_id:shiki_id }, function(data){
+		$("#xf_"+xf).val(data);
+    });
+  }
+}
+</script>  ]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="after">
+			<searchcode><![CDATA[$id = $db->insert_id();]]></searchcode>
+			<replacecode><![CDATA[if ( !isset($aaparser_config) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
+if ( isset($aaparser_config['fields']['xf_shikimori_id']) ) {
+  	$xf_temp_fields = xfieldsdataload($filecontents);
+  	if ( isset($xf_temp_fields[$aaparser_config['fields']['xf_shikimori_id']]) ) {
+      	require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
+      	$shikimori_id = $xf_temp_fields[$aaparser_config['fields']['xf_shikimori_id']];
+      	$base_check_db = $db->super_query( "SELECT shikimori_id, news_id FROM " . PREFIX . "_anime_list WHERE shikimori_id='{$shikimori_id}'" );
+      	if ( $base_check_db['shikimori_id'] == $shikimori_id && $base_check_db['news_id'] != $id )
+          	$db->query("UPDATE " . PREFIX . "_anime_list SET news_id='{$id}', started=1 WHERE shikimori_id='{$shikimori_id}'");
+      	else {
+	        $shikimori = request('https://shikimori.me/api/animes/'.$shikimori_id);
+	        if ( $shikimori['aired_on'] ) {
+		        $aired = explode('-', $shikimori['aired_on']);
+		        $year = $aired[0];
+	        }
+	        else $year = 0;
+	        $kind = $shikimori['kind'];
+	        $status = $shikimori['status'];
+
+	        $db->query("INSERT INTO " . PREFIX . "_anime_list (shikimori_id, year, type, news_id, tv_status, started) VALUES( '{$shikimori_id}', '{$year}', '{$kind}', '{$id}', '{$status}', '1' ) " );
+        }
+    }
+}
+elseif ( isset($aaparser_config['fields']['xf_mdl_id']) ) {
+  	$xf_temp_fields = xfieldsdataload($filecontents);
+  	if ( isset($xf_temp_fields[$aaparser_config['fields']['xf_mdl_id']]) ) {
+      	require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
+      	$mdl_id = $xf_temp_fields[$aaparser_config['fields']['xf_mdl_id']];
+      	$base_check_db = $db->super_query( "SELECT mdl_id, news_id FROM " . PREFIX . "_anime_list WHERE mdl_id='{$mdl_id}'" );
+      	if ( $base_check_db['mdl_id'] == $mdl_id && $base_check_db['news_id'] != $id )
+          	$db->query("UPDATE " . PREFIX . "_anime_list SET news_id='{$id}', started=1 WHERE mdl_id='{$mdl_id}'");
+      	else {
+
+          	if ( isset($aaparser_config['settings']['kodik_api_key']) ) $kodik_apikey = $aaparser_config['settings']['kodik_api_key'];
+			else $kodik_apikey = '7dc2e47c2c45d4e97206ba7519939ec3';
+
+	        $kodik = request('https://kodikapi.com/search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_material_data=true');
+
+	        if ( $kodik['results'][0]['year'] ) $year = $kodik['results'][0]['year'];
+	        else $year = 0;
+
+	        $status = $kodik['results'][0]['material_data']['all_status'];
+
+	        $db->query("INSERT INTO " . PREFIX . "_anime_list (mdl_id, year, news_id, tv_status, started) VALUES( '{$mdl_id}', '{$year}', '{$id}', '{$status}', '1' ) " );
+        }
+    }
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[$need_pass = "<div class]]></searchcode>
+			<replacecode><![CDATA[if ( !isset($aaparser_config_push) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config_push.php';
+if ( $aaparser_config_push['push_notifications']['google_indexing'] == 1 ) {
+  	$gindexing = "<div class=\"checkbox\"><label><input class=\"icheck\" type=\"checkbox\" id=\"gindexing\" name=\"gindexing\" value=\"1\" checked>Уведомить Google о странице через Indexing Api?</label></div>";
+}
+else $gindexing = "";]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="after">
+			<searchcode><![CDATA[{$disable_search}]]></searchcode>
+			<replacecode><![CDATA[{$gindexing}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="after">
+			<searchcode><![CDATA[$parse = new ParseFilter();]]></searchcode>
+			<replacecode><![CDATA[$gindexing = isset( $_POST['gindexing'] ) ? intval( $_POST['gindexing'] ) : 0;]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[msg( "success"]]></searchcode>
+			<replacecode><![CDATA[if ( !isset($aaparser_config_push) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config_push.php';
+if ( $aaparser_config_push['push_notifications']['google_indexing'] == 1 && $gindexing == 1 ) {
+	$indexing_action = 'send';
+	$indexing_type = 'URL_UPDATED';
+	$indexing_url = $full_link;
+	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/indexing.php'));
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/inc/editnews.php">
+		<operation action="before">
+			<searchcode><![CDATA[<button onclick="find_relates(); return false;"]]></searchcode>
+			<replacecode><![CDATA[<button onClick="parser_search(); return false;" class="btn bg-info-800 btn-sm btn-raised legitRipple position-left">Поиск на Kodik</button>]]></replacecode>
+			<enabled>1</enabled>
+			<dleversion>16.1</dleversion>
+			<versioncompare>less</versioncompare>
+		</operation>
+		<operation action="after">
+			<searchcode><![CDATA[echo $categoryfilter;]]></searchcode>
+			<replacecode><![CDATA[require_once ENGINE_DIR . '/mrdeath/aaparser/inc/editnews.php';
+
+$kodik_xf_field = $aaparser_config['updates']['xf_player'];
+$xf_shikimori_id = $aaparser_config['fields']['xf_shikimori_id'];]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="after">
+			<searchcode><![CDATA[<span id="related_news"></span>]]></searchcode>
+			<replacecode><![CDATA[<div id="parser_result" style="width: 100%;"></div>
+
+<script type="text/javascript">
+$(function(){
+	var iframe_xf = '{$kodik_xf_field}';
+	$('#xf_'+iframe_xf).after('<br><button type="button" onclick="updateKodikPlayer(\'' + iframe_xf + '\');" class="btn bg-slate-600 btn-sm btn-raised position-left legitRipple">Обновить плеер kodik</button>');
+});
+function updateKodikPlayer(xf)
+{
+
+  var shiki_id = $("#xf_{$xf_shikimori_id}").val();
+  if (shiki_id == "")
+  {
+    alert('Заполните поле с shikimori ID');
+  }
+  else
+  {
+	$.post('/engine/ajax/controller.php?mod=anime_parser&action=parser_kodikplayer', { shiki_id:shiki_id }, function(data){
+		$("#xf_"+xf).val(data);
+    });
+  }
+}
+</script>  ]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="after">
+			<searchcode><![CDATA[deletenewsbyid( $item_db[0] );]]></searchcode>
+			<replacecode><![CDATA[$nws_id = $item_db[0];
+$base_check_db = $db->super_query( "SELECT news_id FROM " . PREFIX . "_anime_list WHERE news_id='{$nws_id}'" );
+if ( $base_check_db['news_id'] == $nws_id )
+  	$db->query( "DELETE FROM " . PREFIX . "_anime_list WHERE news_id='{$nws_id}'" );]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[<input type="button" onclick="find_relates(); return false;"]]></searchcode>
+			<replacecode><![CDATA[<input type="button" onclick="parser_search(); return false;" class="visible-lg-inline-block btn bg-info-800 btn-sm btn-raised" value="Поиск на Kodik">]]></replacecode>
+			<enabled>1</enabled>
+			<dleversion>17.0</dleversion>
+			<versioncompare>greater</versioncompare>
+		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[$need_pass = "<div class]]></searchcode>
+			<replacecode><![CDATA[if ( !isset($aaparser_config_push) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config_push.php';
+if ( $aaparser_config_push['push_notifications']['google_indexing'] == 1 ) {
+  	$gindexing = "<div class=\"checkbox\"><label><input class=\"icheck\" type=\"checkbox\" id=\"gindexing\" name=\"gindexing\" value=\"1\" checked>Уведомить Google о странице через Indexing Api?</label></div>";
+}
+else $gindexing = "";]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="after">
+			<searchcode><![CDATA[{$disable_search}]]></searchcode>
+			<replacecode><![CDATA[{$gindexing}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="after">
+			<searchcode><![CDATA[$id = intval( $_GET['id'] );]]></searchcode>
+			<replacecode><![CDATA[$gindexing = isset( $_POST['gindexing'] ) ? intval( $_POST['gindexing'] ) : 0;]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[msg( "success", $lang['edit_alleok']]]></searchcode>
+			<replacecode><![CDATA[if ( !isset($aaparser_config_push) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config_push.php';
+if ( $aaparser_config_push['push_notifications']['google_indexing'] == 1 && $gindexing == 1 ) {
+	$indexing_action = 'send';
+	$indexing_type = 'URL_UPDATED';
+	$indexing_url = $full_link;
+	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/indexing.php'));
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="after">
+			<searchcode><![CDATA[deletenewsbyid( $item_db[0] );]]></searchcode>
+			<replacecode><![CDATA[if ( !isset($aaparser_config_push) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config_push.php';
+if ( $aaparser_config_push['push_notifications']['google_indexing'] == 1 ) {
+	$row = $db->super_query( "SELECT id, date, category, alt_name FROM " . PREFIX . "_post WHERE id='{$item_db[0]}' LIMIT 1" );
+	$config['http_home_url'] = dle_strtolower($config['http_home_url']);
+
+	if( $config['allow_alt_url'] ) {
+		if( $config['seo_type'] == 1 OR $config['seo_type'] == 2 ) {
+			if( $row['category'] and $config['seo_type'] == 2 ) {
+				$cats_url = get_url( $row['category'] );
+				if($cats_url) {
+					$full_link = $config['http_home_url'] . $cats_url . "/" . $row['id'] . "-" . $row['alt_name'] . ".html";
+				} else $full_link = $config['http_home_url'] . $row['id'] . "-" . $row['alt_name'] . ".html";
+			} else {
+				$full_link = $config['http_home_url'] . $row['id'] . "-" . $row['alt_name'] . ".html";
+			}
+		} else {
+			$full_link = $config['http_home_url'] . date( 'Y/m/d/', strtotime( $row['date'] ) ) . $row['alt_name'] . ".html";
+		}
+	} else {
+		$full_link = $config['http_home_url'] . "index.php?newsid=" . $row['id'];
+	}
+
+	$indexing_action = 'send';
+	$indexing_type = 'URL_DELETED';
+	$indexing_url = $full_link;
+	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/gindexing/indexing.php'));
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[<option value="mass_add_cat">{$lang['add_selcat']}</option>]]></searchcode>
+			<replacecode><![CDATA[<option value="mass_gindexing">Уведомить Google о странице через Indexing Api</option>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/inc/aap.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE' ) || !defined('LOGGED_IN')) {
+	die('Hacking attempt!');
+}
+
+if (!$user_group[$member_id['user_group']]['admin_complaint']) {
+	msg('error', $lang['index_denied'], $lang['index_denied']);
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/admin/index.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/ajax/anime_parser.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE' ) ) {
+	die('Hacking attempt!');
+}
+
+if (!$user_group[$member_id['user_group']]['admin_complaint']) {
+	msg('error', $lang['index_denied'], $lang['index_denied']);
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/ajax/parser.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/ajax/anime_grabber.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE' ) ) {
+	die('Hacking attempt!');
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/ajax/grabber.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/classes/uploads/upload.class.php">
+		<operation action="replace">
+			<searchcode><![CDATA[if (!$this->tmp_name || !is_uploaded_file($this->tmp_name) ) {
+			die( json_encode(array('error' => 'File not send to server' ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
+		}]]></searchcode>
+			<replacecode><![CDATA[if ((!$this->tmp_name || !is_uploaded_file($this->tmp_name)) && !$this->module ) {
+			die( json_encode(array('error' => 'File not send to server' ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
+		}]]></replacecode>
+			<enabled>1</enabled>
+			<dleversion>15.3</dleversion>
+			<versioncompare>greater</versioncompare>
+		</operation>
+		<operation action="replace">
+			<searchcode><![CDATA[if ( !$this->name ){
+			die( json_encode(array('error' => 'File not send to server' ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
+        }]]></searchcode>
+			<replacecode><![CDATA[if ( !$this->name && !$this->module ){
+			die( json_encode(array('error' => 'File not send to server' ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
+        }]]></replacecode>
+			<enabled>1</enabled>
+			<dleversion>15.3</dleversion>
+			<versioncompare>greater</versioncompare>
+		</operation>
+		<operation action="after">
+			<searchcode><![CDATA[$this->size = $_FILES['qqfile']['size'];]]></searchcode>
+			<replacecode><![CDATA[$this->module = isset($_REQUEST['module']) ? $_REQUEST['module'] : false;]]></replacecode>
+			<enabled>1</enabled>
+			<dleversion>15.3</dleversion>
+			<versioncompare>greater</versioncompare>
+		</operation>
+	</file>
+	<file name="engine/ajax/aaparser_save.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE' ) ) {
+	die('Hacking attempt!');
+}
+
+if (!$user_group[$member_id['user_group']]['admin_complaint']) {
+	msg('error', $lang['index_denied'], $lang['index_denied']);
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/admin/ajax/save_config.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/ajax/aaparser_clear.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE' ) ) {
+	die('Hacking attempt!');
+}
+
+if (!$user_group[$member_id['user_group']]['admin_complaint']) {
+	msg('error', $lang['index_denied'], $lang['index_denied']);
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/ajax/update_queue.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/ajax/kodik_playlist_ajax.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE' ) ) {
+	die('Hacking attempt!');
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/modules/main.php">
+		<operation action="before">
+			<searchcode><![CDATA[echo $tpl->result['main'];]]></searchcode>
+			<replacecode><![CDATA[if ( $dle_module == 'enter_room' ) {
+  	require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
+
+  	$kodik_player_js = <<<HTML
+<script>
+let iframe = null;
+let last_message = {$last_chat_id};
+let leader_time = Number({$leader_time});
+let leader_iframe = '{$leader_iframe}';
+
+$('body').on('click', '.anime-player__fullscreen-btn, .anime-player__fullscreen-btn-close', function() {
+	$('body').toggleClass('room--full');
+});
+
+$('.room-chat__send-message-btn').on('click', function() {
+	sendRoomMessage();
+});
+
+$('#isPublic').on('click', function() {
+	var room_id = $('#room-data').attr("data-id");
+	if (document.getElementById('isPublic').checked) {
+        var room_status = 'public';
+    } else {
+        var room_status = 'private';
+    }
+    $.get(dle_root + "engine/ajax/controller.php?mod=message_room", { room_status: room_status, room_id: room_id, action: 'room_status', user_hash: dle_login_hash }, function(data){
+		if ( data.status == "ok" ) {
+
+		}
+	}, "json");
+});
+
+var room_input = document.getElementById("room-chat");
+room_input.addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    sendRoomMessage();
+  }
+});
+
+
+function sendRoomMessage() {
+    var room_id = $('#room-data').attr("data-id");
+    let textArea = $('.room-chat__send-form textarea');
+    if (textArea.val() == "") return false;
+
+    $.get(dle_root + "engine/ajax/controller.php?mod=message_room", { message: textArea.val(), room_id: room_id, action: 'send', user_hash: dle_login_hash }, function(data){
+		if ( data.status == "sended" ) {
+
+        	const Item = ({
+            	data
+        	}) => data.message;
+        	let room_messages = $('.room-chat__messages');
+        	if (room_messages.length > 0) {
+            	room_messages.prepend(Item({
+                	data: data
+            	}));
+        	}
+       		if (document.getElementById('soundSwitch').checked) {
+            	let audio = new Audio('/uploads/room.mp3');
+            	audio.play();
+       		}
+            last_message = Number(data.last_chat_id);
+		}
+	}, "json");
+
+    textArea.val("");
+}
+
+function getRoomUpdates() {
+    var room_id = $('#room-data').attr("data-id");
+    var room_leader = $('#room-data').attr("data-leader");
+    var now_time = $('#room-status').html();
+    var room_episode = $('#room-episode').html();
+    findIframe();
+    $.get(dle_root + "engine/ajax/controller.php?mod=message_room", { room_leader: room_leader, room_id: room_id, action: 'check', user_hash: dle_login_hash }, function(data){
+		if ( data.status == "updated" ) {
+        	if ( Number(data.last_chat_id) > last_message ) {
+            	last_message = Number(data.last_chat_id);
+                if (document.getElementById('soundSwitch').checked) {
+                	let audio = new Audio('/uploads/room.mp3');
+            		audio.play();
+                }
+            }
+            $('.room-chat__messages').html(data.messages);
+
+            $('.room-users').html(data.visitors);
+            if ( data.not_leader ) {
+                if ( data.visitors_iframe != leader_iframe ) {
+                	leader_iframe = data.visitors_iframe;
+                    episodeChange(data.visitors_iframe, Number(data.episode));
+                }
+                else if ( data.pause == 1 ) {
+                    pauseVideo();
+                }
+                else if ( data.pause == 0 ) {
+                    playVideo();
+                    if ( $('#room-status').html() == 'На паузе' && document.body.classList.contains('room--full') ) {
+                    	$('.anime-player__info2-btn').show();
+                        $('.anime-player__info-btn').hide();
+                    }
+                    else if ( $('#room-status').html() == 'На паузе' ) {
+                    	$('.anime-player__info2-btn').hide();
+                        $('.anime-player__info-btn').show();
+                    }
+                }
+                if ( data.time ) {
+                	leader_time = Number(data.time);
+                }
+            }
+		}
+	}, "json");
+}
+
+$(document).ready(function(){
+	setInterval( getRoomUpdates, 3000 );
+});
+
+function playVideo() {
+    iframe.postMessage({
+        key: "kodik_player_api",
+        value: {
+            method: "play"
+        }
+    }, '*');
+}
+
+function pauseVideo() {
+    iframe.postMessage({
+        key: "kodik_player_api",
+        value: {
+            method: "pause"
+        }
+    }, '*');
+}
+
+function seekVideo(seconds) {
+    iframe.postMessage({
+        key: "kodik_player_api",
+        value: {
+            method: "seek",
+            seconds: Number(seconds)
+        }
+    }, '*');
+    $('#room-status').html(fancyTimeFormat(Number(seconds)));
+}
+
+function episodeChange(iframe_link, set_episode) {
+    $('#room-player')[0].src = iframe_link;
+    if ( set_episode ) {
+    	$('#room-episode').html(set_episode);
+        $('.room-anime__episode').show();
+    }
+}
+
+function findIframe() {
+    if ($('.room__player iframe').length > 0) {
+        iframe = $('.room__player iframe')[0].contentWindow;
+    }
+}
+
+
+function toSeconds(timeStr) {
+  const [hours, minutes, seconds] = timeStr.split(':').map(Number);
+  return hours * 3600 + minutes * 60 + seconds;
+}
+
+function fancyTimeFormat(duration) {
+  const hrs = ~~(duration / 3600);
+  const mins = ~~((duration % 3600) / 60);
+  const secs = ~~duration % 60;
+
+  let ret = "";
+
+  if (hrs > 0) {
+    ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+  }
+
+  ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+  ret += "" + secs;
+
+  return ret;
+}
+
+function CopyRoomLink() {
+  var copyText = $('#copy-room-link').html();
+  var temp = $("<input>");
+  $("body").append(temp);
+  temp.val(copyText).select();
+  document.execCommand("copy");
+  temp.remove();
+}
+
+function kodikMessageListener(message) {
+    var room_id = $('#room-data').attr("data-id");
+    var room_leader = $('#room-data').attr("data-leader");
+    var shikimori_id = $('#room-data').attr("data-shikimori_id");
+    var mdl_id = $('#room-data').attr("data-mdl_id");
+
+    if ( room_leader == '{$member_id['name']}' ) {
+    	if (message.data.key == 'kodik_player_time_update') {
+        	leader_time = message.data.value;
+    		$.get(dle_root + "engine/ajax/controller.php?mod=message_room", { room_id: room_id, action: 'update_time', time: message.data.value, user_hash: dle_login_hash }, function(data){
+				if ( data.status == "updated" ) {
+					$('#room-status').html(fancyTimeFormat(message.data.value));
+				}
+			}, "json");
+    	}
+    	else if (message.data.key == 'kodik_player_play') {
+      		$.get(dle_root + "engine/ajax/controller.php?mod=message_room", { room_id: room_id, action: 'set_play', user_hash: dle_login_hash }, function(data){
+				if ( data.status == "play" ) {
+
+				}
+			}, "json");
+    	}
+    	else if (message.data.key == 'kodik_player_pause') {
+      		$.get(dle_root + "engine/ajax/controller.php?mod=message_room", { room_id: room_id, action: 'set_pause', user_hash: dle_login_hash }, function(data){
+				if ( data.status == "paused" ) {
+					$('#room-status').html('На паузе');
+				}
+			}, "json");
+    	}
+    	else if (message.data.key == 'kodik_player_current_episode') {
+      		$.get(dle_root + "engine/ajax/controller.php?mod=message_room", { room_id: room_id, action: 'set_episode', episode: message.data.value, shikimori_id: shikimori_id, mdl_id: mdl_id, user_hash: dle_login_hash }, function(data){
+				if ( data.status == "complete" && data.episode ) {
+					$('#room-episode').html(data.episode);
+                    $('.room-anime__episode').show();
+				}
+			}, "json");
+    	}
+	} else {
+    	if (message.data.key == 'kodik_player_time_update') {
+        	if ( leader_time > Number(message.data.value)+6 || leader_time < Number(message.data.value)-6 ) {
+            	seekVideo(leader_time);
+            }
+    		$('#room-status').html(fancyTimeFormat(message.data.value));
+            $('.anime-player__info2-btn').hide();
+            $('.anime-player__info-btn').hide();
+    	}
+    	else if (message.data.key == 'kodik_player_pause') {
+      		$('#room-status').html('На паузе');
+    	}
+    }
+}
+
+  if (window.addEventListener) {
+    window.addEventListener('message', kodikMessageListener);
+  } else {
+    window.attachEvent('onmessage', kodikMessageListener);
+  }
+
+$(document).ready(function(){
+	$('.room-anime__episode').hide();
+});
+</script></body>
+HTML;
+  	$tpl->result['main'] = str_replace('</body>', $kodik_player_js, $tpl->result['main']);
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[if (stripos ( $tpl->copy_template, "{jsfiles}" ) !== false) {]]></searchcode>
+			<replacecode><![CDATA[if ( $aaparser_config_push['push_notifications']['enable'] && $is_logged) {
+	$metatags .= <<<HTML
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+<script>
+	var OneSignal = window.OneSignal || [];
+	OneSignal.push(function() {
+		OneSignal.init({
+			appId: "{$aaparser_config_push['push_notifications']['app_id']}",
+		});
+	});
+	OneSignal.push(function() {
+		OneSignal.sendTag("userId", "{$member_id['user_id']}");
+	});
+</script>
+HTML;
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[$js_array = build_css($css_array, $config)."\n".build_js($js_array, $config);]]></searchcode>
+			<replacecode><![CDATA[if ( $dle_module == 'showfull' ) {
+  	require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
+  	if ( $aaparser_config['settings']['rooms_enable'] == 1 || $aaparser_config['player']['enable'] == 1 || $aaparser_config_push['push_notifications']['enable'] == 1 ) {
+      	$js_array[] = "engine/mrdeath/aaparser/js/rooms.js";
+      	$css_array[] = "engine/mrdeath/aaparser/css/rooms.css";
+    }
+  	if ( $aaparser_config['player']['enable'] == 1 && $aaparser_config['player']['auto_next'] == 1 && (!isset($aaparser_config['player']['method']) || $aaparser_config['player']['method'] == 0) ) {
+      	$js_array[] = "engine/mrdeath/aaparser/js/kodik_playlist_autonext.js";
+    }
+  	elseif ( $aaparser_config['player']['enable'] == 1 && (!isset($aaparser_config['player']['method']) || $aaparser_config['player']['method'] == 0) ) {
+      	$js_array[] = "engine/mrdeath/aaparser/js/kodik_playlist.js";
+    }
+  	elseif ( $aaparser_config['player']['enable'] == 1 && $aaparser_config['player']['auto_next'] == 1 ) {
+      	$js_array[] = "engine/mrdeath/aaparser/js/kodik_playlist_new_autonext.js";
+    }
+  	elseif ( $aaparser_config['player']['enable'] == 1 ) {
+      	$js_array[] = "engine/mrdeath/aaparser/js/kodik_playlist_new.js";
+    }
+
+  	if ( $aaparser_config['settings']['next_episode_date_new'] && $aaparser_config['settings']['timer_enable'] == 1 ) {
+      	$js_array[] = "engine/mrdeath/aaparser/js/timer.js";
+      	$css_array[] = "engine/mrdeath/aaparser/css/timer.css";
+    }
+}
+elseif ( $aaparser_config_push['calendar_settings']['enable_schedule'] && $dle_module == 'schedule' ) {
+  	$js_array[] = "engine/mrdeath/aaparser/js/schedule.js";
+    $css_array[] = "engine/mrdeath/aaparser/css/schedule.css";
+}
+elseif ( $aaparser_config_push['calendar_settings']['enable_schedule'] && $aaparser_config_push['calendar_settings']['schedule_main'] && $dle_module == 'main' ) {
+  	$js_array[] = "engine/mrdeath/aaparser/js/schedule.js";
+    $css_array[] = "engine/mrdeath/aaparser/css/schedule.css";
+}
+elseif ( $dle_module == 'enter_room' ) {
+  	$js_array[] = "engine/mrdeath/aaparser/js/rooms.js";
+    $css_array[] = "engine/mrdeath/aaparser/css/rooms.css";
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[$tpl->set ( '{content}', $tpl->result['content'] );]]></searchcode>
+			<replacecode><![CDATA[if ( $aaparser_config_push['calendar_settings']['enable_schedule'] && $aaparser_config_push['calendar_settings']['schedule_main'] ) {
+	$raspisanie_ongoingov = dle_cache( "raspisanie_ongoingov", false );
+	if( $raspisanie_ongoingov === false ) {
+		$raspisanie_ongoingov = [];
+		$sql_select = "SELECT * FROM " . PREFIX . "_raspisanie_ongoingov ORDER BY date ASC";
+		$sql_result = $db->query( $sql_select );
+		while ( $schedule_row = $db->get_row( $sql_result ) ) {
+			$raspisanie_ongoingov[] = $schedule_row;
+		}
+  		$db->free( $sql_result );
+		if ( $raspisanie_ongoingov ) {
+			create_cache( "raspisanie_ongoingov", json_encode($raspisanie_ongoingov, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ), false );
+		}
+	}
+	else $raspisanie_ongoingov = json_decode($raspisanie_ongoingov, true);
+
+	if ( $member_id['favorites'] ) $my_list = explode(',', $member_id['favorites']);
+	else $my_list = [];
+
+	$calendar_mas = [];
+	$anime_list_today = $anime_list_tomorrow = '';
+
+	foreach ( $raspisanie_ongoingov as $rnum => $raspisanie ) {
+  		if ( $rnum > 1 ) continue;
+  		$position = 1;
+  		$anime_list_mas = json_decode($raspisanie['anime_list'], true);
+  		foreach ( $anime_list_mas as $anime_item ) {
+      		if ( $anime_item['image'] ) {
+          		$temp_poster = explode('|', $anime_item['image']);
+          		if ( strpos($temp_poster[0], '/uploads/posts/') == false ) $poster = '/uploads/posts/'.$temp_poster[0];
+          		else $poster = $temp_poster[0];
+        	}
+      		else $poster = '';
+      		if ( in_array($anime_item['news_id'], $my_list) ) $add_to_list = '<div id="watchlist-on-'.$anime_item['news_id'].'" style="display:none;" onclick="FastList(\''.$anime_item['news_id'].'\', \'plus\'); return false;" class="calendar__item-bookmark watchlist_btn">
+            	<svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+                	<path d="M8.96173 18.9109L9.42605 18.3219L8.96173 18.9109ZM12 5.50063L11.4596 6.02073C11.601 6.16763 11.7961 6.25063 12 6.25063C12.2039 6.25063 12.399 6.16763 12.5404 6.02073L12 5.50063ZM15.0383 18.9109L15.5026 19.4999L15.0383 18.9109ZM9.42605 18.3219C7.91039 17.1271 6.25307 15.9603 4.93829 14.4798C3.64922 13.0282 2.75 11.3345 2.75 9.1371H1.25C1.25 11.8026 2.3605 13.8361 3.81672 15.4758C5.24723 17.0866 7.07077 18.3752 8.49742 19.4999L9.42605 18.3219ZM2.75 9.1371C2.75 6.98623 3.96537 5.18252 5.62436 4.42419C7.23607 3.68748 9.40166 3.88258 11.4596 6.02073L12.5404 4.98053C10.0985 2.44352 7.26409 2.02539 5.00076 3.05996C2.78471 4.07292 1.25 6.42503 1.25 9.1371H2.75ZM8.49742 19.4999C9.00965 19.9037 9.55954 20.3343 10.1168 20.6599C10.6739 20.9854 11.3096 21.25 12 21.25V19.75C11.6904 19.75 11.3261 19.6293 10.8736 19.3648C10.4213 19.1005 9.95208 18.7366 9.42605 18.3219L8.49742 19.4999ZM15.5026 19.4999C16.9292 18.3752 18.7528 17.0866 20.1833 15.4758C21.6395 13.8361 22.75 11.8026 22.75 9.1371H21.25C21.25 11.3345 20.3508 13.0282 19.0617 14.4798C17.7469 15.9603 16.0896 17.1271 14.574 18.3219L15.5026 19.4999ZM22.75 9.1371C22.75 6.42503 21.2153 4.07292 18.9992 3.05996C16.7359 2.02539 13.9015 2.44352 11.4596 4.98053L12.5404 6.02073C14.5983 3.88258 16.7639 3.68748 18.3756 4.42419C20.0346 5.18252 21.25 6.98623 21.25 9.1371H22.75ZM14.574 18.3219C14.0479 18.7366 13.5787 19.1005 13.1264 19.3648C12.6739 19.6293 12.3096 19.75 12 19.75V21.25C12.6904 21.25 13.3261 20.9854 13.8832 20.6599C14.4405 20.3343 14.9903 19.9037 15.5026 19.4999L14.574 18.3219Z" fill="#1C274C"/>
+                </svg>
+         		</div><div id="watchlist-off-'.$anime_item['news_id'].'" onclick="FastList(\''.$anime_item['news_id'].'\', \'minus\'); return false;" class="calendar__item-bookmark watchlist_btn watchlist_btn_success">
+            	<svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+                    <path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z" fill="#1C274C"/>
+                </svg>
+         		</div>';
+     		else $add_to_list = '<div id="watchlist-on-'.$anime_item['news_id'].'" onclick="FastList(\''.$anime_item['news_id'].'\', \'plus\'); return false;" class="calendar__item-bookmark watchlist_btn">
+            	<svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+                	<path d="M8.96173 18.9109L9.42605 18.3219L8.96173 18.9109ZM12 5.50063L11.4596 6.02073C11.601 6.16763 11.7961 6.25063 12 6.25063C12.2039 6.25063 12.399 6.16763 12.5404 6.02073L12 5.50063ZM15.0383 18.9109L15.5026 19.4999L15.0383 18.9109ZM9.42605 18.3219C7.91039 17.1271 6.25307 15.9603 4.93829 14.4798C3.64922 13.0282 2.75 11.3345 2.75 9.1371H1.25C1.25 11.8026 2.3605 13.8361 3.81672 15.4758C5.24723 17.0866 7.07077 18.3752 8.49742 19.4999L9.42605 18.3219ZM2.75 9.1371C2.75 6.98623 3.96537 5.18252 5.62436 4.42419C7.23607 3.68748 9.40166 3.88258 11.4596 6.02073L12.5404 4.98053C10.0985 2.44352 7.26409 2.02539 5.00076 3.05996C2.78471 4.07292 1.25 6.42503 1.25 9.1371H2.75ZM8.49742 19.4999C9.00965 19.9037 9.55954 20.3343 10.1168 20.6599C10.6739 20.9854 11.3096 21.25 12 21.25V19.75C11.6904 19.75 11.3261 19.6293 10.8736 19.3648C10.4213 19.1005 9.95208 18.7366 9.42605 18.3219L8.49742 19.4999ZM15.5026 19.4999C16.9292 18.3752 18.7528 17.0866 20.1833 15.4758C21.6395 13.8361 22.75 11.8026 22.75 9.1371H21.25C21.25 11.3345 20.3508 13.0282 19.0617 14.4798C17.7469 15.9603 16.0896 17.1271 14.574 18.3219L15.5026 19.4999ZM22.75 9.1371C22.75 6.42503 21.2153 4.07292 18.9992 3.05996C16.7359 2.02539 13.9015 2.44352 11.4596 4.98053L12.5404 6.02073C14.5983 3.88258 16.7639 3.68748 18.3756 4.42419C20.0346 5.18252 21.25 6.98623 21.25 9.1371H22.75ZM14.574 18.3219C14.0479 18.7366 13.5787 19.1005 13.1264 19.3648C12.6739 19.6293 12.3096 19.75 12 19.75V21.25C12.6904 21.25 13.3261 20.9854 13.8832 20.6599C14.4405 20.3343 14.9903 19.9037 15.5026 19.4999L14.574 18.3219Z" fill="#1C274C"/>
+                </svg>
+         		</div><div id="watchlist-off-'.$anime_item['news_id'].'" style="display:none;" onclick="FastList(\''.$anime_item['news_id'].'\', \'minus\'); return false;" class="calendar__item-bookmark watchlist_btn watchlist_btn_success">
+            	<svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+                    <path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z" fill="#1C274C"/>
+                </svg>
+         		</div>';
+      		if ( ($position+1) > 6 ) $tdhid = ' style="display:none"';
+        	else $tdhid = '';
+      		if ( $rnum == 0 ) $anime_list_today .= '<div class="calendar__item-anime watchlist_parent list_today"'.$tdhid.'>
+         		<div class="calendar__item-number">'.$position.'.</div>
+         		<a href="'.$anime_item['full_link'].'" class="calendar__item-img">
+         		<img src="'.$poster.'" alt="Постер '.$anime_item['russian'].'">
+         		</a>
+         		<div class="calendar__item-names">
+            		<a href="'.$anime_item['full_link'].'" class="calendar__item-name">'.$anime_item['russian'].'</a>
+            		<div class="calendar__item-english-name">'.$anime_item['original'].'</div>
+            		<div class="calendar__item-english-name">Ожидается: '.$anime_item['next_episode'].' серия</div>
+         		</div>
+         		<div class="calendar__item-date">
+            		<div class="calendar__item-day">'.date('j', strtotime($anime_item['next_date'])).'</div>
+            		<div class="calendar__item-month">'.langdate('F', strtotime($anime_item['next_date'])).'</div>
+         		</div>
+         		'.$add_to_list.'
+      		</div>';
+      		else $anime_list_tomorrow .= '<div class="calendar__item-anime watchlist_parent list_tomorrow"'.$tdhid.'>
+         		<div class="calendar__item-number">'.$position.'.</div>
+         		<a href="'.$anime_item['full_link'].'" class="calendar__item-img">
+         		<img src="'.$poster.'" alt="Постер '.$anime_item['russian'].'">
+         		</a>
+         		<div class="calendar__item-names">
+            		<a href="'.$anime_item['full_link'].'" class="calendar__item-name">'.$anime_item['russian'].'</a>
+            		<div class="calendar__item-english-name">'.$anime_item['original'].'</div>
+            		<div class="calendar__item-english-name">Ожидается: '.$anime_item['next_episode'].' серия</div>
+         		</div>
+         		<div class="calendar__item-date">
+            		<div class="calendar__item-day">'.date('j', strtotime($anime_item['next_date'])).'</div>
+            		<div class="calendar__item-month">'.langdate('F', strtotime($anime_item['next_date'])).'</div>
+         		</div>
+         		'.$add_to_list.'
+      		</div>';
+
+      		$position++;
+    	}
+  		$anime_list .= '</div>';
+  		if ($raspisanie['anime_list']) {
+          if ( $rnum == 0 && count($anime_list_mas) > 5 ) $anime_list_today .= '<span id="show-more-today" class="show-more-schedules">Показать все</span>';
+          elseif ( $rnum == 1 && count($anime_list_mas) > 5 ) $anime_list_tomorrow .= '<span id="show-more-tomorrow" class="show-more-schedules">Показать все</span>';
+			}
+    }
+
+	$tpl->set ( '{today-ongoings}', $anime_list_today );
+	$tpl->set ( '{tomorrow-ongoings}', $anime_list_tomorrow );
+}
+else {
+  	$tpl->set ( '{today-ongoings}', '' );
+	$tpl->set ( '{tomorrow-ongoings}', '' );
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/ajax/kodik_watched.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE' ) ) {
+	die('Hacking attempt!');
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/ajax/save_watched.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/modules/show.full.php">
+		<operation action="before">
+			<searchcode><![CDATA[$tpl->set( '{short-story}', $row['short_story'] );]]></searchcode>
+			<replacecode><![CDATA[if ( $member_id['watched_series'] ) $watched_series = json_decode($member_id['watched_series'], true);
+else $watched_series = [];
+
+$watched_episode = $watched_season = 0;
+$watched_translator = '';
+
+foreach ( $watched_series as $key => $value ) {
+	if ( $value['news_id'] == $row['id'] ) {
+      	$watched_episode = $value['episode'];
+      	$watched_season = $value['season'];
+      	$watched_translator = $value['translation'];
+    }
+}
+
+if ( $watched_episode && $watched_season && $watched_translator ) {
+  	$tpl->set('[watched_series]', "");
+  	$tpl->set('[/watched_series]', "");
+	$tpl->set('{watched_episode}', $watched_episode);
+	$tpl->set('{watched_season}', $watched_season);
+	$tpl->set('{watched_translator}', $watched_translator);
+}
+else {
+  	$tpl->set_block("'\\[watched_series\\](.*?)\\[/watched_series\\]'si", '');
+	$tpl->set('{watched_episode}', "");
+	$tpl->set('{watched_season}', "");
+	$tpl->set('{watched_translator}', "");
+}
+
+if ( $aaparser_config_push['push_notifications']['enable'] && $is_logged ) {
+	if ( $member_id['push_subscribe'] ) $push_subscribe = json_decode($member_id['push_subscribe'], true);
+	else $push_subscribe = [];
+
+	if ( in_array($row['id'], $push_subscribe) ) {
+  		$push_subscribe_block = '<div class="js-toggle-fav btn"><span id="push_subscribe" onclick="PushSubscribe(\''.$row['id'].'\', \'subscribe\');return false;" style="display:none;"><i class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell"></i> Отслеживать</span><span id="push_unsubscribe" class="is-active" onclick="PushSubscribe(\''.$row['id'].'\', \'unsubscribe\');return false;"><i class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell-slash"></i> Отписаться</span></div>';
+      	$user_subscribed = '<div class="poster_subscribes"><div class="poster_subscribes-item" title="Вы подписаны"><span class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell"></span></div></div>';
+	}
+	else {
+  		$push_subscribe_block = '<div class="js-toggle-fav btn"><span id="push_subscribe" onclick="PushSubscribe(\''.$row['id'].'\', \'subscribe\');return false;"><i class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell"></i> Отслеживать</span><span id="push_unsubscribe" class="is-active" onclick="PushSubscribe(\''.$row['id'].'\', \'unsubscribe\');return false;" style="display:none;"><i class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell-slash"></i> Отписаться</span></div>';
+      	$user_subscribed = '';
+	}
+
+  	$tpl->set( '[push_subscribe]', "" );
+  	$tpl->set( '[/push_subscribe]', "" );
+	$tpl->set( '{push_subscribe}', $push_subscribe_block );
+	$tpl->set( '{user_subscribed}', $user_subscribed );
+}
+else {
+  	$tpl->set_block("'\\[push_subscribe\\](.*?)\\[/push_subscribe\\]'si", '');
+  	$tpl->set( '{push_subscribe}', "" );
+  	$tpl->set( '{user_subscribed}', "" );
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/modules/show.short.php">
+		<operation action="before">
+			<searchcode><![CDATA[$row['title'] = stripslashes( $row['title'] );]]></searchcode>
+			<replacecode><![CDATA[if ( $member_id['watched_series'] ) $watched_series = json_decode($member_id['watched_series'], true);
+else $watched_series = [];
+
+$watched_episode = $watched_season = 0;
+$watched_translator = '';
+
+foreach ( $watched_series as $key => $value ) {
+	if ( $value['news_id'] == $row['id'] ) {
+      	$watched_episode = $value['episode'];
+      	$watched_season = $value['season'];
+      	$watched_translator = $value['translation'];
+    }
+}
+
+if ( $watched_episode && $watched_season && $watched_translator ) {
+  	$tpl->set('[watched_series]', "");
+  	$tpl->set('[/watched_series]', "");
+	$tpl->set('{watched_episode}', $watched_episode);
+	$tpl->set('{watched_season}', $watched_season);
+	$tpl->set('{watched_translator}', $watched_translator);
+}
+else {
+  	$tpl->set_block("'\\[watched_series\\](.*?)\\[/watched_series\\]'si", '');
+	$tpl->set('{watched_episode}', "");
+	$tpl->set('{watched_season}', "");
+	$tpl->set('{watched_translator}', "");
+}
+
+if ( $aaparser_config_push['push_notifications']['enable'] && $is_logged ) {
+	if ( $member_id['push_subscribe'] ) $push_subscribe = json_decode($member_id['push_subscribe'], true);
+	else $push_subscribe = [];
+
+	if ( in_array($row['id'], $push_subscribe) ) {
+  		$user_subscribed = '<div class="poster_subscribes"><div class="poster_subscribes-item" title="Вы подписаны"><span class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell"></span></div></div>';
+	}
+	else {
+  		$user_subscribed = '';
+	}
+
+	$tpl->set( '{user_subscribed}', $user_subscribed );
+}
+else {
+  	$tpl->set( '{user_subscribed}', "" );
+}
+
+if ( $dle_module == 'rooms_list' ) {
+  	$tpl->set( '{room-url}', $config['http_home_url']."room/".$row['url']."/" );
+  	$tpl->set( '{leader-login}', $row['leader'] );
+  	$tpl->set( '{leader-link}', $config['http_home_url']."user/".$row['leader']."/" );
+  	$tpl->set( '{leader-avatar}', $row['leader_avatar'] );
+  	if ( $row['episode_num'] > 0 ) {
+      	$tpl->set('[room-episode]', "");
+  		$tpl->set('[/room-episode]', "");
+      	$tpl->set( '{room-episode}', $row['episode_num'] );
+    }
+  	else {
+      	$tpl->set_block("'\\[room-episode\\](.*?)\\[/room-episode\\]'si", '');
+		$tpl->set('{room-episode}', "");
+    }
+  	if ( $row['season_num'] > 0 ) {
+      	$tpl->set('[room-season]', "");
+  		$tpl->set('[/room-season]', "");
+      	$tpl->set( '{room-season}', $row['season_num'] );
+    }
+  	else {
+      	$tpl->set_block("'\\[room-season\\](.*?)\\[/room-season\\]'si", '');
+		$tpl->set('{room-season}', "");
+    }
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[if( $category_id and $cat_info[$category_id]['short_tpl'] != '' )]]></searchcode>
+			<replacecode><![CDATA[if ( $dle_module == 'subscribe_page' ) $tpl->load_template( 'shortstory_subscribes.tpl' );
+elseif ( $dle_module == 'rooms_list' ) $tpl->load_template( 'rooms_shortstory.tpl' );
+else]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/modules/show.custom.php">
+		<operation action="before">
+			<searchcode><![CDATA[$row['title'] = stripslashes( $row['title'] );]]></searchcode>
+			<replacecode><![CDATA[if ( $member_id['watched_series'] ) $watched_series = json_decode($member_id['watched_series'], true);
+else $watched_series = [];
+
+$watched_episode = $watched_season = 0;
+$watched_translator = '';
+
+foreach ( $watched_series as $key => $value ) {
+	if ( $value['news_id'] == $row['id'] ) {
+      	$watched_episode = $value['episode'];
+      	$watched_season = $value['season'];
+      	$watched_translator = $value['translation'];
+    }
+}
+
+if ( $watched_episode && $watched_season && $watched_translator ) {
+  	$tpl->set('[watched_series]', "");
+  	$tpl->set('[/watched_series]', "");
+	$tpl->set('{watched_episode}', $watched_episode);
+	$tpl->set('{watched_season}', $watched_season);
+	$tpl->set('{watched_translator}', $watched_translator);
+}
+else {
+  	$tpl->set_block("'\\[watched_series\\](.*?)\\[/watched_series\\]'si", '');
+	$tpl->set('{watched_episode}', "");
+	$tpl->set('{watched_season}', "");
+	$tpl->set('{watched_translator}', "");
+}
+
+if ( $aaparser_config_push['push_notifications']['enable'] && $is_logged ) {
+	if ( $member_id['push_subscribe'] ) $push_subscribe = json_decode($member_id['push_subscribe'], true);
+	else $push_subscribe = [];
+
+	if ( in_array($row['id'], $push_subscribe) ) {
+  		$user_subscribed = '<div class="poster_subscribes"><div class="poster_subscribes-item" title="Вы подписаны"><span class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell"></span></div></div>';
+	}
+	else {
+  		$user_subscribed = '';
+	}
+
+	$tpl->set( '{user_subscribed}', $user_subscribed );
+}
+else {
+  	$tpl->set( '{user_subscribed}', "" );
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/modules/functions.php">
+		<operation action="before">
+			<searchcode><![CDATA[if( preg_match( "#xfields=[\"](.+?)[\"]#i", $param_str, $match ) ) {]]></searchcode>
+			<replacecode><![CDATA[if( preg_match( "#idshiki=['\"](.+?)['\"]#i", $param_str, $match ) ) {
+  		if ( !$aaparser_config ) require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
+		$match[1] = explode (',', $match[1]);
+		$temp_array = array();
+		foreach ($match[1] as $value) {
+			$value = $db->safesql(trim($value));
+			$temp_array[] = "p.franchise_aap = '{$value}'";
+		}
+		$where[] = "(".implode(' OR ', $temp_array).")";
+	}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="replace">
+			<searchcode><![CDATA[$news_date, $banners]]></searchcode>
+			<replacecode><![CDATA[$news_date, $banners, $aaparser_config]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[function totranslit]]></searchcode>
+			<replacecode><![CDATA[require_once ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php';
+function DLE_Send_Onesignal ( $params ) {
+  	global $aaparser_config_push;
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://onesignal.com/api/v1/notifications');
+    curl_setopt(
+        $ch,
+        CURLOPT_HTTPHEADER,
+        [
+            'Content-Type: application/json',
+            'Authorization: Basic '.$aaparser_config_push['push_notifications']['rest_api']
+        ]
+    );
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_HEADER, FALSE);
+    curl_setopt($ch, CURLOPT_POST, TRUE);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    return $response;
+}
+
+function DLE_Send_Push ( $title, $notification, $url = false, $image = false, $user_id = false ) {
+  	global $aaparser_config_push;
+  	$params = [
+            'app_id' => $aaparser_config_push['push_notifications']['app_id'],
+            'headings' => [
+                'en' => $title
+            ],
+            'contents' => [
+                'en' => $notification
+            ]
+        ];
+
+  	if ( $url ) $params = array_merge($params, [
+                'url' => $url
+            ]);
+
+  	if ( $image ) $params = array_merge($params, [
+                'big_picture' => $image,
+      			'chrome_web_image' => $image
+            ]);
+
+  	 if( $user_id ) {
+     	if ( count($user_id) > 100 ) {
+          	$user_mas = array_chunk($user_id, 100);
+        }
+        else {
+        	$user_mas = [];
+        	$user_mas[] = $user_id;
+        }
+       	foreach ( $user_mas as $users_id ) {
+        	$filterList = [];
+            foreach ($users_id as $key => $value) {
+            	if($key > 0) {
+                	$filterList[] = [
+                    	'operator' => 'OR'
+                    ];
+                }
+                $filterList[] = [
+                	'field' => 'tag',
+                	'key' => 'userId',
+                	'value' => $value,
+                	'relation' => '='
+                ];
+            }
+            $params = array_merge($params, [
+            	'filters' => $filterList
+            ]);
+  			$answer = DLE_Send_Onesignal( $params );
+        }
+     }
+     else {
+     	$params = array_merge($params, [
+     		'included_segments' => [
+     			'All'
+     		]
+     	]);
+        $answer = DLE_Send_Onesignal( $params );
+     }
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[function custom_print( $matches=array() ) {]]></searchcode>
+			<replacecode><![CDATA[function custom_rooms( $matches=array() ) {
+	global $db, $is_logged, $member_id, $user_group, $_TIME, $lang, $PHP_SELF, $url_page, $user_query, $custom_news, $remove_canonical, $_DOCUMENT_DATE;
+
+	if ( !count($matches) ) return "";
+
+	$param_str = trim($matches[1]);
+
+  	$where = array();
+
+	$aviable = array("global");
+	$sql_select = "SELECT r.id, r.url, r.leader, r.news_id, r.poster, r.title, r.public, r.episode_num, r.season_num, r.leader_last_login, r.created, rv.avatar as leader_avatar FROM " . PREFIX . "_rooms_list r LEFT JOIN " . PREFIX . "_rooms_visitors rv ON (r.url=rv.room_url AND r.leader=rv.login)";
+	$ids_for_sort = false;
+
+	if( preg_match( "#newsid=['\"](.+?)['\"]#i", $param_str, $match ) ) {
+		$temp_array = array();
+		$where_id = array();
+		$match[1] = explode (',', trim($match[1]));
+
+		foreach ($match[1] as $value) {
+
+			if( count(explode('-', $value)) == 2 ) {
+				$value = explode('-', $value);
+				$where_id[] = "r.news_id >= '" . intval($value[0]) . "' AND r.news_id <= '".intval($value[1])."'";
+
+			} else $temp_array[] = intval($value);
+
+		}
+
+		if ( count($temp_array) ) {
+
+			$where_id[] = "r.news_id IN ('" . implode("','", $temp_array) . "')";
+			$ids_for_sort = "FIND_IN_SET(r.news_id, '".implode(",", $temp_array)."') ";
+		}
+
+		if ( count($where_id) ) {
+			$custom_id = "(".implode(' OR ', $where_id).")";
+			$where[] = $custom_id;
+
+		}
+
+	}
+
+	if( preg_match( "#newsidexclude=['\"](.+?)['\"]#i", $param_str, $match ) ) {
+
+		$temp_array = array();
+		$where_id = array();
+		$match[1] = explode (',', trim($match[1]));
+
+		foreach ($match[1] as $value) {
+
+			if( count(explode('-', $value)) == 2 ) {
+				$value = explode('-', $value);
+				$where_id[] = "(r.news_id < '" . intval($value[0]) . "' OR r.news_id > '".intval($value[1])."')";
+
+			} else $temp_array[] = intval($value);
+
+		}
+
+		if ( count($temp_array) ) {
+
+			$where_id[] = "r.news_id NOT IN ('" . implode("','", $temp_array) . "')";
+		}
+
+		if ( count($where_id) ) {
+			$custom_id = implode(' AND ', $where_id);
+			$where[] = $custom_id;
+
+		}
+	}
+
+	if( preg_match( "#leader=['\"](.+?)['\"]#i", $param_str, $match ) ) {
+
+		$match[1] = explode (',', $match[1]);
+
+		$temp_array = array();
+
+		foreach ($match[1] as $value) {
+
+			$value = $db->safesql(trim($value));
+			$temp_array[] = "r.leader = '{$value}'";
+
+		}
+
+		$where[] = "(".implode(' OR ', $temp_array).")";
+
+
+	}
+
+	if( preg_match( "#leaderexclude=['\"](.+?)['\"]#i", $param_str, $match ) ) {
+
+		$match[1] = explode (',', $match[1]);
+
+		$temp_array = array();
+
+		foreach ($match[1] as $value) {
+
+			$value = $db->safesql(trim($value));
+			$temp_array[] = "r.leader != '{$value}'";
+
+		}
+
+		$where[] = implode(' AND ', $temp_array);
+
+
+	}
+
+	if( preg_match( "#template=['\"](.+?)['\"]#i", $param_str, $match ) ) {
+		$custom_template = trim($match[1]);
+	} else $custom_template = "shortstory";
+
+  	if( preg_match( "#withcount=['\"](.+?)['\"]#i", $param_str, $match ) ) {
+		$withcount = trim($match[1]);
+	} else $withcount = false;
+
+	$custom_from = 0;
+    $custom_all = 0;
+
+	if( preg_match( "#limit=['\"](.+?)['\"]#i", $param_str, $match ) ) {
+		$custom_limit = intval($match[1]);
+	} else $custom_limit = 1;
+
+  	if( preg_match( "#activetime=['\"](.+?)['\"]#i", $param_str, $match ) ) {
+		$activetime = intval($match[1]);
+	} else $activetime = 30;
+
+	if( preg_match( "#hideprivate=['\"](.+?)['\"]#i", $param_str, $match ) ) {
+		if ( $match[1] != "no" ) $where[] = "r.public = 0 AND r.leader_last_login>'".($_TIME-$activetime)."'";
+      	else $where[] = "r.leader_last_login>'".($_TIME-$activetime)."'";
+	}
+	else $where[] = "r.public = 0 AND r.leader_last_login>'".($_TIME-$activetime)."'";
+
+  	$news_msort = 'DESC';
+  	$news_sort = 'id';
+
+	$sql_count = "";
+
+	$tpl = new dle_template();
+	$tpl->dir = TEMPLATE_DIR;
+	$tpl->is_custom = true;
+
+	$tpl->load_template( $custom_template . '.tpl' );
+
+	$sql_select .= " WHERE ".implode(' AND ', $where)." ORDER BY " . $news_sort . " " . $news_msort . " LIMIT " . $custom_from . "," . $custom_limit;
+
+	$sql_result = $db->query( $sql_select );
+
+	include (DLEPlugins::Check(ENGINE_DIR . '/modules/show.rooms.php'));
+
+	$tpl->is_custom = false;
+
+	return $tpl->result['content'];
+
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="replace">
+			<searchcode><![CDATA[p.id, p.autor, p.date, p.short_story]]></searchcode>
+			<replacecode><![CDATA[p.id, p.autor, p.date, p.short_story, p.franchise_aap]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/ajax/push_subscribe.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE' ) ) {
+	die('Hacking attempt!');
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/ajax/push_subscribe.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/engine.php">
+		<operation action="before">
+			<searchcode><![CDATA[case "unsubscribe" :]]></searchcode>
+			<replacecode><![CDATA[case "subscribe_page" :
+		if ($is_logged) include (DLEPlugins::Check(ENGINE_DIR . '/modules/subscribe_page.php'));
+		else {
+			@header( "HTTP/1.1 403 Forbidden" );
+			msgbox ( $lang['all_err_1'], $lang['fav_error'] );
+		}
+		break;
+
+case "enter_room" :
+		if ($is_logged) include (DLEPlugins::Check(ENGINE_DIR . '/modules/enter_room.php'));
+		else {
+			@header( "HTTP/1.1 403 Forbidden" );
+			msgbox ( $lang['all_err_1'], $lang['fav_error'] );
+		}
+		break;
+
+case "rooms_list" :
+		if ($is_logged) include (DLEPlugins::Check(ENGINE_DIR . '/modules/rooms_list.php'));
+		else {
+			@header( "HTTP/1.1 403 Forbidden" );
+			msgbox ( $lang['all_err_1'], $lang['fav_error'] );
+		}
+		break;
+
+case "schedule" :
+		include (DLEPlugins::Check(ENGINE_DIR . '/modules/raspisanie_ongoingov.php'));
+		break;]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/modules/subscribe_page.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE') ) {
+	header( "HTTP/1.1 403 Forbidden" );
+	header ( 'Location: ../../' );
+	die( "Hacking attempt!" );
+}
+
+$error_subscribes = false;
+$allow_userinfo = true;
+$user_title = $member_id['name'];
+$member_name = totranslit($user_title, true, false);
+$dle_module = 'subscribe_page';
+
+$my_subscribes = dle_cache( "subscribes_".$member_name, false );
+if( $my_subscribes === false ) {
+	$user_row = $db->super_query("SELECT name, push_subscribe FROM " . PREFIX . "_users WHERE name='{$user_title}'");
+	if ( $user_row['push_subscribe'] ) {
+		$my_subscribes = $user_row['push_subscribe'];
+	  	create_cache( "subscribes_".$member_name, $my_subscribes, false );
+	}
+  	else $error_subscribes = true;
+}
+if ( $error_subscribes === false ) {
+
+	$my_subscribes = json_decode($my_subscribes, true);
+
+  	$list_link = $config['http_home_url'].'subscribes/';
+  	$canonical = $list_link;
+
+  	$metatags['title'] = 'Подписки на уведомления пользователя '.$user_title;
+
+  	$page_description = $metatags_description = $metatags['title'];
+
+	$url_page = $config['http_home_url'] . "subscribes";
+	$user_query = "do=notifications_news&amp;user=" . urlencode ( $user_title );
+
+	$where = "p.id IN ('" . implode("','", $my_subscribes) . "')";
+	$where_count = "id IN ('" . implode("','", $my_subscribes) . "')";
+
+	if ($cstart < 0) $cstart = 0;
+	if ($cstart) {
+		$cstart = $cstart - 1;
+		$cstart = $cstart * $config['news_number'];
+	}
+  	if ($cstart) $cache_id = ($cstart / $config['news_number']) + 1;
+	else $cache_id = 1;
+
+  	$cache_prefix = $member_name."_".$cache_id;
+
+  	$config['max_cache_pages'] = intval($config['max_cache_pages']);
+	if($config['max_cache_pages'] < 3) $config['max_cache_pages'] = 3;
+
+  	if ($config['allow_cache'] AND $cache_id <= $config['max_cache_pages']) {
+		$active = dle_cache( "subscribes_", $cache_prefix, true );
+		if( $active ) {
+			$active = json_decode($active, true);
+		}
+		$short_news_cache = true;
+	} else {
+		$active = false;
+		$short_news_cache = false;
+	}
+
+  	if ( is_array($active) ) {
+
+		if( isset( $active['content'] ) ) {
+			$tpl->result['content'] .= $active['content'];
+		}
+
+		if( isset($active['navigation']) ) {
+
+			$tpl->result['navigation'] = $active['navigation'];
+
+		} else $tpl->result['navigation'] = '';
+
+		if( isset( $active['last-modified'] ) ) {
+
+			if( $active['last-modified'] > $_DOCUMENT_DATE ) {
+				$_DOCUMENT_DATE = $active['last-modified'];
+			}
+
+		}
+
+		$active = null;
+		$news_found = true;
+		if ($config['allow_quick_wysiwyg'] and ($user_group[$member_id['user_group']]['allow_edit'] or $user_group[$member_id['user_group']]['allow_all_edit'])) $allow_comments_ajax = true;
+		else $allow_comments_ajax = false;
+
+	} else {
+
+		$sql_select = "SELECT p.id, p.autor, p.date, p.short_story, CHAR_LENGTH(p.full_story) as full_story, p.xfields, p.title, p.category, p.alt_name, p.comm_num, p.allow_comm, p.fixed, p.tags, e.news_read, e.allow_rate, e.rating, e.vote_num, e.votes, e.view_edit, e.editdate, e.editor, e.reason FROM " . PREFIX . "_post p LEFT JOIN " . PREFIX . "_post_extras e ON (p.id=e.news_id) WHERE {$where} AND approve=1 ORDER BY p.date DESC LIMIT " . $cstart . "," . $config['news_number'];
+		$sql_count = "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE {$where_count} AND approve=1";
+
+		include_once (DLEPlugins::Check(ENGINE_DIR . '/modules/show.short.php'));
+
+		if (!$config['allow_quick_wysiwyg']) $allow_comments_ajax = false;
+
+		if ($config['files_allow']) if (strpos ( $tpl->result['content'], "[attachment=" ) !== false) {
+			$tpl->result['content'] = show_attach ( $tpl->result['content'], $attachments );
+		}
+		if ($news_found AND $cache_id <= $config['max_cache_pages'] ) create_cache ( "subscribes_", json_encode( array('content' => $tpl->result['content'], 'navigation' => $tpl->result['navigation'], 'description' => $page_description, 'last-modified' => $_DOCUMENT_DATE ) , JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ), $cache_prefix, true );
+	}
+
+	if($tpl->result['content'] AND $canonical AND isset($_GET['cstart']) AND intval($_GET['cstart']) AND intval($_GET['cstart']) != 1 ) {
+		if( $config['allow_alt_url'] ) $canonical .= "page/".intval($_GET['cstart'])."/";
+		else {
+			if ($user_query) $canonical = "{$PHP_SELF}?cstart=".intval($_GET['cstart'])."&".str_replace('&amp;', '&', $user_query);
+			else $canonical = "{$PHP_SELF}?cstart=".intval($_GET['cstart']);
+		}
+	}
+
+}
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/ajax/create_room.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+if( !defined('DATALIFEENGINE') ) {
+	header( "HTTP/1.1 403 Forbidden" );
+	header ( 'Location: ../../' );
+	die( "Hacking attempt!" );
+}
+
+if (!$config['allow_registration'])
+{
+	$dle_login_hash = sha1( SECURE_AUTH_KEY . $_IP );
+}
+
+if($_GET['user_hash'] == "" OR $_GET['user_hash'] != $dle_login_hash)
+{
+	die('Hacking attempt!');
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/rooms/create_room.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/modules/enter_room.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE') ) {
+	header( "HTTP/1.1 403 Forbidden" );
+	header ( 'Location: ../../' );
+	die( "Hacking attempt!" );
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/rooms/enter_room.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/ajax/message_room.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+if( !defined('DATALIFEENGINE') ) {
+	header( "HTTP/1.1 403 Forbidden" );
+	header ( 'Location: ../../' );
+	die( "Hacking attempt!" );
+}
+
+if (!$config['allow_registration'])
+{
+	$dle_login_hash = sha1( SECURE_AUTH_KEY . $_IP );
+}
+
+if($_GET['user_hash'] == "" OR $_GET['user_hash'] != $dle_login_hash)
+{
+	die('Hacking attempt!');
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/rooms/message_room.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/modules/rooms_list.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE') ) {
+	header( "HTTP/1.1 403 Forbidden" );
+	header ( 'Location: ../../' );
+	die( "Hacking attempt!" );
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/rooms/rooms_list.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/classes/templates.class.php">
+		<operation action="before">
+			<searchcode><![CDATA[if( stripos( $this->copy_template, "{include file=" ) !== false ) {]]></searchcode>
+			<replacecode><![CDATA[if( stripos( $this->copy_template, "{roomscustom" ) !== false ) {
+	$this->copy_template = preg_replace_callback( "#\\{roomscustom(.+?)\\}#i", "custom_rooms", $this->copy_template );
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/modules/show.rooms.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE') ) {
+	header( "HTTP/1.1 403 Forbidden" );
+	header ( 'Location: ../../' );
+	die( "Hacking attempt!" );
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/rooms/rooms_custom.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/ajax/kodik_mass_update.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE' ) ) {
+	die('Hacking attempt!');
+}
+
+if (!$user_group[$member_id['user_group']]['admin_complaint']) {
+	msg('error', $lang['index_denied'], $lang['index_denied']);
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/ajax/mass_update.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/ajax/kodik_playlist_ajax_new.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE' ) ) {
+	die('Hacking attempt!');
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist_new.php';
+
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/modules/raspisanie_ongoingov.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE') ) {
+	header( "HTTP/1.1 403 Forbidden" );
+	header ( 'Location: ../../' );
+	die( "Hacking attempt!" );
+}
+
+$dle_module = 'schedule';
+
+$url_page = $config['http_home_url'] . "schedule";
+$user_query = "do=schedule";
+
+$metatags['title'] = 'Расписание выхода аниме';
+
+$page_description = $metatags_description = $metatags['title'];
+
+$raspisanie_ongoingov = dle_cache( "raspisanie_ongoingov", false );
+if( $raspisanie_ongoingov === false ) {
+	$raspisanie_ongoingov = [];
+	$sql_select = "SELECT * FROM " . PREFIX . "_raspisanie_ongoingov ORDER BY date ASC";
+	$sql_result = $db->query( $sql_select );
+	while ( $schedule_row = $db->get_row( $sql_result ) ) {
+		$raspisanie_ongoingov[] = $schedule_row;
+	}
+  	$db->free( $sql_result );
+	if ( $raspisanie_ongoingov ) {
+		create_cache( "raspisanie_ongoingov", json_encode($raspisanie_ongoingov, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ), false );
+	}
+}
+else $raspisanie_ongoingov = json_decode($raspisanie_ongoingov, true);
+
+$day_of_weeks = [
+	'monday' => 'Понедельник',
+	'tuesday' => 'Вторник',
+	'wednesday' => 'Среда',
+	'thursday' => 'Четверг',
+	'friday' => 'Пятница',
+	'saturday' => 'Суббота',
+	'sunday' => 'Воскресенье',
+];
+
+if ( $member_id['favorites'] ) $my_list = explode(',', $member_id['favorites']);
+else $my_list = [];
+
+$tpl2 = new dle_template();
+$tpl2->dir = TEMPLATE_DIR;
+
+$tpl2->load_template( 'schedule.tpl' );
+
+$calendar_mas = [];
+$anime_list = '';
+
+foreach ( $raspisanie_ongoingov as $rnum => $raspisanie ) {
+  	if ( $rnum == 0 ) $active_day = ' calendar-active';
+  	else $active_day = '';
+  	$calendar_mas[] = '<div class="calendar-date__item1'.$active_day.'" id="calendar-'.$raspisanie['day_name'].'" onclick="ScheduleChange(\''.$raspisanie['day_name'].'\'); return false;">
+         <div class="calendar-date__item-day1">'.$day_of_weeks[$raspisanie['day_name']].'</div>
+         <div class="calendar-date__item-month1">'.langdate('j F', strtotime($raspisanie['date'])).'</div>
+      </div>';
+  	if ( $active_day ) $anime_list .= '<div class="calendar__item" style="display: block;" id="calendar-list-'.$raspisanie['day_name'].'">';
+  	else $anime_list .= '<div class="calendar__item" style="display: none;" id="calendar-list-'.$raspisanie['day_name'].'">';
+  	$position = 1;
+  	$anime_list_mas = json_decode($raspisanie['anime_list'], true);
+  	foreach ( $anime_list_mas as $anime_item ) {
+      	if ( $anime_item['image'] ) {
+          	$temp_poster = explode('|', $anime_item['image']);
+          	if ( strpos($temp_poster[0], '/uploads/posts/') == false ) $poster = '/uploads/posts/'.$temp_poster[0];
+          	else $poster = $temp_poster[0];
+        }
+      	else $poster = '';
+      	if ( in_array($anime_item['news_id'], $my_list) ) $add_to_list = '<div id="watchlist-on-'.$anime_item['news_id'].'" style="display:none;" onclick="FastList(\''.$anime_item['news_id'].'\', \'plus\'); return false;" class="calendar__item-bookmark watchlist_btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+            	<path d="M8.96173 18.9109L9.42605 18.3219L8.96173 18.9109ZM12 5.50063L11.4596 6.02073C11.601 6.16763 11.7961 6.25063 12 6.25063C12.2039 6.25063 12.399 6.16763 12.5404 6.02073L12 5.50063ZM15.0383 18.9109L15.5026 19.4999L15.0383 18.9109ZM9.42605 18.3219C7.91039 17.1271 6.25307 15.9603 4.93829 14.4798C3.64922 13.0282 2.75 11.3345 2.75 9.1371H1.25C1.25 11.8026 2.3605 13.8361 3.81672 15.4758C5.24723 17.0866 7.07077 18.3752 8.49742 19.4999L9.42605 18.3219ZM2.75 9.1371C2.75 6.98623 3.96537 5.18252 5.62436 4.42419C7.23607 3.68748 9.40166 3.88258 11.4596 6.02073L12.5404 4.98053C10.0985 2.44352 7.26409 2.02539 5.00076 3.05996C2.78471 4.07292 1.25 6.42503 1.25 9.1371H2.75ZM8.49742 19.4999C9.00965 19.9037 9.55954 20.3343 10.1168 20.6599C10.6739 20.9854 11.3096 21.25 12 21.25V19.75C11.6904 19.75 11.3261 19.6293 10.8736 19.3648C10.4213 19.1005 9.95208 18.7366 9.42605 18.3219L8.49742 19.4999ZM15.5026 19.4999C16.9292 18.3752 18.7528 17.0866 20.1833 15.4758C21.6395 13.8361 22.75 11.8026 22.75 9.1371H21.25C21.25 11.3345 20.3508 13.0282 19.0617 14.4798C17.7469 15.9603 16.0896 17.1271 14.574 18.3219L15.5026 19.4999ZM22.75 9.1371C22.75 6.42503 21.2153 4.07292 18.9992 3.05996C16.7359 2.02539 13.9015 2.44352 11.4596 4.98053L12.5404 6.02073C14.5983 3.88258 16.7639 3.68748 18.3756 4.42419C20.0346 5.18252 21.25 6.98623 21.25 9.1371H22.75ZM14.574 18.3219C14.0479 18.7366 13.5787 19.1005 13.1264 19.3648C12.6739 19.6293 12.3096 19.75 12 19.75V21.25C12.6904 21.25 13.3261 20.9854 13.8832 20.6599C14.4405 20.3343 14.9903 19.9037 15.5026 19.4999L14.574 18.3219Z" fill="#1C274C"/>
+            </svg>
+         </div><div id="watchlist-off-'.$anime_item['news_id'].'" onclick="FastList(\''.$anime_item['news_id'].'\', \'minus\'); return false;" class="calendar__item-bookmark watchlist_btn watchlist_btn_success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+               	<path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z" fill="#1C274C"/>
+            </svg>
+         </div>';
+     	else $add_to_list = '<div id="watchlist-on-'.$anime_item['news_id'].'" onclick="FastList(\''.$anime_item['news_id'].'\', \'plus\'); return false;" class="calendar__item-bookmark watchlist_btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+            	<path d="M8.96173 18.9109L9.42605 18.3219L8.96173 18.9109ZM12 5.50063L11.4596 6.02073C11.601 6.16763 11.7961 6.25063 12 6.25063C12.2039 6.25063 12.399 6.16763 12.5404 6.02073L12 5.50063ZM15.0383 18.9109L15.5026 19.4999L15.0383 18.9109ZM9.42605 18.3219C7.91039 17.1271 6.25307 15.9603 4.93829 14.4798C3.64922 13.0282 2.75 11.3345 2.75 9.1371H1.25C1.25 11.8026 2.3605 13.8361 3.81672 15.4758C5.24723 17.0866 7.07077 18.3752 8.49742 19.4999L9.42605 18.3219ZM2.75 9.1371C2.75 6.98623 3.96537 5.18252 5.62436 4.42419C7.23607 3.68748 9.40166 3.88258 11.4596 6.02073L12.5404 4.98053C10.0985 2.44352 7.26409 2.02539 5.00076 3.05996C2.78471 4.07292 1.25 6.42503 1.25 9.1371H2.75ZM8.49742 19.4999C9.00965 19.9037 9.55954 20.3343 10.1168 20.6599C10.6739 20.9854 11.3096 21.25 12 21.25V19.75C11.6904 19.75 11.3261 19.6293 10.8736 19.3648C10.4213 19.1005 9.95208 18.7366 9.42605 18.3219L8.49742 19.4999ZM15.5026 19.4999C16.9292 18.3752 18.7528 17.0866 20.1833 15.4758C21.6395 13.8361 22.75 11.8026 22.75 9.1371H21.25C21.25 11.3345 20.3508 13.0282 19.0617 14.4798C17.7469 15.9603 16.0896 17.1271 14.574 18.3219L15.5026 19.4999ZM22.75 9.1371C22.75 6.42503 21.2153 4.07292 18.9992 3.05996C16.7359 2.02539 13.9015 2.44352 11.4596 4.98053L12.5404 6.02073C14.5983 3.88258 16.7639 3.68748 18.3756 4.42419C20.0346 5.18252 21.25 6.98623 21.25 9.1371H22.75ZM14.574 18.3219C14.0479 18.7366 13.5787 19.1005 13.1264 19.3648C12.6739 19.6293 12.3096 19.75 12 19.75V21.25C12.6904 21.25 13.3261 20.9854 13.8832 20.6599C14.4405 20.3343 14.9903 19.9037 15.5026 19.4999L14.574 18.3219Z" fill="#1C274C"/>
+            </svg>
+         </div><div id="watchlist-off-'.$anime_item['news_id'].'" style="display:none;" onclick="FastList(\''.$anime_item['news_id'].'\', \'minus\'); return false;" class="calendar__item-bookmark watchlist_btn watchlist_btn_success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+               	<path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z" fill="#1C274C"/>
+            </svg>
+         </div>';
+      	$anime_list .= '<div class="calendar__item-anime">
+         <div class="calendar__item-number">'.$position.'.</div>
+         <a href="'.$anime_item['full_link'].'" class="calendar__item-img">
+         <img src="'.$poster.'" alt="Постер '.$anime_item['russian'].'">
+         </a>
+         <div class="calendar__item-names">
+            <a href="'.$anime_item['full_link'].'" class="calendar__item-name">'.$anime_item['russian'].'</a>
+            <div class="calendar__item-english-name">'.$anime_item['original'].'</div>
+         </div>
+         <div class="calendar__item-episode">
+            <div class="calendar__item-serie">'.$anime_item['next_episode'].' серия</div>
+            <div class="calendar__item-time">В '.date('H:i', strtotime($anime_item['next_date'])).'</div>
+         </div>
+         <div class="calendar__item-date">
+            <div class="calendar__item-day">'.date('j', strtotime($anime_item['next_date'])).'</div>
+            <div class="calendar__item-month">'.langdate('F', strtotime($anime_item['next_date'])).'</div>
+         </div>
+         '.$add_to_list.'
+      </div>';
+      $position++;
+    }
+  	$anime_list .= '</div>';
+}
+
+$tpl2->set( '{calendar-date}', implode('', $calendar_mas) );
+$tpl2->set( '{anime-list}', $anime_list );
+
+$tpl2->compile( 'schedule', true, false );
+
+$tpl->result['content'] = $tpl2->result['schedule'].$tpl->result['content'];]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/ajax/gindexing.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE' ) ) {
+	die('Hacking attempt!');
+}
+
+if (!$user_group[$member_id['user_group']]['admin_complaint']) {
+	msg('error', $lang['index_denied'], $lang['index_denied']);
+}
+if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) {
+	include ENGINE_DIR . '/mrdeath/aaparser/google_indexing/ajax/save.php';
+}
+?>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/inc/massactions.php">
+		<operation action="before">
+			<searchcode><![CDATA[elseif( $action == "do_mass_edit_cloud" ) {]]></searchcode>
+			<replacecode><![CDATA[elseif( $action == "mass_gindexing" ) {
+  	require_once ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php';
+  	if ( $aaparser_config_push['push_notifications']['google_indexing'] == 1 ) {
+		$indexing_url = [];
+		$news_ids = implode(',', $selected_news);
+		$config['http_home_url'] = dle_strtolower($config['http_home_url']);
+		$db->query( "SELECT id, date, alt_name, category FROM " . PREFIX . "_post WHERE id IN ({$news_ids})" );
+		while($row = $db->get_row()) {
+			if( $config['allow_alt_url'] ) {
+				if( $config['seo_type'] == 1 OR $config['seo_type'] == 2 ) {
+					if( $row['category'] and $config['seo_type'] == 2 ) {
+						$cats_url = get_url( $row['category'] );
+						if($cats_url) {
+							$full_link = $config['http_home_url'] . $cats_url . "/" . $row['id'] . "-" . $row['alt_name'] . ".html";
+						} else $full_link = $config['http_home_url'] . $row['id'] . "-" . $row['alt_name'] . ".html";
+					} else {
+						$full_link = $config['http_home_url'] . $row['id'] . "-" . $row['alt_name'] . ".html";
+					}
+				} else {
+					$full_link = $config['http_home_url'] . date( 'Y/m/d/', strtotime( $row['date'] ) ) . $row['alt_name'] . ".html";
+				}
+			} else {
+				$full_link = $config['http_home_url'] . "index.php?newsid=" . $row['id'];
+			}
+			$indexing_url[] = $full_link;
+		}
+		$indexing_type = 'URL_UPDATED';
+		include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/indexing_multiple.php'));
+		msg("success", "Ссылки отправлены", "Выбранные вами ссылки отправлены в Google Indexing", $_SESSION['admin_referrer']);
+    }
+  		else msg("success", "Google Indexing отключён", "Вы отключили работу Google Indexing в админке модуля Advanced Kodik Parser", $_SESSION['admin_referrer']);
+	}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+</dleplugin>
