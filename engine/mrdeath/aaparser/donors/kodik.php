@@ -284,6 +284,28 @@ elseif ($parse_action == 'parse') {
 		}
 	}
 	
+	if (isset($kodik_data['episodes_count']) && $xfields_data['kodik_last_episode_translated'] != '' && $kodik_data['translation']['type'] == 'voice') {
+		$xfields_data['kodik_status_en_voice'] = ($xfields_data['kodik_last_episode_translated'] >= $kodik_data['episodes_count']) ? 'released' : (($xfields_data['kodik_last_episode_translated'] < $kodik_data['episodes_count']) ? 'ongoing' : '');
+		$xfields_data['kodik_status_ru_voice'] = ($xfields_data['kodik_last_episode_translated'] >= $kodik_data['episodes_count']) ? 'Завершён' : (($xfields_data['kodik_last_episode_translated'] < $kodik_data['episodes_count']) ? 'Онгоинг' : '');
+	} else {
+		$xfields_data['kodik_status_en_voice'] = '';
+		$xfields_data['kodik_status_ru_voice'] = '';
+	}
+	if (isset($kodik_data['episodes_count']) && $xfields_data['kodik_last_episode_subtitles'] != '' && $kodik_data['translation']['type'] == 'subtitles' && $kodik_data['translation']['id'] != "1858") {
+		$xfields_data['kodik_status_en_sub'] = ($xfields_data['kodik_last_episode_subtitles'] >= $kodik_data['episodes_count']) ? 'released' : (($xfields_data['kodik_last_episode_subtitles'] < $kodik_data['episodes_count']) ? 'ongoing' : '');
+		$xfields_data['kodik_status_ru_sub'] = ($xfields_data['kodik_last_episode_subtitles'] >= $kodik_data['episodes_count']) ? 'Завершён' : (($xfields_data['kodik_last_episode_subtitles'] < $kodik_data['episodes_count']) ? 'Онгоинг' : '');
+	} else {
+		$xfields_data['kodik_status_en_sub'] = '';
+		$xfields_data['kodik_status_ru_sub'] = '';
+	}
+	if (isset($kodik_data['episodes_count']) && $xfields_data['kodik_last_episode_autosubtitles'] != '' && $kodik_data['translation']['type'] == 'subtitles' && $kodik_data['translation']['id'] == "1858") {
+		$xfields_data['kodik_status_en_autosub'] = ($xfields_data['kodik_last_episode_autosubtitles'] >= $kodik_data['episodes_count']) ? 'released' : (($xfields_data['kodik_last_episode_autosubtitles'] < $kodik_data['episodes_count']) ? 'ongoing' : '');
+		$xfields_data['kodik_status_ru_autosub'] = ($xfields_data['kodik_last_episode_autosubtitles'] >= $kodik_data['episodes_count']) ? 'Завершён' : (($xfields_data['kodik_last_episode_autosubtitles'] < $kodik_data['episodes_count']) ? 'Онгоинг' : '');
+	} else {
+		$xfields_data['kodik_status_en_autosub'] = '';
+		$xfields_data['kodik_status_ru_autosub'] = '';
+	}
+	
 	if ( isset($kodik_data['screenshots']) ) {
 		$xfields_data['kadr_1'] = $kodik_data['screenshots'][0];
 		$xfields_data['kadr_2'] = $kodik_data['screenshots'][1];
