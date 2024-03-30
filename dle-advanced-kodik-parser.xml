@@ -1029,11 +1029,13 @@ else {
   	$tpl->result['main'] = str_replace('{subscribe-total}', $subscribe_count, $tpl->result['main']);
 	$tpl->result['main'] = str_replace( '[is_logged]', '', $tpl->result['main'] );
 	$tpl->result['main'] = str_replace( '[/is_logged]', '', $tpl->result['main'] );
-	
-	if ($newsid>0) {
-		$is_viewed = $db->super_query("select count(*) as count FROM ".PREFIX."_subscribe_info where user_id={$member_id['user_id']} and post_id=".$news_id);
+  
+	$checkernewsid = $db->super_query("select id FROM ".PREFIX."_post where id=".$newsid);
+  	
+	if ($checker_newsid && $newsid>0) {
+		$is_viewed = $db->super_query("select count(*) as count FROM ".PREFIX."_subscribe_info where user_id={$member_id['user_id']} and post_id=".$newsid);
 		if ($is_viewed['count'] > 0) {
-			$db->query("DELETE FROM ".PREFIX."_subscribe_info where user_id={$member_id['user_id']} and post_id=".$news_id);
+			$db->query("DELETE FROM ".PREFIX."_subscribe_info where user_id={$member_id['user_id']} and post_id=".$newsid);
 		}
 	}
 } else {
