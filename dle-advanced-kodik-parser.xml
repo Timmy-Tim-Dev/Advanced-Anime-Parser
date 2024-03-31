@@ -148,8 +148,7 @@ CREATE TABLE IF NOT EXISTS `{prefix}_shikimori_posts` (
   PRIMARY KEY (id)
 ) ENGINE={engine} AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `{prefix}_subscribe_info`;
-CREATE TABLE `{prefix}_subscribe_info` (
+CREATE TABLE IF NOT EXISTS `{prefix}_subscribe_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL DEFAULT 0,
   `post_id` int(11) NOT NULL DEFAULT 0,
