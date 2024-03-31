@@ -113,7 +113,7 @@ CREATE TABLE `{prefix}_subscribe_info` (
   `user_id` int(11) NOT NULL DEFAULT 0,
   `post_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE={engine} AUTO_INCREMENT=8 DEFAULT CHARSET={charset}
+) ENGINE={engine} AUTO_INCREMENT=8 DEFAULT CHARSET={charset};
 
 INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('monday');
 INSERT INTO `{prefix}_raspisanie_ongoingov` (`day_name`) VALUES ('tuesday');
@@ -154,7 +154,7 @@ CREATE TABLE `{prefix}_subscribe_info` (
   `user_id` int(11) NOT NULL DEFAULT 0,
   `post_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE={engine} AUTO_INCREMENT=8 DEFAULT CHARSET={charset}]]></mysqlupgrade>
+) ENGINE={engine} AUTO_INCREMENT=8 DEFAULT CHARSET={charset};]]></mysqlupgrade>
 	<mysqlenable><![CDATA[INSERT IGNORE INTO `{prefix}_admin_sections` (`name`, `title`, `descr`, `icon`, `allow_groups`) VALUES ('aap', 'Advanced Kodik Parser', 'Парсер-граббер аниме/дорам с базы Kodik, а так же сайтов Shikimori, World-art', 'uploads/advanced-anime-parser-icon.png', '1');]]></mysqlenable>
 	<mysqldisable><![CDATA[DELETE FROM `{prefix}_admin_sections` WHERE `name` = 'aap';]]></mysqldisable>
 	<mysqldelete><![CDATA[DELETE FROM `{prefix}_admin_sections` WHERE `name` = 'aap';
