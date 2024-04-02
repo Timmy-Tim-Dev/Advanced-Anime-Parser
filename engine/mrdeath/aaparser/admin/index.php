@@ -258,7 +258,7 @@ else $fa_icons_rooms = 'fa';
 
 $now_year = date('Y');
 
-echoheader('<b>Advanced Kodik Parser v3.4.0</b>', 'Настройки модуля Advanced Kodik Parser');
+echoheader('<b>Advanced Kodik Parser v4.0.0</b>', 'Настройки модуля Advanced Kodik Parser');
 
 echo <<<HTML
 <style>
@@ -301,6 +301,7 @@ include_once ENGINE_DIR.'/mrdeath/aaparser/includes/roomspage.php'; //Совме
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/cronpage.php'; //Настройки планировщика
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/anonspage.php'; //Настройки Анонса
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/gindexpage.php'; //Google indexing
+include_once ENGINE_DIR.'/mrdeath/aaparser/includes/tgpostingpage.php'; //Постинг в Telegram
 echo <<<HTML
     <button type="submit" class="btn bg-teal btn-raised position-left"><i class="fa fa-floppy-o position-left"></i>{$lang['user_save']}</button>
 </form>

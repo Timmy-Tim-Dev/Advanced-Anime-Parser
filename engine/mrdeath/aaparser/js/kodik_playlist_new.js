@@ -9,10 +9,35 @@ $(document).ready(function() {
            $("#kodik_player_ajax").html(data);
         },
         complete: function() {
-            scroll_to_active();
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) {
+                $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+                $('.prevpl').remove();
+                $('.nextpl').remove();
+            }
+            else scroll_to_active();
         }
     });
 });
+(function ($) {
+    'use strict';
+
+    $.fn.scrollToSimple = function ($target) {
+        var $container = this.first();
+
+        var pos = $target.position(), height = $target.outerHeight();
+        var containerScrollTop = $container.scrollTop(), containerHeight = $container.height();
+        var top = pos.top + containerScrollTop;
+
+        var paddingPx = containerHeight * 0.15;
+
+        if (top < containerScrollTop) {
+            $container.scrollTop(top - paddingPx);
+        }
+        else if (top + height > containerScrollTop + containerHeight) {
+            $container.scrollTop(top + height - containerHeight + paddingPx);
+        }
+    };
+})(jQuery);
 function kodik_seasons() {
     $('#simple-seasons-tabs').on('click','.b-simple_season__item',function() {
         var _self = $(this);
@@ -46,7 +71,8 @@ function kodik_seasons() {
             
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
-            scroll_to_active();
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            else scroll_to_active();
         }
     });
 }
@@ -76,7 +102,8 @@ function kodik_episodes() {
                 
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
-            scroll_to_active();
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            else scroll_to_active();
         }
     });
 }
@@ -89,7 +116,8 @@ function kodik_translates() {
             var this_link = _self.attr("data-this_link");
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
-            scroll_to_active();
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            else scroll_to_active();
         }
     });
 }
@@ -106,10 +134,6 @@ function scroll_to_active() {
     var _ew = document.getElementById('simple-episodes-tabs').scrollWidth;
     var _cw1 = Math.abs(_pw - 60 - _ew) <= 1;
     var _cw2 = Math.abs(_pw - 10 - _ew) <= 1;
-	//console.log(_pw);
-    //console.log(_ew);
-    //console.log('Math.abs(',_pw,' - 60 - ',_ew,') <= 1', _cw1);
-    //console.log('Math.abs(',_pw,' - 10 - ',_ew,') <= 1', _cw2);
 
     if ($("div").is("#simple-episodes-tabs")) {
         if (!_cw1 && !_cw2) {

@@ -70,6 +70,7 @@ function makeCheckBox($name, $selected, $function_name = false)
 		elseif ( $function_name == "ShowOrHidePush" ) return "<input class=\"switch\" type=\"checkbox\" name=\"{$name}\" id=\"push_on_off\" value=\"1\" onchange=\"$function_name();\" {$selected}>";
 		elseif ( $function_name == "ShowOrHideRooms" ) return "<input class=\"switch\" type=\"checkbox\" name=\"{$name}\" id=\"rooms_on_off\" value=\"1\" onchange=\"$function_name();\" {$selected}>";
 		elseif ( $function_name == "ShowOrHideGindexing" ) return "<input class=\"switch\" type=\"checkbox\" name=\"{$name}\" id=\"google_indexing\" value=\"1\" onchange=\"$function_name();\" {$selected}>";
+		elseif ( $function_name == "ShowOrHideTg" ) return "<input class=\"switch\" type=\"checkbox\" name=\"{$name}\" id=\"tg_on_off\" value=\"1\" onchange=\"$function_name();\" {$selected}>";
 		else return "<input class=\"switch\" type=\"checkbox\" name=\"{$name}\" value=\"1\" {$selected}>";
 }
 
@@ -637,3 +638,34 @@ $anons_kind = array(
   'ona' => 'ONA',
   'tv' => 'TV'
 );
+
+
+function dir_size($dir) {
+   $totalsize=0;
+   if ($dirstream = @opendir($dir)) {
+      while (false !== ($filename = readdir($dirstream))) {
+         if ($filename!="." && $filename!="..") {
+            if (is_file($dir."/".$filename)) $totalsize+=filesize($dir."/".$filename);
+            if (is_dir($dir."/".$filename)) $totalsize+=dir_size($dir."/".$filename);
+         }
+      }
+   }
+   closedir($dirstream);
+   return $totalsize;
+}
+
+function convert_bytes($size)
+{
+	$i = 0;
+	while (floor($size / 1024) > 0) {
+		++$i;
+		$size /= 1024;
+	}
+ 
+	$size = str_replace('.', ',', round($size, 1));
+	switch ($i) {
+		case 0: return $size .= ' байт';
+		case 1: return $size .= ' КБ';
+		case 2: return $size .= ' МБ';
+	}
+}

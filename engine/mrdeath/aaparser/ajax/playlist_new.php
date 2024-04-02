@@ -13,6 +13,7 @@ if( !defined('DATALIFEENGINE' ) ) {
 }
 
 require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
+require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
   
 header('Content-Type: text/html; charset=utf-8');
 
@@ -53,7 +54,8 @@ $active_translator = isset($_POST['active_translator']) ? $_POST['active_transla
 if ( isset($aaparser_config['settings']['kodik_api_domain']) ) $kodik_api_domain = $aaparser_config['settings']['kodik_api_domain'];
 else $kodik_api_domain = 'https://kodikapi.com/';
     
-$playlist = dle_cache('kodik_playlist', $news_id, false);
+if ( isset($aaparser_config['player']['custom_cache']) && $aaparser_config['player']['custom_cache'] == 1 ) $playlist = kodik_cache('playlist_'.$news_id, false, 'player');
+else $playlist = dle_cache('kodik_playlist', $news_id, false);
 
 if ( $aaparser_config['player']['enable'] != 1 ) die('stop');
 elseif ( !$api_token ) die('stop');
@@ -133,7 +135,8 @@ elseif ( $news_id ) {
         $playlist['iframe'] = $kodik['results'][0]['link'];
         if ( $aaparser_config['player']['add_params'] && $post_fields[$aaparser_config['player']['add_params']] ) $playlist['my_params'] = $post_fields[$aaparser_config['player']['add_params']];
         if ( $aaparser_config['player']['geoblock'] && $post_fields[$aaparser_config['player']['geoblock']] ) $playlist['geoblock'] = $post_fields[$aaparser_config['player']['geoblock']];
-        create_cache('kodik_playlist', json_encode($playlist, JSON_UNESCAPED_UNICODE), $news_id, false);
+        if ( isset($aaparser_config['player']['custom_cache']) && $aaparser_config['player']['custom_cache'] == 1 ) kodik_create_cache('playlist_'.$news_id, json_encode($playlist, JSON_UNESCAPED_UNICODE), false, 'player');
+        else create_cache('kodik_playlist', json_encode($playlist, JSON_UNESCAPED_UNICODE), $news_id, false);
         unset($translators);
         unset($episode);
         unset($kodik);
@@ -268,9 +271,12 @@ elseif ($playlist['episodes'] && $action == 'load_player') {
         //Кнопки серий
     
         $iframe_sublink = '';
+        
+        if ( isset($aaparser_config['player']['vertical_eps']) && $aaparser_config['player']['vertical_eps'] && count($episodes_arr) > $aaparser_config['player']['vertical_eps'] ) $sub_class = ' show-flex-grid';
+        else $sub_class = '';
     
-        if ( !$episode_num ) $episodes .= '<ul id="simple-episodes-list" class="season-tab-'.$season.' b-simple_episodes__list clearfix">';
-        else $episodes .= '<ul id="simple-episodes-list" class="season-tab-'.$season.' b-simple_episodes__list clearfix" style="display:none">';
+        if ( !$episode_num ) $episodes .= '<ul id="simple-episodes-list" class="season-tab-'.$season.' b-simple_episodes__list clearfix'.$sub_class.'">';
+        else $episodes .= '<ul id="simple-episodes-list" class="season-tab-'.$season.' b-simple_episodes__list clearfix'.$sub_class.'" style="display:none">';
     
         foreach ( $episodes_arr as $episode => $translation_arr ) {
             if ( isset($last_episode) ) {

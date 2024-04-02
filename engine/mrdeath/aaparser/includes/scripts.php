@@ -7,6 +7,7 @@ echo <<<HTML
     ShowOrHidePlayer();
     ShowOrHidePush();
     ShowOrHideRooms();
+    ShowOrHideTg();
 	
 HTML;
 if ($php_version >= 74 && file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php')) {

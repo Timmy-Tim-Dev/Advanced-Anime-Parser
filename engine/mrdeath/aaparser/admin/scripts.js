@@ -15,6 +15,7 @@ function ChangeOption(obj, selectedOption) {
 	document.getElementById('cronik').style.display = 'none';
 	document.getElementById('anonsik').style.display = 'none';
 	document.getElementById('gindexing').style.display = 'none';
+	document.getElementById('tgposting').style.display = 'none';
 	document.getElementById(selectedOption).style.display = '';
 
 	return false;
@@ -255,6 +256,25 @@ function update_translations_dorama() {
 	});
 }
 
+function ShowOrHideTg() {
+    var checkbox = document.getElementById("tg_on_off");
+	if( checkbox.checked === true ) {
+		$("#tgposting-settings").show();
+		$("#tgposting-settings-area").show();
+		$("#tgposting-templates").show();
+		$("#tgposting-templates-area").show();
+		$("#tgposting-info").show();
+		$("#tgposting-info-area").show();
+	} else {
+		$("#tgposting-settings").hide();
+		$("#tgposting-settings-area").hide();
+		$("#tgposting-templates").hide();
+		$("#tgposting-templates-area").hide();
+		$("#tgposting-info").hide();
+		$("#tgposting-info-area").hide();
+	}
+}
+
 function ShowOrHideCatStatus(value) {
 	if( value == '1' ) {
 		$("#cat_check_status").show();
@@ -467,6 +487,35 @@ function LogsPage(page, el) {
 	    $(el).addClass( "active" );
 	});
 	return false;
+}
+
+function clear_player_cache() {
+	DLEconfirm( 'Вы уверены что хотите очистить кеш плейлистов?', 'Подтвердите', function () {
+	$.ajax({
+		url: "/engine/ajax/controller.php?mod=aaparser_clear",
+		data:{action: "clear_player_cache", user_hash: dle_login_hash},
+		dataType: "json",
+		cache: false,
+		success: function(data) {
+			if ( data.status == "ok" ) {
+			    $('#pl-cache-size').html('0 КБ');
+                Growl.info({
+					title: 'Успешно!',
+				    text: 'Кеш был успешно очищен',
+				    icon: 'success'
+				});
+				return false;
+			}
+			else {
+			    Growl.error({
+					title: 'Ошибка очистки кеша!',
+				    text: 'Повторите позже'
+				});
+				return false;
+			}
+		}
+	});
+	});
 }
 
 

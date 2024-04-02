@@ -11,16 +11,42 @@ $(document).ready(function() {
         complete: function() {
             var this_translator = $(".b-translator__item.active").attr("data-this_translator");
             var this_season = $(".b-simple_season__item.active").attr("data-this_season");
-            scroll_to_active(this_translator,this_season);
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) {
+                $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+                $('.prevpl').remove();
+                $('.nextpl').remove();
+            }
+            else scroll_to_active(this_translator,this_season);
         }
     });
 });
+(function ($) {
+    'use strict';
+
+    $.fn.scrollToSimple = function ($target) {
+        var $container = this.first();
+
+        var pos = $target.position(), height = $target.outerHeight();
+        var containerScrollTop = $container.scrollTop(), containerHeight = $container.height();
+        var top = pos.top + containerScrollTop;
+
+        var paddingPx = containerHeight * 0.15;
+
+        if (top < containerScrollTop) {
+            $container.scrollTop(top - paddingPx);
+        }
+        else if (top + height > containerScrollTop + containerHeight) {
+            $container.scrollTop(top + height - containerHeight + paddingPx);
+        }
+    };
+})(jQuery);
 function auto_episodes(season, episode, translator) {
 	if(!$('#episode-'+season+'-'+episode+'-'+translator).hasClass('active')) {
 		$('.b-post__lastepisodeout').remove();
 		$('.b-simple_episode__item').removeClass('active');
 		$('#episode-'+season+'-'+episode+'-'+translator).addClass('active');
-        scroll_to_active();
+        if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+        else scroll_to_active();
 	}
     else {
     	$('.b-post__lastepisodeout').remove();
@@ -68,7 +94,8 @@ function kodik_translates() {
             
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
-            scroll_to_active(this_translator,this_season);
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            else scroll_to_active(this_translator,this_season);
 
         }
     });
@@ -106,7 +133,8 @@ function kodik_seasons() {
             
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
-            scroll_to_active(this_translator,this_season);
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            else scroll_to_active(this_translator,this_season);
             
         }
     });
@@ -123,7 +151,8 @@ function kodik_episodes() {
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
             
-            scroll_to_active(this_translator,this_season);
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            else scroll_to_active(this_translator,this_season);
         }
     });
 }
@@ -139,10 +168,6 @@ function scroll_to_active(tr_id, season_id) {
     var _ew = document.getElementById('episodes-tab-' + tr_id + '-' + season_id).scrollWidth;
     var _cw1 = Math.abs(_pw - 60 - _ew) <= 1;
     var _cw2 = Math.abs(_pw - 10 - _ew) <= 1;
-	//console.log(_pw);
-    //console.log(_ew);
-    //console.log('Math.abs(',_pw,' - 60 - ',_ew,') <= 1', _cw1);
-    //console.log('Math.abs(',_pw,' - 10 - ',_ew,') <= 1', _cw2);
 
     if ($("div").is("#simple-episodes-tabs")) {
         if (!_cw1 && !_cw2) {
