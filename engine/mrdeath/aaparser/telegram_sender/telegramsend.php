@@ -138,9 +138,10 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config_push[
             if ($config["seo_type"] == 1 || $config["seo_type"] == 2) {
                 if ($row["category"] && $config["seo_type"] == 2) {
                     $full_link = $config["http_home_url"] . get_url($row["category"]) . "/" . $row["id"] . "-" . urlencode($row["alt_name"]) . ".html";
-                  	$main_category_link = $config["http_home_url"] . get_url($row["category"]) . "/";
+                  	$main_category_link = trim($config["http_home_url"] . get_url($row["category"]) . "/");
                 } else {
                     $full_link = $config["http_home_url"] . $row["id"] . "-" . urlencode($row["alt_name"]) . ".html";
+					$main_category_link = trim($config["http_home_url"] . get_url($row["category"]) . "/");
                 }
             } else {
                 $row["date"] = strtotime($row["date"]);
@@ -149,7 +150,7 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config_push[
         } else {
             $full_link = $config["http_home_url"] . "index.php?newsid=" . $row["id"];
         }
-      
+		
       	$category_name = $category_name_hashtag = [];
         $category_list = explode(",", $row["category"]);
         foreach ($category_list as $v) {
@@ -235,7 +236,7 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config_push[
         }
 
         $titleTag = "#" . str_replace(" ", "_", trim($row['title']));
-
+		
         if (stripos($aaparser_config_push['push_notifications'][$tlg_template], "{title}") !== false) {
 			$aaparser_config_push['push_notifications'][$tlg_template] = str_replace( "{title}", $row['title'], $aaparser_config_push['push_notifications'][$tlg_template] );
         }
@@ -275,7 +276,7 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config_push[
 
         $telegramUrl = "https://api.telegram.org/bot" . $aaparser_config_push['push_notifications']['tg_bot_token'];
         $telegramCmd = ["chat_id" => $aaparser_config_push['push_notifications']['tg_chanel']];
-
+		
         if (strpos($aaparser_config_push['push_notifications'][$tlg_template], "[button") !== false) {
             preg_match_all( "|\[button=(.*)\](.*)\[/button\]|U", $aaparser_config_push['push_notifications'][$tlg_template], $buttons_arr, PREG_SET_ORDER, 0 );
           	$send_buttons = [];
@@ -325,6 +326,9 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config_push[
             //$db->query("UPDATE ".PREFIX ."_telegram_sender SET error=1 WHERE news_id='".$tlg_news_id."'");
             $db->query( "DELETE FROM " . PREFIX . "_telegram_sender WHERE news_id='".$tlg_news_id."'" );
           	if ( isset($working_mode) && $working_mode == 'cron' ) echo 'News id: '.$tlg_news_id.' - ошибка отправки';
+			echo "<br/>Log:<br/><pre>";
+			var_dump ($response);
+			echo "</pre>";
         }
       	unset($row, $full_link, $main_category_link, $category_name, $category_name_hashtag, $category_list, $xfields, $xfieldsdata, $posters, $posterImg, $telegramCmd, $response);
     }
