@@ -234,7 +234,7 @@ function updateKodikPlayer(xf)
   }
   else
   {
-	$.post('/engine/ajax/controller.php?mod=anime_parser&action=parser_kodikplayer', { shiki_id:shiki_id, mdl_id:mdl_id }, function(data){
+	$.post('/engine/ajax/controller.php?mod=anime_grabber&module=anime_parser&action=parser_kodikplayer', { shiki_id:shiki_id, mdl_id:mdl_id }, function(data){
 		$("#xf_"+xf).val(data);
     });
   }
@@ -373,7 +373,7 @@ function updateKodikPlayer(xf)
   }
   else
   {
-	$.post('/engine/ajax/controller.php?mod=anime_parser&action=parser_kodikplayer', { shiki_id:shiki_id, mdl_id:mdl_id }, function(data){
+	$.post('/engine/ajax/controller.php?mod=anime_grabber&module=anime_parser&action=parser_kodikplayer', { shiki_id:shiki_id, mdl_id:mdl_id }, function(data){
 		$("#xf_"+xf).val(data);
     });
   }
@@ -493,24 +493,6 @@ include ENGINE_DIR . '/mrdeath/aaparser/admin/index.php';
 			<enabled>1</enabled>
 		</operation>
 	</file>
-	<file name="engine/ajax/anime_parser.php">
-		<operation action="create">
-			<replacecode><![CDATA[<?php
-
-if( !defined('DATALIFEENGINE' ) ) {
-	die('Hacking attempt!');
-}
-
-if (!$user_group[$member_id['user_group']]['admin_complaint']) {
-	msg('error', $lang['index_denied'], $lang['index_denied']);
-}
-
-include ENGINE_DIR . '/mrdeath/aaparser/ajax/parser.php';
-
-?>]]></replacecode>
-			<enabled>1</enabled>
-		</operation>
-	</file>
 	<file name="engine/ajax/anime_grabber.php">
 		<operation action="create">
 			<replacecode><![CDATA[<?php
@@ -519,8 +501,24 @@ if( !defined('DATALIFEENGINE' ) ) {
 	die('Hacking attempt!');
 }
 
-include ENGINE_DIR . '/mrdeath/aaparser/ajax/grabber.php';
-
+if (isset($_GET['module']) == false) include ENGINE_DIR . '/mrdeath/aaparser/ajax/grabber.php';
+else {
+  	if ($user_group[$member_id['user_group']]['admin_complaint']) {
+      	if ($_GET['module'] == "anime_parser") include ENGINE_DIR . '/mrdeath/aaparser/ajax/parser.php';
+        if ($_GET['module'] == "aaparser_save") include ENGINE_DIR . '/mrdeath/aaparser/admin/ajax/save_config.php';
+        if ($_GET['module'] == "aaparser_clear") include ENGINE_DIR . '/mrdeath/aaparser/ajax/update_queue.php';
+      	if ($_GET['module'] == "kodik_mass_update") include ENGINE_DIR . '/mrdeath/aaparser/ajax/mass_update.php';
+      	if ($_GET['module'] == "gindexing" && file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php')) {
+            include ENGINE_DIR . '/mrdeath/aaparser/google_indexing/ajax/save.php';
+        }
+  	}
+  	if ($_GET['module'] == "kodik_playlist_ajax") include ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist.php';
+  	if ($_GET['module'] == "kodik_playlist_ajax_new") include ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist_new.php';
+  	if ($_GET['module'] == "telegram_sender") include ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_cron.php';
+  	if ($_GET['module'] == "push_subscribe") include ENGINE_DIR . '/mrdeath/aaparser/ajax/push_subscribe.php';
+  	if ($_GET['module'] == "kodik_watched") include ENGINE_DIR . '/mrdeath/aaparser/ajax/save_watched.php';
+  	
+}
 ?>]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
@@ -554,56 +552,6 @@ include ENGINE_DIR . '/mrdeath/aaparser/ajax/grabber.php';
 			<enabled>1</enabled>
 			<dleversion>15.3</dleversion>
 			<versioncompare>greater</versioncompare>
-		</operation>
-	</file>
-	<file name="engine/ajax/aaparser_save.php">
-		<operation action="create">
-			<replacecode><![CDATA[<?php
-
-if( !defined('DATALIFEENGINE' ) ) {
-	die('Hacking attempt!');
-}
-
-if (!$user_group[$member_id['user_group']]['admin_complaint']) {
-	msg('error', $lang['index_denied'], $lang['index_denied']);
-}
-
-include ENGINE_DIR . '/mrdeath/aaparser/admin/ajax/save_config.php';
-
-?>]]></replacecode>
-			<enabled>1</enabled>
-		</operation>
-	</file>
-	<file name="engine/ajax/aaparser_clear.php">
-		<operation action="create">
-			<replacecode><![CDATA[<?php
-
-if( !defined('DATALIFEENGINE' ) ) {
-	die('Hacking attempt!');
-}
-
-if (!$user_group[$member_id['user_group']]['admin_complaint']) {
-	msg('error', $lang['index_denied'], $lang['index_denied']);
-}
-
-include ENGINE_DIR . '/mrdeath/aaparser/ajax/update_queue.php';
-
-?>]]></replacecode>
-			<enabled>1</enabled>
-		</operation>
-	</file>
-	<file name="engine/ajax/kodik_playlist_ajax.php">
-		<operation action="create">
-			<replacecode><![CDATA[<?php
-
-if( !defined('DATALIFEENGINE' ) ) {
-	die('Hacking attempt!');
-}
-
-include ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist.php';
-
-?>]]></replacecode>
-			<enabled>1</enabled>
 		</operation>
 	</file>
 	<file name="engine/modules/main.php">
@@ -1062,20 +1010,6 @@ else {
 } else {
 	$tpl->result['main'] = preg_replace( "'\\[is_logged\\](.*?)\\[/is_logged\\]'is", "", $tpl->result['main'] );
 }]]></replacecode>
-			<enabled>1</enabled>
-		</operation>
-	</file>
-	<file name="engine/ajax/kodik_watched.php">
-		<operation action="create">
-			<replacecode><![CDATA[<?php
-
-if( !defined('DATALIFEENGINE' ) ) {
-	die('Hacking attempt!');
-}
-
-include ENGINE_DIR . '/mrdeath/aaparser/ajax/save_watched.php';
-
-?>]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -1561,20 +1495,6 @@ function DLE_Send_Push ( $title, $notification, $url = false, $image = false, $u
 			<enabled>1</enabled>
 		</operation>
 	</file>
-	<file name="engine/ajax/push_subscribe.php">
-		<operation action="create">
-			<replacecode><![CDATA[<?php
-
-if( !defined('DATALIFEENGINE' ) ) {
-	die('Hacking attempt!');
-}
-
-include ENGINE_DIR . '/mrdeath/aaparser/ajax/push_subscribe.php';
-
-?>]]></replacecode>
-			<enabled>1</enabled>
-		</operation>
-	</file>
 	<file name="engine/engine.php">
 		<operation action="before">
 			<searchcode><![CDATA[case "unsubscribe" :]]></searchcode>
@@ -1834,38 +1754,6 @@ include ENGINE_DIR . '/mrdeath/aaparser/rooms/rooms_custom.php';
 			<enabled>1</enabled>
 		</operation>
 	</file>
-	<file name="engine/ajax/kodik_mass_update.php">
-		<operation action="create">
-			<replacecode><![CDATA[<?php
-
-if( !defined('DATALIFEENGINE' ) ) {
-	die('Hacking attempt!');
-}
-
-if (!$user_group[$member_id['user_group']]['admin_complaint']) {
-	msg('error', $lang['index_denied'], $lang['index_denied']);
-}
-
-include ENGINE_DIR . '/mrdeath/aaparser/ajax/mass_update.php';
-
-?>]]></replacecode>
-			<enabled>1</enabled>
-		</operation>
-	</file>
-	<file name="engine/ajax/kodik_playlist_ajax_new.php">
-		<operation action="create">
-			<replacecode><![CDATA[<?php
-
-if( !defined('DATALIFEENGINE' ) ) {
-	die('Hacking attempt!');
-}
-
-include ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist_new.php';
-
-?>]]></replacecode>
-			<enabled>1</enabled>
-		</operation>
-	</file>
 	<file name="engine/modules/raspisanie_ongoingov.php">
 		<operation action="create">
 			<replacecode><![CDATA[<?php
@@ -1990,24 +1878,6 @@ $tpl->result['content'] = $tpl2->result['schedule'].$tpl->result['content'];]]><
 			<enabled>1</enabled>
 		</operation>
 	</file>
-	<file name="engine/ajax/gindexing.php">
-		<operation action="create">
-			<replacecode><![CDATA[<?php
-
-if( !defined('DATALIFEENGINE' ) ) {
-	die('Hacking attempt!');
-}
-
-if (!$user_group[$member_id['user_group']]['admin_complaint']) {
-	msg('error', $lang['index_denied'], $lang['index_denied']);
-}
-if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) {
-	include ENGINE_DIR . '/mrdeath/aaparser/google_indexing/ajax/save.php';
-}
-?>]]></replacecode>
-			<enabled>1</enabled>
-		</operation>
-	</file>
 	<file name="engine/inc/massactions.php">
 		<operation action="before">
 			<searchcode><![CDATA[elseif( $action == "do_mass_edit_cloud" ) {]]></searchcode>
@@ -2043,20 +1913,6 @@ if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) 
     }
   		else msg("success", "Google Indexing отключён", "Вы отключили работу Google Indexing в админке модуля Advanced Kodik Parser", $_SESSION['admin_referrer']);
 	}]]></replacecode>
-			<enabled>1</enabled>
-		</operation>
-	</file>
-	<file name="engine/ajax/telegram_sender.php">
-		<operation action="create">
-			<replacecode><![CDATA[<?php
-
-if( !defined('DATALIFEENGINE' ) ) {
-	die('Hacking attempt!');
-}
-
-include ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_cron.php';
-
-?>]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>

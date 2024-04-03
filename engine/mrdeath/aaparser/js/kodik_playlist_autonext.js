@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var news_id = $("#kodik_player_ajax").attr("data-news_id");
     $.ajax({
-        url: "/engine/ajax/controller.php?mod=kodik_playlist_ajax",
+        url: "/engine/ajax/controller.php?mod=anime_grabber&module=kodik_playlist_ajax",
         type: "POST",
         dataType: "html",
         data: {news_id:news_id,action:'load_player'},
@@ -157,7 +157,7 @@ function kodik_episodes() {
     });
 }
 function del(news_id) {
-    $.get(dle_root + "engine/ajax/controller.php?mod=kodik_watched", { 'news_id': news_id, 'action': 'delete_watched' }, function(data) {
+    $.get(dle_root + "engine/ajax/controller.php?mod=anime_grabber&module=kodik_watched", { 'news_id': news_id, 'action': 'delete_watched' }, function(data) {
 		if ( data.status ) {
             $('.b-post__lastepisodeout').remove();
 		}
@@ -234,7 +234,7 @@ jQuery.cookie = function(name, value, options) {
 function kodikMessageListener(message) {
     if ( message.data.key == 'kodik_player_current_episode' ) {
         var news_id = $("#kodik_player_ajax").attr("data-news_id");
-        $.get(dle_root + "engine/ajax/controller.php?mod=kodik_watched", { 'news_id': news_id, 'kodik_data': message.data.value }, function(data) {
+        $.get(dle_root + "engine/ajax/controller.php?mod=anime_grabber&module=kodik_watched", { 'news_id': news_id, 'kodik_data': message.data.value }, function(data) {
 			if ( data.status ) {
             	auto_episodes(data.season, data.episode, data.translator);
 			}
