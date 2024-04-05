@@ -54,6 +54,8 @@
 		}
 		
 		if (in_array($checking_post['id'], $updated_news_list)) continue;
+        //Очистка кастумного кеша кодик
+        if ( isset($aaparser_config['player']['custom_cache']) && $aaparser_config['player']['custom_cache'] == 1 ) kodik_clear_cache('playlist_'.$checking_post['id'], 'player');
 		
 		$title_en = $anime_check['title_orig'];
 		$title_ru = $anime_check['title'];
@@ -231,9 +233,8 @@
                 $xfields_post[$aaparser_config['updates']['xf_golos_imdb']] = $imdb_gol;
 			}
         }
-        
 		
-        //Проверка на изменение статуса сериала для субтитров и автосубтитров
+		//Проверка на изменение статуса сериала для субтитров и автосубтитров
 		$status_type = array( 'anons' => 'Анонс', 'ongoing' => 'Онгоинг', 'released' => 'Завершён' );
 		
 		if ($aaparser_config['updates']['xf_status_sub'])
@@ -300,7 +301,7 @@
 		}		
 		
 		///
-		
+        
         //Проверка на изменение статуса сериала
         
         if ( ($serial_status_k || $serial_status_ru_k) && $material_row['cat_check'] != 1 ) {
@@ -509,6 +510,10 @@
 		        $indexing->setUrls($full_link);
                 $indexing->Index();
 			}
+			
+			if ( $aaparser_config_push['push_notifications']['enable_tgposting'] == 1 && $aaparser_config_push['push_notifications']['tg_cron_modupdate'] == 1 && $checking_post['approve'] == 1 ) {
+	            telegram_sender($news_id, 'editnews_cron');
+            }
 			
         }
 		unset($xfields_post);

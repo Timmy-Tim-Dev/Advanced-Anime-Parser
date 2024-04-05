@@ -304,5 +304,12 @@ elseif ( $action == "connect_base" ) {
 	}
 
 }
+elseif ( $action == "clear_player_cache" ) {
+    require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+    kodik_clear_cache('playlist', 'player');
+	die(json_encode(array(
+		'status' => 'ok'
+	)));
+}
 
 ?>

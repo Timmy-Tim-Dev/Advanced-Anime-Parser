@@ -159,6 +159,16 @@ elseif ($parse_action == 'parse') {
 	$xfields_data['kodik_year'] = isset($kodik_data['year']) ? $kodik_data['year'] : '';
 	$xfields_data['kodik_worldart_link'] = isset($kodik_data['worldart_link']) ? $kodik_data['worldart_link'] : '';
 	$xfields_data['kodik_mydramalist_tags'] = isset($kodik_data['material_data']['mydramalist_tags']) ? implode(', ', $kodik_data['material_data']['mydramalist_tags']) : '';
+	if ( $xfields_data['kodik_mydramalist_tags'] && isset($aaparser_config['settings']['tags_tolower']) && $aaparser_config['settings']['tags_tolower'] == 1 ) $xfields_data['kodik_mydramalist_tags'] = mb_strtolower($xfields_data['kodik_mydramalist_tags'], 'UTF-8');
+	if ( $xfields_data['kodik_mydramalist_tags'] && isset($aaparser_config['settings']['translate_tags']) && $aaparser_config['settings']['translate_tags'] == 1 ) {
+	    require_once ENGINE_DIR . '/mrdeath/aaparser/functions/GoogleTranslateForFree.php';
+	    $tr = new GoogleTranslateForFree();
+	    $tranlsted_mdl_tags = $tr->translate('en', 'ru', $xfields_data['kodik_mydramalist_tags'], 5);
+	    if ( $tranlsted_mdl_tags ) {
+	        $xfields_data['kodik_mydramalist_tags'] = $tranlsted_mdl_tags;
+	        if ( isset($aaparser_config['settings']['translate_tags_tolower']) && $aaparser_config['settings']['translate_tags_tolower'] == 1 ) $xfields_data['kodik_mydramalist_tags'] = mb_strtolower($xfields_data['kodik_mydramalist_tags'], 'UTF-8');
+	    }
+	}
 	$xfields_data['kodik_status_en'] = isset($kodik_data['material_data']['all_status']) ? $kodik_data['material_data']['all_status'] : '';
 	$xfields_data['kodik_status_ru'] = isset($kodik_data['material_data']['all_status']) ? $status_type[$kodik_data['material_data']['all_status']] : '';
 	

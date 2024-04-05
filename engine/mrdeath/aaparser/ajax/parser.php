@@ -91,9 +91,10 @@ if ( $action == "parser_search" ) {
 }
 elseif ( $action == "parser_kodikplayer" ) {
 	$shiki_id = $_REQUEST['shiki_id'];
+	$mdl_id = $_REQUEST['mdl_id'];
 	$parse_action = 'parse';
 	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/kodik.php'));	
-	echo $kodik['results'][0]['link'];
+	echo $xfields_data['kodik_iframe'];
 }
 elseif ( $action == "parser_get" ) {
 	

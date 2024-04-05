@@ -192,7 +192,7 @@ span.material-info {
 
             ShowLoading('');
             $.ajax({
-                url: "/engine/ajax/controller.php?mod=anime_parser",
+                url: "/engine/ajax/controller.php?mod=anime_grabber&module=anime_parser",
                 data:{action: 'parser_search',  title: document.addnews.title.value},
                 dataType: "json",
                 cache: false,
@@ -259,7 +259,7 @@ span.material-info {
 
             ShowLoading('');
             $.ajax({
-                url: "/engine/ajax/controller.php?mod=anime_parser",
+                url: "/engine/ajax/controller.php?mod=anime_grabber&module=anime_parser",
                 data:{action: 'parser_get', shiki_id: shiki_id, mdl_id: mdl_id, id_news: id_news, mode: mode},
                 dataType: "json",
                 cache: false,

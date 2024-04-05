@@ -568,5 +568,9 @@
 	    include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/indexing.php'));
     }
     
+    if ( $aaparser_config_push['push_notifications']['enable_tgposting'] == 1 && $aaparser_config_push['push_notifications']['tg_cron_modadd'] == 1 && $publish == 1 ) {
+	    telegram_sender($id, 'addnews_cron');
+    }
+    
     clear_cache( array('news_', 'tagscloud_', 'archives_', 'calendar_', 'topnews_', 'rss', 'stats') );
     echo "Добавили ".$text_info_2." ".$kodik_title;

@@ -15,6 +15,7 @@ function ChangeOption(obj, selectedOption) {
 	document.getElementById('cronik').style.display = 'none';
 	document.getElementById('anonsik').style.display = 'none';
 	document.getElementById('gindexing').style.display = 'none';
+	document.getElementById('tgposting').style.display = 'none';
 	document.getElementById(selectedOption).style.display = '';
 
 	return false;
@@ -23,7 +24,7 @@ function ChangeOption(obj, selectedOption) {
 $(document).ready(function() {
     $( "#connect-base" ).click(function() {
 		$.ajax({
-			url: '/engine/ajax/controller.php?mod=aaparser_clear',
+			url: '/engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear',
 			data: {action: "connect_base_get", user_hash: dle_login_hash},
 			response: 'json',
 			success: function (data) {
@@ -35,7 +36,7 @@ $(document).ready(function() {
 	$( "#mass-update" ).click(function() {
 	    DLEconfirm("Данное действие необратимо. Сделайте резервную копию базы данных. Вы уверены что хотите запустить массовое проставление данных в доп. поля?", "Подтвердите действие", function YesImReady() {
 		    $.ajax({
-			    url: '/engine/ajax/controller.php?mod=kodik_mass_update',
+			    url: '/engine/ajax/controller.php?mod=anime_grabber&module=kodik_mass_update',
 			    data: {action: "update_news_get", user_hash: dle_login_hash},
 			    response: 'json',
 			    success: function (data) {
@@ -51,7 +52,7 @@ function senddata(ind, list_news, current_upd, current) {
 	all_news = list_news.length;
 
 	$.ajax({		
-		url: '/engine/ajax/controller.php?mod=aaparser_clear',
+		url: '/engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear',
 		data: {'newsid': temp['id'], 'shikiid': temp['shikimori_id'], 'mdlid': temp['mdl_id'], action: "connect_base", user_hash: dle_login_hash},
 		response: 'text',
 	}).then(function(result){
@@ -112,7 +113,7 @@ function DoNewsUpdate(data) {
 	$.each(list_news, function(index, temp){
 		promise = promise.then(function(){
 			return $.ajax({			
-				url: '/engine/ajax/controller.php?mod=kodik_mass_update',
+				url: '/engine/ajax/controller.php?mod=anime_grabber&module=kodik_mass_update',
 				data: {'newsid': temp['id'], 'shikiid': temp['shikimori_id'], 'mdlid': temp['mdl_id'], action: "update_news", user_hash: dle_login_hash},
 				response: 'text',
 			})
@@ -137,7 +138,7 @@ function update_queue() {
 	DLEconfirm("Данное действие необратимо. Вы уверены что хотите очистить базу данных, обновив очередь на граббинг?", "Подтвердите действие", function YesImReady() {
 		ShowLoading('');
 		$.ajax({
-			url: "/engine/ajax/controller.php?mod=aaparser_clear",
+			url: "/engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear",
 			data:{action: "update", user_hash: dle_login_hash},
 			dataType: "json",
 			cache: false,
@@ -159,7 +160,7 @@ function update_all_xfields() {
 	DLEconfirm("Вы уверены что хотите дать крону команду на перезапись доп полей в аниме?", "Подтвердите действие", function YesImReady() {
 		ShowLoading('');
 		$.ajax({
-			url: "/engine/ajax/controller.php?mod=aaparser_clear",
+			url: "/engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear",
 			data:{action: "update_xfields", user_hash: dle_login_hash},
 			dataType: "json",
 			cache: false,
@@ -181,7 +182,7 @@ function update_all_cats() {
 	DLEconfirm("Вы уверены что хотите дать крону команду на полную перезапись категорий в аниме?", "Подтвердите действие", function YesImReady() {
 		ShowLoading('');
 		$.ajax({
-			url: "/engine/ajax/controller.php?mod=aaparser_clear",
+			url: "/engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear",
 			data:{action: "update_cats", user_hash: dle_login_hash},
 			dataType: "json",
 			cache: false,
@@ -202,7 +203,7 @@ function update_all_cats() {
 function update_translations() {
 	ShowLoading('');
 	$.ajax({
-		url: "/engine/ajax/controller.php?mod=aaparser_clear",
+		url: "/engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear",
 		data:{action: "update_translations", user_hash: dle_login_hash},
 		dataType: "json",
 		cache: false,
@@ -230,7 +231,7 @@ function update_translations() {
 function update_translations_dorama() {
 	ShowLoading('');
 	$.ajax({
-		url: "/engine/ajax/controller.php?mod=aaparser_clear",
+		url: "/engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear",
 		data:{action: "update_translations_dorama", user_hash: dle_login_hash},
 		dataType: "json",
 		cache: false,
@@ -253,6 +254,25 @@ function update_translations_dorama() {
 			}
 		}
 	});
+}
+
+function ShowOrHideTg() {
+    var checkbox = document.getElementById("tg_on_off");
+	if( checkbox.checked === true ) {
+		$("#tgposting-settings").show();
+		$("#tgposting-settings-area").show();
+		$("#tgposting-templates").show();
+		$("#tgposting-templates-area").show();
+		$("#tgposting-info").show();
+		$("#tgposting-info-area").show();
+	} else {
+		$("#tgposting-settings").hide();
+		$("#tgposting-settings-area").hide();
+		$("#tgposting-templates").hide();
+		$("#tgposting-templates-area").hide();
+		$("#tgposting-info").hide();
+		$("#tgposting-info-area").hide();
+	}
 }
 
 function ShowOrHideCatStatus(value) {
@@ -374,7 +394,7 @@ function ShowOrHideGindexing() {
 }
 
 function saveAcc(acc) {
-	$.post('/engine/ajax/controller.php?mod=gindexing', {acc: acc, action: 'save', user_hash: dle_login_hash}, function(data) {
+	$.post('/engine/ajax/controller.php?mod=anime_grabber&module=gindexing', {acc: acc, action: 'save', user_hash: dle_login_hash}, function(data) {
 	    data = jQuery.parseJSON(data);
 		if (!data.success) {
 			Growl.error({
@@ -394,7 +414,7 @@ function saveAcc(acc) {
 
 function ClearLogs() {
     DLEconfirm( 'Вы уверены что хотите очистить логи?', 'Подтвердите', function () {
-    	$.post('/engine/ajax/controller.php?mod=gindexing', {action: 'clear_logs', user_hash: dle_login_hash}, function(data) {
+    	$.post('/engine/ajax/controller.php?mod=anime_grabber&module=gindexing', {action: 'clear_logs', user_hash: dle_login_hash}, function(data) {
 	        data = jQuery.parseJSON(data);
 		    if (!data.success) {
 			    Growl.error({
@@ -418,7 +438,7 @@ function ClearLogs() {
 function CheckSingle() {
     var single_link = document.getElementById("single_link").value;
     if (single_link == "") return false;
-	$.post('/engine/ajax/controller.php?mod=gindexing', {url: single_link, action: 'check', user_hash: dle_login_hash}, function(data) {
+	$.post('/engine/ajax/controller.php?mod=anime_grabber&module=gindexing', {url: single_link, action: 'check', user_hash: dle_login_hash}, function(data) {
 	    data = jQuery.parseJSON(data);
 		if (!data.success) {
 			Growl.error({
@@ -438,7 +458,7 @@ function SendMass(acc) {
     var kind = e.options[e.selectedIndex].text;
     var textArea = document.getElementById("url-list").value;
     if (textArea == "") return false;
-	$.post('/engine/ajax/controller.php?mod=gindexing', {kind: kind, urls: textArea, action: 'mass', user_hash: dle_login_hash}, function(data) {
+	$.post('/engine/ajax/controller.php?mod=anime_grabber&module=gindexing', {kind: kind, urls: textArea, action: 'mass', user_hash: dle_login_hash}, function(data) {
 	    data = jQuery.parseJSON(data);
 		if (!data.success) {
 			Growl.error({
@@ -460,13 +480,42 @@ function LogsPage(page, el) {
     if ( el.classList.contains('active') ) {
         return false;
     }
-	$.post('/engine/ajax/controller.php?mod=gindexing', {page: page, action: 'logspage', user_hash: dle_login_hash}, function(data) {
+	$.post('/engine/ajax/controller.php?mod=anime_grabber&module=gindexing', {page: page, action: 'logspage', user_hash: dle_login_hash}, function(data) {
 	    data = jQuery.parseJSON(data);
 	    $('#logs-result').html(data.result);
 	    $("li").removeClass("active");
 	    $(el).addClass( "active" );
 	});
 	return false;
+}
+
+function clear_player_cache() {
+	DLEconfirm( 'Вы уверены что хотите очистить кеш плейлистов?', 'Подтвердите', function () {
+	$.ajax({
+		url: "/engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear",
+		data:{action: "clear_player_cache", user_hash: dle_login_hash},
+		dataType: "json",
+		cache: false,
+		success: function(data) {
+			if ( data.status == "ok" ) {
+			    $('#pl-cache-size').html('0 КБ');
+                Growl.info({
+					title: 'Успешно!',
+				    text: 'Кеш был успешно очищен',
+				    icon: 'success'
+				});
+				return false;
+			}
+			else {
+			    Growl.error({
+					title: 'Ошибка очистки кеша!',
+				    text: 'Повторите позже'
+				});
+				return false;
+			}
+		}
+	});
+	});
 }
 
 

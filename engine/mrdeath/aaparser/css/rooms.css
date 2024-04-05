@@ -80,8 +80,8 @@
 .b-simple_seasons__title{color:#fff;font-size:15px;font-weight:bold;padding-top:10px;padding-left:11px;text-align:left}
 .b-simple_season__item{background:#2d2d2d;color:#fff;cursor:pointer;float:left;font-size:13px;margin: 0 2px 2px 0 !important;min-width:11.8%;padding:5px 7px;text-align:left;list-style: none !important}
 .b-simple_episodes__list{margin:0 auto;padding:10px 10px 12px 13px;text-align:left}
-.b-simple_episode__item{background:#2d2d2d;color:#fff;cursor:pointer;display:inline-block;font-size:13px;margin: 0 2px 2px 0 !important;min-width:11.8%;padding:5px 7px;text-align:left}
-#kodik_player_ajax{min-height:460px}
+.b-simple_episode__item{background:#2d2d2d;color:#fff;cursor:pointer;display:inline-block;font-size:13px;margin: 0 2px 2px 0 !important;width:69px;padding:5px 7px;text-align:left}
+#kodik_player_ajax{min-height:600px;background: #151515;}
 #simple-episodes-tabs{white-space:nowrap;overflow:hidden;margin:0 30px 0 30px;display:block;position:relative}
 @media only screen and (max-width: 590px) {
     #simple-episodes-tabs {-webkit-overflow-scrolling: touch;overflow-x:scroll}
@@ -96,6 +96,7 @@
 .prevpl{left:0px}
 .nextpl{right:0px}
 #player_wrap.premact{width:100%}
+.show-flex-grid{display: flex;flex-wrap: wrap;padding: 5px;max-height: 155px;overflow-y: auto;}
 
 
 /* Room create button

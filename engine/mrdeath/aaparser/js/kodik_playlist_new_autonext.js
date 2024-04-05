@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var news_id = $("#kodik_player_ajax").attr("data-news_id");
     $.ajax({
-        url: "/engine/ajax/controller.php?mod=kodik_playlist_ajax_new",
+        url: "/engine/ajax/controller.php?mod=anime_grabber&module=kodik_playlist_ajax_new",
         type: "POST",
         dataType: "html",
         data: {news_id:news_id,action:'load_player'},
@@ -9,10 +9,35 @@ $(document).ready(function() {
            $("#kodik_player_ajax").html(data);
         },
         complete: function() {
-            scroll_to_active();
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) {
+                $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+                $('.prevpl').remove();
+                $('.nextpl').remove();
+            }
+            else scroll_to_active();
         }
     });
 });
+(function ($) {
+    'use strict';
+
+    $.fn.scrollToSimple = function ($target) {
+        var $container = this.first();
+
+        var pos = $target.position(), height = $target.outerHeight();
+        var containerScrollTop = $container.scrollTop(), containerHeight = $container.height();
+        var top = pos.top + containerScrollTop;
+
+        var paddingPx = containerHeight * 0.15;
+
+        if (top < containerScrollTop) {
+            $container.scrollTop(top - paddingPx);
+        }
+        else if (top + height > containerScrollTop + containerHeight) {
+            $container.scrollTop(top + height - containerHeight + paddingPx);
+        }
+    };
+})(jQuery);
 function auto_episodes(season, episode, translator) {
 	if(!$('#episode-'+season+'-'+episode).hasClass('active')) {
 	    $('.b-translator__item').removeClass('active');
@@ -20,7 +45,8 @@ function auto_episodes(season, episode, translator) {
 		$('.b-post__lastepisodeout').remove();
 		$('.b-simple_episode__item').removeClass('active');
 		$('#episode-'+season+'-'+episode+'').addClass('active');
-        scroll_to_active();
+        if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+        else scroll_to_active();
 	}
     else {
     	$('.b-post__lastepisodeout').remove();
@@ -60,7 +86,8 @@ function kodik_seasons() {
             
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
-            scroll_to_active();
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            else scroll_to_active();
         }
     });
 }
@@ -90,7 +117,8 @@ function kodik_episodes() {
                 
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
-            scroll_to_active();
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            else scroll_to_active();
         }
     });
 }
@@ -103,13 +131,14 @@ function kodik_translates() {
             var this_link = _self.attr("data-this_link");
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
-            scroll_to_active();
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            else scroll_to_active();
         }
     });
 }
 
 function del(news_id) {
-    $.get(dle_root + "engine/ajax/controller.php?mod=kodik_watched", { 'news_id': news_id, 'action': 'delete_watched' }, function(data) {
+    $.get(dle_root + "engine/ajax/controller.php?mod=anime_grabber&module=kodik_watched", { 'news_id': news_id, 'action': 'delete_watched' }, function(data) {
 		if ( data.status ) {
             $('.b-post__lastepisodeout').remove();
 		}
@@ -120,10 +149,6 @@ function scroll_to_active() {
     var _ew = document.getElementById('simple-episodes-tabs').scrollWidth;
     var _cw1 = Math.abs(_pw - 60 - _ew) <= 1;
     var _cw2 = Math.abs(_pw - 10 - _ew) <= 1;
-	//console.log(_pw);
-    //console.log(_ew);
-    //console.log('Math.abs(',_pw,' - 60 - ',_ew,') <= 1', _cw1);
-    //console.log('Math.abs(',_pw,' - 10 - ',_ew,') <= 1', _cw2);
 
     if ($("div").is("#simple-episodes-tabs")) {
         if (!_cw1 && !_cw2) {
@@ -187,7 +212,7 @@ jQuery.cookie = function(name, value, options) {
 function kodikMessageListener(message) {
     if ( message.data.key == 'kodik_player_current_episode' ) {
         var news_id = $("#kodik_player_ajax").attr("data-news_id");
-        $.get(dle_root + "engine/ajax/controller.php?mod=kodik_watched", { 'news_id': news_id, 'kodik_data': message.data.value }, function(data) {
+        $.get(dle_root + "engine/ajax/controller.php?mod=anime_grabber&module=kodik_watched", { 'news_id': news_id, 'kodik_data': message.data.value }, function(data) {
 			if ( data.status ) {
             	auto_episodes(data.season, data.episode, data.translator);
 			}

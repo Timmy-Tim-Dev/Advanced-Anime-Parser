@@ -23,7 +23,7 @@ $('.rooms-invite').on('click', function() {
 
 function PushSubscribe(post_id, action)
 {	
-    $.get(dle_root + "engine/ajax/controller.php?mod=push_subscribe", { post_id: post_id, subaction: action, user_hash: dle_login_hash }, function(data){
+    $.get(dle_root + "engine/ajax/controller.php?mod=anime_grabber&module=push_subscribe", { post_id: post_id, subaction: action, user_hash: dle_login_hash }, function(data){
 		if ( data.status ) {
 			if ( action == 'subscribe' ) {
         		$('#push_subscribe').hide();

@@ -17,6 +17,8 @@ session_write_close();
 include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
 require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
 require_once ENGINE_DIR . '/mrdeath/aaparser/functions/public.php';
+require_once ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_functions.php';
+require_once ENGINE_DIR . '/mrdeath/aaparser/functions/kodik_cache.php';
 
 if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log')) {
   	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log', "w+");

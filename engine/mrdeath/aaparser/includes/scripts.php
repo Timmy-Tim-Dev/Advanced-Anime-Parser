@@ -7,6 +7,7 @@ echo <<<HTML
     ShowOrHidePlayer();
     ShowOrHidePush();
     ShowOrHideRooms();
+    ShowOrHideTg();
 	
 HTML;
 if ($php_version >= 74 && file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php')) {
@@ -75,7 +76,7 @@ echo <<<HTML
 		    }
 			
 			var data_form = $('form').serialize();
-			$.post('/engine/ajax/controller.php?mod=aaparser_save', {data_form: data_form, action: 'options', user_hash: '{$dle_login_hash}'}, function(data) {
+			$.post('/engine/ajax/controller.php?mod=anime_grabber&module=aaparser_save', {data_form: data_form, action: 'options', user_hash: '{$dle_login_hash}'}, function(data) {
 				data = jQuery.parseJSON(data);
 				
 				if (!data.success) {

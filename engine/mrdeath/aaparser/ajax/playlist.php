@@ -13,6 +13,7 @@ if( !defined('DATALIFEENGINE' ) ) {
 }
 
 require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
+require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
   
 header('Content-Type: text/html; charset=utf-8');
 
@@ -41,6 +42,8 @@ function kodik_api($url) {
 	return $parse;
 }
 
+
+
 $news_id = isset($_POST['news_id']) ? intval($_POST['news_id']) : false;
 $api_token = $aaparser_config['settings']['kodik_api_key'] ?? false;
 $action = $_POST['action'] ?? 'load_player';
@@ -52,7 +55,8 @@ $this_translator = isset($_POST['this_translator']) ? intval($_POST['this_transl
 if ( isset($aaparser_config['settings']['kodik_api_domain']) ) $kodik_api_domain = $aaparser_config['settings']['kodik_api_domain'];
 else $kodik_api_domain = 'https://kodikapi.com/';
     
-$playlist = dle_cache('kodik_playlist', $news_id, false);
+if ( isset($aaparser_config['player']['custom_cache']) && $aaparser_config['player']['custom_cache'] == 1 ) $playlist = kodik_cache('playlist_'.$news_id, false, 'player');
+else $playlist = dle_cache('kodik_playlist', $news_id, false);
 
 if ( $aaparser_config['player']['enable'] != 1 ) die('stop');
 elseif ( !$api_token ) die('stop');
@@ -115,7 +119,8 @@ elseif ( $news_id ) {
         $playlist[0]['serial_name'] = $kodik['results'][0]['title'];
         if ( $aaparser_config['player']['add_params'] && $post_fields[$aaparser_config['player']['add_params']] ) $playlist[0]['my_params'] = $post_fields[$aaparser_config['player']['add_params']];
         if ( $aaparser_config['player']['geoblock'] && $post_fields[$aaparser_config['player']['geoblock']] ) $playlist[0]['geoblock'] = $post_fields[$aaparser_config['player']['geoblock']];
-        create_cache('kodik_playlist', json_encode($playlist, JSON_UNESCAPED_UNICODE), $news_id, false);
+        if ( isset($aaparser_config['player']['custom_cache']) && $aaparser_config['player']['custom_cache'] == 1 ) kodik_create_cache('playlist_'.$news_id, json_encode($playlist, JSON_UNESCAPED_UNICODE), false, 'player');
+        else create_cache('kodik_playlist', json_encode($playlist, JSON_UNESCAPED_UNICODE), $news_id, false);
         unset($translators);
         unset($episode);
         unset($kodik);

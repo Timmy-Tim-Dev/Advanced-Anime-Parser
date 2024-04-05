@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var news_id = $("#kodik_player_ajax").attr("data-news_id");
     $.ajax({
-        url: "/engine/ajax/controller.php?mod=kodik_playlist_ajax",
+        url: "/engine/ajax/controller.php?mod=anime_grabber&module=kodik_playlist_ajax",
         type: "POST",
         dataType: "html",
         data: {news_id:news_id,action:'load_player'},
@@ -11,10 +11,35 @@ $(document).ready(function() {
         complete: function() {
             var this_translator = $(".b-translator__item.active").attr("data-this_translator");
             var this_season = $(".b-simple_season__item.active").attr("data-this_season");
-            scroll_to_active(this_translator,this_season);
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) {
+                $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+                $('.prevpl').remove();
+                $('.nextpl').remove();
+            }
+            else scroll_to_active(this_translator,this_season);
         }
     });
 });
+(function ($) {
+    'use strict';
+
+    $.fn.scrollToSimple = function ($target) {
+        var $container = this.first();
+
+        var pos = $target.position(), height = $target.outerHeight();
+        var containerScrollTop = $container.scrollTop(), containerHeight = $container.height();
+        var top = pos.top + containerScrollTop;
+
+        var paddingPx = containerHeight * 0.15;
+
+        if (top < containerScrollTop) {
+            $container.scrollTop(top - paddingPx);
+        }
+        else if (top + height > containerScrollTop + containerHeight) {
+            $container.scrollTop(top + height - containerHeight + paddingPx);
+        }
+    };
+})(jQuery);
 function kodik_translates() {
     $('#translators-list').on('click','.b-translator__item',function() {
         var _self = $(this);
@@ -57,7 +82,8 @@ function kodik_translates() {
             
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
-            scroll_to_active(this_translator,this_season);
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            else scroll_to_active(this_translator,this_season);
 
         }
     });
@@ -95,7 +121,8 @@ function kodik_seasons() {
             
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
-            scroll_to_active(this_translator,this_season);
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            else scroll_to_active(this_translator,this_season);
             
         }
     });
@@ -112,12 +139,13 @@ function kodik_episodes() {
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
             
-            scroll_to_active(this_translator,this_season);
+            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            else scroll_to_active(this_translator,this_season);
         }
     });
 }
 function del(news_id) {
-    $.get(dle_root + "engine/ajax/controller.php?mod=kodik_watched", { 'news_id': news_id, 'action': 'delete_watched' }, function(data) {
+    $.get(dle_root + "engine/ajax/controller.php?mod=anime_grabber&module=kodik_watched", { 'news_id': news_id, 'action': 'delete_watched' }, function(data) {
 		if ( data.status ) {
             $('.b-post__lastepisodeout').remove();
 		}
@@ -128,10 +156,6 @@ function scroll_to_active(tr_id, season_id) {
     var _ew = document.getElementById('episodes-tab-' + tr_id + '-' + season_id).scrollWidth;
     var _cw1 = Math.abs(_pw - 60 - _ew) <= 1;
     var _cw2 = Math.abs(_pw - 10 - _ew) <= 1;
-	//console.log(_pw);
-    //console.log(_ew);
-    //console.log('Math.abs(',_pw,' - 60 - ',_ew,') <= 1', _cw1);
-    //console.log('Math.abs(',_pw,' - 10 - ',_ew,') <= 1', _cw2);
 
     if ($("div").is("#simple-episodes-tabs")) {
         if (!_cw1 && !_cw2) {
@@ -198,7 +222,7 @@ jQuery.cookie = function(name, value, options) {
 function kodikMessageListener(message) {
     if ( message.data.key == 'kodik_player_current_episode' ) {
         var news_id = $("#kodik_player_ajax").attr("data-news_id");
-        $.get(dle_root + "engine/ajax/controller.php?mod=kodik_watched", { 'news_id': news_id, 'kodik_data': message.data.value }, function(data) {
+        $.get(dle_root + "engine/ajax/controller.php?mod=anime_grabber&module=kodik_watched", { 'news_id': news_id, 'kodik_data': message.data.value }, function(data) {
 			if ( data.status ) {
             	$('.b-post__lastepisodeout').remove();
 			}
