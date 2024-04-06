@@ -11,8 +11,8 @@ $(document).ready(function() {
         complete: function() {
             var this_translator = $(".b-translator__item.active").attr("data-this_translator");
             var this_season = $(".b-simple_season__item.active").attr("data-this_season");
-            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) {
-                $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            if ($(".b-simple_episodes__list").hasClass( "show-flex-grid" )) {
+                $(".b-simple_episodes__list").scrollToSimple( $(".b-simple_episodes__list > .active") );
                 $('.prevpl').remove();
                 $('.nextpl').remove();
             }
@@ -82,7 +82,7 @@ function kodik_translates() {
             
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
-            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            if ($(".b-simple_episodes__list").hasClass( "show-flex-grid" )) $(".b-simple_episodes__list").scrollToSimple( $(".b-simple_episodes__list > .active") );
             else scroll_to_active(this_translator,this_season);
 
         }
@@ -121,7 +121,7 @@ function kodik_seasons() {
             
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
-            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            if ($(".b-simple_episodes__list").hasClass( "show-flex-grid" )) $(".b-simple_episodes__list").scrollToSimple( $(".b-simple_episodes__list > .active") );
             else scroll_to_active(this_translator,this_season);
             
         }
@@ -139,7 +139,7 @@ function kodik_episodes() {
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
             
-            if ($("#simple-episodes-list").hasClass( "show-flex-grid" )) $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
+            if ($(".b-simple_episodes__list").hasClass( "show-flex-grid" )) $(".b-simple_episodes__list").scrollToSimple( $(".b-simple_episodes__list > .active") );
             else scroll_to_active(this_translator,this_season);
         }
     });

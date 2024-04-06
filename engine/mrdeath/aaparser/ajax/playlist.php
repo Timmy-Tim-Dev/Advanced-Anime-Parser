@@ -228,9 +228,12 @@ if ($playlist && $action == 'load_player') {
                 else $seasons .= '<li id="season-'.$playlist[$num]['translator_id'].'-'.$season.'" onclick="kodik_seasons();" class="b-simple_season__item' . $active_szn . '" data-this_season="' . $season . '" data-this_translator="' . $playlist[$num]['translator_id'] . '">Сезон ' . $season . '</li>';
             
                 //Кнопки серий
+                
+                if ( isset($aaparser_config['player']['vertical_eps']) && $aaparser_config['player']['vertical_eps'] && count($episode) > $aaparser_config['player']['vertical_eps'] ) $sub_class = ' show-flex-grid';
+                else $sub_class = '';
             
-                if ( $active_tr && $active_szn ) $episodes .= '<ul id="episodes-tab-'.$translation['translator_id'].'-'.$season.'" class="episode-tab-'.$translation['translator_id'].'-'.$season.' b-simple_episodes__list clearfix">';
-                else $episodes .= '<ul id="episodes-tab-'.$translation['translator_id'].'-'.$season.'" class="episode-tab-'.$translation['translator_id'].'-'.$season.' b-simple_episodes__list clearfix" style="display:none">';
+                if ( $active_tr && $active_szn ) $episodes .= '<ul id="episodes-tab-'.$translation['translator_id'].'-'.$season.'" class="episode-tab-'.$translation['translator_id'].'-'.$season.' b-simple_episodes__list clearfix'.$sub_class.'">';
+                else $episodes .= '<ul id="episodes-tab-'.$translation['translator_id'].'-'.$season.'" class="episode-tab-'.$translation['translator_id'].'-'.$season.' b-simple_episodes__list clearfix'.$sub_class.'" style="display:none">';
             
                 if ( isset($last_season) ) $season_num = $last_season;
                 else $season_num = $playlist[$num]['max_season'];

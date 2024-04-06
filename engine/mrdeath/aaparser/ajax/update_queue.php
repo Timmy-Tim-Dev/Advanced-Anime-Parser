@@ -311,5 +311,13 @@ elseif ( $action == "clear_player_cache" ) {
 		'status' => 'ok'
 	)));
 }
+elseif ( $action == "update_module" ) {
+	$row = $db->super_query("SHOW TABLE STATUS WHERE Name = '" . PREFIX . "_post'");
+	$storage_engine = $row['Engine'];
+	
+	if( file_exists( ENGINE_DIR . "/mrdeath/aaparser/includes/upgrade/".$_GET['version'].".php" ) ) {
+		include ( ENGINE_DIR . "/mrdeath/aaparser/includes/upgrade/".$_GET['version'].".php" );
+	}
+}
 
 ?>

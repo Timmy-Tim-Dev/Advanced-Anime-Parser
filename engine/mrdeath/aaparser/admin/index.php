@@ -11,6 +11,10 @@
 if (!defined('DATALIFEENGINE') OR !defined('LOGGED_IN')) {
 	die('Hacking attempt!');
 }
+
+$module_version = 4.0;
+$action = isset($_GET['action']) ? $_GET['action'] : false;
+
 $php_version = intval(str_replace(array(".",","),"",substr(PHP_VERSION,0,3)));
 //Проверяем существование системных файлов и файла настроек
 if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/config.php')) {
@@ -39,6 +43,7 @@ $text = <<<HTML
     'max_editors' => 5,
     'max_designers' => 5,
     'max_operators' => 5,
+    'version' => '$module_version',
     'cron_key' => '
 HTML;
 $text .= md5(time().$config['http_home_url'] . $_SESSION['user_id']['email']);
@@ -149,6 +154,15 @@ if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log')) {
   	fclose($fp);
 }
 
+if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.log')) {
+  	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/version.log', "w+");
+  	fwrite($fp, $module_version);
+  	fclose($fp);
+}
+else {
+    $log_module_version = file_get_contents(ENGINE_DIR.'/mrdeath/aaparser/data/version.log');
+}
+
 if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) {
 	if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/data/indexing.json') ) {
 		$mod_settings = file_get_contents(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/data/indexing.json');
@@ -200,6 +214,8 @@ if ( !$aclist ) $aclist[] = 'Пусто';
 require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/functions/admin.php';
+
+if ( !isset($aaparser_config['settings']['version']) ) $aaparser_config['settings']['version'] = '3.4.1';
 
 if ( !file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) {
 	if (isset($aaparser_config['settings_gindexing']['account'])){
@@ -258,7 +274,20 @@ else $fa_icons_rooms = 'fa';
 
 $now_year = date('Y');
 
-echoheader('<b>Advanced Kodik Parser v4.0.0</b>', 'Настройки модуля Advanced Kodik Parser');
+echoheader('<b>Advanced Kodik Parser v'.$module_version.'</b>', 'Настройки модуля Advanced Kodik Parser');
+
+if($is_loged_in AND version_compare($log_module_version , $module_version , '<') && $action != 'dbupgrade' ) {
+
+	if( $member_id['user_group'] == 1 ) {
+		
+		header( "Location: ?mod=aap&action=dbupgrade" );
+		die();
+		
+	} else msg("error", $lang['addnews_denied'], $lang['upgr_notadm']);
+	
+}
+
+if ( !$action ) {
 
 echo <<<HTML
 <style>
@@ -303,6 +332,7 @@ include_once ENGINE_DIR.'/mrdeath/aaparser/includes/anonspage.php'; //Настр
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/gindexpage.php'; //Google indexing
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/tgpostingpage.php'; //Постинг в Telegram
 echo <<<HTML
+    <input type="hidden" value="{$module_version}" class="form-control" name="settings[version]">
     <button type="submit" class="btn bg-teal btn-raised position-left"><i class="fa fa-floppy-o position-left"></i>{$lang['user_save']}</button>
 </form>
 HTML;
@@ -317,4 +347,111 @@ echo <<<HTML
 </div>
 HTML;
 echofooter();
+}
+elseif ( $action == 'dbupgrade' ) {
+    
+        $versions = array();
+		$files = glob( ENGINE_DIR . "/mrdeath/aaparser/includes/upgrade/*");
+		
+		foreach ($files as $file) {
+			$version = basename( $file, ".php" );
+			
+			if( version_compare( $log_module_version, $version, '<=') ) {
+				$versions[] = $version;
+			}
+			
+		}
+		
+		$total = count($versions);
+		
+		//$versions[] = $module_version;
+		
+		sort($versions, SORT_NUMERIC);
+		
+		$versions = "['".implode("','", $versions)."']";
+    
+echo <<<HTML
+<script>
+
+	var actualversion = '{$module_version}';
+	var total = {$total};
+	var versions = {$versions};
+	var step = 0;
+	var versions_info = '{$lang['upgr_db_ver']}';
+
+	function db_upgrade()  {
+	
+		var version = versions[step];
+		step ++;
+		
+		$('#button').attr("disabled", "disabled");
+		$('#wconvert').html(versions_info + ' <b>' + version + '</b>');
+		$('#ajaxerror').html('');
+		
+		$.ajax({
+		    url: '/engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear',
+		    data: {action: "update_module", version: version, user_hash: dle_login_hash},
+			dataType: "json",
+			cache: false,
+		    success: function (data) {
+				if ( data.status == "ok" ) {
+				    var proc = Math.round( (100 * step) / total );
+				    if ( proc > 100 ) proc = 100;
+				    $('#progressbar').css( "width", proc + '%' );
+				    if (data.version == actualversion) {
+				        setTimeout("window.location = '?mod=aap'", 1000 );
+				    }
+				    else {
+				        setTimeout("db_upgrade()", 1000 );
+				    }
+				}
+				else {
+				    //var proc = Math.round( (100 * step) / total );
+				    //if ( proc > 100 ) proc = 100;
+				    //$('#progressbar').css( "width", proc + '%' );
+				}
+			}
+		});
+	
+		return false;
+	
+	}
+	
+	$(function() {
+		
+		$('#button').click(function() {
+			$('#button').attr("disabled", "disabled");
+			db_upgrade();
+			return false;
+		});
+		
+		{$autostart}
+
+	});
+
+</script>
+
+	<div class="panel panel-default">
+	  <div class="panel-heading">
+		Мастер обновления модуля Advanced Anime Parser
+	  </div>
+		<div class="panel-body">
+			Сейчас будет произведено обновление вашей базы данных до текущей версии модуля. Ваша база данных будет пошагово обновлена с версии {$log_module_version} до {$module_version}.
+		</div>
+		<div class="panel-body">
+			<div class="progress"><div id="progressbar" class="progress-bar progress-blue" style="width:0%;"><span></span></div></div>
+			<div class="text-size-small"><span id="wconvert"></span> <span id="status"></span></div>
+		</div>
+		<div class="panel-body">
+			<div id="ajaxerror"></div>
+			<div class="text-muted text-size-small">{$lang['upgr_noclose_2']}</div>
+		</div>	
+		<div class="panel-footer">
+			<button id="button" type="button" class="btn bg-teal btn-sm btn-raised"><i class="fa fa-forward position-left"></i>{$lang['upgr_next']}</button>
+		</div>
+	</div>
+HTML;
+    
+echofooter();
+}
 ?>
