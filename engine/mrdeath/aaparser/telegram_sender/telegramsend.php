@@ -25,6 +25,8 @@ function sanitizeText($text)
     $text = str_replace('<br />', '', $text);
     $text = str_replace('<p>', '', $text);
     $text = str_replace('</p>', '', $text);
+    $text = str_replace('<span>', '', $text);
+    $text = str_replace('</span>', '', $text);
     $text = html_entity_decode($text, ENT_QUOTES, "UTF-8");
     $text = preg_replace("'\\[attachment=(.*?)\\]'si", "", $text);
     $text = preg_replace("#\\[hide\\](.+?)\\[/hide\\]#ims", "", $text);

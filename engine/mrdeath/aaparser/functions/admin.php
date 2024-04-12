@@ -256,9 +256,13 @@ krsort($years_array);
 
 $c_time = time()-604800;
 if ($aaparser_config['settings']['working_mode'] == 1) {
-	if (!file_exists(ROOT_DIR."/engine/mrdeath/aaparser/data/translators_name_dorama.json") || filectime(ROOT_DIR."/engine/mrdeath/aaparser/data/translators_name_dorama.json") < $c_time) {
+	if (!file_exists(ENGINE_DIR."/mrdeath/aaparser/data/translators_name_dorama.json") || filectime(ENGINE_DIR."/mrdeath/aaparser/data/translators_name_dorama.json") < $c_time) {
 		//dorama
-		$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");
+		if ($aaparser_config['settings']['kodik_api_domain'] != '') {
+			$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");
+		} else {
+			$cont = file_get_contents("https://kodikapi.com/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");
+		}
 		$cont = json_decode($cont, true);
 		$translators_name = $translators = [];
 		if (isset($cont['results'])) {
@@ -274,9 +278,13 @@ if ($aaparser_config['settings']['working_mode'] == 1) {
 		unset ($cont);
 	}
 } elseif ($aaparser_config['settings']['working_mode'] == 2) {
-	if (!file_exists(ROOT_DIR."/engine/mrdeath/aaparser/data/translators_name.json") || !file_exists(ROOT_DIR."/engine/mrdeath/aaparser/data/translators_name_dorama.json") || filectime(ROOT_DIR."/engine/mrdeath/aaparser/data/translators_name.json") < $c_time || filectime(ROOT_DIR."/engine/mrdeath/aaparser/data/translators_name_dorama.json") < $c_time) {
+	if (!file_exists(ENGINE_DIR."/mrdeath/aaparser/data/translators_name.json") || !file_exists(ENGINE_DIR."/mrdeath/aaparser/data/translators_name_dorama.json") || filectime(ENGINE_DIR."/mrdeath/aaparser/data/translators_name.json") < $c_time || filectime(ENGINE_DIR."/mrdeath/aaparser/data/translators_name_dorama.json") < $c_time) {
 		//dorama
-		$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");
+		if ($aaparser_config['settings']['kodik_api_domain'] != '') {
+			$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");
+		} else {
+			$cont = file_get_contents("https://kodikapi.com/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");	
+		}
 		$cont = json_decode($cont, true);
 		$translators_name = $translators = [];
 		if (isset($cont['results'])) {
@@ -291,7 +299,11 @@ if ($aaparser_config['settings']['working_mode'] == 1) {
 		unset ($translators);
 		unset ($cont);
 		//anime
-		$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
+		if ($aaparser_config['settings']['kodik_api_domain'] != '') {
+			$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
+		} else {
+			$cont = file_get_contents("https://kodikapi.com/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
+		}
 		$cont = json_decode($cont, true);
 		$translators_name = $translators = [];
 		if (isset($cont['results'])) {
@@ -307,9 +319,13 @@ if ($aaparser_config['settings']['working_mode'] == 1) {
 		unset ($cont);
 	}
 } else {
-	if (!file_exists(ROOT_DIR."/engine/mrdeath/aaparser/data/translators_name.json") || filectime(ROOT_DIR."/engine/mrdeath/aaparser/data/translators_name.json") < $c_time) {
+	if (!file_exists(ENGINE_DIR."/mrdeath/aaparser/data/translators_name.json") || filectime(ENGINE_DIR."/mrdeath/aaparser/data/translators_name.json") < $c_time) {
 		//anime
-		$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
+		if ($aaparser_config['settings']['kodik_api_domain'] != '') {
+			$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
+		} else {
+			$cont = file_get_contents("https://kodikapi.com/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
+		}
 		$cont = json_decode($cont, true);
 		$translators_name = $translators = [];
 		if (isset($cont['results'])) {
@@ -354,22 +370,29 @@ if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/translators_dorama.json') ) 
 }
 else $translators_array_dorama = [];
 
-
-
-if (!file_exists(ROOT_DIR."/engine/mrdeath/aaparser/data/mydramalist.json") || filectime(ROOT_DIR."/engine/mrdeath/aaparser/data/mydramalist.json") < $c_time)
-{
-	$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=mydramalist");
-	file_put_contents(ROOT_DIR."/engine/mrdeath/aaparser/data/mydramalist.json", $cont);
+if (!file_exists(ENGINE_DIR."/mrdeath/aaparser/data/mydramalist.json") || filectime(ENGINE_DIR."/mrdeath/aaparser/data/mydramalist.json") < $c_time || file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/mydramalist.json") == '') {
+	if ($aaparser_config['settings']['kodik_api_domain'] != '') {
+		$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=mydramalist");
+	} else {
+		$cont = file_get_contents("https://kodikapi.com/genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=mydramalist");
+	}
+	file_put_contents(ENGINE_DIR."/mrdeath/aaparser/data/mydramalist.json", $cont);
 }
-if (!file_exists(ROOT_DIR."/engine/mrdeath/aaparser/data/shikimori.json") || filectime(ROOT_DIR."/engine/mrdeath/aaparser/data/shikimori.json") < $c_time)
-{
-	$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=shikimori");
-	file_put_contents(ROOT_DIR."/engine/mrdeath/aaparser/data/shikimori.json", $cont);	
+if (!file_exists(ENGINE_DIR."/mrdeath/aaparser/data/shikimori.json") || filectime(ENGINE_DIR."/mrdeath/aaparser/data/shikimori.json") < $c_time || file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/shikimori.json") == '') {
+	if ($aaparser_config['settings']['kodik_api_domain'] != '') {
+		$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=shikimori");
+	} else {
+		$cont = file_get_contents("https://kodikapi.com/genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=shikimori");
+	}
+	file_put_contents(ENGINE_DIR."/mrdeath/aaparser/data/shikimori.json", $cont);	
 }
-if (!file_exists(ROOT_DIR."/engine/mrdeath/aaparser/data/kinopoisk.json") || filectime(ROOT_DIR."/engine/mrdeath/aaparser/data/kinopoisk.json") < $c_time)
-{
-	$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=kinopoisk");
-	file_put_contents(ROOT_DIR."/engine/mrdeath/aaparser/data/kinopoisk.json", $cont);	
+if (!file_exists(ENGINE_DIR."/mrdeath/aaparser/data/kinopoisk.json") || filectime(ENGINE_DIR."/mrdeath/aaparser/data/kinopoisk.json") < $c_time || file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/kinopoisk.json") == '') {
+	if ($aaparser_config['settings']['kodik_api_domain'] != '') {
+		$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=kinopoisk");
+	} else {
+		$cont = file_get_contents("https://kodikapi.com/genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=kinopoisk");
+	}
+	file_put_contents(ENGINE_DIR."/mrdeath/aaparser/data/kinopoisk.json", $cont);	
 }
 
 
