@@ -152,10 +152,12 @@ function del(news_id) {
 	}, "json");
 }
 function scroll_to_active(tr_id, season_id) {
-    var _pw = parseInt($('#kodik_player_ajax').width());
-    var _ew = document.getElementById('episodes-tab-' + tr_id + '-' + season_id).scrollWidth;
-    var _cw1 = Math.abs(_pw - 60 - _ew) <= 1;
-    var _cw2 = Math.abs(_pw - 10 - _ew) <= 1;
+	if (document.getElementById('episodes-tab-' + tr_id + '-' + season_id)) {
+		var _pw = parseInt($('#kodik_player_ajax').width());
+		var _ew = document.getElementById('episodes-tab-' + tr_id + '-' + season_id).scrollWidth;
+		var _cw1 = Math.abs(_pw - 60 - _ew) <= 1;
+		var _cw2 = Math.abs(_pw - 10 - _ew) <= 1;
+	}
 
     if ($("div").is("#simple-episodes-tabs")) {
         if (!_cw1 && !_cw2) {
