@@ -177,7 +177,14 @@ DROP TABLE IF EXISTS `{prefix}_telegram_sender`;]]></mysqldelete>
           $data = $xfieldsdata[$fran_name];
           $db->query("update ".PREFIX."_post set franchise_aap='$data'  where id=".$row['id']);
       }
-    }]]></phpinstall>
+    }
+
+$actual_module_version = '4.0.0';
+if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.log')) {
+  	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/version.log', "w+");
+  	fwrite($fp, $actual_module_version);
+  	fclose($fp);
+}]]></phpinstall>
 	<phpupgrade><![CDATA[include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
 	$fran_name = $aaparser_config['fields']['xf_shikimori_id'];
 
@@ -225,12 +232,15 @@ $(function(){
 });
 function updateKodikPlayer(xf)
 {
-
-  var shiki_id = $("#xf_{$xf_shikimori_id}").val();
-  var mdl_id = $("#xf_{$xf_mdl_id}").val();
-  if (shiki_id == "" && mdl_id == "")
-  {
-    alert('Заполните поле с shikimori или mdl ID');
+  if ( $("#xf_{$xf_shikimori_id}").val() ) var shiki_id = $("#xf_{$xf_shikimori_id}").val();
+  else var shiki_id = 0;
+  if ( $("#xf_{$xf_mdl_id}").val() ) var mdl_id = $("#xf_{$xf_mdl_id}").val();
+  else var mdl_id = 0;
+  if (shiki_id == 0 && mdl_id == 0) {
+    Growl.error({
+		title: 'Внимание',
+		text: 'Заполните поле с shikimori или mdl ID'
+	});
   }
   else
   {
@@ -365,11 +375,15 @@ $(function(){
 function updateKodikPlayer(xf)
 {
 
-  var shiki_id = $("#xf_{$xf_shikimori_id}").val();
-  var mdl_id = $("#xf_{$xf_mdl_id}").val();
-  if (shiki_id == "" && mdl_id == "")
-  {
-    alert('Заполните поле с shikimori или mdl ID');
+  if ( $("#xf_{$xf_shikimori_id}").val() ) var shiki_id = $("#xf_{$xf_shikimori_id}").val();
+  else var shiki_id = 0;
+  if ( $("#xf_{$xf_mdl_id}").val() ) var mdl_id = $("#xf_{$xf_mdl_id}").val();
+  else var mdl_id = 0;
+  if (shiki_id == 0 && mdl_id == 0) {
+    Growl.error({
+		title: 'Внимание',
+		text: 'Заполните поле с shikimori или mdl ID'
+	});
   }
   else
   {
