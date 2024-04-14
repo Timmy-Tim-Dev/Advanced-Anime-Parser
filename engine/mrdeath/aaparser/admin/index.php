@@ -12,7 +12,7 @@ if (!defined('DATALIFEENGINE') OR !defined('LOGGED_IN')) {
 	die('Hacking attempt!');
 }
 
-$module_version = 4.0;
+$actual_module_version = '4.0.0';
 $action = isset($_GET['action']) ? $_GET['action'] : false;
 
 $php_version = intval(str_replace(array(".",","),"",substr(PHP_VERSION,0,3)));
@@ -43,7 +43,6 @@ $text = <<<HTML
     'max_editors' => 5,
     'max_designers' => 5,
     'max_operators' => 5,
-    'version' => '$module_version',
     'cron_key' => '
 HTML;
 $text .= md5(time().$config['http_home_url'] . $_SESSION['user_id']['email']);
@@ -156,7 +155,7 @@ if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log')) {
 
 if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.log')) {
   	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/version.log', "w+");
-  	fwrite($fp, $module_version);
+  	fwrite($fp, '3.4.1');
   	fclose($fp);
 }
 else {
@@ -183,45 +182,59 @@ if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) 
 	}
 
     
-if ( !isset($mod_settings['today_limit'][$mod_settings['account']]) ) {
-    $mod_settings['today_limit'][$mod_settings['account']] = 0;
-}
-if ( date('Y-m-d', time()) != $mod_settings['today_date'] ) {
-    foreach ( $mod_settings['today_limit'] as $num => $acc_name ) {
-        $mod_settings['today_limit'][$num] = 0;
+    if ( !isset($mod_settings['today_limit'][$mod_settings['account']]) ) {
+        $mod_settings['today_limit'][$mod_settings['account']] = 0;
     }
-    $mod_settings['today_date'] = date('Y-m-d', time());
-}
+    if ( date('Y-m-d', time()) != $mod_settings['today_date'] ) {
+        foreach ( $mod_settings['today_limit'] as $num => $acc_name ) {
+            $mod_settings['today_limit'][$num] = 0;
+        }
+        $mod_settings['today_date'] = date('Y-m-d', time());
+    }
     
-if ( !$mod_settings['account'] || !isset($mod_settings['today_limit'][$mod_settings['account']]) ) $today_limit = 0;
-else $today_limit = $mod_settings['today_limit'][$mod_settings['account']];
-$all = $mod_settings['all'];
-$updated = $mod_settings['updated'];
-$deleted = $mod_settings['deleted'];
+    if ( !$mod_settings['account'] || !isset($mod_settings['today_limit'][$mod_settings['account']]) ) $today_limit = 0;
+    else $today_limit = $mod_settings['today_limit'][$mod_settings['account']];
+    $all = $mod_settings['all'];
+    $updated = $mod_settings['updated'];
+    $deleted = $mod_settings['deleted'];
 
-$inform = $all.". Из них: добавлено/обновлено - ".$mod_settings['updated'].", удалено - ".$mod_settings['deleted'];
+    $inform = $all.". Из них: добавлено/обновлено - ".$mod_settings['updated'].", удалено - ".$mod_settings['deleted'];
 
-$acdir = opendir(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/accounts/');
-$aclist = [];
-while($file = readdir($acdir)){
-    if( $file == '.htaccess' || !mb_stripos( $file,'.json' ) ){
-        continue;
+    $acdir = opendir(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/accounts/');
+    $aclist = [];
+    while($file = readdir($acdir)){
+        if( $file == '.htaccess' || !mb_stripos( $file,'.json' ) ){
+            continue;
+        }
+        $aclist[] = $file;
     }
-    $aclist[] = $file;
-}
-if ( !$aclist ) $aclist[] = 'Пусто';
+    if ( !$aclist ) $aclist[] = 'Пусто';
 }
 require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/functions/admin.php';
 
-if ( !isset($aaparser_config['settings']['version']) ) $aaparser_config['settings']['version'] = '3.4.1';
-
 if ( !file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) {
 	if (isset($aaparser_config['settings_gindexing']['account'])){
 		$mod_settings['account'] = $aaparser_config['settings_gindexing']['account'];
 	}
-} 
+}
+
+if($is_loged_in AND version_compare($log_module_version , $actual_module_version , '<') && $action != 'dbupgrade' ) {
+
+	if( $member_id['user_group'] == 1 ) {
+		
+		header( "Location: ?mod=aap&action=dbupgrade" );
+		die();
+		
+	} else msg("error", $lang['addnews_denied'], $lang['upgr_notadm']);
+	
+}
+
+
+echoheader('<b>Advanced Kodik Parser v'.$actual_module_version.'</b>', 'Настройки модуля Advanced Kodik Parser');
+
+if ( !$action ) {
 
 $all = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_anime_list" );
 $done = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_anime_list WHERE started>0" );
@@ -274,21 +287,6 @@ else $fa_icons_rooms = 'fa';
 
 $now_year = date('Y');
 
-echoheader('<b>Advanced Kodik Parser v'.$module_version.'</b>', 'Настройки модуля Advanced Kodik Parser');
-
-if($is_loged_in AND version_compare($log_module_version , $module_version , '<') && $action != 'dbupgrade' ) {
-
-	if( $member_id['user_group'] == 1 ) {
-		
-		header( "Location: ?mod=aap&action=dbupgrade" );
-		die();
-		
-	} else msg("error", $lang['addnews_denied'], $lang['upgr_notadm']);
-	
-}
-
-if ( !$action ) {
-
 echo <<<HTML
 <style>
 HTML;
@@ -332,7 +330,6 @@ include_once ENGINE_DIR.'/mrdeath/aaparser/includes/anonspage.php'; //Настр
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/gindexpage.php'; //Google indexing
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/tgpostingpage.php'; //Постинг в Telegram
 echo <<<HTML
-    <input type="hidden" value="{$module_version}" class="form-control" name="settings[version]">
     <button type="submit" class="btn bg-teal btn-raised position-left"><i class="fa fa-floppy-o position-left"></i>{$lang['user_save']}</button>
 </form>
 HTML;
@@ -364,7 +361,7 @@ elseif ( $action == 'dbupgrade' ) {
 		
 		$total = count($versions);
 		
-		//$versions[] = $module_version;
+		//$versions[] = $actual_module_version;
 		
 		sort($versions, SORT_NUMERIC);
 		
@@ -373,7 +370,7 @@ elseif ( $action == 'dbupgrade' ) {
 echo <<<HTML
 <script>
 
-	var actualversion = '{$module_version}';
+	var actualversion = '{$actual_module_version}';
 	var total = {$total};
 	var versions = {$versions};
 	var step = 0;
@@ -436,7 +433,7 @@ echo <<<HTML
 		Мастер обновления модуля Advanced Anime Parser
 	  </div>
 		<div class="panel-body">
-			Сейчас будет произведено обновление вашей базы данных до текущей версии модуля. Ваша база данных будет пошагово обновлена с версии {$log_module_version} до {$module_version}.
+			Сейчас будет произведено обновление вашей базы данных до текущей версии модуля. Ваша база данных будет пошагово обновлена с версии {$log_module_version} до {$actual_module_version}.
 		</div>
 		<div class="panel-body">
 			<div class="progress"><div id="progressbar" class="progress-bar progress-blue" style="width:0%;"><span></span></div></div>

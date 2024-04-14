@@ -6,6 +6,7 @@ echo <<<HTML
 				<tbody>
 HTML;
 showRow("Секретный ключ для работы крона", "Введите ключ-пароль для работы крона. Данный ключ вы будете использовать в качестве параметра key в крон-ссылках<br>Можете скопировать такой ключ: <b>".md5(time().$config['http_home_url'] . $_SESSION['user_id']['email'])."</b>", showInput(['settings[cron_key]', 'text', $aaparser_config['settings']['cron_key']]));
+showRow('Защита крона от повторного запуска в секундах', 'Введите кол-во секунд, в течении заданного времени крон будет заблокирован для повторного запуска. Рекомендуется указать 10', showInput(['settings[cron_time]', 'number', $aaparser_config['settings']['cron_time']]));
 echo <<<HTML
 						
 				</tbody>

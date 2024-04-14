@@ -20,6 +20,18 @@ elseif ( !isset($_GET['key']) ) die('Cron secret key is empty');
 
 if ( !$aaparser_config_push['push_notifications']['enable_tgposting'] ) die('Постинг в телеграм отключён в админке модуля');
 
+if ( isset($aaparser_config_push['push_notifications']['stop_send_from']) && $aaparser_config_push['push_notifications']['stop_send_from'] ) $stop_send_from = strtotime(date('Y-m-d') ." ".$aaparser_config_push['push_notifications']['stop_send_from']);
+else $stop_send_from = false;
+
+if ( isset($aaparser_config_push['push_notifications']['stop_send_to']) && $aaparser_config_push['push_notifications']['stop_send_to'] ) $stop_send_to = strtotime(date('Y-m-d') ." ".$aaparser_config_push['push_notifications']['stop_send_to']);
+else $stop_send_to = false;
+
+if ( isset($aaparser_config_push['push_notifications']['stop_send_from']) && isset($aaparser_config_push['push_notifications']['stop_send_to']) && $aaparser_config_push['push_notifications']['stop_send_from'] == $aaparser_config_push['push_notifications']['stop_send_to'] ) $stop_send_from = $stop_send_to = false;
+
+if ( $stop_send_from && $stop_send_to && $stop_send_from < $stop_send_to ) {
+    if ( $_TIME >= $stop_send_from && $_TIME <= $stop_send_to ) die('Отправка постов приостановлена с учётом указанного в настройках времени');
+}
+
 $working_mode = 'cron';
 
 require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend.php'));
