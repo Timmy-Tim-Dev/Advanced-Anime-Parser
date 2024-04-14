@@ -260,11 +260,38 @@ elseif ($parse_action == 'parse') {
         $movies_id = [];
 
         if ( $shiki_api['nodes'] ) {
-          foreach ( $shiki_api['nodes'] as $shiki_anime ) {
-            $movies_id[] = $shiki_anime['id'];
-          }
-          if ( $movies_id ) $part_id = implode(',', $movies_id);
-          else $part_id = '';
+			// Сортировка массива в зависимости от значения $franchise_sort
+			if ($aaparser_config['settings']['franchise_sort'] == 'date_asd') {
+				usort($shiki_api['nodes'], function($a, $b) {
+					return $a['date'] - $b['date']; // Сортировка по дате в порядке возрастания
+				});
+			} elseif ($aaparser_config['settings']['franchise_sort'] == 'date_dsa') {
+				usort($shiki_api['nodes'], function($a, $b) {
+					return $b['date'] - $a['date']; // Сортировка по дате в порядке убывания
+				});
+			} elseif ($aaparser_config['settings']['franchise_sort'] == 'name_asd') {
+				usort($shiki_api['nodes'], function($a, $b) {
+					return strcmp($a['name'], $b['name']); // Сортировка по названию в порядке возрастания
+				});
+			} elseif ($aaparser_config['settings']['franchise_sort'] == 'name_dsa') {
+				usort($shiki_api['nodes'], function($a, $b) {
+					return strcmp($b['name'], $a['name']); // Сортировка по названию в порядке убывания
+				});
+			} elseif ($aaparser_config['settings']['franchise_sort'] == 'id_asd') {
+				usort($shiki_api['nodes'], function($a, $b) {
+					return $a['id'] - $b['id']; // Сортировка по ID в порядке возрастания
+				});
+			} elseif ($aaparser_config['settings']['franchise_sort'] == 'id_dsa') {
+				usort($shiki_api['nodes'], function($a, $b) {
+					return $b['id'] - $a['id']; // Сортировка по ID в порядке убывания
+				});
+			}
+				
+			foreach ( $shiki_api['nodes'] as $shiki_anime ) {
+				$movies_id[] = $shiki_anime['id'];
+			}
+			if ( $movies_id ) $part_id = implode(',', $movies_id);
+			else $part_id = '';
         }
         else $part_id = '';
 
