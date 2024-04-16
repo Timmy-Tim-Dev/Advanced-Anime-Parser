@@ -65,7 +65,7 @@ echo <<<HTML
 		</textarea>
 		    </div>
 		</div>
-	<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Настройка вывода персонажев и авторов аниме</div>
+	<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Настройка вывода персонажей и авторов аниме</div>
 		<div class="table-responsive">
 		<table class="table table-striped">
 HTML;

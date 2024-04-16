@@ -668,7 +668,7 @@ else {
 if ( $aaparser_config_push['push_notifications']['enable'] && $is_logged ) {
 	if ( $member_id['push_subscribe'] ) $push_subscribe = json_decode($member_id['push_subscribe'], true);
 	else $push_subscribe = [];
-
+	
 	if ( in_array($row['id'], $push_subscribe) ) {
   		$push_subscribe_block = '<div class="js-toggle-fav btn"><span id="push_subscribe" onclick="PushSubscribe(\''.$row['id'].'\', \'subscribe\');return false;" style="display:none;"><i class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell"></i> Отслеживать</span><span id="push_unsubscribe" class="is-active" onclick="PushSubscribe(\''.$row['id'].'\', \'unsubscribe\');return false;"><i class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell-slash"></i> Отписаться</span></div>';
       	$user_subscribed = '<div class="poster_subscribes"><div class="poster_subscribes-item" title="Вы подписаны"><span class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell"></span></div></div>';
@@ -677,7 +677,11 @@ if ( $aaparser_config_push['push_notifications']['enable'] && $is_logged ) {
   		$push_subscribe_block = '<div class="js-toggle-fav btn"><span id="push_subscribe" onclick="PushSubscribe(\''.$row['id'].'\', \'subscribe\');return false;"><i class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell"></i> Отслеживать</span><span id="push_unsubscribe" class="is-active" onclick="PushSubscribe(\''.$row['id'].'\', \'unsubscribe\');return false;" style="display:none;"><i class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell-slash"></i> Отписаться</span></div>';
       	$user_subscribed = '';
 	}
-
+  
+	$is_viewed = $db->super_query("select count(*) as count FROM ".PREFIX."_subscribe_info where user_id={$member_id['user_id']} and post_id=".$row['id']);
+  	if ($is_viewed['count'] > 0) {
+     	$db->query("DELETE FROM ".PREFIX."_subscribe_info WHERE user_id='{$member_id['user_id']}' AND post_id='{$row['id']}'");
+    }
   	$tpl->set( '[push_subscribe]', "" );
   	$tpl->set( '[/push_subscribe]', "" );
 	$tpl->set( '{push_subscribe}', $push_subscribe_block );

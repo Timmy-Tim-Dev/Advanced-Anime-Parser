@@ -499,9 +499,8 @@
 	            $users_list = [];
 	            while ( $user_list = $db->get_row($res) ) {
 					// 11.02.24
+					if ( $user_list['user_id'] ) $users_list[] = $user_list['user_id'];
 					$db->query("INSERT INTO ".PREFIX."_subscribe_info set user_id='{$user_list['user_id']}', post_id='$news_id'");
-					
-		            if ( $user_list['user_id'] ) $users_list[] = $user_list['user_id'];
 	            }
   	            if ( $users_list ) {
   	                
