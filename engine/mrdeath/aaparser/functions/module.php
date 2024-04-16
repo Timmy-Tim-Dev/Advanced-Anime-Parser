@@ -482,3 +482,36 @@ if (!function_exists('RenameGenres')) {
         return array_unique($new_genres);
     }
 }
+
+function change_tags ($html, $name, $tag) {
+	if ($tag) {
+		$html = preg_replace("'\\[".$name."\\](.*?)\\[/".$name."\\]'si", '\\1', $html);
+		$html = preg_replace("'\\[not_".$name."\\](.*?)\\[/not_".$name."\\]'si", '', $html);
+		if (is_array($tag)) $html = str_replace("{".$name."}", implode(', ', $tag), $html);
+		else $html = str_replace("{".$name."}", $tag, $html);
+		return $html;
+	} else {
+		$html = preg_replace("'\\[".$name."\\](.*?)\\[/".$name."\\]'si", '', $html);
+		$html = preg_replace("'\\[not_".$name."\\](.*?)\\[/not_".$name."\\]'si", '\\1', $html);
+		$html = str_replace("{".$name."}", '', $html);
+		return $html;
+	}
+}
+
+function change_tags_take($html, $name) {
+    preg_match_all('/\[' . $name . '\](.*?)\[\/' . $name . '\]/si', $html, $matched);
+    $out = implode("<br/>", $matched[1]);
+    return $out; 
+}
+
+function change_tags_set ($html, $name, $tag) {
+	if ($tag != '') {
+		$html = preg_replace("'\\[".$name."\\](.*?)\\[/".$name."\\]'si", $tag, $html);
+		$html = preg_replace("'\\[not_".$name."\\](.*?)\\[/not_".$name."\\]'si", '', $html);
+		return $html;
+	} else {
+		$html = preg_replace("'\\[".$name."\\](.*?)\\[/".$name."\\]'si", '', $html);
+		$html = preg_replace("'\\[not_".$name."\\](.*?)\\[/not_".$name."\\]'si", '\\1', $html);
+		return $html;
+	}
+}

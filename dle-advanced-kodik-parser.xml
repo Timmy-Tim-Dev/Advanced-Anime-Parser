@@ -531,7 +531,7 @@ else {
   	if ($_GET['module'] == "telegram_sender") include ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_cron.php';
   	if ($_GET['module'] == "push_subscribe") include ENGINE_DIR . '/mrdeath/aaparser/ajax/push_subscribe.php';
   	if ($_GET['module'] == "kodik_watched") include ENGINE_DIR . '/mrdeath/aaparser/ajax/save_watched.php';
-  	
+  	if ($_GET['module'] == "persons") include ENGINE_DIR . '/mrdeath/aaparser/ajax/persons.php';
 }
 ?>]]></replacecode>
 			<enabled>1</enabled>

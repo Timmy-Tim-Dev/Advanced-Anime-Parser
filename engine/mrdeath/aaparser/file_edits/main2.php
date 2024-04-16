@@ -37,6 +37,9 @@ if ( $dle_module == 'showfull' ) {
       	$js_array[] = "engine/mrdeath/aaparser/js/timer.js";
       	$css_array[] = "engine/mrdeath/aaparser/css/timer.css";
     }
+  	if ( $aaparser_config['integration']['personas_on'] == 1 ) {
+      	$js_array[] = "engine/mrdeath/aaparser/js/persons.js";
+    }
 }
 elseif ( $aaparser_config_push['calendar_settings']['enable_schedule'] && $dle_module == 'schedule' ) {
   	$js_array[] = "engine/mrdeath/aaparser/js/schedule.js";
