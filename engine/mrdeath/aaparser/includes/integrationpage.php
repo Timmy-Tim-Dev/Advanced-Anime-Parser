@@ -76,8 +76,8 @@ echo <<<HTML
 		</table>
 		<div class="alert alert-info alert-styled-left alert-arrow-left alert-component">
 		Создаем файл в Вашем шаблоне под названием <b>persons_info.tpl</b>
-		<br/>Выводим тегом <b><div id="personas_block" data-sh_id="[xfvalue_shikimori_id]"></div></b>в любом месте полной страницы <i>(fullstory.tpl), [xfvalue_shikimori_id] - укажите свое доп поле которое содержит Shikimori ID</i>
-		<br/><b><div id="swilly_refresh">Перезагрузить</div></b> Этой кнопкой Вы можете перезагрузить блок если оно не загрузилось.
+		<br/>Выводим тегом <b><div id="personas_block" data-sh_id="[xfvalue_shikimori_id]">Загрузка...</div></b>в любом месте полной страницы <i>(fullstory.tpl), [xfvalue_shikimori_id] - укажите свое доп поле которое содержит Shikimori ID</i>
+		<br/><b><div id="swilly_refresh">Перезагрузить</div></b> Этой кнопкой Вы можете перезагрузить блок если оно не загрузилось <i>Желательно скрыть от пользователей</i>.
 		<br/>Теги которые работают в этом шаблоне:
 		<br/><i>Все теги имеют инвертированную вариацию, пример <b>[not_main_characters_name_eng][/not_main_characters_name_eng]</b></i>
 		<hr/>

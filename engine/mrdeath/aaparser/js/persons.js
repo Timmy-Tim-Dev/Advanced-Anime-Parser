@@ -7,7 +7,14 @@ $(document).ready(function() {
 			dataType: "html",
 			data: {sh_id:sh_id},
 			success: function(data) {
-			   $("#personas_block").append(data);
+			   if (data.trim() === "Shikimori не вернул ничего") {
+					console.log("Попытаемся ещё раз.");
+					$("#personas_block").html("Загрузка...");
+					personas();
+				} else {
+					$("#personas_block").html(data);
+					console.log("Успешно загружены персонажи.");
+				}
 			}
 		});
 	}

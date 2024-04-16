@@ -29,11 +29,13 @@ if ($aaparser_config['integration']['personas_on'] == 1) {
 	}
 	if ( isset($aaparser_config['integration']['personas_cache']) && $aaparser_config['integration']['personas_cache'] == 1 ) $shiki_request = kodik_cache('personas_'.$shiki_id, false, 'personas_characters');
 	if (!$shiki_request || $shiki_request == "null" || $shiki_request == '{"main":{"items":[]},"sub":{"items":[]},"all":{"items":[]}}') {
+	
 		$shiki_request = request($shikimori_api_domain. 'api/animes/'.$shiki_id.'/roles');
 		// print_r ($shiki_request);
 		$main_b = $sub_b = $all_b = array(
 			'items' => array ()
 		);
+		
 		if ( !$shiki_request['message'] || !$shiki_request['code'] ) {
 			foreach ( $shiki_request as $item ) {
 				// Привязка по переменным
@@ -122,6 +124,7 @@ if ($aaparser_config['integration']['personas_on'] == 1) {
 			echo "Состояние > " . $shiki_request['message'];
 			echo "<br/> Код > " .$shiki_request['code'];
 		}
+
 	} else {
 		$full_b = json_decode($shiki_request, true);
 	}
@@ -177,7 +180,13 @@ if ($aaparser_config['integration']['personas_on'] == 1) {
 	$html_data = change_tags_set($html_data, 'sub_characters_item', $sub_data_arr);
 	$html_data = change_tags_set($html_data, 'all_personas_item', $all_data_arr);
 	
-	echo $html_data;
+	$check_ref = array();
+	$check_ref = $all_b['items'] + $sub_b['items'] + $main_b['items'];
+	if ($check_ref === Array()) {
+		echo "Shikimori не вернул ничего";
+	} else {
+		echo $html_data;
+	}
 } else {
 	die ('Функционал отключен! Пожалуйста включите если Вам это необходимо');
 }
