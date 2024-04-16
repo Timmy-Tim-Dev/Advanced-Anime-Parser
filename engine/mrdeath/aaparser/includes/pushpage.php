@@ -91,24 +91,24 @@ rewrite ^/subscribes/*$ /index.php?do=subscribe_page last;
                     </tr>
                     <tr>
                         <td style="width:100%">
-                            9. В корне папки с вашим шаблоном создайте файл shortstory_subscribes.tpl и перенесите в него содержимое вашего shortstory.tpl, оформите как вам нужно. Данный файл отвечает за показ кратких новостей на странице подписок, в нём работают все стандартные теги краткой новости.<br>
-							- Для просмотренного материала [subscribe_viewed] Материал просмотрен [/subscribe_viewed]<br>
-							- Для не просмотренного материала [subscribe_notviewed] Материал НЕ просмотрен [/subscribe_notviewed]
+                            9. В корне папки с вашим шаблоном создайте файл <b>shortstory_subscribes.tpl</b> и перенесите в него содержимое вашего <b>shortstory.tpl</b>, оформите как вам нужно. Данный файл отвечает за показ кратких новостей на странице подписок, в нём работают все стандартные теги краткой новости.<br>
+							- Для просмотренного материала <b>[subscribe_viewed]</b> Материал просмотрен <b>[/subscribe_viewed]</b><br>
+							- Для не просмотренного материала <b>[subscribe_notviewed]</b> Материал НЕ просмотрен <b>[/subscribe_notviewed]</b>
                         </td>
                     </tr>
                     <tr>
                         <td style="width:100%">
-                            10. Страница всех подписок доступна по ссылке <a href="{$config["http_home_url"]}subscribes/" target="_blank">{$config["http_home_url"]}subscribes/</a> для авторизованного пользователя. Разместите данную ссылку в нужном вам месте, не забудьте обернуть в тег [not-group=5]...[/not-group]. Для визуального оформления страницы в main.tpl используйте тег [available=subscribe_page]...[/available]
+                            10. Страница всех подписок доступна по ссылке <a href="{$config["http_home_url"]}subscribes/" target="_blank">{$config["http_home_url"]}subscribes/</a> для авторизованного пользователя. Разместите данную ссылку в нужном вам месте, не забудьте обернуть в тег <b>[not-group=5]</b>...<b>[/not-group]</b>. Для визуального оформления страницы в main.tpl используйте тег <b>[available=subscribe_page]</b>...<b>[/available]</b>
                         </td>
                     </tr>
                     <tr>
                         <td style="width:100%">
-                            11. Для вывода колокольчика <a href="https://prnt.sc/zOGW-gRNleVN" target="_blank">(скриншот)</a> на постере/обложке аниме, в шаблонах shortstory.tpl, fullstory.tpl, shortstory_subscribes.tpl а также в шаблонах выводимых тегом {custom} вам доступен тег {user_subscribed}, вставьте его ниже тега вывода постера/обложки - под/ниже img. 
+                            11. Для вывода колокольчика <a href="https://prnt.sc/zOGW-gRNleVN" target="_blank">(скриншот)</a> на постере/обложке аниме, в шаблонах <b>shortstory.tpl, fullstory.tpl, shortstory_subscribes.tpl</b> а также в шаблонах выводимых тегом <b>{custom}</b> вам доступен тег <b>{user_subscribed}</b>, вставьте его ниже тега вывода постера/обложки - под/ниже img. 
                         </td>
                     </tr>
                     <tr>
                         <td style="width:100%">
-                            12. Для вывода количества подписанных новостей {subscribe-total} у пользователя. А так же, {subscribe-notification-count} для вывода не просмотренных уведомлении пользователя.
+                            12. Для вывода количества подписанных новостей <b>{subscribe-total}</b> у пользователя. А так же, <b>{subscribe-notification-count}</b> для вывода не просмотренных уведомлении пользователя.
                         </td>
                     </tr>
                 </tbody>

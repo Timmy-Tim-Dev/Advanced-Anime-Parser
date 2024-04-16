@@ -41,7 +41,7 @@ if ( $error_subscribes === false ) {
   	$page_description = $metatags_description = $metatags['title'];
 
 	$url_page = $config['http_home_url'] . "subscribes";
-	$user_query = "do=notifications_news&amp;user=" . urlencode ( $user_title );
+	$user_query = "do=subscribes&amp;user=" . urlencode ( $user_title );
 
 	$where = "p.id IN ('" . implode("','", $my_subscribes) . "')";
 	$where_count = "id IN ('" . implode("','", $my_subscribes) . "')";
