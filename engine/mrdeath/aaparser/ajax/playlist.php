@@ -198,7 +198,7 @@ if ($playlist && $action == 'load_player') {
                 if ( $num == 0 ) $active_tr = " active";
                 else $active_tr = "";
             }
-            if ( $aaparser_config['player']['hide_episodes'] == 1 ) $translators .= '<li onclick="kodik_translates_alt();" class="b-translator__item'.$active_tr.'" data-this_link="'.$translation['translator_link'].'?translations=false&only_translations='.$translation['translator_id'].'">'.$translation['translator_name'].'</li>';
+            if ( $aaparser_config['player']['hide_episodes'] == 1 || !$playlist[$num]['episodes']) $translators .= '<li onclick="kodik_translates_alt();" class="b-translator__item'.$active_tr.'" data-this_link="'.$translation['translator_link'].'?translations=false&only_translations='.$translation['translator_id'].'">'.$translation['translator_name'].'</li>';
             else $translators .= '<li onclick="kodik_translates();" class="b-translator__item'.$active_tr.'" data-this_translator="'.$translation['translator_id'].'">'.$translation['translator_name'].'</li>';
             
             //Кнопки сезонов
@@ -320,7 +320,8 @@ if ($playlist && $action == 'load_player') {
         }
         $iframe .= '<div id="ibox"><div id="player-loader-overlay"></div><div id="player_kodik"'.$show_seasons_attr.' style="height: 100%; margin: 0 auto; width: 100%;"><iframe src="'.$iframe_url.$this_season.$this_translator.$this_episode.'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe></div>';
     
-        if ( $aaparser_config['player']['hide_episodes'] != 1 ) $ajax_player = $ajax_player . $seasons . $iframe . $episodes;
+        if ($aaparser_config['player']['hide_episodes'] != 1 && $playlist[$num]['episodes']) $ajax_player = $ajax_player . $seasons . $iframe . $episodes;
+		elseif ($aaparser_config['player']['hide_episodes'] != 1 && !$playlist[$num]['episodes'])  $ajax_player = $ajax_player . $seasons . $iframe;
         else $ajax_player = $ajax_player . $iframe;
 
         $ajax_player .= '</div></div>';
