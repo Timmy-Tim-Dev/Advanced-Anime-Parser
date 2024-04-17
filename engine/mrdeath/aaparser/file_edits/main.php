@@ -101,14 +101,16 @@ function getRoomUpdates() {
             $('.room-chat__messages').html(data.messages);
 
             $('.room-users').html(data.visitors);
+			videoSpeed(data.speed);
             if ( data.not_leader ) {
+				
                 if ( data.visitors_iframe != leader_iframe ) {
                 	leader_iframe = data.visitors_iframe;
                     episodeChange(data.visitors_iframe, Number(data.episode));
                 }
                 else if ( data.pause == 1 ) {
                     pauseVideo();
-                }
+                } 
                 else if ( data.pause == 0 ) {
                     playVideo();
                     if ( $('#room-status').html() == 'На паузе' && document.body.classList.contains('room--full') ) {
@@ -137,6 +139,16 @@ function playVideo() {
         key: "kodik_player_api",
         value: {
             method: "play"
+        }
+    }, '*');
+}
+
+function videoSpeed(valik) {
+    iframe.postMessage({
+        key: "kodik_player_api",
+        value: {
+            method: "speed",
+			speed: parseFloat(valik)
         }
     }, '*');
 }
@@ -212,7 +224,6 @@ function kodikMessageListener(message) {
     var room_leader = $('#room-data').attr("data-leader");
     var shikimori_id = $('#room-data').attr("data-shikimori_id");
     var mdl_id = $('#room-data').attr("data-mdl_id");
-
     if ( room_leader == '{$member_id['name']}' ) {
     	if (message.data.key == 'kodik_player_time_update') {
         	leader_time = message.data.value;
@@ -225,7 +236,7 @@ function kodikMessageListener(message) {
     	else if (message.data.key == 'kodik_player_play') {
       		$.get(dle_root + "engine/ajax/controller.php?mod=message_room", { room_id: room_id, action: 'set_play', user_hash: dle_login_hash }, function(data){
 				if ( data.status == "play" ) {
-
+					
 				}
 			}, "json");
     	}
@@ -233,6 +244,13 @@ function kodikMessageListener(message) {
       		$.get(dle_root + "engine/ajax/controller.php?mod=message_room", { room_id: room_id, action: 'set_pause', user_hash: dle_login_hash }, function(data){
 				if ( data.status == "paused" ) {
 					$('#room-status').html('На паузе');
+				}
+			}, "json");
+    	}
+		else if (message.data.key == 'kodik_player_speed_change') {
+      		$.get(dle_root + "engine/ajax/controller.php?mod=message_room", { room_id: room_id, action: 'set_speed', speed: message.data.value.speed, user_hash: dle_login_hash }, function(data){
+				if ( data.speed ) {
+					
 				}
 			}, "json");
     	}

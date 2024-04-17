@@ -104,6 +104,7 @@ elseif ( $action == 'check' ) {
 		'visitors' => $room_visitors,
 		'not_leader' => $not_leader,
 		'time' => $room_row['time'],
+		'speed' => $room_row['speed'],
 		'episode' => $room_row['episode_num'],
 		'season' => $room_row['season_num'],
 		'translation' => $room_row['translation'],
@@ -126,6 +127,15 @@ elseif ( $action == 'set_pause' ) {
   	$db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_id['name']}', '{$member_id['foto']}', '{$_TIME}', 'Поставил на паузу')" );
   	die(json_encode(array(
 		'status' => 'paused'
+	)));
+}
+elseif ( $action == 'set_speed' ) {
+	$val_speed = $_GET['speed'];
+    if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
+  	$db->query( "UPDATE " . PREFIX . "_rooms_list SET speed='{$val_speed}', leader_last_login='{$_TIME}' WHERE url='{$room_id}'" );
+  	// $db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_id['name']}', '{$member_id['foto']}', '{$_TIME}', 'Изменил скорость на {$val_speed}')" );
+  	die(json_encode(array(
+		'speed' => $val_speed
 	)));
 }
 elseif ( $action == 'set_play' ) {
