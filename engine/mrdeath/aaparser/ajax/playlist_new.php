@@ -327,9 +327,8 @@ elseif ($playlist['episodes'] && $action == 'load_player') {
                     }
                     else $active_tr = "";
                 }
-                $translators .= '<li id="translation-'.$season.'-'.$episode.'-'.$episode_data['translation_id'].'" onclick="kodik_translates();" class="b-translator__item'.$active_tr.'" data-this_link="'.$playlist['iframe'].'?season='.$season.'&episode='.$episode.'&only_translations='.$episode_data['translation_id'].'&hide_selectors=true'.$add_params.$geoblock.'" data-this_translator="'.$episode_data['translation_name'].'" data-this_translator_id="'.$episode_data['translation_id'].'">'.$episode_data['translation_name'].'</li>';
-            }
-                
+                $translators .= '<li id="translation-'.$season.'-'.$episode.'-'.$episode_data['translation_id'].'" onclick="kodik_translates();" class="b-translator__item'.$active_tr.'" data-this_link="'.$episode_data['link'].'&hide_selectors=true'.$add_params.$geoblock.'" data-this_translator="'.$episode_data['translation_name'].'" data-this_translator_id="'.$episode_data['translation_id'].'">'.$episode_data['translation_name'].'</li>';
+            }  
             $translators = $translators.'</ul>';
             
         }
