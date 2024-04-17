@@ -65,6 +65,7 @@ CREATE TABLE `{prefix}_rooms_list` (
   `public` tinyint(1) NOT NULL DEFAULT '0',
   `pause` tinyint(1) NOT NULL DEFAULT '1',
   `time` int(5) NOT NULL DEFAULT '0',
+  `speed` FLOAT(5,2) NOT NULL DEFAULT '1',
   `created` int(12) NOT NULL DEFAULT '0',
   `episode_num` int(5) NOT NULL DEFAULT '0',
   `season_num` int(5) NOT NULL DEFAULT '0',
@@ -139,6 +140,8 @@ CREATE TABLE `{prefix}_telegram_sender` (
   `error` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={charset};
+
+ALTER TABLE `{prefix}_rooms_list` ADD COLUMN `speed` FLOAT(5,2) NOT NULL DEFAULT '1' AFTER `time`;
 
 DROP TABLE IF EXISTS `{prefix}_subscribe_info`;
 CREATE TABLE `{prefix}_subscribe_info` (
