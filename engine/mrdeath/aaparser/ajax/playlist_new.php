@@ -327,6 +327,7 @@ elseif ($playlist['episodes'] && $action == 'load_player') {
                     }
                     else $active_tr = "";
                 }
+				$episode_data['link'] = str_replace('&episode=1', '&episode=' . $episode, $episode_data['link']);
                 $translators .= '<li id="translation-'.$season.'-'.$episode.'-'.$episode_data['translation_id'].'" onclick="kodik_translates();" class="b-translator__item'.$active_tr.'" data-this_link="'.$episode_data['link'].'&hide_selectors=true'.$add_params.$geoblock.'" data-this_translator="'.$episode_data['translation_name'].'" data-this_translator_id="'.$episode_data['translation_id'].'">'.$episode_data['translation_name'].'</li>';
             }  
             $translators = $translators.'</ul>';
