@@ -140,6 +140,20 @@ return <<<HTML
 HTML;
 }
 
+function ShowFaq ($faq_id = '', $faq_type ='', $quest = '', $answer = '') {
+if ($faq_id != '') $faq_id = "id='faq_id_{$faq_id}'";
+if ($faq_type != '') $faq_type = $faq_type . "-settings";
+echo  <<<HTML
+		<div class="faq-item {$faq_type}" {$faq_id}>
+			<div class="faq-quest">
+				<p>{$quest}</p>
+				<i class="fa fa-chevron-up"></i>
+			</div>
+			<div class="faq-answer">{$answer}</div>
+		</div>
+HTML;
+}
+
 function ShowSelected($data)
 {
 	foreach ($data[1] as $key => $val) {

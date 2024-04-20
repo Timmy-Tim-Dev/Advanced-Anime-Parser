@@ -329,6 +329,7 @@ include_once ENGINE_DIR.'/mrdeath/aaparser/includes/cronpage.php'; //Настр�
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/anonspage.php'; //Настройки Анонса
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/gindexpage.php'; //Google indexing
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/tgpostingpage.php'; //Постинг в Telegram
+include_once ENGINE_DIR.'/mrdeath/aaparser/includes/faqpage.php'; //Часто задаваемые вопросы
 echo <<<HTML
     <button type="submit" class="btn bg-teal btn-raised position-left"><i class="fa fa-floppy-o position-left"></i>{$lang['user_save']}</button>
 </form>

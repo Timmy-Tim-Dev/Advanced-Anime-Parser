@@ -16,6 +16,7 @@ function ChangeOption(obj, selectedOption) {
 	document.getElementById('anonsik').style.display = 'none';
 	document.getElementById('gindexing').style.display = 'none';
 	document.getElementById('tgposting').style.display = 'none';
+	document.getElementById('faq').style.display = 'none';
 	document.getElementById(selectedOption).style.display = '';
 
 	return false;
@@ -288,26 +289,48 @@ function ShowOrHideCatStatus(value) {
 	}
 }
 
+function ShowOrHideAnime() {
+	$(".dorama-settings").hide();
+	$(".dorama-info").hide();
+	$(".anime-settings").show();
+	$(".anime-info").show();
+	$(".all-info").hide();
+}
+
+function ShowOrHideDorama() {
+	$(".dorama-settings").show();
+	$(".dorama-info").show();
+	$(".anime-settings").hide();
+	$(".anime-info").hide();
+	$(".all-info").hide();
+}
+
+function ShowOrHideAll() {
+	$(".dorama-settings").show();
+	$(".dorama-info").show();
+	$(".anime-settings").show();
+	$(".anime-info").show();
+	$(".all-info").show();
+}
+
 function ShowOrHideMode(value) {
-	if( value == '1' ) {
-		$(".dorama-settings").show();
-		$(".dorama-info").show();
-		$(".anime-settings").hide();
-		$(".anime-info").hide();
-		$(".all-info").hide();
-	} else if(value == '2') {
-		$(".dorama-settings").show();
-		$(".dorama-info").show();
-		$(".anime-settings").show();
-		$(".anime-info").show();
-		$(".all-info").show();
-	} else {
-	    $(".dorama-settings").hide();
-		$(".dorama-info").hide();
-		$(".anime-settings").show();
-		$(".anime-info").show();
-		$(".all-info").hide();
-	}
+	
+	if( value == '1' ) ShowOrHideDorama();
+	else if(value == '2') ShowOrHideAll();
+	else ShowOrHideAnime();
+	
+	setTimeout(function () {
+		if( value == '1' ) ShowOrHideDorama();
+		else if(value == '2') ShowOrHideAll();
+		else ShowOrHideAnime();
+	},300);
+	
+	setTimeout(function () {
+		if( value == '1' ) ShowOrHideDorama();
+		else if(value == '2') ShowOrHideAll();
+		else ShowOrHideAnime();
+	},600);
+	
 }
 
 function ShowOrHideXfStatus(value) {
@@ -520,39 +543,58 @@ function clear_player_cache() {
 
 
 $(document).ready(function(){
-    $(".rcol-2col-header").click (function(){
+	$(".rcol-2col-header").click (function(){
 
-        $(this).next(".rcol-2col-body").stop().slideToggle(300);
-        if ($(this).children('.show-hide').text() == 'Show') {
-        $(this).children('.show-hide').text('Hide');
-        }
-        else {
-        $(this).children('.show-hide').text('Show');
-        }
-    });
-});
-
-$(document).ready(function(){
+		$(this).next(".rcol-2col-body").stop().slideToggle(300);
+		if ($(this).children('.show-hide').text() == 'Show') {
+		$(this).children('.show-hide').text('Hide');
+		}
+		else {
+		$(this).children('.show-hide').text('Show');
+		}
+	});
    
-  var shiki = $('#dynamic_field_shiki').find('div').length;
-  $("#add_shiki").click(function(){
-        shiki++;
-        $('#dynamic_field_shiki').append('<div style="display: flex;height: 40px;margin-bottom: 5px;" id="row'+shiki+'"><input type="text" autocomplete="off" style="float: right;height: 40px;" name="blacklist_shikimori[]" placeholder="id Shikimori" class="form-control"/><button type="button" name="remove_shiki" id="'+shiki+'" class="btn btn-danger btn_remove_shiki">X</button></div>');  
-  });
+	var shiki = $('#dynamic_field_shiki').find('div').length;
+	$("#add_shiki").click(function(){
+		shiki++;
+		$('#dynamic_field_shiki').append('<div style="display: flex;height: 40px;margin-bottom: 5px;" id="row'+shiki+'"><input type="text" autocomplete="off" style="float: right;height: 40px;" name="blacklist_shikimori[]" placeholder="id Shikimori" class="form-control"/><button type="button" name="remove_shiki" id="'+shiki+'" class="btn btn-danger btn_remove_shiki">X</button></div>');  
+	});
 
-  $(document).on('click', '.btn_remove_shiki', function(){  
+	$(document).on('click', '.btn_remove_shiki', function(){  
 	  var button_id = $(this).attr("id");     
-      $('#row'+button_id+'').remove();  
-   });
-   
-  var mdl = $('#dynamic_field_mdl').find('div').length;
-  $("#add_mdl").click(function(){
-        mdl++;
-        $('#dynamic_field_mdl').append('<div style="display: flex;height: 40px;margin-bottom: 5px;" id="rowmdl'+mdl+'"><input type="text" autocomplete="off" style="float: right;height: 40px;" name="blacklist_mdl[]" placeholder="id MyDramaList" class="form-control"/><button type="button" name="remove_mdl" id="'+mdl+'" class="btn btn-danger btn_remove_mdl">X</button></div>');  
-  });
+	  $('#row'+button_id+'').remove();  
+	});
 
-  $(document).on('click', '.btn_remove_mdl', function(){  
+	var mdl = $('#dynamic_field_mdl').find('div').length;
+	$("#add_mdl").click(function(){
+		mdl++;
+		$('#dynamic_field_mdl').append('<div style="display: flex;height: 40px;margin-bottom: 5px;" id="rowmdl'+mdl+'"><input type="text" autocomplete="off" style="float: right;height: 40px;" name="blacklist_mdl[]" placeholder="id MyDramaList" class="form-control"/><button type="button" name="remove_mdl" id="'+mdl+'" class="btn btn-danger btn_remove_mdl">X</button></div>');  
+	});
+
+	$(document).on('click', '.btn_remove_mdl', function(){  
 	  var button_id = $(this).attr("id");     
-      $('#rowmdl'+button_id+'').remove();  
-   });
+	  $('#rowmdl'+button_id+'').remove();  
+	});
+	
+	$('.faq-quest').click(function(){
+		if ($(this).parent().hasClass('faq-open')) {
+			$(this).parent().removeClass('faq-open');
+			$(this).parent().children('.faq-answer').slideUp(200);
+		} else {
+			$(this).parent().addClass('faq-open');
+			$(this).parent().children('.faq-answer').slideDown(200);
+		}
+	});
+	
+	$(".faq_find").click(function () {
+		ChangeOption($("ul.nav.navbar-nav li[data-original-title='FAQ']"), 'faq');
+		var targetId = "#" + $(this).attr('class').split(' ')[1];
+		if ($(targetId).hasClass('faq-open')) {
+			$(targetId).removeClass('faq-open');
+			$(targetId).children('.faq-answer').slideUp(200);
+		} else {
+			$(targetId).addClass('faq-open');
+			$(targetId).children('.faq-answer').slideDown(200);
+		}
+	});
 });

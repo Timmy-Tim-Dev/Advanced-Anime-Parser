@@ -21,6 +21,7 @@ echo <<<HTML
 			<li><a onclick="ChangeOption(this, 'anonsik');" class="tip anime-settings" title="Настройка парсинга Анонсов с Shikimori"><i class="fa fa-leaf"></i> Настройка Анонса</a></li>
 			<li><a onclick="ChangeOption(this, 'gindexing');" class="tip" title="Настройка Google Indexing Api"><i class="fa fa-google"></i> Google Indexing</a></li>
 			<li><a onclick="ChangeOption(this, 'tgposting');" class="tip" title="Настройка постинга в телеграм"><i class="fa fa-telegram"></i> Постинг в Telegram</a></li>
+			<li><a onclick="ChangeOption(this, 'faq');" class="tip" title="FAQ"><i class="fa fa-info"></i> FAQ</a></li>
 		</ul>
 	</div>
 </div>

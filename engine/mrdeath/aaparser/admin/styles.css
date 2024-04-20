@@ -107,3 +107,64 @@
 .dle_theme_dark .rcol-2col-body {
     color: black!important;
 }
+
+.faq-block {
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px 20px 20px;
+}
+
+.faq-item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: 1px solid #777;
+    border-radius: 5px;
+	padding: 8px;
+	transition: .3s all;
+}
+
+.faq-item:first-child {
+    margin-top: unset;
+}
+
+.faq-item i {
+    transition: .3s all;
+	transform: rotate(0);
+}
+
+.faq-open i {
+	transform: rotate(180deg);
+}
+
+.faq-quest {
+    position: relative;
+	font-weight: bold;
+	display: flex;
+    align-items: center;
+    justify-content: space-between;
+    align-content: center;
+	padding-bottom: 0;
+	cursor: pointer;
+}
+
+.faq-quest p {
+	margin: unset;
+}
+
+.faq-answer {
+    display: none;
+	padding-top: 5px;
+}
+
+.faq-open .faq-quest {
+	border-bottom: 1px dashed;
+    padding-bottom: 5px;
+}
+
+.faq_find {
+	cursor: pointer;
+	color: red;
+}

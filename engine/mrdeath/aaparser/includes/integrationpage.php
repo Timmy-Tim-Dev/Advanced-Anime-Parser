@@ -16,8 +16,8 @@ echo <<<HTML
 HTML;
 if ( $aaparser_config['settings']['working_mode'] == 0 ) {
 echo <<<HTML
-    <div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Настройка расписания выхода серий аниме</div>
-		<div class="table-responsive">
+    <div class="panel-body anime-settings" style="padding: 20px;font-size:20px; font-weight:bold;">Настройка расписания выхода серий аниме</div>
+		<div class="table-responsive anime-settings">
 			<table class="table table-striped">
 HTML;
 showRow('Включить функционал расписания выхода серий аниме?', 'Включив, модуль будет собирать данные про расписание выхода онгоингов аниме с Shikimori и выводить его на отдельной странице <a href="'. $config["http_home_url"] .'schedule/" target="_blank">'. $config["http_home_url"] .'schedule/</a>. Инструкция по настройке находится ниже', makeCheckBox('calendar_settings[enable_schedule]', $aaparser_config_push['calendar_settings']['enable_schedule']));
@@ -65,8 +65,8 @@ echo <<<HTML
 		</textarea>
 		    </div>
 		</div>
-	<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Настройка вывода персонажей и авторов аниме</div>
-		<div class="table-responsive">
+	<div class="panel-body anime-settings" style="padding: 20px;font-size:20px; font-weight:bold;">Настройка вывода персонажей и авторов аниме</div>
+		<div class="table-responsive anime-settings">
 		<table class="table table-striped">
 HTML;
 showRow('Включить вывод персонажей и авторов (только для Аниме)?', 'Включив, модуль будет выводить состав персонажей, главные герои, второстепенные герои, авторы аниме и другие участники аниме', makeCheckBox('integration[personas_on]', $aaparser_config['integration']['personas_on']));
