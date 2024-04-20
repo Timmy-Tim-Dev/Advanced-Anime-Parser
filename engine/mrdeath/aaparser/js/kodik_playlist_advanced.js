@@ -216,7 +216,11 @@ function kodikMessageListener(message) {
         var news_id = $("#kodik_player_ajax").attr("data-news_id");
         $.get(dle_root + "engine/ajax/controller.php?mod=anime_grabber&module=kodik_watched", { 'news_id': news_id, 'kodik_data': message.data.value }, function(data) {
 			if ( data.status ) {
-            	auto_episodes(data.season, data.episode, data.translator);
+				if ($("#kodik_player_ajax #player").attr('data-autonext') == 'yes') {
+					auto_episodes(data.season, data.episode, data.translator);
+				} else {
+					$('.b-post__lastepisodeout').remove();
+				}
 			}
 		}, "json");
     }

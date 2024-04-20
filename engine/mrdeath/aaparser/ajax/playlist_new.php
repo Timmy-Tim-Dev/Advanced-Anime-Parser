@@ -351,8 +351,11 @@ elseif ($playlist['episodes'] && $action == 'load_player') {
         $lastepisodeout = '<div class="b-post__lastepisodeout"><h2><i class="fa fa-eye" style="font-size: 20px !important;"></i>  ' . $serial_name . '<span id="les">. Вы остановились на ' . $last_episode . ' серии в озвучке «' . $last_translator . '»</span><i class="fa fa-trash" onclick="del('.$news_id.');" id="lesc" title="Удалить отметку"></i></h2> </div>';
     }
     else $lastepisodeout = '';
-
-    $ajax_player = '<div id="player" class="b-player" style="text-align: center;">';
+	
+	if (isset($aaparser_config['player']['auto_next']) && $aaparser_config['player']['auto_next'] == 1) $autonext = 'yes';
+	else $autonext = 'no';
+	
+    $ajax_player = '<div id="player" class="b-player" style="text-align: center;" data-autonext="'. $autonext .'">';
     
     if ( $aaparser_config['player']['buttons'] == 1 ) {
         

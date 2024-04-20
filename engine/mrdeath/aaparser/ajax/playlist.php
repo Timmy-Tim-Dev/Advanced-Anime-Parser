@@ -164,9 +164,10 @@ if ( $playlist[0]['geoblock'] && $aaparser_config['player']['geoblock_group'] ) 
 else $geoblock = '';
 
 if ($playlist && $action == 'load_player') {
-    
-    $translators = $seasons = '';
-    $ajax_player = '<div id="player" class="b-player" style="text-align: center;">';
+	$translators = $seasons = '';
+    if (isset($aaparser_config['player']['auto_next']) && $aaparser_config['player']['auto_next'] == 1) $autonext = 'yes';
+	else $autonext = 'no';
+    $ajax_player = '<div id="player" class="b-player" style="text-align: center;" data-autonext="'. $autonext .'">';
     $episodes = '<div class="prenext"><div class="prevpl" onclick="prevpl();">&lsaquo;</div><div id="simple-episodes-tabs">';
     $season_num = $episode_numb = '';
     $show_seasons = false;
