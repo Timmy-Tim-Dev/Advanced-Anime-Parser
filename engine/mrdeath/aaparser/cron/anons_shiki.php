@@ -53,7 +53,7 @@ if ( $shikimori ) {
 		
 		$shiki_link = isset($result['url']) ? $shikimori_image_domain.$result['url'] : '';
 		
-		$where = "xfields LIKE '%".$aaparser_config['fields']['xf_shikimori_id']."|".$id_shiki."||%'";
+		$where = "xfields LIKE '%".$aaparser_config_push['main_fields']['xf_shikimori_id']."|".$id_shiki."||%'";
 		$proverka = $db->super_query( "SELECT id, xfields FROM " . PREFIX . "_post WHERE ".$where );
 		
 		if (isset($proverka['id']) && $proverka['id']) {
@@ -645,8 +645,8 @@ if ( $shikimori ) {
 		$full_story = preg_replace("#\{.*?\}|\[if.*?\].*?\[\/if.*?\]#uis", "", $full_story);
 	}
 	
-	if ( $aaparser_config['fields']['xf_shikimori_id'] && $xfields_data['shikimori_id'] ) $xfields_list[$aaparser_config['fields']['xf_shikimori_id']] = $xfields_data['shikimori_id'];
-	if ( $aaparser_config['fields']['xf_mdl_id'] && $xfields_data['mydramalist_id'] ) $xfields_list[$aaparser_config['fields']['xf_mdl_id']] = $xfields_data['mydramalist_id'];
+	if ( $aaparser_config_push['main_fields']['xf_shikimori_id'] && $xfields_data['shikimori_id'] ) $xfields_list[$aaparser_config_push['main_fields']['xf_shikimori_id']] = $xfields_data['shikimori_id'];
+	if ( $aaparser_config_push['main_fields']['xf_mdl_id'] && $xfields_data['mydramalist_id'] ) $xfields_list[$aaparser_config_push['main_fields']['xf_mdl_id']] = $xfields_data['mydramalist_id'];
 	if ( $aaparser_config['images']['xf_poster'] && $xfields_data['image']) $xfields_list[$aaparser_config['images']['xf_poster']] = $xfields_data['image'];
 	if ( $aaparser_config['images']['xf_screens'] && $xfields_data['kadr_1']) $xfields_list[$aaparser_config['images']['xf_screens']] = $xf_screen_1.$xf_screen_2.$xf_screen_3.$xf_screen_4.$xf_screen_5;
 	if ( $aaparser_config['fields']['xf_camrip'] && $is_camrip === true ) $xfields_list[$aaparser_config['fields']['xf_camrip']] = 1;

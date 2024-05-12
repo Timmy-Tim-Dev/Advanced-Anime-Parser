@@ -170,12 +170,12 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config_push[
         if ( !isset($xfields) ) $xfields = xfieldsload();
         $xfieldsdata = xfieldsdataload($row["xfields"]);
         if ($aaparser_config_push['push_notifications']['tg_enable_poster']) {
-            if ($aaparser_config_push['push_notifications']['tg_source_poster'] == "xfields" && isset($aaparser_config_push['push_notifications']['tg_xf_poster']) && isset($xfieldsdata[$aaparser_config_push['push_notifications']['tg_xf_poster']])) {
+            if ($aaparser_config_push['push_notifications']['tg_source_poster'] == "xfields" && isset($aaparser_config_push['main_fields']['xf_poster']) && isset($xfieldsdata[$aaparser_config_push['main_fields']['xf_poster']])) {
                 $posters = [];
-                if ( strpos( $xfieldsdata[$aaparser_config_push['push_notifications']['tg_xf_poster']], "/uploads/posts/" ) === false ) {
-                    $image = $config["http_home_url"] . "uploads/posts/" . $xfieldsdata[$aaparser_config_push['push_notifications']['tg_xf_poster']];
+                if ( strpos( $xfieldsdata[$aaparser_config_push['main_fields']['xf_poster']], "/uploads/posts/" ) === false ) {
+                    $image = $config["http_home_url"] . "uploads/posts/" . $xfieldsdata[$aaparser_config_push['main_fields']['xf_poster']];
                 } else {
-                    $image = $xfieldsdata[$aaparser_config_push['push_notifications']['tg_xf_poster']];
+                    $image = $xfieldsdata[$aaparser_config_push['main_fields']['xf_poster']];
                 }
                 $temp_image = explode("|", $image);
                 $posters[1] = $temp_image[0];
@@ -189,7 +189,7 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config_push[
             if ($posters[1]) {
                 $posterImg["poster"] = trim($posters[1]);
             } else {
-                $posterImg["poster"] = trim($aaparser_config_push['push_notifications']['tg_poster_empty']);
+                $posterImg["poster"] = trim($aaparser_config_push['main_fields']['poster_empty']);
             }
             $posterImg = processImages($posterImg, $config["http_home_url"]);
         }

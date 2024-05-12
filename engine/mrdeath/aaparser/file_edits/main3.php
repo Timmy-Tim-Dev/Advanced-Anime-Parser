@@ -116,3 +116,80 @@ else {
   	$tpl->set ( '{today-ongoings}', '' );
 	$tpl->set ( '{tomorrow-ongoings}', '' );
 }
+
+if (file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json') && $aaparser_config_push['updates_block']['enable_history'] == 1) {
+    $updates_history = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/updates_history.json' ), true );
+    if ( is_array($updates_history) && $updates_history ) {
+        $kodik_updates_block = '';
+        $first_block_styles = 'show';
+        $inum = 1;
+        $today_date_is = date('Y-m-d', $_TIME);
+        $tempdate = strtotime($today_date_is);
+        $yesterday_date_is = date('Y-m-d', strtotime("-1 day", $tempdate));
+        foreach ( $updates_history as $upd_day => $upd_items ) {
+            if ( $first_block_styles ) $first_block_text = 'Свернуть';
+            else $first_block_text = 'Развернуть';
+            if ( $upd_day == $today_date_is ) $kodik_updates_block .= '<div class="card-header last-update-header di-flex align-items-center">
+                    <div class="h6 di-flex mr-auto mb-0">
+                        <span>
+                            <span class="mr-1">Сегодня</span>
+                            <span class="d-none d-xl-inline">('.date('d.m.Y', strtotime($upd_day)).')</span>
+                        </span>
+                    </div>
+                    <a class="bb-dashed-1" onclick="kodik_block_collapse(\''.$inum.'\', this);">'.$first_block_text.'</a>
+                    </div>
+                    <div id="kodik_block_day_'.$inum.'" style="max-height: 649px;" class="last-update-container scroll collapse '.$first_block_styles.'">';
+            elseif ( $upd_day == $yesterday_date_is ) $kodik_updates_block .= '<div class="card-header last-update-header di-flex align-items-center">
+                    <div class="h6 di-flex mr-auto mb-0">
+                        <span>
+                            <span class="mr-1">Вчера</span>
+                            <span class="d-none d-xl-inline">('.date('d.m.Y', strtotime($upd_day)).')</span>
+                        </span>
+                    </div>
+                    <a class="bb-dashed-1" onclick="kodik_block_collapse(\''.$inum.'\', this);">'.$first_block_text.'</a>
+                    </div>
+                    <div id="kodik_block_day_'.$inum.'" style="max-height: 649px;" class="last-update-container scroll collapse '.$first_block_styles.'">';
+            else $kodik_updates_block .= '<div class="card-header last-update-header di-flex align-items-center">
+                    <div class="h6 di-flex mr-auto mb-0">
+                        <span>
+                            <span class="mr-1">'.date('d.m.Y', strtotime($upd_day)).'</span>
+                        </span>
+                    </div>
+                    <a class="bb-dashed-1" onclick="kodik_block_collapse(\''.$inum.'\', this);">'.$first_block_text.'</a>
+                    </div>
+                    <div id="kodik_block_day_'.$inum.'" style="max-height: 649px;" class="last-update-container scroll collapse '.$first_block_styles.'">';
+            $first_block_styles = '';
+            foreach ( $upd_items as $upd_item ) {
+                $kodik_updates_block .= '<div class="last-update-item list-group-item list-group-item-action border-left-0 border-right-0 border-bottom-0 border-top-0 cursor-pointer" onclick="location.href=\''.$upd_item['link'].'\'" tabindex="-1">
+                  <div class="media w-100 align-items-center">
+                     <div class="media-left last-update-img mr-2">
+                        <div class="img-square lazy br-50" style="background-image: url('.$upd_item['image'].');"></div>
+                     </div>
+                     <div class="media-body">
+                        <div class="di-flex align-items-center">
+                           <div class="di-flex mr-auto"><span class="card-link list-group-item-action bg-transparent"><span class="last-update-title font-weight-600">'.$upd_item['title'].'</span></span></div>
+                           <div class="ml-3 text-right">
+                              <div class="font-weight-600 text-truncate"><span class="season-info">'.$upd_item['season'].' сезон </span>'.$upd_item['episode'].' серия</div>
+                              <div class="text-gray-dark-6">('.$upd_item['translation'].')</div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>';
+            }
+            $kodik_updates_block .= '</div>';
+            $inum++;
+        }
+        $tpl->set ( '{kodik_updates_block}', $kodik_updates_block );
+        $tpl->set ( '[kodik_updates_block]', "" );
+        $tpl->set ( '[/kodik_updates_block]', "" );
+    }
+    else {
+        $tpl->set ( '{kodik_updates_block}', "" );
+        $tpl->set_block( "'\\[kodik_updates_block\\](.*?)\\[/kodik_updates_block\\]'si", "" );
+    }
+}
+else {
+    $tpl->set ( '{kodik_updates_block}', "" );
+    $tpl->set_block( "'\\[kodik_updates_block\\](.*?)\\[/kodik_updates_block\\]'si", "" );
+}

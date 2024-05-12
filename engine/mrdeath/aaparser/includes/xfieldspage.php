@@ -4,8 +4,6 @@ echo <<<HTML
 	    <div class="table-responsive">
 			<table class="table table-striped">
 HTML;
-showRow('Дополнительное поле с ID Shikimori', 'Выберите дополнительное поле, в котором содержится id аниме с Shikimori. Выберите если добавляете на сайт аниме', makeDropDown( $xfields_list, "fields[xf_shikimori_id]", $aaparser_config['fields']['xf_shikimori_id']));
-showRow('Дополнительное поле с ID MyDramaList', 'Выберите дополнительное поле, в котором содержится id дорам с MyDramaList. Выберите если добавляете на сайт дорамы', makeDropDown( $xfields_list, "fields[xf_mdl_id]", $aaparser_config['fields']['xf_mdl_id']));
 showRow('Дополнительное поле "переключатель да/нет" с указанием релиз camrip или нет', 'Выберите дополнительное поле "переключатель да/нет" с указанием релиз camrip или нет, если у вас такое поле есть. Заполняется в том случае, если данное аниме/дорама есть в базе Kodik', makeDropDown( $xfield_yesorno, "fields[xf_camrip]", $aaparser_config['fields']['xf_camrip']));
 showRow('Дополнительное поле "переключатель да/нет" с указанием содержания LGBT сцен', 'Выберите дополнительное поле "переключатель да/нет" с указанием содержания LGBT сцен, если у вас такое поле есть. Заполняется в том случае, если данное аниме/дорама есть в базе Kodik', makeDropDown( $xfield_yesorno, "fields[xf_lgbt]", $aaparser_config['fields']['xf_lgbt']));
 echo <<<HTML

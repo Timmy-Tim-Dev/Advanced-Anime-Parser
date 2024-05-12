@@ -1,34 +1,27 @@
 <?php
 echo <<<HTML
-	<div id="push" class="panel panel-flat" style='display:none'>
+	<div id="updates_block" class="panel panel-flat" style='display:none'>
+		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Настройка блока обновления сериалов</div>
 		<div class="table-responsive">
 			<table class="table table-striped">
 HTML;
-showRow('Включить Push уведомления?', 'Включив активируется система подписок на уведомления через сервис OneSignal. При выходе новой серии аниме или лучшего качества подписавшиеся пользователи будут получать уведомления на своём смартфоне или пк. <b>Перед включением следуйте инструкции ниже, вам нужно создать приложение в сервисе OneSignal и указать OneSignal App ID и Rest API Key в поля ниже</b>', makeCheckBox('push_notifications[enable]', $aaparser_config_push['push_notifications']['enable'], 'ShowOrHidePush'));
+
+
+showRow('Вести историю для блока обновления серий сериалов?', 'Если включено, будет вестись история обновления серий сериалов, которую вы сможете отобразить на главной странице сайта. Инструкция находится внизу', makeCheckBox('updates_block[enable_history]', $aaparser_config_push['updates_block']['enable_history']));
+showRow('Вести историю в случае если в последней вышедшей серии добавлена новая озвучка?', 'Если включено, в историю будет записано каждое добавление новой озвучки в одной и той же серии, следовательно один сериал в блоке будет показан несколько раз. Если выключено, сериал будет показан в блоке лишь раз по факту обновления серии.<br><b>Будет срабатывать только если во вкладке "Поднятия новостей" активирован пункт "Поднимать в случае если в последней вышедшей серии добавлена новая озвучка?" и выбрано доп. поле "Дополнительное поле c историей добавленных озвучек последней доступной серии"</b>', makeCheckBox('updates_block[new_translation_history]', $aaparser_config_push['updates_block']['new_translation_history']));
+showRow('За сколько дней вести историю?', 'Введите количество дней, 1 - сегодня, 2 - сегодня и вчера, и так далее', showInput(['updates_block[count_days]', 'number', $aaparser_config_push['updates_block']['count_days']]));
+showRow('Лимит записей за день', 'Вы можете задать лимит записей истории обновлений за день. Для отключения лимита выставьте 0', showInput(['updates_block[count_history]', 'number', $aaparser_config_push['updates_block']['count_history']]));
+
 echo <<<HTML
 			</table>
 		</div>
-		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;" id="push-settings">Настройка Push Уведомлений</div>
-		<div class="table-responsive" id="push-settings-area">
-			<table class="table table-striped">
-HTML;
-showRow('Семейство иконок Font Awesome', 'Выберите семейство иконок Font Awesome, соответствующее иконкам используемым на сайте. Если у вас не подключена библиотека иконок то обязательно подключаем <a href="https://fontawesome.com/" target="_blank">по ссылке</a>', makeDropDown( $fa_icons, "push_notifications[fa_icons]", $aaparser_config_push['push_notifications']['fa_icons']));
-showRow('OneSignal App ID', 'Укажите OneSignal App ID вашего приложение', showInput(['push_notifications[app_id]', 'text', $aaparser_config_push['push_notifications']['app_id']]));
-showRow('Rest API Key', 'Укажите Rest API Key вашего приложения', showInput(['push_notifications[rest_api]', 'text', $aaparser_config_push['push_notifications']['rest_api']]));
-showRow('Заголовок уведомления для сериалов', 'Введите заголовок уведомления про обновление сериала.<br>Например: Обновился аниме сериал<br>Или: MySite(имя вашего сайта)', showInput(['push_notifications[tv_title]', 'text', $aaparser_config_push['push_notifications']['tv_title']]));
-showRow('Формат вывода уведомления для сериалов', 'Используйте теги: {episode}, {season}, {translation} и {title}<br>Например: Вышла {episode} серия {season} сезона аниме {title} в озвучке {translation}<br>Если оставить пустым - уведомление по сериалам отправляться не будет', showInput(['push_notifications[tv_text]', 'text', $aaparser_config_push['push_notifications']['tv_text']]));
-showRow('Заголовок уведомления для фильмов', 'Введите заголовок уведомления про обновление фильма.<br>Например: Обновился аниме фильм<br>Или: MySite(имя вашего сайта)', showInput(['push_notifications[movie_title]', 'text', $aaparser_config_push['push_notifications']['movie_title']]));
-showRow('Формат вывода уведомления для фильмов', 'Используйте теги: {quality} и {title}<br>Обновилось качество аниме фильма {title} до {quality}<br>Если оставить пустым - уведомление по смене качества аниме фильмов отправляться не будет', showInput(['push_notifications[movie_text]', 'text', $aaparser_config_push['push_notifications']['movie_text']]));
-echo <<<HTML
-			</table>
-		</div>
-		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;" id="push-info">Инструкция по регистрации приложения и настройке</div>
-		<div class="table-responsive" id="push-info-area">
+		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Инструкция по выводу на сайте</div>
+		<div class="table-responsive">
 			<table class="table table-striped">
                 <tbody>
                     <tr>
                         <td style="width:100%">
-                            1. Регистрируемся на сайте <a href="https://onesignal.com/" target="_blank">OneSignal</a> и авторизуемся.
+                            1. Создайте в корне папки с шаблоном файл под названием kodik_updates_block.tpl.
                         </td>
                     </tr>
                     <tr>

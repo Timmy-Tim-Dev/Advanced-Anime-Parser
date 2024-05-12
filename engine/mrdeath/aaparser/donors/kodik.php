@@ -46,8 +46,8 @@ if ($parse_action == 'search') {
             
             $where = [];
             
-            if ( $aaparser_config['fields']['xf_shikimori_id'] && $shikimori_id ) $where[] = "xfields LIKE '%".$aaparser_config['fields']['xf_shikimori_id']."|".$shikimori_id."||%'";
-            if ( $aaparser_config['fields']['xf_mdl_id'] && $mydramalist_id ) $where[] = "xfields LIKE '%".$aaparser_config['fields']['xf_mdl_id']."|".$mydramalist_id."||%'";
+            if ( $aaparser_config_push['main_fields']['xf_shikimori_id'] && $shikimori_id ) $where[] = "xfields LIKE '%".$aaparser_config_push['main_fields']['xf_shikimori_id']."|".$shikimori_id."||%'";
+            if ( $aaparser_config_push['main_fields']['xf_mdl_id'] && $mydramalist_id ) $where[] = "xfields LIKE '%".$aaparser_config_push['main_fields']['xf_mdl_id']."|".$mydramalist_id."||%'";
 			
 			if ( $where ) {
 			    $where = implode(' OR ', $where);

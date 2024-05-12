@@ -5,17 +5,29 @@ function ChangeOption(obj, selectedOption) {
 	document.getElementById('grabbing').style.display = 'none';
 	document.getElementById('updates').style.display = 'none';
 	document.getElementById('update_news').style.display = 'none';
-	document.getElementById('player').style.display = 'none';
 	document.getElementById('integration').style.display = 'none';
 	document.getElementById('xfields').style.display = 'none';
 	document.getElementById('categories').style.display = 'none';
 	document.getElementById('images').style.display = 'none';
-	document.getElementById('push').style.display = 'none';
-	document.getElementById('rooms').style.display = 'none';
 	document.getElementById('cronik').style.display = 'none';
 	document.getElementById('anonsik').style.display = 'none';
+	document.getElementById('faq').style.display = 'none';
+	document.getElementById('modules').style.display = 'none';
+	document.getElementById(selectedOption).style.display = '';
+
+	return false;
+}
+function ChangeOptionModules(obj, selectedOption) {
+	$('#option_menu_modules li').removeClass('active');
+	$(obj).parent().addClass('active');
+	document.getElementById('player').style.display = 'none';
+	document.getElementById('calendar').style.display = 'none';
+	document.getElementById('updates_block').style.display = 'none';
+	document.getElementById('push').style.display = 'none';
+	document.getElementById('rooms').style.display = 'none';
 	document.getElementById('gindexing').style.display = 'none';
 	document.getElementById('tgposting').style.display = 'none';
+	document.getElementById('personajes').style.display = 'none';
 	document.getElementById(selectedOption).style.display = '';
 
 	return false;
@@ -288,26 +300,48 @@ function ShowOrHideCatStatus(value) {
 	}
 }
 
+function ShowOrHideAnime() {
+	$(".dorama-settings").hide();
+	$(".dorama-info").hide();
+	$(".anime-settings").show();
+	$(".anime-info").show();
+	$(".all-info").hide();
+}
+
+function ShowOrHideDorama() {
+	$(".dorama-settings").show();
+	$(".dorama-info").show();
+	$(".anime-settings").hide();
+	$(".anime-info").hide();
+	$(".all-info").hide();
+}
+
+function ShowOrHideAll() {
+	$(".dorama-settings").show();
+	$(".dorama-info").show();
+	$(".anime-settings").show();
+	$(".anime-info").show();
+	$(".all-info").show();
+}
+
 function ShowOrHideMode(value) {
-	if( value == '1' ) {
-		$(".dorama-settings").show();
-		$(".dorama-info").show();
-		$(".anime-settings").hide();
-		$(".anime-info").hide();
-		$(".all-info").hide();
-	} else if(value == '2') {
-		$(".dorama-settings").show();
-		$(".dorama-info").show();
-		$(".anime-settings").show();
-		$(".anime-info").show();
-		$(".all-info").show();
-	} else {
-	    $(".dorama-settings").hide();
-		$(".dorama-info").hide();
-		$(".anime-settings").show();
-		$(".anime-info").show();
-		$(".all-info").hide();
-	}
+	
+	if( value == '1' ) ShowOrHideDorama();
+	else if(value == '2') ShowOrHideAll();
+	else ShowOrHideAnime();
+	
+	setTimeout(function () {
+		if( value == '1' ) ShowOrHideDorama();
+		else if(value == '2') ShowOrHideAll();
+		else ShowOrHideAnime();
+	},300);
+	
+	setTimeout(function () {
+		if( value == '1' ) ShowOrHideDorama();
+		else if(value == '2') ShowOrHideAll();
+		else ShowOrHideAnime();
+	},600);
+	
 }
 
 function ShowOrHideXfStatus(value) {
@@ -518,41 +552,117 @@ function clear_player_cache() {
 	});
 }
 
+function clear_chars_cache() {
+	DLEconfirm( 'Вы уверены что хотите очистить кеш персонажей и персон?', 'Подтвердите', function () {
+	$.ajax({
+		url: "/engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear",
+		data:{action: "clear_personajes_cache", user_hash: dle_login_hash},
+		dataType: "json",
+		cache: false,
+		success: function(data) {
+			if ( data.status == "ok" ) {
+			    $('#chars-cache-size').html('0 КБ');
+                Growl.info({
+					title: 'Успешно!',
+				    text: 'Кеш был успешно очищен',
+				    icon: 'success'
+				});
+				return false;
+			}
+			else {
+			    Growl.error({
+					title: 'Ошибка очистки кеша!',
+				    text: 'Повторите позже'
+				});
+				return false;
+			}
+		}
+	});
+	});
+}
+
+function clear_actors_cache() {
+	DLEconfirm( 'Вы уверены что хотите очистить кеш актёров?', 'Подтвердите', function () {
+	$.ajax({
+		url: "/engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear",
+		data:{action: "clear_personajes_cache", user_hash: dle_login_hash},
+		dataType: "json",
+		cache: false,
+		success: function(data) {
+			if ( data.status == "ok" ) {
+			    $('#actors-cache-size').html('0 КБ');
+                Growl.info({
+					title: 'Успешно!',
+				    text: 'Кеш был успешно очищен',
+				    icon: 'success'
+				});
+				return false;
+			}
+			else {
+			    Growl.error({
+					title: 'Ошибка очистки кеша!',
+				    text: 'Повторите позже'
+				});
+				return false;
+			}
+		}
+	});
+	});
+}
 
 $(document).ready(function(){
-    $(".rcol-2col-header").click (function(){
+	$(".rcol-2col-header").click (function(){
 
-        $(this).next(".rcol-2col-body").stop().slideToggle(300);
-        if ($(this).children('.show-hide').text() == 'Show') {
-        $(this).children('.show-hide').text('Hide');
-        }
-        else {
-        $(this).children('.show-hide').text('Show');
-        }
-    });
-});
-
-$(document).ready(function(){
+		$(this).next(".rcol-2col-body").stop().slideToggle(300);
+		if ($(this).children('.show-hide').text() == 'Show') {
+		$(this).children('.show-hide').text('Hide');
+		}
+		else {
+		$(this).children('.show-hide').text('Show');
+		}
+	});
    
-  var shiki = $('#dynamic_field_shiki').find('div').length;
-  $("#add_shiki").click(function(){
-        shiki++;
-        $('#dynamic_field_shiki').append('<div style="display: flex;height: 40px;margin-bottom: 5px;" id="row'+shiki+'"><input type="text" autocomplete="off" style="float: right;height: 40px;" name="blacklist_shikimori[]" placeholder="id Shikimori" class="form-control"/><button type="button" name="remove_shiki" id="'+shiki+'" class="btn btn-danger btn_remove_shiki">X</button></div>');  
-  });
+	var shiki = $('#dynamic_field_shiki').find('div').length;
+	$("#add_shiki").click(function(){
+		shiki++;
+		$('#dynamic_field_shiki').append('<div style="display: flex;height: 40px;margin-bottom: 5px;" id="row'+shiki+'"><input type="text" autocomplete="off" style="float: right;height: 40px;" name="blacklist_shikimori[]" placeholder="id Shikimori" class="form-control"/><button type="button" name="remove_shiki" id="'+shiki+'" class="btn btn-danger btn_remove_shiki">X</button></div>');  
+	});
 
-  $(document).on('click', '.btn_remove_shiki', function(){  
+	$(document).on('click', '.btn_remove_shiki', function(){  
 	  var button_id = $(this).attr("id");     
-      $('#row'+button_id+'').remove();  
-   });
-   
-  var mdl = $('#dynamic_field_mdl').find('div').length;
-  $("#add_mdl").click(function(){
-        mdl++;
-        $('#dynamic_field_mdl').append('<div style="display: flex;height: 40px;margin-bottom: 5px;" id="rowmdl'+mdl+'"><input type="text" autocomplete="off" style="float: right;height: 40px;" name="blacklist_mdl[]" placeholder="id MyDramaList" class="form-control"/><button type="button" name="remove_mdl" id="'+mdl+'" class="btn btn-danger btn_remove_mdl">X</button></div>');  
-  });
+	  $('#row'+button_id+'').remove();  
+	});
 
-  $(document).on('click', '.btn_remove_mdl', function(){  
+	var mdl = $('#dynamic_field_mdl').find('div').length;
+	$("#add_mdl").click(function(){
+		mdl++;
+		$('#dynamic_field_mdl').append('<div style="display: flex;height: 40px;margin-bottom: 5px;" id="rowmdl'+mdl+'"><input type="text" autocomplete="off" style="float: right;height: 40px;" name="blacklist_mdl[]" placeholder="id MyDramaList" class="form-control"/><button type="button" name="remove_mdl" id="'+mdl+'" class="btn btn-danger btn_remove_mdl">X</button></div>');  
+	});
+
+	$(document).on('click', '.btn_remove_mdl', function(){  
 	  var button_id = $(this).attr("id");     
-      $('#rowmdl'+button_id+'').remove();  
-   });
+	  $('#rowmdl'+button_id+'').remove();  
+	});
+	
+	$('.faq-quest').click(function(){
+		if ($(this).parent().hasClass('faq-open')) {
+			$(this).parent().removeClass('faq-open');
+			$(this).parent().children('.faq-answer').slideUp(200);
+		} else {
+			$(this).parent().addClass('faq-open');
+			$(this).parent().children('.faq-answer').slideDown(200);
+		}
+	});
+	
+	$(".faq_find").click(function () {
+		ChangeOption($("ul.nav.navbar-nav li[data-original-title='FAQ']"), 'faq');
+		var targetId = "#" + $(this).attr('class').split(' ')[1];
+		if ($(targetId).hasClass('faq-open')) {
+			$(targetId).removeClass('faq-open');
+			$(targetId).children('.faq-answer').slideUp(200);
+		} else {
+			$(targetId).addClass('faq-open');
+			$(targetId).children('.faq-answer').slideDown(200);
+		}
+	});
 });

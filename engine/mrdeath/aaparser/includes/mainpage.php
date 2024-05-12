@@ -9,17 +9,25 @@ HTML;
 showRow('Ваш API-токен в балансере Kodik', 'Обязательное поле, необходимое для работы модуля. Взять api токен можно <a href="https://bd.kodik.biz/users/profile" target="_blank">по ссылке</a>', showInput(['settings[kodik_api_key]', 'text', $aaparser_config['settings']['kodik_api_key']]));
 showRow('Домен Kodik для запросов к api', 'По умолчанию <b>https://kodikapi.com/</b>, замените в случае переезда/замены домена Kodik для запросов к api. Указываем с https в начале и со слешем в конце', showInput(['settings[kodik_api_domain]', 'text', $aaparser_config['settings']['kodik_api_domain']]));
 showRow('Режим работы модуля', 'Выберите режим работы модуля соответствующий тематике вашего сайта - только аниме, только дорамы, аниме и дорамы', makeDropDown( $working_mode, "settings[working_mode]", $aaparser_config['settings']['working_mode'], 'ShowOrHideMode'));
-showRow('Максимум актёров', 'Введите максимальное количество актёров. Для снятия ограничения укажите 0', showInput(['settings[max_actors]', 'number', $aaparser_config['settings']['max_actors']]));
-showRow('Максимум режисёров', 'Введите максимальное количество режисёров. Для снятия ограничения укажите 0', showInput(['settings[max_directors]', 'number', $aaparser_config['settings']['max_directors']]));
-showRow('Максимум продюссеров', 'Введите максимальное количество продюссеров. Для снятия ограничения укажите 0', showInput(['settings[max_producers]', 'number', $aaparser_config['settings']['max_producers']]));
-showRow('Максимум сценаристов', 'Введите максимальное количество сценаристов. Для снятия ограничения укажите 0', showInput(['settings[max_writers]', 'number', $aaparser_config['settings']['max_writers']]));
-showRow('Максимум композиторов', 'Введите максимальное количество композиторов. Для снятия ограничения укажите 0', showInput(['settings[max_composers]', 'number', $aaparser_config['settings']['max_composers']]));
-showRow('Максимум монтажеров', 'Введите максимальное количество монтажеров. Для снятия ограничения укажите 0', showInput(['settings[max_editors]', 'number', $aaparser_config['settings']['max_editors']]));
-showRow('Максимум художников', 'Введите максимальное количество художников. Для снятия ограничения укажите 0', showInput(['settings[max_designers]', 'number', $aaparser_config['settings']['max_designers']]));
-showRow('Максимум операторов', 'Введите максимальное количество операторов. Для снятия ограничения укажите 0', showInput(['settings[max_operators]', 'number', $aaparser_config['settings']['max_operators']]));
-showRow('Добавлять теги MyDramaList в нижнем регистре?', 'Если включено, то теги будут вставляться в нижнем регистре, т.е. с маленькой буквы', makeCheckBox('settings[tags_tolower]', $aaparser_config['settings']['tags_tolower']));
-showRow('Осуществлять перевод тегов MyDramaList на русский язык?', 'Если включено, то теги будут переводиться с английского на русский язык. Внимание, это экспериментальная функция, качество перевода может быть плохое. Рекомендуется ручная проверка и коррекция вставляемых в доп. поле тегов после их перевода', makeCheckBox('settings[translate_tags]', $aaparser_config['settings']['translate_tags']));
-showRow('Добавлять переведённые теги MyDramaList на русский в нижнем регистре?', 'Если включено, то теги переведённые на русский будут вставляться в нижнем регистре, т.е. с маленькой буквы', makeCheckBox('settings[translate_tags_tolower]', $aaparser_config['settings']['translate_tags_tolower']));
+
+echo <<<HTML
+            </table>
+		</div>
+		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Основные доп. поля</div>
+		<div class="table-responsive">
+			<table class="table table-striped">
+HTML;
+
+showRow('Дополнительное поле с ID Shikimori', 'Выберите дополнительное поле, в котором содержится id аниме с Shikimori. Выберите если добавляете на сайт аниме', makeDropDown( $xfields_list, "main_fields[xf_shikimori_id]", $aaparser_config_push['main_fields']['xf_shikimori_id']));
+showRow('Дополнительное поле с ID MyDramaList', 'Выберите дополнительное поле, в котором содержится id дорам с MyDramaList. Выберите если добавляете на сайт дорамы', makeDropDown( $xfields_list, "main_fields[xf_mdl_id]", $aaparser_config_push['main_fields']['xf_mdl_id']));
+showRow('Дополнительное поле c плеером', 'Выберите дополнительное поле в котором содержится ссылка на плеер с балансера', makeDropDown( $xfields_list, "main_fields[xf_player]", $aaparser_config_push['main_fields']['xf_player']));
+showRow('Доп. поле с постером', 'Выберите дополнительное поле, в котором содержится постер (обложка)', makeDropDown( $xfields_all_list, "main_fields[xf_poster]", $aaparser_config_push['main_fields']['xf_poster']));
+showRow('Ссылка на картинку-заглушку', 'Введите ссылку на картинку-заглушку в случае отсутствия постера', showInput(['main_fields[poster_empty]', 'text', $aaparser_config_push['main_fields']['poster_empty']]));
+showRow('Дополнительное поле c последним вышедшим сезоном (обязательно)', 'Выберите дополнительное поле c последним вышедшим сезоном сериала (целое число)', makeDropDown( $xfields_list, "main_fields[xf_season]", $aaparser_config_push['main_fields']['xf_season']));
+showRow('Дополнительное поле c последней вышедшей серией (обязательно)', 'Выберите дополнительное поле c последней вышедшей серией сериала (целое число)', makeDropDown( $xfields_list, "main_fields[xf_series]", $aaparser_config_push['main_fields']['xf_series']));
+showRow('Дополнительное поле c качеством фильма', 'Выберите дополнительное поле c качеством фильма', makeDropDown( $xfields_list, "main_fields[xf_quality]", $aaparser_config_push['main_fields']['xf_quality']));
+showRow('Дополнительное поле cо всеми доступными озвучками', 'Выберите дополнительное поле в котором содержится перечень озвучек фильма или сериала', makeDropDown( $xfields_list, "main_fields[xf_translation]", $aaparser_config_push['main_fields']['xf_translation']));
+showRow('Дополнительное поле c последней добавленной озвучкой', 'Выберите дополнительное поле в котором содержиться озвучка последней добавленной в базу серии', makeDropDown( $xfields_list, "main_fields[xf_translation_last]", $aaparser_config_push['main_fields']['xf_translation_last']));
 
 echo <<<HTML
             </table>
@@ -32,7 +40,7 @@ HTML;
 showRow('Домен Shikimori для запросов к api', 'По умолчанию <b>https://shikimori.me/</b>, замените в случае переезда/замены домена Shikimori для запросов к api. Указываем с https в начале и со слешем в конце', showInput(['settings[shikimori_api_domain]', 'text', $aaparser_config['settings']['shikimori_api_domain']]));
 showRow('Парсить ссылки на аниме в разных базах с Шикимори?', 'При отключении не будут использоваться теги {myanimelist_id}, {official_site}, {wikipedia}, {anime_news_network}, {anime_db}, {world_art}, {kinopoisk} и {kage_project}. Отключение ускоряет работу парсинга', makeCheckBox('settings[other_sites]', $aaparser_config['settings']['other_sites']));
 showRow('Парсить авторский состав с Шикимори?', 'При отключении не будут использоваться теги {shikimori_director}, {shikimori_producer}, {shikimori_script} и {shikimori_composition}. Отключение ускоряет работу парсинга', makeCheckBox('settings[parse_authors]', $aaparser_config['settings']['parse_authors']));
-showRow('Парсить франшизы с Шикимори?', 'При отключении не будет использоваться тег {shikimori_franshise}. Отключение ускоряет работу парсинга', makeCheckBox('settings[parse_franshise]', $aaparser_config['settings']['parse_franshise']));
+showRow('Парсить франшизы с Шикимори?', 'При отключении не будет использоваться тег {shikimori_franshise}. Отключение ускоряет работу парсинга<br/><b class="faq_find faq_id_2">Подробнее</b>', makeCheckBox('settings[parse_franshise]', $aaparser_config['settings']['parse_franshise']));
 showRow('Выберите сортировку франшизы с Шикимори', 'Работает только с включенным парсингом Франшизы (Настройка выше)', makeDropDown( $franchise_sort, "settings[franchise_sort]", $aaparser_config['settings']['franchise_sort'], 'ShowOrHideMode'));
 showRow('Парсить похожие аниме с Шикимори?', 'При отключении не будет использоваться тег {shikimori_similar}. Отключение ускоряет работу парсинга', makeCheckBox('settings[parse_similar]', $aaparser_config['settings']['parse_similar']));
 showRow('Парсить связанные аниме с Шикимори?', 'При отключении не будет использоваться тег {shikimori_related}. Отключение ускоряет работу парсинга', makeCheckBox('settings[parse_related]', $aaparser_config['settings']['parse_related']));
@@ -121,10 +129,6 @@ echo <<<HTML
 	            </div>
 	            <div class="update-status__msg" id="result-msg">Запустите связывание...</div>
             </div>
-			<div class="alert alert-info alert-styled-left alert-arrow-left alert-component anime-info">Франшизы, связанные и похожие аниме записываются в виде списка из id аниме с Shikimori в ваши доп. поля. <b>Для вывода</b> соответствующих аниме на вашем сайте <b>используйте параметр idshiki="[xfvalue_x]" в конктрукции {custom}</b>. Например:<br><b>{custom idshiki="[xfvalue_franchise]" template="relatednews" limit="100"}</b></div>
-			
-			<div class="alert alert-info alert-styled-left alert-arrow-left alert-component anime-info">Если у Вы обновились и у Вас нету порядка просмотров. То запустите ссылку и ожидайте до появления сообщения.<br><b><a href="{$config['http_home_url']}engine/ajax/controller.php?mod=anime_grabber&action=update_franchise&key={$cron_key}">{$config['http_home_url']}engine/ajax/controller.php?mod=anime_grabber&action=update_franchise&key={$cron_key}</a></b><br>Достаточно 1 раз запустить после обновления.</div>
-			
 		</div>
 	</div>
 HTML;

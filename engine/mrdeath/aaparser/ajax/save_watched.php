@@ -18,7 +18,7 @@ $action = $_REQUEST['action'];
 
 require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
 
-$maximum_animes = $aaparser_config['player']['max_remembers'];
+$maximum_animes = $aaparser_config_push['player']['max_remembers'];
 
 if ( $is_logged && $member_id['user_id'] && $news_id && $kodik_data && $maximum_animes ) {
     
@@ -47,6 +47,7 @@ if ( $is_logged && $member_id['user_id'] && $news_id && $kodik_data && $maximum_
     }
   
   	$my_watched_series = json_encode($watched_series, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+	$my_watched_series = str_replace("'", "\'", $my_watched_series);
   	$db->query( "UPDATE " . PREFIX . "_users SET watched_series='{$my_watched_series}' WHERE user_id='{$member_id['user_id']}'" );
   	die(json_encode(array(
 		'msg' => 'ok',

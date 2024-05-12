@@ -44,7 +44,7 @@
 		$xf_shiki = '';
 		
 		if ( !$anime_check['mdl_id'] ) continue;
-		$xf_shiki = "xfields LIKE '%".$aaparser_config['fields']['xf_mdl_id']."|".$anime_check['mdl_id']."||%'";
+		$xf_shiki = "xfields LIKE '%".$aaparser_config_push['main_fields']['xf_mdl_id']."|".$anime_check['mdl_id']."||%'";
 		$checking_post = $db->super_query( "SELECT id, xfields, title, approve, category, date, alt_name FROM " . PREFIX . "_post WHERE ".$xf_shiki );
 		if ( $checking_post['id'] > 0 ) $xfields_post = xfieldsdataload( $checking_post['xfields'] );
         else {
@@ -55,7 +55,7 @@
 		
 		if (in_array($checking_post['id'], $updated_news_list)) continue;
         //Очистка кастумного кеша кодик
-        if ( isset($aaparser_config['player']['custom_cache']) && $aaparser_config['player']['custom_cache'] == 1 ) kodik_clear_cache('playlist_'.$checking_post['id'], 'player');
+        if ( isset($aaparser_config_push['player']['custom_cache']) && $aaparser_config_push['player']['custom_cache'] == 1 ) kodik_clear_cache('playlist_'.$checking_post['id'], 'player');
 		
 		$title_en = $anime_check['title_orig'];
 		$title_ru = $anime_check['title'];
@@ -78,8 +78,8 @@
 		
 		$serial_status_ru_k = $status_type[$anime_check['material_data']['all_status']];
 		$last_translation = trim($anime_check['translation']['title']);
-		if ( $xfields_post[$aaparser_config['updates']['xf_translation']] ) {
-			$old_translations = explode(', ', $xfields_post[$aaparser_config['updates']['xf_translation']]);
+		if ( $xfields_post[$aaparser_config_push['main_fields']['xf_translation']] ) {
+			$old_translations = explode(', ', $xfields_post[$aaparser_config_push['main_fields']['xf_translation']]);
 			if ( !in_array($last_translation, $old_translations) ) $old_translations[] = $last_translation;
 			$translation = implode(', ', $old_translations);
 		}
@@ -100,12 +100,12 @@
 		
 		//Проверка на выход новой озвучки в последней доступной серии
 		
-		if ( $last_episode_k > 0 && $aaparser_config['updates']['xf_series'] && $xfields_post[$aaparser_config['updates']['xf_series']] == $last_episode_k && $aaparser_config['updates']['xf_translation_last'] && $aaparser_config['updates']['xf_translation_last_names'] && $last_translation && !$aaparser_config['grabbing']['translators'] && !$aaparser_config['grabbing']['not_translators'] ) {
+		if ( $last_episode_k > 0 && $aaparser_config_push['main_fields']['xf_series'] && $xfields_post[$aaparser_config_push['main_fields']['xf_series']] == $last_episode_k && $aaparser_config_push['main_fields']['xf_translation_last'] && $aaparser_config['updates']['xf_translation_last_names'] && $last_translation && !$aaparser_config['grabbing']['translators'] && !$aaparser_config['grabbing']['not_translators'] ) {
 		    if ( $xfields_post[$aaparser_config['updates']['xf_translation_last_names']] ) $translation_last_names = explode(', ', $xfields_post[$aaparser_config['updates']['xf_translation_last_names']]);
 		    else $translation_last_names = [];
 		    if ( !in_array($last_translation, $translation_last_names) ) {
 		        $translation_last_names[] = $last_translation;
-		        $xfields_post[$aaparser_config['updates']['xf_translation_last']] = $last_translation;
+		        $xfields_post[$aaparser_config_push['main_fields']['xf_translation_last']] = $last_translation;
 		        $xfields_post[$aaparser_config['updates']['xf_translation_last_names']] = implode(', ', $translation_last_names);
                 $need_update = 1;
                 if ( $aaparser_config['updates']['new_translation_last'] == 1 ) $need_update_date = 1;
@@ -116,12 +116,12 @@
         
         //Проверка на выход нового сезона или новой серии сериала
 		
-		if ( $aaparser_config['updates']['xf_series'] && $aaparser_config['updates']['xf_season'] && $last_episode_k > 0 && $last_season_k > 0 ) {
-            if ( $xfields_post[$aaparser_config['updates']['xf_series']] < $last_episode_k ) {
+		if ( $aaparser_config_push['main_fields']['xf_series'] && $aaparser_config_push['main_fields']['xf_season'] && $last_episode_k > 0 && $last_season_k > 0 ) {
+            if ( $xfields_post[$aaparser_config_push['main_fields']['xf_series']] < $last_episode_k ) {
                 if ( $aaparser_config['updates']['xf_translation_last_names'] ) $xfields_post[$aaparser_config['updates']['xf_translation_last_names']] = $last_translation;
-                if ( $aaparser_config['updates']['xf_translation_last'] ) $xfields_post[$aaparser_config['updates']['xf_translation_last']] = $last_translation;
+                if ( $aaparser_config_push['main_fields']['xf_translation_last'] ) $xfields_post[$aaparser_config_push['main_fields']['xf_translation_last']] = $last_translation;
                 $updated_news_list[] = $checking_post['id'];
-                $xfields_post[$aaparser_config['updates']['xf_series']] = $last_episode_k;
+                $xfields_post[$aaparser_config_push['main_fields']['xf_series']] = $last_episode_k;
                 if ( $aaparser_config['updates']['xf_series_1'] ) $xfields_post[$aaparser_config['updates']['xf_series_1']] = generate_numbers($last_episode_k, 1);
                 if ( $aaparser_config['updates']['xf_series_2'] ) $xfields_post[$aaparser_config['updates']['xf_series_2']] = generate_numbers($last_episode_k, 2);
                 if ( $aaparser_config['updates']['xf_series_3'] ) $xfields_post[$aaparser_config['updates']['xf_series_3']] = generate_numbers($last_episode_k, 3);
@@ -135,11 +135,11 @@
                 if ( $aaparser_config['updates']['new_series'] == 1 ) $need_update_date = 1;
                 $reason_updation .= '. Добавлена '.$last_episode_k.' серия';
             }
-            if ( $xfields_post[$aaparser_config['updates']['xf_season']] < $last_season_k ) {
+            if ( $xfields_post[$aaparser_config_push['main_fields']['xf_season']] < $last_season_k ) {
                 if ( $aaparser_config['updates']['xf_translation_last_names'] ) $xfields_post[$aaparser_config['updates']['xf_translation_last_names']] = $last_translation;
-                if ( $aaparser_config['updates']['xf_translation_last'] ) $xfields_post[$aaparser_config['updates']['xf_translation_last']] = $last_translation;
+                if ( $aaparser_config_push['main_fields']['xf_translation_last'] ) $xfields_post[$aaparser_config_push['main_fields']['xf_translation_last']] = $last_translation;
                 $updated_news_list[] = $checking_post['id'];
-                $xfields_post[$aaparser_config['updates']['xf_season']] = $last_season_k;
+                $xfields_post[$aaparser_config_push['main_fields']['xf_season']] = $last_season_k;
                 if ( $aaparser_config['updates']['xf_season_1'] ) $xfields_post[$aaparser_config['updates']['xf_series_1']] = generate_numbers($last_season_k, 1);
                 if ( $aaparser_config['updates']['xf_season_2'] ) $xfields_post[$aaparser_config['updates']['xf_season_2']] = generate_numbers($last_season_k, 2);
                 if ( $aaparser_config['updates']['xf_season_3'] ) $xfields_post[$aaparser_config['updates']['xf_season_3']] = generate_numbers($last_season_k, 3);
@@ -321,9 +321,9 @@
 		
 		//Проверка на изменение качества фильма
         
-        if ( $aaparser_config['updates']['xf_quality'] && $quality && $anime_check['type'] != 'foreign-serial' ) {
-            if ( $xfields_post[$aaparser_config['updates']['xf_quality']] != $quality ) {
-                $xfields_post[$aaparser_config['updates']['xf_quality']] = $quality;
+        if ( $aaparser_config_push['main_fields']['xf_quality'] && $quality && $anime_check['type'] != 'foreign-serial' ) {
+            if ( $xfields_post[$aaparser_config_push['main_fields']['xf_quality']] != $quality ) {
+                $xfields_post[$aaparser_config_push['main_fields']['xf_quality']] = $quality;
                 $need_update = 1;
                 $send_push = 1;
                 if ( $aaparser_config['updates']['new_quality'] == 1 ) $need_update_date = 1;
@@ -333,9 +333,9 @@
         
         //Проверка на появление новой озвучки
         
-        if ( $aaparser_config['updates']['xf_translation'] && $translation && !$aaparser_config['grabbing']['translators'] && !$aaparser_config['grabbing']['not_translators'] ) {
-            if ( $xfields_post[$aaparser_config['updates']['xf_translation']] != $translation ) {
-                $xfields_post[$aaparser_config['updates']['xf_translation']] = $translation;
+        if ( $aaparser_config_push['main_fields']['xf_translation'] && $translation && !$aaparser_config['grabbing']['translators'] && !$aaparser_config['grabbing']['not_translators'] ) {
+            if ( $xfields_post[$aaparser_config_push['main_fields']['xf_translation']] != $translation ) {
+                $xfields_post[$aaparser_config_push['main_fields']['xf_translation']] = $translation;
                 $need_update = 1;
                 if ( $aaparser_config['updates']['new_translation'] == 1 ) $need_update_date = 1;
             }
@@ -399,7 +399,7 @@
 		else $update_fields['translation_type_ru'] = '';
         
         if ( $need_update == 1 ) {
-            if ( $aaparser_config['updates']['xf_player'] && $iframe_link ) $xfields_post[$aaparser_config['updates']['xf_player']] = $iframe_link;
+            if ( $aaparser_config_push['main_fields']['xf_player'] && $iframe_link ) $xfields_post[$aaparser_config_push['main_fields']['xf_player']] = $iframe_link;
 			if ( $aaparser_config['updates']['change_title'] == 1 && $aaparser_config['updates']['title'] ) {
 				$and_title = $db->safesql( check_if($aaparser_config['updates']['title'], $update_fields) );
 				$set_title = ", title='".$and_title."'";
@@ -464,20 +464,20 @@
   	            if ( $users_list ) {
   	                
   		            $xfields_data = xfieldsdataload($xfields_post);
-  		            if ( $aaparser_config_push['push_notifications']['poster'] && $xfields_data[$aaparser_config_push['push_notifications']['poster']] ) {
-       		            if ( strpos($xfields_data[$aaparser_config_push['push_notifications']['poster']], '/uploads/posts/') === false ) $image = $config['http_home_url'].'uploads/posts/'.$xfields_data[$aaparser_config_push['push_notifications']['poster']];
-       		            else $image = $xfields_data[$aaparser_config_push['push_notifications']['poster']];
+  		            if ( $aaparser_config_push['main_fields']['xf_poster'] && $xfields_data[$aaparser_config_push['main_fields']['xf_poster']] ) {
+       		            if ( strpos($xfields_data[$aaparser_config_push['main_fields']['xf_poster']], '/uploads/posts/') === false ) $image = $config['http_home_url'].'uploads/posts/'.$xfields_data[$aaparser_config_push['main_fields']['xf_poster']];
+       		            else $image = $xfields_data[$aaparser_config_push['main_fields']['xf_poster']];
        		            $temp_image = explode('|', $image);
        		            $image = $temp_image[0];
     	            }
-    	            elseif ( $aaparser_config_push['push_notifications']['poster_empty'] ) $image = $aaparser_config_push['push_notifications']['poster_empty'];
+    	            elseif ( $aaparser_config_push['main_fields']['poster_empty'] ) $image = $aaparser_config_push['main_fields']['poster_empty'];
     	            else $image = '';
-  		            if ( $aaparser_config_push['push_notifications']['tv_title'] && $aaparser_config_push['push_notifications']['tv_text'] && $xfields_data[$aaparser_config_push['push_notifications']['episode']] ) {
-      		            $notification = str_replace( ['{episode}', '{season}', '{title}', '{translation}'], [$xfields_data[$aaparser_config_push['push_notifications']['episode']],                   $xfields_data[$aaparser_config_push['push_notifications']['season']], $checking_post['title'], $xfields_data[$aaparser_config_push['push_notifications']['translation']]], $aaparser_config_push['push_notifications']['tv_text'] );
+  		            if ( $aaparser_config_push['push_notifications']['tv_title'] && $aaparser_config_push['push_notifications']['tv_text'] && $xfields_data[$aaparser_config_push['main_fields']['xf_series']] ) {
+      		            $notification = str_replace( ['{episode}', '{season}', '{title}', '{translation}'], [$xfields_data[$aaparser_config_push['main_fields']['xf_series']],                   $xfields_data[$aaparser_config_push['main_fields']['xf_season']], $checking_post['title'], $xfields_data[$aaparser_config_push['main_fields']['xf_translation_last']]], $aaparser_config_push['push_notifications']['tv_text'] );
       		            DLE_Send_Push( $aaparser_config_push['push_notifications']['tv_title'], $notification, $full_link, $image, $users_list );
     	            }
-  		            elseif ( $aaparser_config_push['push_notifications']['movie_title'] && $aaparser_config_push['push_notifications']['movie_text'] && $xfields_data[$aaparser_config_push['push_notifications']['quality']] ) {
-      		            $notification = str_replace( ['{quality}', '{title}'], [$xfields_data[$aaparser_config_push['push_notifications']['quality']], $checking_post['title']], $aaparser_config_push['push_notifications']['movie_text'] );
+  		            elseif ( $aaparser_config_push['push_notifications']['movie_title'] && $aaparser_config_push['push_notifications']['movie_text'] && $xfields_data[$aaparser_config_push['main_fields']['xf_quality']] ) {
+      		            $notification = str_replace( ['{quality}', '{title}'], [$xfields_data[$aaparser_config_push['main_fields']['xf_quality']], $checking_post['title']], $aaparser_config_push['push_notifications']['movie_text'] );
       		            DLE_Send_Push( $aaparser_config_push['push_notifications']['movie_title'], $notification, $full_link, $image, $users_list );
     	            }
                 }

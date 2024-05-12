@@ -8,7 +8,7 @@
 =====================================================
 */
 
-    if ( isset($aaparser_config_push['calendar_settings']['enable_schedule']) && $aaparser_config_push['calendar_settings']['enable_schedule'] && $aaparser_config['fields']['xf_shikimori_id'] ) {
+    if ( isset($aaparser_config_push['calendar_settings']['enable_schedule']) && $aaparser_config_push['calendar_settings']['enable_schedule'] && $aaparser_config_push['main_fields']['xf_shikimori_id'] ) {
         $no_poster = '/templates/'.$config['theme'].'/dleimages/no_image.jpg';
         $sql = "SELECT * FROM " . PREFIX . "_raspisanie_ongoingov";
         $db->query( $sql );
@@ -27,7 +27,7 @@
       	    $temp_num = 0;
   		    foreach ( $shikimori_api as $api_anime ) {
           	    if ( strpos($api_anime['next_episode_at'], $today_date) !== false ) {
-              	    $news_row = $db->super_query( "SELECT id, alt_name, date, title, category, xfields FROM " . PREFIX . "_post WHERE xfields LIKE '%{$aaparser_config['fields']['xf_shikimori_id']}|{$api_anime['anime']['id']}||%' AND approve=1" );
+              	    $news_row = $db->super_query( "SELECT id, alt_name, date, title, category, xfields FROM " . PREFIX . "_post WHERE xfields LIKE '%{$aaparser_config_push['main_fields']['xf_shikimori_id']}|{$api_anime['anime']['id']}||%' AND approve=1" );
               	    if ( !$news_row['id'] ) {
                   	    unset($news_row);
                   	    continue;
@@ -53,7 +53,7 @@
               	    $spisok_raspisaniy[$today_name][$temp_num]['russian'] = stripslashes($news_row['title']);
               	    $spisok_raspisaniy[$today_name][$temp_num]['original'] = $api_anime['anime']['name'];
               	    $spisok_raspisaniy[$today_name][$temp_num]['full_link'] = $full_link;
-              	    if ( isset( $aaparser_config['settings']['poster'] ) && $temp_xfields[$aaparser_config['settings']['poster']] ) $spisok_raspisaniy[$today_name][$temp_num]['image'] = $temp_xfields[$aaparser_config['settings']['poster']];
+              	    if ( isset( $aaparser_config_push['main_fields']['xf_poster'] ) && $temp_xfields[$aaparser_config_push['main_fields']['xf_poster']] ) $spisok_raspisaniy[$today_name][$temp_num]['image'] = $temp_xfields[$aaparser_config_push['main_fields']['xf_poster']];
               	    else $spisok_raspisaniy[$today_name][$temp_num]['image'] = $no_poster;
               	    $spisok_raspisaniy[$today_name][$temp_num]['next_episode'] = $api_anime['next_episode'];
               	    $spisok_raspisaniy[$today_name][$temp_num]['next_date'] = $api_anime['next_episode_at'];

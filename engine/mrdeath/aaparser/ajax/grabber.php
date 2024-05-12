@@ -26,6 +26,12 @@ if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log')) {
   	fclose($fp);
 }
 
+if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json')) {
+  	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json', "w+");
+  	fwrite($fp, "[]");
+  	fclose($fp);
+}
+
 @header('Content-type: text/html; charset=' . $config['charset']);
 
 date_default_timezone_set($config['date_adjust']);

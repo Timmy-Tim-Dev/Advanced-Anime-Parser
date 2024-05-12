@@ -33,7 +33,7 @@ if ($action == 'options') {
 	}
 	$new_array = [];
 	foreach ($array_post as $index => $item) {
-	    if ( $index == 'push_notifications' || $index == 'calendar_settings' ) continue;
+	    if ( $index == 'push_notifications' || $index == 'calendar_settings' || $index == 'main_fields' || $index == 'updates_block' || $index == 'player' || $index == 'persons' ) continue;
 		foreach ($item as $key => $value) {
 			if ($value != '' && $value != '-') {
 				if (is_numeric($value)) {
@@ -56,7 +56,7 @@ if ($action == 'options') {
 	fclose($handler);
 	$new_array = [];
 	foreach ($array_post as $index => $item) {
-	    if ( $index != 'push_notifications' && $index != 'calendar_settings' ) continue;
+	    if ( $index != 'push_notifications' && $index != 'calendar_settings' && $index != 'main_fields' && $index != 'updates_block' && $index != 'player' && $index != 'persons' ) continue;
 		foreach ($item as $key => $value) {
 			if ($value != '' && $value != '-') {
 				if (is_numeric($value)) {

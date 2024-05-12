@@ -53,7 +53,7 @@ if ( $parse_action == 'search' ) {
             
             $shiki_link = isset($result['url']) ? $shikimori_image_domain.$result['url'] : '';
 			
-			$where = "xfields LIKE '%".$aaparser_config['fields']['xf_shikimori_id']."|".$id_shiki."||%'";
+			$where = "xfields LIKE '%".$aaparser_config_push['main_fields']['xf_shikimori_id']."|".$id_shiki."||%'";
             $proverka = $db->super_query( "SELECT id, xfields FROM " . PREFIX . "_post WHERE ".$where );
 			
 	    	if (isset($proverka['id']) && $proverka['id']) {

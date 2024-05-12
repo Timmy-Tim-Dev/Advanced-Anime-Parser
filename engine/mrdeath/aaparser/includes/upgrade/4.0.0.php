@@ -21,6 +21,12 @@ if ( $check['Msg_type'] == 'Error' ) {
 }
 unset($check);
 
+$check = $db->super_query( "SHOW COLUMNS FROM " . PREFIX . "_rooms_list LIKE 'speed'" );
+if (!$check) {
+	$db->query("ALTER TABLE `" . PREFIX . "_rooms_list` ADD COLUMN `speed` FLOAT(5,2) NOT NULL DEFAULT '1' AFTER `time`");
+}
+unset($check);
+
 if ( count($tableSchema) > 0 ) {
     foreach ($tableSchema as $table) {
 	    $db->query($table, false);

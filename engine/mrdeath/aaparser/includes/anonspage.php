@@ -31,7 +31,7 @@ showRow('Использовать в Яндекс Турбо', '', makeCheckBox(
 showRow('Использовать в Яндекс Дзен', '', makeCheckBox('settings_anons[allow_zen]', $aaparser_config['settings_anons']['allow_zen']));
 showRow('Запретить индексацию страницы для поисковиков', '', makeCheckBox('settings_anons[dissalow_index]', $aaparser_config['settings_anons']['dissalow_index']));
 showRow('Исключить из поиска по сайту', '', makeCheckBox('settings_anons[dissalow_search]', $aaparser_config['settings_anons']['dissalow_search']));
-showRow('Обновлять описание', 'Обновление заданное или пустое описание анонса на полученную с API?<br/><span style="color:red">При обновлении проверяет наличие категории анонса и проверяет с заданное описание анонса, если оно совпадает или же оно пустое, то записывается новое описание с API</span>', makeCheckBox('settings_anons[description_update]', $aaparser_config['settings_anons']['description_update']));
+showRow('Обновлять описание', 'Обновление заданное или пустое описание анонса на полученную с API?<br/><span style="color:red">При обновлении проверяет наличие категории анонса и проверяет с заданное описание анонса, если оно совпадает или же оно пустое, то записывается новое описание с API</span><br/><b class="faq_find faq_id_1">Подробнее</b>', makeCheckBox('settings_anons[description_update]', $aaparser_config['settings_anons']['description_update']));
 echo <<<HTML
 					<tr>
 						<td colspan="2">

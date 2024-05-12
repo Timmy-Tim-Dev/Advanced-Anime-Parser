@@ -156,15 +156,15 @@ elseif ( $action == "update_translations_dorama" ) {
 }
 elseif ( $action == "connect_base_get" ) {
 		
-		if ( !$aaparser_config['fields']['xf_shikimori_id'] && !$aaparser_config['fields']['xf_mdl_id'] ) {
+		if ( !$aaparser_config_push['main_fields']['xf_shikimori_id'] && !$aaparser_config_push['main_fields']['xf_mdl_id'] ) {
 	        die(json_encode(array(
 		        'status' => 'fail'
 	        )));
 	    }
 	
-	    if ( $aaparser_config['fields']['xf_shikimori_id'] && $aaparser_config['fields']['xf_mdl_id'] ) $where = "xfields LIKE '%|".$aaparser_config['fields']['xf_shikimori_id']."|%' OR xfields LIKE '%|".$aaparser_config['fields']['xf_mdl_id']."|%'";
-	    elseif ( $aaparser_config['fields']['xf_shikimori_id'] ) $where = "xfields LIKE '%|".$aaparser_config['fields']['xf_shikimori_id']."|%'";
-	    else $where = "xfields LIKE '%|".$aaparser_config['fields']['xf_mdl_id']."|%'";
+	    if ( $aaparser_config_push['main_fields']['xf_shikimori_id'] && $aaparser_config_push['main_fields']['xf_mdl_id'] ) $where = "xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_shikimori_id']."|%' OR xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_mdl_id']."|%'";
+	    elseif ( $aaparser_config_push['main_fields']['xf_shikimori_id'] ) $where = "xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_shikimori_id']."|%'";
+	    else $where = "xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_mdl_id']."|%'";
 	    $news = $db->query( "SELECT id, xfields FROM " . PREFIX . "_post WHERE ".$where );
 		
 		$news_count = $news->num_rows;
@@ -175,9 +175,9 @@ elseif ( $action == "connect_base_get" ) {
 		while($temp_news = $db->get_row($news)) {
 			$id = intval($temp_news['id']);
 			$xfields = xfieldsdataload($temp_news['xfields']);
-			if ( $xfields[$aaparser_config['fields']['xf_shikimori_id']] ) $shikimori_id = $xfields[$aaparser_config['fields']['xf_shikimori_id']];
+			if ( $xfields[$aaparser_config_push['main_fields']['xf_shikimori_id']] ) $shikimori_id = $xfields[$aaparser_config_push['main_fields']['xf_shikimori_id']];
 			else $shikimori_id = 0;
-			if ( $xfields[$aaparser_config['fields']['xf_mdl_id']] ) $mdl_id = $xfields[$aaparser_config['fields']['xf_mdl_id']];
+			if ( $xfields[$aaparser_config_push['main_fields']['xf_mdl_id']] ) $mdl_id = $xfields[$aaparser_config_push['main_fields']['xf_mdl_id']];
 			else $mdl_id = 0;
 
 			if (!$shikimori_id && !$mdl_id) continue;			
@@ -199,7 +199,7 @@ elseif ( $action == "connect_base_get" ) {
 }
 elseif ( $action == "connect_base" ) {
 	
-	if ( !$aaparser_config['fields']['xf_shikimori_id'] && !$aaparser_config['fields']['xf_mdl_id'] ) {
+	if ( !$aaparser_config_push['main_fields']['xf_shikimori_id'] && !$aaparser_config_push['main_fields']['xf_mdl_id'] ) {
 	   die(json_encode(array(
 		  'status' => 'fail'
 	   )));
@@ -307,6 +307,13 @@ elseif ( $action == "connect_base" ) {
 elseif ( $action == "clear_player_cache" ) {
     require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
     kodik_clear_cache('playlist', 'player');
+	die(json_encode(array(
+		'status' => 'ok'
+	)));
+}
+elseif ( $action == "clear_personajes_cache" ) {
+    require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+    kodik_clear_cache('personas', 'personas_characters');
 	die(json_encode(array(
 		'status' => 'ok'
 	)));

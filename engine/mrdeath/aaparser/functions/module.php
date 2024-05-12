@@ -483,35 +483,41 @@ if (!function_exists('RenameGenres')) {
     }
 }
 
-function change_tags ($html, $name, $tag) {
-	if ($tag) {
-		$html = preg_replace("'\\[".$name."\\](.*?)\\[/".$name."\\]'si", '\\1', $html);
-		$html = preg_replace("'\\[not_".$name."\\](.*?)\\[/not_".$name."\\]'si", '', $html);
-		if (is_array($tag)) $html = str_replace("{".$name."}", implode(', ', $tag), $html);
-		else $html = str_replace("{".$name."}", $tag, $html);
-		return $html;
-	} else {
-		$html = preg_replace("'\\[".$name."\\](.*?)\\[/".$name."\\]'si", '', $html);
-		$html = preg_replace("'\\[not_".$name."\\](.*?)\\[/not_".$name."\\]'si", '\\1', $html);
-		$html = str_replace("{".$name."}", '', $html);
-		return $html;
-	}
+function change_tags ($type, $needVal, $nameTag, $urlPrefix = '') {
+    global $shikimori_url_domain;
+    
+    if ($needVal) {
+        $type->set("[" . $nameTag . "]", "");
+        $type->set("[/" . $nameTag . "]", "");
+        $fullUrl = ($urlPrefix != '') ? $urlPrefix . $needVal : $needVal;
+        $type->set("{" . $nameTag . "}", $fullUrl);
+        $type->set_block("'\\[not_" . $nameTag . "\\](.*?)\\[/not_" . $nameTag . "\\]'si", "");
+    } else {
+        $type->set("[not_" . $nameTag . "]", "");
+        $type->set("[/not_" . $nameTag . "]", "");
+        $type->set_block("'\\[" . $nameTag . "\\](.*?)\\[/" . $nameTag . "\\]'si", "");
+        $type->set("{" . $nameTag . "}", '');
+    }
 }
 
-function change_tags_take($html, $name) {
-    preg_match_all('/\[' . $name . '\](.*?)\[\/' . $name . '\]/si', $html, $matched);
-    $out = implode("<br/>", $matched[1]);
-    return $out; 
-}
-
-function change_tags_set ($html, $name, $tag) {
-	if ($tag != '') {
-		$html = preg_replace("'\\[".$name."\\](.*?)\\[/".$name."\\]'si", $tag, $html);
-		$html = preg_replace("'\\[not_".$name."\\](.*?)\\[/not_".$name."\\]'si", '', $html);
-		return $html;
-	} else {
-		$html = preg_replace("'\\[".$name."\\](.*?)\\[/".$name."\\]'si", '', $html);
-		$html = preg_replace("'\\[not_".$name."\\](.*?)\\[/not_".$name."\\]'si", '\\1', $html);
-		return $html;
-	}
+function change_tags_img($type, $needVal, $nameTag, $defaultImage = '') {
+    global $shikimori_url_domain, $aaparser_config_push;
+    
+    if ($needVal) {
+        $type->set("[" . $nameTag . "]", "");
+        $type->set("[/$" . $nameTag . "]", "");
+        $fullUrl = 'https://' . $shikimori_url_domain . $needVal;
+        $type->set("{" . $nameTag . "}", $fullUrl);
+        $type->set_block("'\\[not_" . $nameTag . "\\](.*?)\\[/not_" . $nameTag . "\\]'si", "");
+    } elseif ($defaultImage) {
+        $type->set("[" . $nameTag . "]", "");
+        $type->set("[/" . $nameTag . "]", "");
+        $type->set("{" . $nameTag . "}", $defaultImage);
+        $type->set_block("'\\[not_" . $nameTag . "\\](.*?)\\[/not_" . $nameTag . "\\]'si", "");
+    } else {
+        $type->set("[not_" . $nameTag . "]", "");
+        $type->set("[/not_" . $nameTag . "]", "");
+        $type->set_block("'\\[" . $nameTag . "\\](.*?)\\[/" . $nameTag . "\\]'si", "");
+        $type->set("{" . $nameTag . "}", "");
+    }
 }

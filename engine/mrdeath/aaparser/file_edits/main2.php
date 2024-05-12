@@ -16,28 +16,22 @@ if( !defined('DATALIFEENGINE') ) {
 
 if ( $dle_module == 'showfull' ) {
   	require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
-  	if ( $aaparser_config['settings']['rooms_enable'] == 1 || $aaparser_config['player']['enable'] == 1 || $aaparser_config_push['push_notifications']['enable'] == 1 ) {
+  	if ( $aaparser_config['settings']['rooms_enable'] == 1 || $aaparser_config_push['player']['enable'] == 1 || $aaparser_config_push['push_notifications']['enable'] == 1 ) {
       	$js_array[] = "engine/mrdeath/aaparser/js/rooms.js";
       	$css_array[] = "engine/mrdeath/aaparser/css/rooms.css";
     }
-  	if ( $aaparser_config['player']['enable'] == 1 && $aaparser_config['player']['auto_next'] == 1 && (!isset($aaparser_config['player']['method']) || $aaparser_config['player']['method'] == 0) ) {
-      	$js_array[] = "engine/mrdeath/aaparser/js/kodik_playlist_autonext.js";
+  	if ( $aaparser_config_push['player']['enable'] == 1 && (!isset($aaparser_config_push['player']['method']) || $aaparser_config_push['player']['method'] == 0) ) {
+      	$js_array[] = "engine/mrdeath/aaparser/js/kodik_playlist_main.js";
     }
-  	elseif ( $aaparser_config['player']['enable'] == 1 && (!isset($aaparser_config['player']['method']) || $aaparser_config['player']['method'] == 0) ) {
-      	$js_array[] = "engine/mrdeath/aaparser/js/kodik_playlist.js";
-    }
-  	elseif ( $aaparser_config['player']['enable'] == 1 && $aaparser_config['player']['auto_next'] == 1 ) {
-      	$js_array[] = "engine/mrdeath/aaparser/js/kodik_playlist_new_autonext.js";
-    }
-  	elseif ( $aaparser_config['player']['enable'] == 1 ) {
-      	$js_array[] = "engine/mrdeath/aaparser/js/kodik_playlist_new.js";
+  	if ( $aaparser_config_push['player']['enable'] == 1 && (!isset($aaparser_config_push['player']['method']) || $aaparser_config_push['player']['method'] == 1) ) {
+      	$js_array[] = "engine/mrdeath/aaparser/js/kodik_playlist_advanced.js";
     }
 
   	if ( $aaparser_config['settings']['next_episode_date_new'] && $aaparser_config['settings']['timer_enable'] == 1 ) {
       	$js_array[] = "engine/mrdeath/aaparser/js/timer.js";
       	$css_array[] = "engine/mrdeath/aaparser/css/timer.css";
     }
-  	if ( $aaparser_config['integration']['personas_on'] == 1 ) {
+  	if ( $aaparser_config_push['persons']['personas_on'] == 1 || $aaparser_config_push['persons']['personas_on_dorama'] == 1 ) {
       	$js_array[] = "engine/mrdeath/aaparser/js/persons.js";
     }
 }

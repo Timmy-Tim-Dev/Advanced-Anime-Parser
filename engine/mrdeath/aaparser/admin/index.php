@@ -12,7 +12,7 @@ if (!defined('DATALIFEENGINE') OR !defined('LOGGED_IN')) {
 	die('Hacking attempt!');
 }
 
-$actual_module_version = '4.0.0';
+$actual_module_version = '4.1.0';
 $action = isset($_GET['action']) ? $_GET['action'] : false;
 
 $php_version = intval(str_replace(array(".",","),"",substr(PHP_VERSION,0,3)));
@@ -210,6 +210,13 @@ if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) 
     }
     if ( !$aclist ) $aclist[] = 'Пусто';
 }
+
+if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json')) {
+  	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json', "w+");
+  	fwrite($fp, "[]");
+  	fclose($fp);
+}
+
 require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/functions/admin.php';
@@ -263,20 +270,20 @@ if ( $aaparser_config['update_news']['xf_check'] ) {
     if ( $xf_check_db['count'] > 0 ) $xf_check_status = '<div style="color:#f44336">Доп. поля новостей обновляются</div>';
     else $xf_check_status = '<div style="color:#009688">Доп. поля новостей обновлены</div>';
 }
-if ( $aaparser_config['fields']['xf_shikimori_id'] && $aaparser_config['fields']['xf_mdl_id'] ) {
-    $added_news = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE xfields LIKE '%".$aaparser_config['fields']['xf_shikimori_id']."|%' OR xfields LIKE '%".$aaparser_config['fields']['xf_mdl_id']."|%'" );
+if ( $aaparser_config_push['main_fields']['xf_shikimori_id'] && $aaparser_config_push['main_fields']['xf_mdl_id'] ) {
+    $added_news = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE xfields LIKE '%".$aaparser_config_push['main_fields']['xf_shikimori_id']."|%' OR xfields LIKE '%".$aaparser_config_push['main_fields']['xf_mdl_id']."|%'" );
     if ( $done['count'] && $added_news['count'] && $done['count'] < $added_news['count'] ) {
         $base_status = '<div style="color:#ef5350"><i class="fa fa-wrench position-left"></i>Требуется связывание, нажмите кнопку ниже</div>';
     }
 }
-elseif ( $aaparser_config['fields']['xf_shikimori_id'] ) {
-    $added_news = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE xfields LIKE '%".$aaparser_config['fields']['xf_shikimori_id']."|%'" );
+elseif ( $aaparser_config_push['main_fields']['xf_shikimori_id'] ) {
+    $added_news = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE xfields LIKE '%".$aaparser_config_push['main_fields']['xf_shikimori_id']."|%'" );
     if ( $done['count'] && $added_news['count'] && $done['count'] < $added_news['count'] ) {
         $base_status = '<div style="color:#ef5350"><i class="fa fa-wrench position-left"></i>Требуется связывание, нажмите кнопку ниже</div>';
     }
 }
-elseif ( $aaparser_config['fields']['xf_mdl_id'] ) {
-    $added_news = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE xfields LIKE '%".$aaparser_config['fields']['xf_mdl_id']."|%'" );
+elseif ( $aaparser_config_push['main_fields']['xf_mdl_id'] ) {
+    $added_news = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE xfields LIKE '%".$aaparser_config_push['main_fields']['xf_mdl_id']."|%'" );
     if ( $done['count'] && $added_news['count'] && $done['count'] < $added_news['count'] ) {
         $base_status = '<div style="color:#ef5350"><i class="fa fa-wrench position-left"></i>Требуется связывание, нажмите кнопку ниже</div>';
     }
@@ -321,14 +328,11 @@ include_once ENGINE_DIR.'/mrdeath/aaparser/includes/updatespage.php'; //Подн
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/xfieldspage.php'; //Основные и доп поля
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/catspage.php'; //Категории
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/imagespage.php'; //Изображения
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/playerpage.php'; //Вывод плеера
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/integrationpage.php'; //Интеграция
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/pushpage.php'; //Push уведомления
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/roomspage.php'; //Совместный просмотр
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/cronpage.php'; //Настройки планировщика
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/anonspage.php'; //Настройки Анонса
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/gindexpage.php'; //Google indexing
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/tgpostingpage.php'; //Постинг в Telegram
+include_once ENGINE_DIR.'/mrdeath/aaparser/includes/faqpage.php'; //Часто задаваемые вопросы
+include_once ENGINE_DIR.'/mrdeath/aaparser/includes/modulespage.php'; //Модули
 echo <<<HTML
     <button type="submit" class="btn bg-teal btn-raised position-left"><i class="fa fa-floppy-o position-left"></i>{$lang['user_save']}</button>
 </form>
@@ -353,7 +357,7 @@ elseif ( $action == 'dbupgrade' ) {
 		foreach ($files as $file) {
 			$version = basename( $file, ".php" );
 			
-			if( version_compare( $log_module_version, $version, '<=') ) {
+			if( version_compare( $log_module_version, $version, '<') ) {
 				$versions[] = $version;
 			}
 			

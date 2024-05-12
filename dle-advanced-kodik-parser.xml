@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dleplugin>
 	<name>Advanced Kodik Parser</name>
-	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, обновления новостей, с собственным ajax плейлистом аниме, push уведомлениями и комнатами совместного просмотра</description>
+	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, парсинг анонсов аниме, обновление новостей при выходе новой серии или лучшего качества, тонкие настройки работы cron.</description>
 	<icon>uploads/advanced-anime-parser-icon.png</icon>
-	<version>4.0.0</version>
+	<version>4.1.0</version>
 	<dleversion>15.0</dleversion>
 	<versioncompare>greater</versioncompare>
 	<upgradeurl>https://storage.kodik.biz/files/advanced-anime-parser/last_version.json</upgradeurl>
 	<filedelete>0</filedelete>
 	<needplugin></needplugin>
-	<mnotice>0</mnotice>
+	<mnotice>1</mnotice>
 	<mysqlinstall><![CDATA[DROP TABLE IF EXISTS `{prefix}_shikimori_posts`;
 CREATE TABLE `{prefix}_shikimori_posts` (
   id int(11) NOT NULL AUTO_INCREMENT,
@@ -65,6 +65,7 @@ CREATE TABLE `{prefix}_rooms_list` (
   `public` tinyint(1) NOT NULL DEFAULT '0',
   `pause` tinyint(1) NOT NULL DEFAULT '1',
   `time` int(5) NOT NULL DEFAULT '0',
+  `speed` FLOAT(5,2) NOT NULL DEFAULT '1',
   `created` int(12) NOT NULL DEFAULT '0',
   `episode_num` int(5) NOT NULL DEFAULT '0',
   `season_num` int(5) NOT NULL DEFAULT '0',
@@ -131,22 +132,7 @@ CREATE TABLE `{prefix}_telegram_sender` (
   `error` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={charset};]]></mysqlinstall>
-	<mysqlupgrade><![CDATA[DROP TABLE IF EXISTS `{prefix}_telegram_sender`;
-CREATE TABLE `{prefix}_telegram_sender` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `news_id` int(11) NOT NULL DEFAULT '0',
-  `settings` varchar(255) NOT NULL,
-  `error` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={charset};
-
-DROP TABLE IF EXISTS `{prefix}_subscribe_info`;
-CREATE TABLE `{prefix}_subscribe_info` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL DEFAULT 0,
-  `post_id` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE={engine} AUTO_INCREMENT=8 DEFAULT CHARSET={charset};]]></mysqlupgrade>
+	<mysqlupgrade><![CDATA[]]></mysqlupgrade>
 	<mysqlenable><![CDATA[INSERT IGNORE INTO `{prefix}_admin_sections` (`name`, `title`, `descr`, `icon`, `allow_groups`) VALUES ('aap', 'Advanced Kodik Parser', 'Парсер-граббер аниме/дорам с базы Kodik, а так же сайтов Shikimori, World-art', 'uploads/advanced-anime-parser-icon.png', '1');]]></mysqlenable>
 	<mysqldisable><![CDATA[DELETE FROM `{prefix}_admin_sections` WHERE `name` = 'aap';]]></mysqldisable>
 	<mysqldelete><![CDATA[DELETE FROM `{prefix}_admin_sections` WHERE `name` = 'aap';
@@ -161,51 +147,26 @@ DROP TABLE IF EXISTS `{prefix}_raspisanie_ongoingov`;
 DROP TABLE IF EXISTS `{prefix}_shikimori_posts`;
 DROP TABLE IF EXISTS `{prefix}_subscribe_info`;
 DROP TABLE IF EXISTS `{prefix}_telegram_sender`;]]></mysqldelete>
-	<phpinstall><![CDATA[include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
-	$fran_name = $aaparser_config['fields']['xf_shikimori_id'];
-
-	$chekering = $db->query("SHOW COLUMNS FROM ".PREFIX."_post LIKE 'franchise_aap'");
-	if ($chekering->num_rows == "0") {
-		$db->query("ALTER TABLE ".PREFIX."_post add `franchise_aap` varchar(700) NOT NULL DEFAULT ''");
-	}
-
-	if ($fran_name != "") {
-      $res = $db->query("SELECT * FROM ".PREFIX."_post WHERE xfields like '%$fran_name%'");
-      while ( $row = $db->get_row($res) ) {
-          $xfieldsdata = xfieldsdataload( $row['xfields'] );
-
-          $data = $xfieldsdata[$fran_name];
-          $db->query("update ".PREFIX."_post set franchise_aap='$data'  where id=".$row['id']);
-      }
-    }
-
-$actual_module_version = '4.0.0';
-if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.log')) {
+	<phpinstall><![CDATA[if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.log')) {
   	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/version.log', "w+");
-  	fwrite($fp, $actual_module_version);
+  	fwrite($fp, '4.1.0');
   	fclose($fp);
 }]]></phpinstall>
-	<phpupgrade><![CDATA[include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
-	$fran_name = $aaparser_config['fields']['xf_shikimori_id'];
-
-	$chekering = $db->query("SHOW COLUMNS FROM ".PREFIX."_post LIKE 'franchise_aap'");
-	if ($chekering->num_rows == "0") {
-		$db->query("ALTER TABLE ".PREFIX."_post add `franchise_aap` varchar(700) NOT NULL DEFAULT ''");
-	}
-
-	if ($fran_name != "") {
-      $res = $db->query("SELECT * FROM ".PREFIX."_post WHERE xfields like '%$fran_name%'");
-      while ( $row = $db->get_row($res) ) {
-          $xfieldsdata = xfieldsdataload( $row['xfields'] );
-
-          $data = $xfieldsdata[$fran_name];
-          $db->query("update ".PREFIX."_post set franchise_aap='$data'  where id=".$row['id']);
-      }
-    }]]></phpupgrade>
+	<phpupgrade><![CDATA[]]></phpupgrade>
 	<phpenable><![CDATA[]]></phpenable>
 	<phpdisable><![CDATA[]]></phpdisable>
 	<phpdelete><![CDATA[]]></phpdelete>
-	<notice><![CDATA[]]></notice>
+	<notice><![CDATA[<b>Список дополнительных модулей в комплекте:</b>
+[ol=1]
+[*]Ajax плейлист с запоминанием серий
+[*]Расписание выхода серий (только для аниме сайтов)
+[*]Блок обновления сериалов
+[*]Push уведомления про обновления на сайте
+[*]Комнаты совместного просмотра
+[*]Google Indexing
+[*]Постинг новостей в Telegram
+[*]Актёры и персонажи
+[/ol]]]></notice>
 	<file name="engine/inc/addnews.php">
 		<operation action="after">
 			<searchcode><![CDATA[name="title" id="title" maxlength="250" >]]></searchcode>
@@ -216,9 +177,9 @@ if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.log')) {
 			<searchcode><![CDATA[echo $categoryfilter;]]></searchcode>
 			<replacecode><![CDATA[require_once ENGINE_DIR . '/mrdeath/aaparser/inc/addnews.php';
 
-$kodik_xf_field = $aaparser_config['updates']['xf_player'];
-$xf_shikimori_id = $aaparser_config['fields']['xf_shikimori_id'];
-$xf_mdl_id = $aaparser_config['fields']['xf_mdl_id'];]]></replacecode>
+$kodik_xf_field = $aaparser_config_push['main_fields']['xf_player'];
+$xf_shikimori_id = $aaparser_config_push['main_fields']['xf_shikimori_id'];
+$xf_mdl_id = $aaparser_config_push['main_fields']['xf_mdl_id'];]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="after">
@@ -255,11 +216,11 @@ function updateKodikPlayer(xf)
 		<operation action="after">
 			<searchcode><![CDATA[$id = $db->insert_id();]]></searchcode>
 			<replacecode><![CDATA[if ( !isset($aaparser_config) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
-if ( isset($aaparser_config['fields']['xf_shikimori_id']) ) {
+if ( isset($aaparser_config_push['main_fields']['xf_shikimori_id']) ) {
   	$xf_temp_fields = xfieldsdataload($filecontents);
-  	if ( isset($xf_temp_fields[$aaparser_config['fields']['xf_shikimori_id']]) ) {
+  	if ( isset($xf_temp_fields[$aaparser_config_push['main_fields']['xf_shikimori_id']]) ) {
       	require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
-      	$shikimori_id = $xf_temp_fields[$aaparser_config['fields']['xf_shikimori_id']];
+      	$shikimori_id = $xf_temp_fields[$aaparser_config_push['main_fields']['xf_shikimori_id']];
       	$base_check_db = $db->super_query( "SELECT shikimori_id, news_id FROM " . PREFIX . "_anime_list WHERE shikimori_id='{$shikimori_id}'" );
       	if ( $base_check_db['shikimori_id'] == $shikimori_id && $base_check_db['news_id'] != $id )
           	$db->query("UPDATE " . PREFIX . "_anime_list SET news_id='{$id}', started=1 WHERE shikimori_id='{$shikimori_id}'");
@@ -277,11 +238,11 @@ if ( isset($aaparser_config['fields']['xf_shikimori_id']) ) {
         }
     }
 }
-elseif ( isset($aaparser_config['fields']['xf_mdl_id']) ) {
+elseif ( isset($aaparser_config_push['main_fields']['xf_mdl_id']) ) {
   	$xf_temp_fields = xfieldsdataload($filecontents);
-  	if ( isset($xf_temp_fields[$aaparser_config['fields']['xf_mdl_id']]) ) {
+  	if ( isset($xf_temp_fields[$aaparser_config_push['main_fields']['xf_mdl_id']]) ) {
       	require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
-      	$mdl_id = $xf_temp_fields[$aaparser_config['fields']['xf_mdl_id']];
+      	$mdl_id = $xf_temp_fields[$aaparser_config_push['main_fields']['xf_mdl_id']];
       	$base_check_db = $db->super_query( "SELECT mdl_id, news_id FROM " . PREFIX . "_anime_list WHERE mdl_id='{$mdl_id}'" );
       	if ( $base_check_db['mdl_id'] == $mdl_id && $base_check_db['news_id'] != $id )
           	$db->query("UPDATE " . PREFIX . "_anime_list SET news_id='{$id}', started=1 WHERE mdl_id='{$mdl_id}'");
@@ -358,9 +319,9 @@ if ( $aaparser_config_push['push_notifications']['enable_tgposting'] == 1 && $aa
 			<searchcode><![CDATA[echo $categoryfilter;]]></searchcode>
 			<replacecode><![CDATA[require_once ENGINE_DIR . '/mrdeath/aaparser/inc/editnews.php';
 
-$kodik_xf_field = $aaparser_config['updates']['xf_player'];
-$xf_shikimori_id = $aaparser_config['fields']['xf_shikimori_id'];
-$xf_mdl_id = $aaparser_config['fields']['xf_mdl_id'];]]></replacecode>
+$kodik_xf_field = $aaparser_config_push['main_fields']['xf_player'];
+$xf_shikimori_id = $aaparser_config_push['main_fields']['xf_shikimori_id'];
+$xf_mdl_id = $aaparser_config_push['main_fields']['xf_mdl_id'];]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="after">
@@ -637,61 +598,7 @@ HTML;
 	<file name="engine/modules/show.full.php">
 		<operation action="before">
 			<searchcode><![CDATA[$tpl->set( '{short-story}', $row['short_story'] );]]></searchcode>
-			<replacecode><![CDATA[if ( $member_id['watched_series'] ) $watched_series = json_decode($member_id['watched_series'], true);
-else $watched_series = [];
-
-$watched_episode = $watched_season = 0;
-$watched_translator = '';
-
-foreach ( $watched_series as $key => $value ) {
-	if ( $value['news_id'] == $row['id'] ) {
-      	$watched_episode = $value['episode'];
-      	$watched_season = $value['season'];
-      	$watched_translator = $value['translation'];
-    }
-}
-
-if ( $watched_episode && $watched_season && $watched_translator ) {
-  	$tpl->set('[watched_series]', "");
-  	$tpl->set('[/watched_series]', "");
-	$tpl->set('{watched_episode}', $watched_episode);
-	$tpl->set('{watched_season}', $watched_season);
-	$tpl->set('{watched_translator}', $watched_translator);
-}
-else {
-  	$tpl->set_block("'\\[watched_series\\](.*?)\\[/watched_series\\]'si", '');
-	$tpl->set('{watched_episode}', "");
-	$tpl->set('{watched_season}', "");
-	$tpl->set('{watched_translator}', "");
-}
-
-if ( $aaparser_config_push['push_notifications']['enable'] && $is_logged ) {
-	if ( $member_id['push_subscribe'] ) $push_subscribe = json_decode($member_id['push_subscribe'], true);
-	else $push_subscribe = [];
-	
-	if ( in_array($row['id'], $push_subscribe) ) {
-  		$push_subscribe_block = '<div class="js-toggle-fav btn"><span id="push_subscribe" onclick="PushSubscribe(\''.$row['id'].'\', \'subscribe\');return false;" style="display:none;"><i class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell"></i> Отслеживать</span><span id="push_unsubscribe" class="is-active" onclick="PushSubscribe(\''.$row['id'].'\', \'unsubscribe\');return false;"><i class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell-slash"></i> Отписаться</span></div>';
-      	$user_subscribed = '<div class="poster_subscribes"><div class="poster_subscribes-item" title="Вы подписаны"><span class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell"></span></div></div>';
-	}
-	else {
-  		$push_subscribe_block = '<div class="js-toggle-fav btn"><span id="push_subscribe" onclick="PushSubscribe(\''.$row['id'].'\', \'subscribe\');return false;"><i class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell"></i> Отслеживать</span><span id="push_unsubscribe" class="is-active" onclick="PushSubscribe(\''.$row['id'].'\', \'unsubscribe\');return false;" style="display:none;"><i class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell-slash"></i> Отписаться</span></div>';
-      	$user_subscribed = '';
-	}
-  
-	$is_viewed = $db->super_query("select count(*) as count FROM ".PREFIX."_subscribe_info where user_id={$member_id['user_id']} and post_id=".$row['id']);
-  	if ($is_viewed['count'] > 0) {
-     	$db->query("DELETE FROM ".PREFIX."_subscribe_info WHERE user_id='{$member_id['user_id']}' AND post_id='{$row['id']}'");
-    }
-  	$tpl->set( '[push_subscribe]', "" );
-  	$tpl->set( '[/push_subscribe]', "" );
-	$tpl->set( '{push_subscribe}', $push_subscribe_block );
-	$tpl->set( '{user_subscribed}', $user_subscribed );
-}
-else {
-  	$tpl->set_block("'\\[push_subscribe\\](.*?)\\[/push_subscribe\\]'si", '');
-  	$tpl->set( '{push_subscribe}', "" );
-  	$tpl->set( '{user_subscribed}', "" );
-}]]></replacecode>
+			<replacecode><![CDATA[include ENGINE_DIR . '/mrdeath/aaparser/file_edits/show.full.php';]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -773,6 +680,7 @@ if ( $dle_module == 'rooms_list' ) {
 			<searchcode><![CDATA[if( $category_id and $cat_info[$category_id]['short_tpl'] != '' )]]></searchcode>
 			<replacecode><![CDATA[if ( $dle_module == 'subscribe_page' ) $tpl->load_template( 'shortstory_subscribes.tpl' );
 elseif ( $dle_module == 'rooms_list' ) $tpl->load_template( 'rooms_shortstory.tpl' );
+elseif ( $dle_module == 'continue_watch' ) $tpl->load_template( 'continue_watch.tpl' );
 else]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
@@ -796,56 +704,6 @@ else]]></replacecode>
 			$tpl->set_block ( "'\\[subscribe_notviewed\\](.*?)\\[/subscribe_notviewed\\]'si", "" );
 		}
 		]]></replacecode>
-			<enabled>1</enabled>
-		</operation>
-	</file>
-	<file name="engine/modules/show.custom.php">
-		<operation action="before">
-			<searchcode><![CDATA[$row['title'] = stripslashes( $row['title'] );]]></searchcode>
-			<replacecode><![CDATA[if ( $member_id['watched_series'] ) $watched_series = json_decode($member_id['watched_series'], true);
-else $watched_series = [];
-
-$watched_episode = $watched_season = 0;
-$watched_translator = '';
-
-foreach ( $watched_series as $key => $value ) {
-	if ( $value['news_id'] == $row['id'] ) {
-      	$watched_episode = $value['episode'];
-      	$watched_season = $value['season'];
-      	$watched_translator = $value['translation'];
-    }
-}
-
-if ( $watched_episode && $watched_season && $watched_translator ) {
-  	$tpl->set('[watched_series]', "");
-  	$tpl->set('[/watched_series]', "");
-	$tpl->set('{watched_episode}', $watched_episode);
-	$tpl->set('{watched_season}', $watched_season);
-	$tpl->set('{watched_translator}', $watched_translator);
-}
-else {
-  	$tpl->set_block("'\\[watched_series\\](.*?)\\[/watched_series\\]'si", '');
-	$tpl->set('{watched_episode}', "");
-	$tpl->set('{watched_season}', "");
-	$tpl->set('{watched_translator}', "");
-}
-
-if ( $aaparser_config_push['push_notifications']['enable'] && $is_logged ) {
-	if ( $member_id['push_subscribe'] ) $push_subscribe = json_decode($member_id['push_subscribe'], true);
-	else $push_subscribe = [];
-
-	if ( in_array($row['id'], $push_subscribe) ) {
-  		$user_subscribed = '<div class="poster_subscribes"><div class="poster_subscribes-item" title="Вы подписаны"><span class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell"></span></div></div>';
-	}
-	else {
-  		$user_subscribed = '';
-	}
-
-	$tpl->set( '{user_subscribed}', $user_subscribed );
-}
-else {
-  	$tpl->set( '{user_subscribed}', "" );
-}]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -997,6 +855,14 @@ case "rooms_list" :
 
 case "schedule" :
 		include (DLEPlugins::Check(ENGINE_DIR . '/modules/raspisanie_ongoingov.php'));
+		break;
+
+case "continue_watch" :
+		if ($is_logged) include (DLEPlugins::Check(ENGINE_DIR . '/modules/continue_watch.php'));
+		else {
+			@header( "HTTP/1.1 403 Forbidden" );
+			msgbox ( $lang['all_err_1'], $lang['fav_error'] );
+		}
 		break;]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
@@ -1105,6 +971,88 @@ include ENGINE_DIR . '/mrdeath/aaparser/rooms/rooms_list.php';
 }]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[if (stripos ( $content, "android]" ) !== false) {]]></searchcode>
+			<replacecode><![CDATA[if (stripos ( $content, "{kodik_updates_block}" ) !== false) {
+if (file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json')) {
+    $updates_history = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/updates_history.json' ), true );
+    if ( is_array($updates_history) && $updates_history ) {
+        $kodik_updates_block = '';
+        $first_block_styles = 'show';
+        $inum = 1;
+        $today_date_is = date('Y-m-d', $_TIME);
+        $tempdate = strtotime($today_date_is);
+        $yesterday_date_is = date('Y-m-d', strtotime("-1 day", $tempdate));
+        foreach ( $updates_history as $upd_day => $upd_items ) {
+            if ( $first_block_styles ) $first_block_text = 'Свернуть';
+            else $first_block_text = 'Развернуть';
+            if ( $upd_day == $today_date_is ) $kodik_updates_block .= '<div class="card-header last-update-header di-flex align-items-center">
+                    <div class="h6 di-flex mr-auto mb-0">
+                        <span>
+                            <span class="mr-1">Сегодня</span>
+                            <span class="d-none d-xl-inline">('.date('d.m.Y', strtotime($upd_day)).')</span>
+                        </span>
+                    </div>
+                    <a class="bb-dashed-1" onclick="kodik_block_collapse(\''.$inum.'\', this);">'.$first_block_text.'</a>
+                    </div>
+                    <div id="kodik_block_day_'.$inum.'" style="max-height: 649px;" class="last-update-container scroll collapse '.$first_block_styles.'">';
+            elseif ( $upd_day == $yesterday_date_is ) $kodik_updates_block .= '<div class="card-header last-update-header di-flex align-items-center">
+                    <div class="h6 di-flex mr-auto mb-0">
+                        <span>
+                            <span class="mr-1">Вчера</span>
+                            <span class="d-none d-xl-inline">('.date('d.m.Y', strtotime($upd_day)).')</span>
+                        </span>
+                    </div>
+                    <a class="bb-dashed-1" onclick="kodik_block_collapse(\''.$inum.'\', this);">'.$first_block_text.'</a>
+                    </div>
+                    <div id="kodik_block_day_'.$inum.'" style="max-height: 649px;" class="last-update-container scroll collapse '.$first_block_styles.'">';
+            else $kodik_updates_block .= '<div class="card-header last-update-header di-flex align-items-center">
+                    <div class="h6 di-flex mr-auto mb-0">
+                        <span>
+                            <span class="mr-1">'.date('d.m.Y', strtotime($upd_day)).'</span>
+                        </span>
+                    </div>
+                    <a class="bb-dashed-1" onclick="kodik_block_collapse(\''.$inum.'\', this);">'.$first_block_text.'</a>
+                    </div>
+                    <div id="kodik_block_day_'.$inum.'" style="max-height: 649px;" class="last-update-container scroll collapse '.$first_block_styles.'">';
+            $first_block_styles = '';
+            foreach ( $upd_items as $upd_item ) {
+                $kodik_updates_block .= '<div class="last-update-item list-group-item list-group-item-action border-left-0 border-right-0 border-bottom-0 border-top-0 cursor-pointer" onclick="location.href=\''.$upd_item['link'].'\'" tabindex="-1">
+                  <div class="media w-100 align-items-center">
+                     <div class="media-left last-update-img mr-2">
+                        <div class="img-square lazy br-50" style="background-image: url('.$upd_item['image'].');"></div>
+                     </div>
+                     <div class="media-body">
+                        <div class="di-flex align-items-center">
+                           <div class="di-flex mr-auto"><span class="card-link list-group-item-action bg-transparent"><span class="last-update-title font-weight-600">'.$upd_item['title'].'</span></span></div>
+                           <div class="ml-3 text-right">
+                              <div class="font-weight-600 text-truncate"><span class="season-info">'.$upd_item['season'].' сезон </span>'.$upd_item['episode'].' серия</div>
+                              <div class="text-gray-dark-6">('.$upd_item['translation'].')</div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>';
+            }
+            $kodik_updates_block .= '</div>';
+            $inum++;
+        }
+      	$content = str_ireplace( '{kodik_updates_block}', $kodik_updates_block, $content );
+      	$content = str_ireplace( '[kodik_updates_block]', "", $content );
+      	$content = str_ireplace( '[/kodik_updates_block]', "", $content );
+    }
+    else {
+        $content = str_ireplace( '{kodik_updates_block}', "", $content );
+      	$content = preg_replace( "#\[kodik_updates_block\](.+?)\[/kodik_updates_block\]#is", "", $content );
+    }
+}
+else {
+    $content = str_ireplace( '{kodik_updates_block}', "", $content );
+    $content = preg_replace( "#\[kodik_updates_block\](.+?)\[/kodik_updates_block\]#is", "", $content );
+}
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
 	</file>
 	<file name="engine/modules/show.rooms.php">
 		<operation action="create">
@@ -1171,6 +1119,20 @@ include ENGINE_DIR . '/mrdeath/aaparser/file_edits/raspisanie_ongoingov.php';]]>
     }
   		else msg("success", "Google Indexing отключён", "Вы отключили работу Google Indexing в админке модуля Advanced Kodik Parser", $_SESSION['admin_referrer']);
 	}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/modules/continue_watch.php">
+		<operation action="create">
+			<replacecode><![CDATA[<?php
+
+if( !defined('DATALIFEENGINE') ) {
+	header( "HTTP/1.1 403 Forbidden" );
+	header ( 'Location: ../../' );
+	die( "Hacking attempt!" );
+}
+
+include ENGINE_DIR . '/mrdeath/aaparser/file_edits/continue_watch.php';]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
