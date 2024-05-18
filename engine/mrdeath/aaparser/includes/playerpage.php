@@ -137,8 +137,7 @@ echo <<<HTML
         <td class="col-xs-2 col-md-5 settingstd "></td>
     </tr>
 HTML;
-}
-else {
+} else {
     echo <<<HTML
     <tr>
         <td class="col-xs-10 col-sm-6 col-md-7 "><button onclick="update_translations_dorama(); return false;" class="btn bg-slate-600 btn-raised legitRipple"><i class="fa fa-microphone position-left"></i>Получить озвучки дорам</button><span class="note large"></span></td>
@@ -153,8 +152,10 @@ showRow('Отключить вывод озвучек', 'Вывод выбран
 echo <<<HTML
 			
 			</table>
+		
 			<div class="alert alert-info alert-styled-left alert-arrow-left alert-component">Для вывода плеера в файле шаблона полной новости fullstory.tpl вставьте в то место где плеер будет выводиться код<br><b>&lt;div id="kodik_player_ajax" data-news_id="{news-id}"&gt;&lt;/div&gt;</b><br>Не забудьте обернуть тегом [xfgiven_x] или [catlist=1,2....]</div>
-			<div class="alert alert-info alert-styled-left alert-arrow-left alert-component">Вы можете выводить плеер с анимированным прелоадером в момент загрузки плейлиста плеера, <a href="https://prnt.sc/CEMEEe3A3kjp" target="_blank">скриншот</a> как выглядит в действии. Для этого добавьте следующие стили в подключенный к шаблону файл стилей<textarea style="width:100%;height:300px;" disabled="">
+			<div class="alert alert-info alert-styled-left alert-arrow-left alert-component">Вы можете выводить плеер с анимированным прелоадером в момент загрузки плейлиста плеера, <a href="https://prnt.sc/CEMEEe3A3kjp" target="_blank">скриншот</a> как выглядит в действии. Для этого добавьте следующие стили в подключенный к шаблону файл стилей
+			<textarea style="width:100%;height:300px;" disabled>
 .loading-kodik {
   	position: absolute;
     width: 5rem;
@@ -212,7 +213,10 @@ echo <<<HTML
     transform: rotateX(35deg) rotateY(55deg) rotateZ(1turn);
   }
 }
-			    </textarea></br>В файле шаблона полной новости fullstory.tpl вставьте в то место где плеер будет выводиться код<br><textarea style="width:100%;height:180px;" disabled="">
+</textarea>
+</br>В файле шаблона полной новости fullstory.tpl вставьте в то место где плеер будет выводиться код
+<br>
+<textarea style="width:100%;height:180px;" disabled>
 <div id="kodik_player_ajax" data-news_id="{news-id}">
 	<div class="loading-kodik">
   		<div class="arc"></div>
@@ -220,18 +224,19 @@ echo <<<HTML
   		<div class="arc"></div>
 	</div>
 </div>
-			    </textarea></div>
+			    </textarea>
 		</div>
+</div>
 		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Страница "Продолжить просмотр"</div>
 		<div class="table-responsive">
 			<table class="table table-striped">
 HTML;
-showRow('Включить страницу "Продолжить просмотр"?', 'Если включено, то будет активирована страница, на которой полный перечень всех аниме/дорам, которые пользователь смотрел в последнее время. Новости попадают на страницу "Продолжить просмотр" в момент, когда пользователь сайта смотрит сериалы или фильмы через модуль плейлиста. Лимит на количество новостей на данной странице равен параметру "Максимальное количество новостей для запоминания". Инструкция по настройке находится ниже.', makeCheckBox('player[custom_cache]', $aaparser_config_push['player']['custom_cache']));
+showRow('Включить страницу "Продолжить просмотр"?', 'Если включено, то будет активирована страница, на которой полный перечень всех аниме\дорам, которые пользователь смотрел в последнее время. Новости попадают на страницу "Продолжить просмотр" в момент, когда пользователь сайта смотрит сериалы или фильмы через модуль плейлиста. Лимит на количество новостей на данной странице равен параметру "Максимальное количество новостей для запоминания". Инструкция по настройке находится ниже.', makeCheckBox('player[custom_cache]', $aaparser_config_push['player']['custom_cache']));
 
 echo <<<HTML
 			    
 			    <tr>
-                    <td style="width:100%">
+                    <td style="width:100%" colspan="2">
                     1. Если у вас apache, то открываем .htaccess в корне сайта и ниже строчки <b>RewriteEngine On</b> вставляем правило<br>
                             <textarea style="width:100%;height:40px;" disabled>
 RewriteRule ^continue(/?)+$ index.php?do=continue_watch [L]
@@ -243,7 +248,7 @@ rewrite ^/continue/*$ /index.php?do=continue_watch last;
                     </td>
                 </tr>
 			    <tr>
-                    <td style="width:100%">
+                    <td style="width:100%" colspan="2">
                     2. В корне папки с шаблоном создаём файл <b>continue_watch.tpl</b>, копируем в него содержимое вашего shortstory.tpl. В данном файле доступны все стандартные теги краткой новости, а также следующие теги:<br>
                         [watched_series]...[/watched_series] - выведет содержимое тега в случае если по данному аниме есть запоминание последней просмотренной серии<br>
                         {watched_episode} - номер запомненной серии<br>
@@ -252,6 +257,48 @@ rewrite ^/continue/*$ /index.php?do=continue_watch last;
                     </td>
                 </tr>
 			</table>
+		</div>
+		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Рейтинг озвучек</div>
+		<div class="table-responsive">
+			<table class="table table-striped">
+HTML;
+showRow('Включить рейтинг озвучек?', 'Если включено, то модуль будет выводить информацию по самым выбираемым озвучкам выбранного материала </br>Для вывода рейтинга озвучек вставьте <b>{kodik_voicerate}</b> в fullstory.tpl', makeCheckBox('player[voicerate_mod]', $aaparser_config_push['player']['voicerate_mod']));
+
+echo <<<HTML
+			</table>
+			<div class="alert alert-info alert-styled-left alert-arrow-left alert-component">Стандартные стили для рейтинга озвучек
+			<textarea style="width:100%;height:300px;" disabled>
+.voicerate_item {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+	padding: 2px 6px;
+}
+
+.voicerate_title {
+    width: 15%;
+}
+
+.voicerate_count {
+    width: 12%;
+	text-align: right;
+}
+
+.voicerate_prgbar {
+    width: 71%;
+    background: #898989;
+    border-radius: 5px;
+}
+
+.voicerate_prgbar_width {
+    background: red;
+    height: 5px;
+    border-radius: 5px;
+}
+
+			</textarea>
+			</div>
 		</div>
 	</div>
 HTML;

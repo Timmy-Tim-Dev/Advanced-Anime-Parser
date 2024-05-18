@@ -85,6 +85,9 @@ else {
     $tpl->set( '{kodik_sub_characters}', '' );
     $tpl->set( '{kodik_persons}', '' );
 }
+if (isset($aaparser_config_push['player']['voicerate_mod']) && $aaparser_config_push['player']['voicerate_mod'] == 1) {
+    $tpl->set( '{kodik_voicerate}', '<div id="voicerate_mod" data-news_id="'.$row['id'].'">Загрузка...</div>' );
+} else $tpl->set( '{kodik_voicerate}', '' );
 
 if ( isset($aaparser_config_push['persons']['personas_on_dorama']) && $aaparser_config_push['persons']['personas_on_dorama'] == 1 && isset($aaparser_config_push['main_fields']['xf_mdl_id']) && isset($xfieldsdata[$aaparser_config_push['main_fields']['xf_mdl_id']]) && $xfieldsdata[$aaparser_config_push['main_fields']['xf_mdl_id']] ) {
     $kodik_persons_dorama = 'yes';

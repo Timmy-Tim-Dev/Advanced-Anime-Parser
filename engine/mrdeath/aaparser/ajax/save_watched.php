@@ -17,6 +17,35 @@ $kodik_data = $_REQUEST['kodik_data'];
 $action = $_REQUEST['action'];
 
 require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
+require_once ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php';
+
+if ($news_id && $action == 'voicerate' && $kodik_data && $aaparser_config_push['player']['voicerate_mod'] == 1) {
+	require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+	
+	$voice_cache = kodik_cache('voicerate_'.$news_id, false, 'voicerate');
+	if ($voice_cache === false) $voice_cache = [];
+	else $voice_cache = json_decode($voice_cache, true);
+	
+	if (isset($voice_cache[$kodik_data['translation']['title']])) {
+		$voice_cache[$kodik_data['translation']['title']]++;
+	} else {
+		$voice_cache[$kodik_data['translation']['title']] = 1;
+	}
+	
+	$voice_cache = json_encode($voice_cache, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+	kodik_create_cache('voicerate_'.$news_id, $voice_cache, false, 'voicerate');
+	die($voice_cache);
+}
+
+if ($news_id && $action == 'voicerate_take' && $aaparser_config_push['player']['voicerate_mod'] == 1) {
+	require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+	
+	$voice_cache = kodik_cache('voicerate_'.$news_id, false, 'voicerate');
+	if ($voice_cache === false) die(json_encode('Нету кэша'));
+	else die($voice_cache);
+	
+}
+
 
 $maximum_animes = $aaparser_config_push['player']['max_remembers'];
 

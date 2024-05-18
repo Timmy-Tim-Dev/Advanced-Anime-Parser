@@ -225,6 +225,56 @@ jQuery.cookie = function(name, value, options) {
     }
 };
 
+function voicerate_take (news_take) {
+	$.ajax({
+		url: "/engine/ajax/controller.php?mod=anime_grabber&module=kodik_watched",
+		type: "POST",
+		dataType: "json",
+		data: {news_id:news_take,action:'voicerate_take'},
+		success: function(data) {
+			if (data != 'Нету кэша') {
+				var total = 0;
+				var sortedKeys = Object.keys(data).sort(function(a, b) {
+					return data[b] - data[a];
+				});
+				
+				var sortedData = {};
+				sortedKeys.forEach(function(key) {
+					sortedData[key] = data[key];
+				});
+				
+				$("#voicerate_mod").empty();
+
+				Object.values(data).forEach(function(value) {
+					total += value;
+				});
+
+				sortedKeys.forEach(function(key) {
+					var percentage = (data[key] / total * 100).toFixed(1);
+					var listItem = $(`
+						<div class='voicerate_item'>
+							<div class='voicerate_title'>${key}</div>
+							<div class='voicerate_prgbar'>
+								<div class='voicerate_prgbar_width' style='width: ${percentage}%'></div>
+							</div>
+							<div class='voicerate_count'>${data[key]} (${percentage}%)</div>
+						</div>
+					`);
+					$("#voicerate_mod").append(listItem);
+				});
+			} else {
+				$("#voicerate_mod").html("В данный момент нет рейтинга озвучек");
+			}
+		}
+
+
+	});
+};
+
+if ($("#voicerate_mod").attr("data-news_id")) {
+	voicerate_take ($("#voicerate_mod").attr("data-news_id"));
+}
+
 function kodikMessageListener(message) {
     if ( message.data.key == 'kodik_player_current_episode' ) {
         var news_id = $("#kodik_player_ajax").attr("data-news_id");
@@ -235,6 +285,11 @@ function kodikMessageListener(message) {
 				} else {
 					$('.b-post__lastepisodeout').remove();
 				}
+			}
+		}, "json");
+		$.get(dle_root + "engine/ajax/controller.php?mod=anime_grabber&module=kodik_watched", { 'news_id': news_id, 'kodik_data': message.data.value, 'action': 'voicerate' }, function(data) {
+			if ( data ) {
+				voicerate_take (news_id);
 			}
 		}, "json");
     }
