@@ -9,6 +9,23 @@ echo <<<HTML
 		<div class="table-responsive anime-settings">
 		<table class="table table-striped">
 HTML;
+
+$avaiable_tags_chars = '
+<br/><b>{id}</b> - выводит Shikimori ID персонажа.
+<br/><b>{name}</b> - Выводит имя персонажа на Английском
+<br/><b>{russian}</b> - Выводит имя персонажа на Русском
+<br/><b>{altname}</b> - Выводит прозвище персонажа <i style="color:red;">Работает только у персонажей</i>
+<br/><b>{japanese}</b> - Выводит имя персонажа на Японском
+<br/><b>{url}</b> - Выводит ссылку персонажа на Shikimori
+<br/><b>{birth_on}</b> - Выводит день рождение деятеля <i style="color:red;">Работает только у деятелей</i>
+<br/><b>{job_title}</b> - Выводит должность деятеля <i style="color:red;">Работает только у деятелей</i>
+<br/><b>{website}</b> - Выводит вебсайт деятеля <i style="color:red;">Работает только у деятелей</i>
+<br/><b>{description}</b> - Выводит описание персонажа <i style="color:red;">Работает только у персонажей</i>
+<br/><b>{description_no_spoiler}</b> - Выводит описание персонажа без спойлера <i style="color:red;">Работает только у персонажей</i>
+<br/><b>{spoiler}</b> - Выводит спойлер описание персонажа <i style="color:red;">Работает только у персонажей</i>
+<br/>Для каждого тега доступны конструкции [if_x]...[/if_x], а так же [ifnot_x]...[/ifnot_x], где x - тег.
+';
+
 showRow('Включить вывод персонажей и авторов?', 'Включив, модуль будет выводить состав персонажей, главные герои, второстепенные герои, авторы аниме и другие участники аниме', makeCheckBox('persons[personas_on]', $aaparser_config_push['persons']['personas_on']));
 showRow('Выводить главных персонажей?', 'Включив, модуль будет выводить главных персонажей, будет активирован тег {kodik_main_characters}', makeCheckBox('persons[main_characters]', $aaparser_config_push['persons']['main_characters']));
 showRow('Лимит главных персонажей', 'Вы можете задать лимит количества главных персонажей, для отключеня лимита вставьте 0', showInput(['persons[main_characters_limit]', 'number', $aaparser_config_push['persons']['main_characters_limit']]));
@@ -22,7 +39,9 @@ showRow('Постер при отсутствий изображения', 'Ук
 showRow('Включить обработку страниц персонажей и авторов аниме?', 'Включить вывод обработки страниц персонажей и авторов аниме взятых из Shikimori', makeCheckBox('persons[persons_page]', $aaparser_config_push['persons']['persons_page']));
 showRow('Кэшировать данные страниц персонажей и авторов?', 'Включив, модуль будет кэшировать полученные данные, заметно ускоряет обработку страницы<br/><b>Настоятельно рекомендуем использовать кэширование!</b>', makeCheckBox('persons[persons_page_cache]', $aaparser_config_push['persons']['persons_page_cache']));
 showRow('Общий вес файлов страницы кеша персон и персонажей - <span id="chars-cache-size">'.$personajes_page_cache_size.'</span>', 'При изменении какой либо опции из данного раздела обязательно очистите кеш', '<button onclick="clear_page_cache(); return false;" class="btn bg-danger btn-raised legitRipple"><i class="fa fa-trash position-left"></i>Очистить кеш</button>');
-
+showRow('Метатег "title" для страницы персонажей и авторов', 'Если оставите пустым, то будет выведен стандартный от DLE. <br/>Список доступных тегов: '. $avaiable_tags_chars, showInput(['persons[metatitle]', 'text', $aaparser_config_push['persons']['metatitle']]));
+showRow('Метатег "description" для страницы персонажей и авторов', 'Если оставите пустым, то будет выведен стандартный от DLE. <br/>Список доступных тегов: '. $avaiable_tags_chars, showInput(['persons[metadescr]', 'text', $aaparser_config_push['persons']['metadescr']]));
+showRow('Метатег "keywords" для страницы персонажей и авторов', 'Если оставите пустым, то будет выведен стандартный от DLE. <br/>Список доступных тегов: '. $avaiable_tags_chars, showInput(['persons[metakeyw]', 'text', $aaparser_config_push['persons']['metakeyw']]));
 echo <<<HTML
 		</table>
 <div class="rcol-2col anime-settings" style="margin-top:0;float:unset;">

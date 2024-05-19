@@ -15,7 +15,6 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-
 ini_set("memory_limit","256M");
 ini_set('max_execution_time',300);
 $type = $_GET['type'];
@@ -38,16 +37,12 @@ if ($type == "people") {
 		$json = request($shikimori_api_domain . '/api/people/' . $id);
 		if ( isset($aaparser_config_push['persons']['persons_page_cache']) && $aaparser_config_push['persons']['persons_page_cache'] == 1 && $json != '') kodik_create_cache('people_'.$id, json_encode($json, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES), false, 'personas_characters_page');
 	}	
-	
-	
-	
+
 	$al_id = '';
 	if (!is_null($json['roles'])) {
 		$al_ids = [];
 		foreach ($json['roles'] as $role) {
-			if (isset($role['animes'])) {
-				$al_ids = array_merge($al_ids, array_column($role['animes'], 'id'));
-			}
+			if (isset($role['animes'])) $al_ids = array_merge($al_ids, array_column($role['animes'], 'id'));
 		}
 		$al_id = implode(', ', $al_ids);
 	}
@@ -83,6 +78,32 @@ if ($type == "people") {
 	}	
 	
 	$tpl->compile('content');
+	
+	// микроразметка
+	$metajson['id'] = isset($json['id']) ? $json['id'] : '';
+	$metajson['name'] = isset($json['name']) ? $json['name'] : '';
+	$metajson['russian'] = isset($json['russian']) ? $json['russian'] : '';
+	$metajson['altname'] = isset($json['altname']) ? $json['altname'] : '';
+	$metajson['japanese'] = isset($json['japanese']) ? $json['japanese'] : '';
+	$metajson['url'] = isset($json['url']) ? $json['url'] : '';
+	$metajson['description'] = isset($json['description']) ? $json['description'] : '';
+	$metajson['description_no_spoiler'] = isset($descr_without_spoil) ? $descr_without_spoil : '';
+	$metajson['spoiler'] = isset($spoil) ? $spoil : '';
+	$metajson['birth_on'] = isset($json['birth_on']) ? $json['birth_on'] : '';
+	$metajson['job_title'] = isset($json['job_title']) ? $json['job_title'] : '';
+	$metajson['website'] = isset($json['website']) ? $json['website'] : '';
+	
+	$urlik = ((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+	$canonical = preg_replace('#(https?://[^/]+/characters/\d+)-[^/]+#', '$1', $urlik);
+	if ( isset($aaparser_config_push['persons']['metatitle']) && $aaparser_config_push['persons']['metatitle'] != '') {
+		$metatags['title'] = check_if($aaparser_config_push['persons']['metatitle'], $metajson);
+	}
+	if ( isset($aaparser_config_push['persons']['metadescr']) && $aaparser_config_push['persons']['metadescr'] != '') {
+		$metatags['description'] = check_if($aaparser_config_push['persons']['metadescr'], $metajson);
+	}
+	if ( isset($aaparser_config_push['persons']['metakeyw']) && $aaparser_config_push['persons']['metakeyw'] != '') {
+		$metatags['keywords'] = check_if($aaparser_config_push['persons']['metakeyw'], $metajson);
+	}
 }
 if ($type == "characters") {
 	$dle_module = 'characters';
@@ -98,18 +119,14 @@ if ($type == "characters") {
 		}	
 	
 		$al_id = $ml_id = '';
-		if (!is_null($json['animes'])) {
-			$al_id = implode(', ', array_column($json['animes'], 'id'));
-		}
-		if (!is_null($json['mangas'])) {
-			$ml_id = implode(', ', array_column($json['mangas'], 'id'));
-		}
+		if (!is_null($json['animes'])) $al_id = implode(', ', array_column($json['animes'], 'id'));
+		if (!is_null($json['mangas'])) $ml_id = implode(', ', array_column($json['mangas'], 'id'));
 		$json['description'] = preg_replace('/\[\/?character(?:=[^\]]+)?\]/', '', $json['description']);
-		if (preg_match('/\[spoiler\](.*?)\[\/spoiler\]/s', $json['description'], $matches)) {
+		if (preg_match('/\[spoiler(?:=[^\]]+)?\](.*?)\[\/spoiler\]/s', $json['description'], $matches)) {
 			$spoil = $matches[1];
 		}
-		$descr_without_spoil = preg_replace('/\[spoiler\](.*?)\[\/spoiler\]/s', '', $json['description']);
-		$json['description'] = preg_replace('/\[\/?spoiler\]/', '', $json['description']);
+		$descr_without_spoil = preg_replace('/\[spoiler(?:=[^\]]+)?\](.*?)\[\/spoiler\]/s', '', $json['description']);
+		$json['description'] = preg_replace('/\[\/?spoiler(?:=[^\]]+)?\]/', '', $json['description']);
 		
 		$tpl->load_template( 'characters/characters.tpl' );
 		
@@ -131,8 +148,33 @@ if ($type == "characters") {
 		change_tags_img($tpl, $json['image']['x96'], "image_x96", $aaparser_config_push['persons']['default_image']);
 		change_tags_img($tpl, $json['image']['x48'], "image_x48", $aaparser_config_push['persons']['default_image']);
 		
-		
 		$tpl->compile('content');
+		
+		// микроразметка
+		$metajson['id'] = isset($json['id']) ? $json['id'] : '';
+		$metajson['name'] = isset($json['name']) ? $json['name'] : '';
+		$metajson['russian'] = isset($json['russian']) ? $json['russian'] : '';
+		$metajson['altname'] = isset($json['altname']) ? $json['altname'] : '';
+		$metajson['japanese'] = isset($json['japanese']) ? $json['japanese'] : '';
+		$metajson['url'] = isset($json['url']) ? $json['url'] : '';
+		$metajson['description'] = isset($json['description']) ? $json['description'] : '';
+		$metajson['description_no_spoiler'] = isset($descr_without_spoil) ? $descr_without_spoil : '';
+		$metajson['spoiler'] = isset($spoil) ? $spoil : '';
+		$metajson['birth_on'] = isset($json['birth_on']) ? $json['birth_on'] : '';
+		$metajson['job_title'] = isset($json['job_title']) ? $json['job_title'] : '';
+		$metajson['website'] = isset($json['website']) ? $json['website'] : '';
+		
+		$urlik = ((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		$canonical = preg_replace('#(https?://[^/]+/characters/\d+)-[^/]+#', '$1', $urlik);
+		if ( isset($aaparser_config_push['persons']['metatitle']) && $aaparser_config_push['persons']['metatitle'] != '') {
+			$metatags['title'] = check_if($aaparser_config_push['persons']['metatitle'], $metajson);
+		}
+		if ( isset($aaparser_config_push['persons']['metadescr']) && $aaparser_config_push['persons']['metadescr'] != '') {
+			$metatags['description'] = check_if($aaparser_config_push['persons']['metadescr'], $metajson);
+		}
+		if ( isset($aaparser_config_push['persons']['metakeyw']) && $aaparser_config_push['persons']['metakeyw'] != '') {
+			$metatags['keywords'] = check_if($aaparser_config_push['persons']['metakeyw'], $metajson);
+		}
 }
 	
 ?>
