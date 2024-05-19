@@ -417,6 +417,16 @@ echo <<<HTML
 		[/anime-list]
 	</div>
 </div></textarea>
+			<hr/>
+			<i>Правила для <b>apache</b></i>
+			<textarea style="width:100%;height:50px;" disabled>
+RewriteRule ^characters/([^/]*)(/?)+$ index.php?do=characters&type=characters&id=$1 [L]
+RewriteRule ^people/([^/]*)(/?)+$ index.php?do=characters&type=people&id=$1 [L]</textarea>
+			<hr/>
+			<i>Правила для <b>NGINX</b></i>
+			<textarea style="width:100%;height:50px;" disabled>
+rewrite ^/characters/([^/]*)(/?)+$ /index.php?do=characters&type=characters&id=$1 last;
+rewrite ^/people/([^/]*)(/?)+$ /index.php?do=characters&type=people&id=$1 last;</textarea>
 		</div>
 	</div>
 </div>
