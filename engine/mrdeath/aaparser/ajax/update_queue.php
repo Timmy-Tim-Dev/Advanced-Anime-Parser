@@ -318,6 +318,13 @@ elseif ( $action == "clear_personajes_cache" ) {
 		'status' => 'ok'
 	)));
 }
+elseif ( $action == "clear_page_cache" ) {
+    require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+    kodik_clear_cache('personas', 'personas_characters_page');
+	die(json_encode(array(
+		'status' => 'ok'
+	)));
+}
 elseif ( $action == "update_module" ) {
 	$row = $db->super_query("SHOW TABLE STATUS WHERE Name = '" . PREFIX . "_post'");
 	$storage_engine = $row['Engine'];

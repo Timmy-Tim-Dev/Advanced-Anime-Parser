@@ -22,6 +22,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 	else $shikimori_api_domain = 'https://shikimori.one/';
 	
 	$shikimori_url_domain = clean_url($shikimori_api_domain);
+	$site_url_domain = clean_url($config['http_home_url']);
 	
 	$shiki_id = isset($_POST['sh_id']) ? $_POST['sh_id'] : '';
 	
@@ -106,6 +107,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 						change_tags($tplmcharactersone, $main_character['data']['name'], 'characters_name_eng');
 						change_tags($tplmcharactersone, $main_character['data']['russian'], 'characters_name_rus');
 						change_tags($tplmcharactersone, $main_character['data']['url'], 'characters_url', 'https://' . $shikimori_url_domain);
+						change_tags($tplmcharactersone, $main_character['data']['url'], 'site_characters_url', 'https://' . $site_url_domain);
 						
 						change_tags_img($tplmcharactersone, $main_character['data']['image']['original'], 'characters_image_orig', $aaparser_config_push['persons']['default_image']);
 						change_tags_img($tplmcharactersone, $main_character['data']['image']['preview'], 'characters_image_prev', $aaparser_config_push['persons']['default_image']);
@@ -171,6 +173,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 						change_tags($tplscharactersone, $sub_character['data']['name'], 'characters_name_eng');
 						change_tags($tplscharactersone, $sub_character['data']['russian'], 'characters_name_rus');
 						change_tags($tplscharactersone, $sub_character['data']['url'], 'characters_url', 'https://' . $shikimori_url_domain);
+						change_tags($tplscharactersone, $sub_character['data']['url'], 'site_characters_url', 'https://' . $site_url_domain);
 						
 						change_tags_img($tplscharactersone, $sub_character['data']['image']['original'], 'characters_image_orig', $aaparser_config_push['persons']['default_image']);
 						change_tags_img($tplscharactersone, $sub_character['data']['image']['preview'], 'characters_image_prev', $aaparser_config_push['persons']['default_image']);
@@ -235,6 +238,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 						change_tags($tplpersonsone, $person['data']['name'], 'persons_name_eng');
 						change_tags($tplpersonsone, $person['data']['russian'], 'persons_name_rus');
 						change_tags($tplpersonsone, $person['data']['url'], 'persons_url', 'https://' . $shikimori_url_domain);
+						change_tags($tplpersonsone, $person['data']['url'], 'site_persons_url', 'https://' . $site_url_domain);
 						
 						change_tags_img($tplpersonsone, $person['data']['image']['original'], 'persons_image_orig', $aaparser_config_push['persons']['default_image']);
 						change_tags_img($tplpersonsone, $person['data']['image']['preview'], 'persons_image_prev', $aaparser_config_push['persons']['default_image']);

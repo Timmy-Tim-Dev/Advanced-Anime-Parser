@@ -9,24 +9,36 @@
 */
 
 if (!function_exists('request')) {
-    function request($url){
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60 );
-        curl_setopt($ch, CURLOPT_TIMEOUT, 60 );
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        
-        $headers = [
-    		'Content-Type: application/json'
-		];
+    function request($url, $max_attempts = 5, $initial_delay = 1){
+		$attempt = 0;
+		while ($attempt < $max_attempts) {
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60 );
+			curl_setopt($ch, CURLOPT_TIMEOUT, 60 );
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+			
+			$headers = [
+				'Content-Type: application/json'
+			];
 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-		$kp_api = curl_exec ($ch);
-		curl_close ($ch);
-  
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+			$kp_api = curl_exec ($ch);
+			$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			if ($http_code == 200) {
+				// Успешный ответ
+				curl_close($ch);
+				return json_decode($kp_api, true);
+			} elseif ($http_code == 429) {
+				// Превышен лимит запросов
+				$attempt++;
+				sleep($initial_delay);
+			}
+			curl_close ($ch);
+		}
   		return json_decode($kp_api, true);
     }
 }

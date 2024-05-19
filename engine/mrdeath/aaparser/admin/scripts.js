@@ -610,6 +610,35 @@ function clear_actors_cache() {
 	});
 }
 
+function clear_page_cache() {
+	DLEconfirm( 'Вы уверены что хотите очистить кеш страниц персонажей и авторов?', 'Подтвердите', function () {
+	$.ajax({
+		url: "/engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear",
+		data:{action: "clear_page_cache", user_hash: dle_login_hash},
+		dataType: "json",
+		cache: false,
+		success: function(data) {
+			if ( data.status == "ok" ) {
+			    $('#page-cache-size').html('0 КБ');
+                Growl.info({
+					title: 'Успешно!',
+				    text: 'Кеш был успешно очищен',
+				    icon: 'success'
+				});
+				return false;
+			}
+			else {
+			    Growl.error({
+					title: 'Ошибка очистки кеша!',
+				    text: 'Повторите позже'
+				});
+				return false;
+			}
+		}
+	});
+	});
+}
+
 $(document).ready(function(){
 	$(".rcol-2col-header").click (function(){
 
