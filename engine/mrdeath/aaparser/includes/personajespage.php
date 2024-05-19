@@ -313,6 +313,55 @@ echo <<<HTML
 			<br/><b>[manga-list]</b>Выводит содержимое если есть манга в котором участвовал персонаж <b>[/manga-list]</b>
 			<br/><b>{manga-list}</b>Выводит список Manga ID где участвовал персонаж
 			<hr/>
+			<i>Примерный файл для <b>characters.tpl</b></i>
+			<textarea style="width:100%;height:200px;" disabled>
+<div class="swblock">
+	<div class="swtop">
+		<div class="swcard">
+			<div class="swimg">
+				<img src="{image_orig}" alt="{name}">
+			</div>
+			<div class="swcardinfo">
+				<div class="swcardhead">Карточка персонажа:</div>
+				[name]<div class="swcardrow">Имя: <span>{name}</span></div>[/name]
+				[russian]<div class="swcardrow">Имя на Русском: <span>{russian}</span></div>[/russian]
+				[japanese]<div class="swcardrow">Имя на Японском: <span>{japanese}</span></div>[/japanese]
+				[altname]<div class="swcardrow">Прозвище: <span>{altname}</span></div>[/altname]
+				[url]<div class="swcardrow">Ссылка на источник: <span><a href="{url}">{url}</a></span></div>[/url]
+			</div>
+		</div>
+		<div class="swabout">
+			<h2>Описание</h2>
+			[not_description]
+			<div class="swdescr">
+				У данного персонажа в данный момент нету описания
+			</div>
+			[/not_description]
+			[description_no_spoiler]
+			<div class="swdescr">
+				{description_no_spoiler}
+			</div>
+			[/description_no_spoiler]
+			[spoiler]
+			<details class="swspoil">
+				<summary class="swspoilbtn">
+					Спойлер!
+				</summary>
+				<p>{spoiler}</p>
+			</details>
+			[/spoiler]
+		</div>
+	</div>
+	<div class="swbot">
+		[anime-list]
+		<h2>Персонаж в аниме</h2>
+		<div class="swcontent">
+			{custom idshiki="{anime-list}" template="shortstory"}
+		</div>
+		[/anime-list]
+	</div>
+</div></textarea>
+			<hr/>
 			Теги которые работают в файле шаблона <b>people.tpl</b>:
 			<br/><b>{id}</b> - выводит Shikimori ID деятеля.
 			<br/><b>[name]</b>Выводит содержимое если есть имя деятеля на Английском<b>[/name]</b>
@@ -339,6 +388,35 @@ echo <<<HTML
 			<br/><b>{image_x48}</b>Выводит фото деятеля в x48 формате
 			<br/><b>[anime-list]</b>Выводит содержимое если есть аниме в котором участвовал деятель <b>[/anime-list]</b>
 			<br/><b>{anime-list}</b>Выводит список Shikimori ID где участвовал деятель
+			<hr/>
+			<i>Примерный файл для <b>people.tpl</b></i>
+			<textarea style="width:100%;height:200px;" disabled>
+<div class="swblock">
+	<div class="swtop">
+		<div class="swcard">
+			<div class="swimg">
+				<img src="{image_orig}" alt="{name}">
+			</div>
+			<div class="swcardinfo">
+				<div class="swcardhead">Карточка деятеля:</div>
+				[name]<div class="swcardrow">Имя: <span>{name}</span></div>[/name]
+				[russian]<div class="swcardrow">Имя на Русском: <span>{russian}</span></div>[/russian]
+				[japanese]<div class="swcardrow">Имя на Японском: <span>{japanese}</span></div>[/japanese]
+				[job_title]<div class="swcardrow">Должность: <span>{job_title}</span></div>[/job_title]
+				[birth_on]<div class="swcardrow">День рождение: <span>{birth_on}</span></div>[/birth_on]
+				[url]<div class="swcardrow">Ссылка на источник: <span><a href="{url}">{url}</a></span></div>[/url]
+			</div>
+		</div>
+	</div>
+	<div class="swbot">
+		[anime-list]
+		<h2>Участвовал(а) в аниме</h2>
+		<div class="swcontent">
+			{custom idshiki="{anime-list}" template="shortstory"}
+		</div>
+		[/anime-list]
+	</div>
+</div></textarea>
 		</div>
 	</div>
 </div>
