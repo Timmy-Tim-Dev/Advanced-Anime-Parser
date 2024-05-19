@@ -93,8 +93,7 @@ if ($type == "people") {
 	$metajson['job_title'] = isset($json['job_title']) ? $json['job_title'] : '';
 	$metajson['website'] = isset($json['website']) ? $json['website'] : '';
 	
-	$urlik = ((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-	$canonical = preg_replace('#(https?://[^/]+/characters/\d+)-[^/]+#', '$1', $urlik);
+	$canonical = ((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 	if ( isset($aaparser_config_push['persons']['metatitle']) && $aaparser_config_push['persons']['metatitle'] != '') {
 		$metatags['title'] = check_if($aaparser_config_push['persons']['metatitle'], $metajson);
 	}
@@ -164,8 +163,7 @@ if ($type == "characters") {
 		$metajson['job_title'] = isset($json['job_title']) ? $json['job_title'] : '';
 		$metajson['website'] = isset($json['website']) ? $json['website'] : '';
 		
-		$urlik = ((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-		$canonical = preg_replace('#(https?://[^/]+/characters/\d+)-[^/]+#', '$1', $urlik);
+		$canonical = ((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		if ( isset($aaparser_config_push['persons']['metatitle']) && $aaparser_config_push['persons']['metatitle'] != '') {
 			$metatags['title'] = check_if($aaparser_config_push['persons']['metatitle'], $metajson);
 		}
