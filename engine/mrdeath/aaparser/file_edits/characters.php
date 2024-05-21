@@ -20,6 +20,7 @@ ini_set("memory_limit","256M");
 ini_set('max_execution_time',300);
 $type = $_GET['type'];
 $id = $_GET['id'];
+$newid = explode('-', $id)[0];
 require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/functions/module.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
@@ -34,13 +35,13 @@ if ($type == "people") {
 	// Начало
 	$dle_module = 'people';
 	if ( isset($aaparser_config_push['persons']['persons_page_cache']) && $aaparser_config_push['persons']['persons_page_cache'] == 1 ) {
-		$json = kodik_cache('people_'.$id, false, 'personas_characters_page');
+		$json = kodik_cache('people_'.$newid, false, 'personas_characters_page');
 		$json = json_decode($json, true);
 	} else $json = false;
 	
 	if ($json === false || $json == '') {
-		$json = request($shikimori_api_domain . '/api/people/' . $id);
-		if ( isset($aaparser_config_push['persons']['persons_page_cache']) && $aaparser_config_push['persons']['persons_page_cache'] == 1 && $json != '') kodik_create_cache('people_'.$id, json_encode($json, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES), false, 'personas_characters_page');
+		$json = request($shikimori_api_domain . '/api/people/' . $newid);
+		if ( isset($aaparser_config_push['persons']['persons_page_cache']) && $aaparser_config_push['persons']['persons_page_cache'] == 1 && $json != '') kodik_create_cache('people_'.$newid, json_encode($json, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES), false, 'personas_characters_page');
 	}
 	
 	// Обработка данных
@@ -88,27 +89,29 @@ if ($type == "people") {
 	$tpl->compile('content');
 	
 	// Карта сайта
-	$sitemapurl = ltrim($json['url'], '/');
-	$data = unserialize(file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/people.dat"));
-	if (!is_array($data)) $data = array();
-	if (!in_array($sitemapurl, $data) && $sitemapurl != ''){
-		$data[] = $sitemapurl;
-		$data = serialize($data);
-		file_put_contents(ENGINE_DIR."/mrdeath/aaparser/data/people.dat", $data);
-		chmod( ENGINE_DIR . "/mrdeath/aaparser/data/people.dat", 0777 );
+	if (isset($aaparser_config_push['persons']['persons_sitemap']) && $aaparser_config_push['persons']['persons_sitemap']) { 
+		$sitemapurl = ltrim($json['url'], '/');
+		$data = unserialize(file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/people.dat"));
+		if (!is_array($data)) $data = array();
+		if (!in_array($sitemapurl, $data) && $sitemapurl != ''){
+			$data[] = $sitemapurl;
+			$data = serialize($data);
+			file_put_contents(ENGINE_DIR."/mrdeath/aaparser/data/people.dat", $data);
+			chmod( ENGINE_DIR . "/mrdeath/aaparser/data/people.dat", 0777 );
+		}
 	}
 }
 if ($type == "characters") {
 	// Начало
 	$dle_module = 'characters';
 	if ( isset($aaparser_config_push['persons']['persons_page_cache']) && $aaparser_config_push['persons']['persons_page_cache'] == 1 ) {
-		$json = kodik_cache('character_'.$id, false, 'personas_characters_page');
+		$json = kodik_cache('character_'.$newid, false, 'personas_characters_page');
 		$json = json_decode($json, true);
 	} else $json = false;
 
 	if ($json === false || $json == '') {
-		$json = request($shikimori_api_domain . '/api/characters/' . $id);
-		if ( isset($aaparser_config_push['persons']['persons_page_cache']) && $aaparser_config_push['persons']['persons_page_cache'] == 1 && $json != '') kodik_create_cache('character_'.$id, json_encode($json, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES), false, 'personas_characters_page');
+		$json = request($shikimori_api_domain . '/api/characters/' . $newid);
+		if ( isset($aaparser_config_push['persons']['persons_page_cache']) && $aaparser_config_push['persons']['persons_page_cache'] == 1 && $json != '') kodik_create_cache('character_'.$newid, json_encode($json, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES), false, 'personas_characters_page');
 	}	
 	// Обработка данных
 	$al_id = $ml_id = '';
@@ -147,14 +150,16 @@ if ($type == "characters") {
 	$tpl->compile('content');
 	
 	// Карта сайта
-	$sitemapurl = ltrim($json['url'], '/');
-	$data = unserialize(file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/characters.dat"));
-	if (!is_array($data)) $data = array();
-	if (!in_array($sitemapurl, $data) && $sitemapurl != '') {
-		$data[] = $sitemapurl;
-		$data = serialize($data);
-		file_put_contents(ENGINE_DIR."/mrdeath/aaparser/data/characters.dat", $data);
-		chmod( ENGINE_DIR . "/mrdeath/aaparser/data/characters.dat", 0777 );
+	if (isset($aaparser_config_push['persons']['persons_sitemap']) && $aaparser_config_push['persons']['persons_sitemap']) { 
+		$sitemapurl = ltrim($json['url'], '/');
+		$data = unserialize(file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/characters.dat"));
+		if (!is_array($data)) $data = array();
+		if (!in_array($sitemapurl, $data) && $sitemapurl != '') {
+			$data[] = $sitemapurl;
+			$data = serialize($data);
+			file_put_contents(ENGINE_DIR."/mrdeath/aaparser/data/characters.dat", $data);
+			chmod( ENGINE_DIR . "/mrdeath/aaparser/data/characters.dat", 0777 );
+		}
 	}
 
 }
