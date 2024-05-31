@@ -93,7 +93,22 @@
 	    if ( in_array( $xfields_data['mydramalist_id'], $aaparser_config['blacklist_mdl'] ) ) die($text_info_2.' '.$kodik_title.' входит в чёрный список дорам. Пропущено');
 	}
     
-    $searching_post = $db->super_query( "SELECT id, xfields FROM " . PREFIX . "_post WHERE ".$where_xf );
+    $max_attempts = 3; // Количество попыток
+	$attempts = 0;
+
+	while ($attempts < $max_attempts) {
+		try {
+			$attempts++;
+			$searching_post = $db->super_query("SELECT id, xfields FROM " . PREFIX . "_post WHERE " . $where_xf);
+			break;
+		} catch (Exception $e) {
+			error_log("Попытка $attempts не удалась: " . $e->getMessage());
+			if ($attempts >= $max_attempts) {
+				throw $e;
+			}
+			sleep(1);
+		}
+	}
     
     if ( $searching_post['id'] > 0 ) {
         $news_id = $searching_post['id'];
@@ -279,6 +294,9 @@
 	
 	$tags_array = array();
 	
+	if ( $xfields_data['shikimori_status'] ) $tags_array[] = $shikimori['status'];
+	if ( $xfields_data['shikimori_status_ru'] ) $tags_array[] = $status_type[$shikimori['status']];
+	
 	if ( $xfields_data['shikimori_id'] ) $tags_array[] = 'аниме';
 	elseif ( $xfields_data['mydramalist_id'] ) $tags_array[] = 'дорама';
 	
@@ -355,8 +373,9 @@
 	if ( $aaparser_config['images']['xf_screens'] && $xfields_data['kadr_1']) $xfields_list[$aaparser_config['images']['xf_screens']] = $xf_screen_1.$xf_screen_2.$xf_screen_3.$xf_screen_4.$xf_screen_5;
 	if ( $aaparser_config['fields']['xf_camrip'] && $is_camrip === true ) $xfields_list[$aaparser_config['fields']['xf_camrip']] = 1;
 	if ( $aaparser_config['fields']['xf_lgbt'] && $is_lgbt === true ) $xfields_list[$aaparser_config['fields']['xf_lgbt']] = 1;
-	echo $next_episode_date . '<br>';
+	
 	if ( isset($next_episode_date) && $next_episode_date && $aaparser_config['settings']['next_episode_date_new'] ) {
+		echo $next_episode_date . '<br>';
 		$xfields_list[$aaparser_config['settings']['next_episode_date_new']] = $next_episode_date;
 	}
 	

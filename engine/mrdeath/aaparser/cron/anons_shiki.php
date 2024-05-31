@@ -101,8 +101,8 @@ if ( $shikimori ) {
 		}
 		if ( $shikimori_votes > 0 ) $xfields_data['shikimori_votes'] = $shikimori_votes;
 		else $xfields_data['shikimori_votes'] = '';
-		$xfields_data['shikimori_status'] = isset($shikimori['status']) ? $shikimori['status'] : '';
-		$xfields_data['shikimori_status_ru'] = isset($shikimori['status']) ? $status_type[$shikimori['status']] : '';
+		$xfields_data['shikimori_status'] = 'Anons';
+		$xfields_data['shikimori_status_ru'] = 'Анонс';
 		$xfields_data['shikimori_episodes'] = isset($shikimori['episodes']) ? $shikimori['episodes'] : '';
 		
 		if ( isset($shikimori['episodes_aired']) && $shikimori['episodes_aired'] ) {

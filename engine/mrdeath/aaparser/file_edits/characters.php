@@ -93,8 +93,12 @@ if ($type == "people") {
 		$sitemapurl = ltrim($json['url'], '/');
 		$data = unserialize(file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/people.dat"));
 		if (!is_array($data)) $data = array();
-		if (!in_array($sitemapurl, $data) && $sitemapurl != ''){
-			$data[] = $sitemapurl;
+		$urls = array_column($data, 'url');
+		if (!in_array($sitemapurl, $urls) && $sitemapurl != '') {
+			$data[] = array(
+				'url' => $sitemapurl,
+				'date' => (new DateTime())->format('Y-m-d\TH:i:sP')
+			);
 			$data = serialize($data);
 			file_put_contents(ENGINE_DIR."/mrdeath/aaparser/data/people.dat", $data);
 			chmod( ENGINE_DIR . "/mrdeath/aaparser/data/people.dat", 0777 );
@@ -154,8 +158,12 @@ if ($type == "characters") {
 		$sitemapurl = ltrim($json['url'], '/');
 		$data = unserialize(file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/characters.dat"));
 		if (!is_array($data)) $data = array();
-		if (!in_array($sitemapurl, $data) && $sitemapurl != '') {
-			$data[] = $sitemapurl;
+		$urls = array_column($data, 'url');
+		if (!in_array($sitemapurl, $urls) && $sitemapurl != '') {
+			$data[] = array(
+				'url' => $sitemapurl,
+				'date' => (new DateTime())->format('Y-m-d\TH:i:sP')
+			);
 			$data = serialize($data);
 			file_put_contents(ENGINE_DIR."/mrdeath/aaparser/data/characters.dat", $data);
 			chmod( ENGINE_DIR . "/mrdeath/aaparser/data/characters.dat", 0777 );

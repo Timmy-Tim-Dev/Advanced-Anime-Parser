@@ -1199,7 +1199,7 @@ include ENGINE_DIR . '/mrdeath/aaparser/file_edits/characters.php';
 		
 		foreach ($data as $item)
 		{
-			if (trim($item) != "")$map->loc($item)->freq($this->changefreq)->lastMod(date('c'))->priority( $this->priority );
+			if (trim($item['url']) != "")$map->loc($item['url'])->freq($this->changefreq)->lastMod($item['date'])->priority( $this->priority );
 		}			
 	});
 }	
@@ -1218,7 +1218,7 @@ function generate_characters() {
 		
 		foreach ($data as $item)
 		{
-          if (trim($item) != "")$map->loc($item)->freq($this->changefreq)->lastMod(date('c'))->priority( $this->priority );
+			if (trim($item['url']) != "")$map->loc($item['url'])->freq($this->changefreq)->lastMod($item['date'])->priority( $this->priority );
 		}			
 	});
 }	]]></replacecode>
