@@ -49,6 +49,7 @@ ALTER TABLE `{prefix}_anime_list`
 ALTER TABLE `{prefix}_post`
   MODIFY `tags` text NOT NULL;
 
+ALTER TABLE `{prefix}_post` ADD `franchise_aap` varchar(700) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
 ALTER TABLE `{prefix}_users` ADD `watched_series` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
 ALTER TABLE `{prefix}_users` ADD `push_subscribe` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
 
@@ -166,6 +167,8 @@ DROP TABLE IF EXISTS `{prefix}_telegram_sender`;]]></mysqldelete>
 [*]Google Indexing
 [*]Постинг новостей в Telegram
 [*]Актёры и персонажи
+[*]Карта сайта для Актёров и персонажей
+[*]Рейтинг выбранных озвучек
 [/ol]]]></notice>
 	<file name="engine/inc/addnews.php">
 		<operation action="after">
