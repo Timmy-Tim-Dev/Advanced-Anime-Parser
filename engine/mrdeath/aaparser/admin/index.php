@@ -12,7 +12,7 @@ if (!defined('DATALIFEENGINE') OR !defined('LOGGED_IN')) {
 	die('Hacking attempt!');
 }
 
-$actual_module_version = '4.1.0';
+$actual_module_version = '4.1.1';
 $action = isset($_GET['action']) ? $_GET['action'] : false;
 
 $php_version = intval(str_replace(array(".",","),"",substr(PHP_VERSION,0,3)));
@@ -395,6 +395,7 @@ echo <<<HTML
 			dataType: "json",
 			cache: false,
 		    success: function (data) {
+				console.log(data);
 				if ( data.status == "ok" ) {
 				    var proc = Math.round( (100 * step) / total );
 				    if ( proc > 100 ) proc = 100;

@@ -20,15 +20,10 @@ function kodik_cache($prefix, $cache_id = false, $cache_folder) {
         @chmod( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/", 0777 );
     }
 	
-	if( ! $cache_id ) {
-		
-		$key = $prefix;
-	
-	} else {
-		
+	if( ! $cache_id ) $key = $prefix;
+	else {
 		$cache_id = md5( $cache_id );
 		$key = $prefix . "_" . $cache_id;
-	
 	}
 	
 	// Кэширование куда либо помимо файлового кэша
@@ -52,16 +47,10 @@ function kodik_create_cache($prefix, $cache_text, $cache_id = false, $cache_fold
         @chmod( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/", 0777 );
     }
 	
-	if( ! $cache_id ) {
-		
-		$key = $prefix;
-		
-	} else {
-		
+	if( ! $cache_id ) $key = $prefix;
+	else {
 		$cache_id = md5( $cache_id );
-		
 		$key = $prefix . "_" . $cache_id;
-	
 	}
 	
 	if($cache_text === false) $cache_text = '';
@@ -108,11 +97,8 @@ function kodik_clear_cache($cache_areas = false, $cache_folder) {
 		if( $file != '.htaccess' AND !is_dir(ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $file) ) {
 			
 			if( $cache_areas ) {
-				
 				foreach($cache_areas as $cache_area) if( stripos( $file, $cache_area ) !== false ) @unlink( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $file );
-			
 			} else {
-				
 				@unlink( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $file );
 			
 			}
