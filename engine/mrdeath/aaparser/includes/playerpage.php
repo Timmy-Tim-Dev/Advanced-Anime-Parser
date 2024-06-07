@@ -239,11 +239,11 @@ echo <<<HTML
                     <td style="width:100%" colspan="2">
                     1. Если у вас apache, то открываем .htaccess в корне сайта и ниже строчки <b>RewriteEngine On</b> вставляем правило<br>
                             <textarea style="width:100%;height:40px;" disabled>
-RewriteRule ^continue(/?)+$ index.php?do=continue_watch [L]
+RewriteRule ^continue_watch(/?)+$ index.php?do=continue_watch [L]
                             </textarea>
                             <br>Если у вас сайт работает на nginx то правило такое<br>
                             <textarea style="width:100%;height:40px;" disabled>
-rewrite ^/continue/*$ /index.php?do=continue_watch last;
+rewrite ^/continue_watch/*$ /index.php?do=continue_watch last;
                             </textarea>
                     </td>
                 </tr>

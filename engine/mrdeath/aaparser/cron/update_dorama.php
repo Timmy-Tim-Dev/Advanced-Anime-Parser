@@ -237,71 +237,57 @@
 		//Проверка на изменение статуса сериала для субтитров и автосубтитров
 		$status_type = array( 'anons' => 'Анонс', 'ongoing' => 'Онгоинг', 'released' => 'Завершён' );
 		
-		if ($aaparser_config['updates']['xf_status_sub'])
-		{
+		if ($aaparser_config['updates']['xf_status_sub']) {
 			$status = "ongoing";
-			if ($anime_check['last_episode'] >= $anime_check['episodes_count']) $status = "released";
-			if ($xfields_post[$aaparser_config['updates']['xf_status_sub']] != $status && $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] != "1858")
-			{
+			if ($anime_check['last_episode'] >= $anime_check['material_data']['episodes_total']) $status = "released";
+			if ($xfields_post[$aaparser_config['updates']['xf_status_sub']] != $status && $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] != "1858") {
 				$need_update = 1;
-				$xfields_post[$aaparser_config['updates']['xf_status_sub']] = $status;				
+				$xfields_post[$aaparser_config['updates']['xf_status_sub']] = $status;			
 			}						
 		}
-		if ($aaparser_config['updates']['xf_status_ru_sub'])
-		{
+		if ($aaparser_config['updates']['xf_status_ru_sub']) {
 			$status = "Онгоинг";
-			if ($anime_check['last_episode'] >= $anime_check['episodes_count']) $status = "Завершён";
-			if ($xfields_post[$aaparser_config['updates']['xf_status_ru_sub']] != $status && $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] != "1858")
-			{
+			if ($anime_check['last_episode'] >= $anime_check['material_data']['episodes_total']) $status = "Завершён";
+			if ($xfields_post[$aaparser_config['updates']['xf_status_ru_sub']] != $status && $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] != "1858") {
 				$need_update = 1;
-				$xfields_post[$aaparser_config['updates']['xf_status_ru_sub']] = $status;				
+				$xfields_post[$aaparser_config['updates']['xf_status_ru_sub']] = $status;			
 			}						
 		}
 		
-		if ($aaparser_config['updates']['xf_status_autosub'])
-		{
+		if ($aaparser_config['updates']['xf_status_autosub']) {
 			$status = "ongoing";
-			if ($anime_check['last_episode'] >= $anime_check['episodes_count']) $status = "released";
-			if ($xfields_post[$aaparser_config['updates']['xf_status_autosub']] != $status && $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] == "1858")
-			{
+			if ($anime_check['last_episode'] >= $anime_check['material_data']['episodes_total']) $status = "released";
+			if ($xfields_post[$aaparser_config['updates']['xf_status_autosub']] != $status && $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] == "1858") {
 				$need_update = 1;
-				$xfields_post[$aaparser_config['updates']['xf_status_autosub']] = $status;				
+				$xfields_post[$aaparser_config['updates']['xf_status_autosub']] = $status;			
 			}						
 		}
-		if ($aaparser_config['updates']['xf_status_ru_autosub'])
-		{
+		if ($aaparser_config['updates']['xf_status_ru_autosub']) {
 			$status = "Онгоинг";
-			if ($anime_check['last_episode'] >= $anime_check['episodes_count']) $status = "Завершён";
-			if ($xfields_post[$aaparser_config['updates']['xf_status_ru_autosub']] != $status && $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] == "1858")
-			{
+			if ($anime_check['last_episode'] >= $anime_check['material_data']['episodes_total']) $status = "Завершён";
+			if ($xfields_post[$aaparser_config['updates']['xf_status_ru_autosub']] != $status && $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] == "1858") {
 				$need_update = 1;
-				$xfields_post[$aaparser_config['updates']['xf_status_ru_autosub']] = $status;				
+				$xfields_post[$aaparser_config['updates']['xf_status_ru_autosub']] = $status;		
 			}						
 		}	
 		
-		if ($aaparser_config['updates']['xf_status_voice'])
-		{
+		if ($aaparser_config['updates']['xf_status_voice']) {
 			$status = "ongoing";
-			if ($anime_check['last_episode'] >= $anime_check['episodes_count']) $status = "released";
-			if ($xfields_post[$aaparser_config['updates']['xf_status_voice']] != $status && $anime_check['translation']['type'] == 'voice')
-			{
+			if ($anime_check['last_episode'] >= $anime_check['material_data']['episodes_total']) $status = "released";
+			if ($xfields_post[$aaparser_config['updates']['xf_status_voice']] != $status && $anime_check['translation']['type'] == 'voice') {
 				$need_update = 1;
-				$xfields_post[$aaparser_config['updates']['xf_status_voice']] = $status;				
+				$xfields_post[$aaparser_config['updates']['xf_status_voice']] = $status;		
 			}						
 		}
-		if ($aaparser_config['updates']['xf_status_ru_voice'])
-		{
+		if ($aaparser_config['updates']['xf_status_ru_voice']) {
 			$status = "Онгоинг";
-			if ($anime_check['last_episode'] >= $anime_check['episodes_count']) $status = "Завершён";
-			if ($xfields_post[$aaparser_config['updates']['xf_status_ru_voice']] != $status && $anime_check['translation']['type'] == 'voice')
-			{
+			if ($anime_check['last_episode'] >= $anime_check['material_data']['episodes_total']) $status = "Завершён";
+			if ($xfields_post[$aaparser_config['updates']['xf_status_ru_voice']] != $status && $anime_check['translation']['type'] == 'voice') {
 				$need_update = 1;
-				$xfields_post[$aaparser_config['updates']['xf_status_ru_voice']] = $status;				
+				$xfields_post[$aaparser_config['updates']['xf_status_ru_voice']] = $status;	
 			}						
-		}		
+		}	
 		
-		///
-        
         //Проверка на изменение статуса сериала
         
         if ( ($serial_status_k || $serial_status_ru_k) && $material_row['cat_check'] != 1 ) {
