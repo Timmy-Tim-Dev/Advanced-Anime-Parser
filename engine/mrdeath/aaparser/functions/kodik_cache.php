@@ -31,11 +31,12 @@ function kodik_cache($prefix, $cache_id = false, $cache_folder) {
 	
 	}
 	
-	if( $config['cache_type'] ) {
-		if( $dlefastcache->connection > 0 ) {
-			return $dlefastcache->get($key);
-		}
-	}
+	// Кэширование куда либо помимо файлового кэша
+	// if( $config['cache_type'] ) {
+		// if( $dlefastcache->connection > 0 ) {
+			// return $dlefastcache->get($key);
+		// }
+	// }
 
 	$buffer = @file_get_contents( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $key . ".tmp" );
 
@@ -65,12 +66,13 @@ function kodik_create_cache($prefix, $cache_text, $cache_id = false, $cache_fold
 	
 	if($cache_text === false) $cache_text = '';
 
-	if( $config['cache_type'] ) {
-		if( $dlefastcache->connection > 0 ) {
-			$dlefastcache->set( $key, $cache_text );
-			return true;
-		}
-	}
+	// Кэширование куда либо помимо файлового кэша
+	// if( $config['cache_type'] ) {
+		// if( $dlefastcache->connection > 0 ) {
+			// $dlefastcache->set( $key, $cache_text );
+			// return true;
+		// }
+	// }
 
 	file_put_contents (ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $key . ".tmp", $cache_text, LOCK_EX);
 	@chmod( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $key . ".tmp", 0666 );
