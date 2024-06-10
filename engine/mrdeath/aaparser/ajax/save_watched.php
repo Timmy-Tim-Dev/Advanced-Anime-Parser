@@ -26,11 +26,8 @@ if ($news_id && $action == 'voicerate' && $kodik_data && $aaparser_config_push['
 	if ($voice_cache === false) $voice_cache = [];
 	else $voice_cache = json_decode($voice_cache, true);
 	
-	if (isset($voice_cache[$kodik_data['translation']['title']])) {
-		$voice_cache[$kodik_data['translation']['title']]++;
-	} else {
-		$voice_cache[$kodik_data['translation']['title']] = 1;
-	}
+	if (isset($voice_cache[$kodik_data['translation']['title']])) $voice_cache[$kodik_data['translation']['title']]++;
+	else $voice_cache[$kodik_data['translation']['title']] = 1;
 	
 	$voice_cache = json_encode($voice_cache, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
 	kodik_create_cache('voicerate_'.$news_id, $voice_cache, false, 'voicerate');
@@ -43,7 +40,6 @@ if ($news_id && $action == 'voicerate_take' && $aaparser_config_push['player']['
 	$voice_cache = kodik_cache('voicerate_'.$news_id, false, 'voicerate');
 	if ($voice_cache === false) die(json_encode('Нету кэша'));
 	else die($voice_cache);
-	
 }
 
 
@@ -71,9 +67,7 @@ if ( $is_logged && $member_id['user_id'] && $news_id && $kodik_data && $maximum_
   	
   	array_unshift($watched_series, $new_serie);
   
-  	if ( $maximum_animes > 0 ) {
-      	$watched_series = array_slice($watched_series, 0, $maximum_animes);
-    }
+  	if ( $maximum_animes > 0 ) $watched_series = array_slice($watched_series, 0, $maximum_animes);
   
   	$my_watched_series = json_encode($watched_series, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 	$my_watched_series = str_replace("'", "\'", $my_watched_series);
@@ -86,8 +80,7 @@ if ( $is_logged && $member_id['user_id'] && $news_id && $kodik_data && $maximum_
       	'translator' => $kodik_data['translation']['id'],
       	'news_id' => $news_id
 	)));
-}
-elseif ( $news_id && $kodik_data && $maximum_animes ) {
+} elseif ( $news_id && $kodik_data && $maximum_animes ) {
     
     if ( !$kodik_data['episode'] ) die(json_encode(array( 'status' => false )));
     
@@ -121,8 +114,7 @@ if ( $is_logged && $member_id['user_id'] && $news_id && $action == 'delete_watch
 		'msg' => 'ok',
     	'status' => true
 	)));
-}
-elseif ( $news_id && $action == 'delete_watched' ) {
+} elseif ( $news_id && $action == 'delete_watched' ) {
     if (isset($_COOKIE['watched_series_'.$news_id])) {
         unset($_COOKIE['watched_series_'.$news_id]); 
         setcookie('watched_series_'.$news_id, null, -1, '/'); 

@@ -28,9 +28,7 @@ else $stop_send_to = false;
 
 if ( isset($aaparser_config_push['push_notifications']['stop_send_from']) && isset($aaparser_config_push['push_notifications']['stop_send_to']) && $aaparser_config_push['push_notifications']['stop_send_from'] == $aaparser_config_push['push_notifications']['stop_send_to'] ) $stop_send_from = $stop_send_to = false;
 
-if ( $stop_send_from && $stop_send_to && $stop_send_from < $stop_send_to ) {
-    if ( $_TIME >= $stop_send_from && $_TIME <= $stop_send_to ) die('Отправка постов приостановлена с учётом указанного в настройках времени');
-}
+if ( $stop_send_from && $stop_send_to && $stop_send_from < $stop_send_to ) if ( $_TIME >= $stop_send_from && $_TIME <= $stop_send_to ) die('Отправка постов приостановлена с учётом указанного в настройках времени');
 
 $working_mode = 'cron';
 

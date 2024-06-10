@@ -46,8 +46,7 @@
 	                	    $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$shikimori['status']}' WHERE material_id='{$will_check['material_id']}'");
                         }
                     }
-                }
-                elseif ( $will_check['mdl_id'] ) {
+                } elseif ( $will_check['mdl_id'] ) {
                     $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&mdl_id='.$will_check['mdl_id'].'&with_material_data=true');
                     if ( $kodik['results'][0]['material_data']['all_status'] ) {
                         $status_type = array( 'anons' => 'Анонс', 'ongoing' => 'Онгоинг', 'released' => 'Завершён' );
@@ -82,10 +81,8 @@
             $db->query("UPDATE " . PREFIX . "_anime_list SET cat_check=0 WHERE material_id='{$will_check['material_id']}'");
             clear_cache( array('news_', 'full_') );
             die('Проверка на обновление категорий-статусов завершена');
-        }
-        else die('У всех новостей актуальные категории');
-    }
-    elseif ( $aaparser_config['update_news']['cat_check'] == 2 ) {
+        } else die('У всех новостей актуальные категории');
+    } elseif ( $aaparser_config['update_news']['cat_check'] == 2 ) {
         $will_check = $db->super_query( "SELECT * FROM " . PREFIX . "_anime_list WHERE news_id>0 AND cat_check=1 LIMIT 1" );
         if ( $will_check ) {
             $news_row = $db->super_query( "SELECT id, category, title FROM " . PREFIX . "_post WHERE id='{$will_check['news_id']}'" );
@@ -166,6 +163,5 @@
             $db->query("UPDATE " . PREFIX . "_anime_list SET cat_check=0 WHERE material_id='{$will_check['material_id']}'");
             clear_cache( array('news_', 'full_') );
             die('Готово');
-        }
-        else die('У всех новостей актуальные категории');
+        } else die('У всех новостей актуальные категории');
     }

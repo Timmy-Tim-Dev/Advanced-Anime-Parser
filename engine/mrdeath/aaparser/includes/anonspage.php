@@ -10,12 +10,8 @@ showRow('Включить настройки Анонсов?','Включив э
 showRow('Сортировка порядка','Выберите порядок сортировки парсинга данных с shikimori', makeDropDown( $anons_sort_arr_film, "settings_anons[anons_film_sort_by]", $aaparser_config['settings_anons']['anons_film_sort_by'], 'ShowOrHideMode'));
 showRow('Тип добавляемых материалов','Выберите какие материалы необходимо добавлять на сайт', makeSelect( $anons_kind, "settings_anons[anons_kind]", $aaparser_config['settings_anons']['anons_kind'], 'Выберите Тип', 0));
 foreach ($cat_info as $cat_arr) {
-	if (intval($aaparser_config['settings_anons']['cat_id']) == $cat_arr['id']) {
-		$anons_category_values[] = '<option value="'.$cat_arr['id'].'" selected>'.$cat_arr['name'].'</option>';
-	}
-	else {
-		$anons_category_values[] = '<option value="'.$cat_arr['id'].'">'.$cat_arr['name'].'</option>';
-	}
+	if (intval($aaparser_config['settings_anons']['cat_id']) == $cat_arr['id']) $anons_category_values[] = '<option value="'.$cat_arr['id'].'" selected>'.$cat_arr['name'].'</option>';
+	else $anons_category_values[] = '<option value="'.$cat_arr['id'].'">'.$cat_arr['name'].'</option>';
 	$anons_category_values[] = $cat_arr['name'];
 }
 showRow('Выберите категорию', 'Выберите категорию которую необходимо добавить при добавлении материала </br><span style="color:red">При проставлении категориев, в будущем при изменении статуса аниме или же его описания, оно будет проверяться по этой категории</span>', '<select data-placeholder="Выберите Категорию" name="settings_anons[cat_id]" id="settings_anons[cat_id]" class="valuesselect" multiple style="width:100%;max-width:350px;">'.implode('', $anons_category_values).'</select>');

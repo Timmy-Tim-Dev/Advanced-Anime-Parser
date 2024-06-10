@@ -16,8 +16,7 @@ function convert_date($date, $type) {
     if ( $type == 1 ) {
         $date_mas = explode("-", $date);
         return $date_mas[2].".".$date_mas[1].".".$date_mas[0];
-    }
-    elseif ( $type == 2 ) {
+    } elseif ( $type == 2 ) {
         $date_mas = explode("-", $date);
         $month_mas = [
             "01" => " января ",
@@ -42,8 +41,7 @@ function convert_date($date, $type) {
 }
 
 function unique_multidim_array($array, $key) : array {
-    $uniq_array = array();
-    $key_array = array();
+    $uniq_array = $key_array = array();
 
     foreach($array as $val) {
         if (!in_array($val[$key], $key_array)) {
@@ -54,9 +52,7 @@ function unique_multidim_array($array, $key) : array {
     return $uniq_array;
 }
 
-function in_arrayi($needle, $haystack) {
-    return in_array(strtolower($needle), array_map('strtolower', $haystack));
-}
+function in_arrayi($needle, $haystack) { return in_array(strtolower($needle), array_map('strtolower', $haystack)); }
 
 function convert_duration($duration, $type) {
     if ( $type == 1 ) return ($duration*60);

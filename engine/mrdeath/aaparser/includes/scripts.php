@@ -10,9 +10,7 @@ echo <<<HTML
     ShowOrHideTg();
 	
 HTML;
-if ($php_version >= 74 && file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php')) {
-	echo "ShowOrHideGindexing();";
-}
+if ($php_version >= 74 && file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php')) echo "ShowOrHideGindexing();";
 echo <<<HTML
 	$(function() {
 		$( '#needreplacer' ).val( $('#needreplacer').val().replace( /NNNNNW/g,  $('select[name="settings[next_episode_date_new]"]').val() ) );

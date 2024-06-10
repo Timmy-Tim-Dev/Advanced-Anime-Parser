@@ -70,11 +70,4 @@ if( ! defined( 'DATALIFEENGINE' ) ) {
         }
         else $xfields_data['worldart_votes'] = '';
 	    
-	}
-	else {
-	    $xfields_data['worldart_country'] = '';
-	    $xfields_data['worldart_tags'] = '';
-	    $xfields_data['worldart_plot'] = '';
-	    $xfields_data['worldart_rating'] = '';
-	    $xfields_data['worldart_votes'] = '';
-	}
+	} else $xfields_data['worldart_country'] = $xfields_data['worldart_tags'] = $xfields_data['worldart_plot'] = $xfields_data['worldart_rating'] = $xfields_data['worldart_votes'] = '';

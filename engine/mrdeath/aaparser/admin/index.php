@@ -12,7 +12,7 @@ if (!defined('DATALIFEENGINE') OR !defined('LOGGED_IN')) {
 	die('Hacking attempt!');
 }
 
-$actual_module_version = '4.1.1';
+$actual_module_version = '4.1.2';
 $action = isset($_GET['action']) ? $_GET['action'] : false;
 
 $php_version = intval(str_replace(array(".",","),"",substr(PHP_VERSION,0,3)));
@@ -114,6 +114,7 @@ $text .= <<<HTML
 HTML;
 
   	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/config.php', "w+");
+	@chmod(ENGINE_DIR.'/mrdeath/aaparser/data/config.php', 0777);
   	fwrite($fp, $text);
   	fclose($fp);
   	unset($text);
@@ -136,6 +137,7 @@ $text = <<<HTML
 HTML;
 
   	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php', "w+");
+	@chmod(ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php', 0777);
   	fwrite($fp, $text);
   	fclose($fp);
   	unset($text);
@@ -143,23 +145,33 @@ HTML;
 
 if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/kodik.log')) {
   	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/kodik.log', "w+");
+	@chmod(ENGINE_DIR.'/mrdeath/aaparser/data/kodik.log', 0777);
   	fwrite($fp, "");
   	fclose($fp);
 }
 
 if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log')) {
   	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log', "w+");
+	@chmod(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log', 0777);
   	fwrite($fp, "");
   	fclose($fp);
 }
 
-if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.log')) {
-  	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/version.log', "w+");
-  	fwrite($fp, '3.4.1');
-  	fclose($fp);
-}
-else {
-    $log_module_version = file_get_contents(ENGINE_DIR.'/mrdeath/aaparser/data/version.log');
+if (file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.php')) {
+	$log_module_version = file_get_contents(ENGINE_DIR.'/mrdeath/aaparser/data/version.php');
+} elseif (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.php') && file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.log')) {
+    $log_module_version_old = file_get_contents(ENGINE_DIR.'/mrdeath/aaparser/data/version.log');
+	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/version.php', "w+");
+	@chmod(ENGINE_DIR.'/mrdeath/aaparser/data/version.php', 0777);
+	fwrite($fp, $log_module_version_old);
+	fclose($fp);
+	$log_module_version = file_get_contents(ENGINE_DIR.'/mrdeath/aaparser/data/version.php');
+} elseif (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.php') && !file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.log')) {
+	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/version.php', "w+");
+	@chmod(ENGINE_DIR.'/mrdeath/aaparser/data/version.php', 0777);
+	fwrite($fp, '3.4.1');
+	fclose($fp);
+	$log_module_version = file_get_contents(ENGINE_DIR.'/mrdeath/aaparser/data/version.php');
 }
 
 if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) {
@@ -177,6 +189,7 @@ if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) 
 		$mod_settings['deleted'] = 0;
 		$mod_settings['logs'][] = '';
 		$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/data/indexing.json', "w+");
+		@chmod(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/data/indexing.json', 0777);
 		fwrite($fp, json_encode($mod_settings, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
 		fclose($fp);
 	}
@@ -209,12 +222,6 @@ if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) 
         $aclist[] = $file;
     }
     if ( !$aclist ) $aclist[] = 'Пусто';
-}
-
-if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json')) {
-  	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json', "w+");
-  	fwrite($fp, "[]");
-  	fclose($fp);
 }
 
 require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
@@ -311,12 +318,12 @@ HTML;
 include_once ENGINE_DIR.'/mrdeath/aaparser/includes/navbar.php'; //Навигация
 
 // Проверка доступа к Data и его элементам
+$data_items = glob( ENGINE_DIR . "/mrdeath/aaparser/data/*");
+foreach ($data_items as $data_item_f) {
+	if (Permer($data_item_f)) echo "<div class='alert alert-danger'>Выставьте права 777 для {$data_item_f}</div>";
+}
 $perm_f = ENGINE_DIR.'/mrdeath/aaparser/data/';
-$perm_c = ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
-$perm_cp = ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php';
 if (Permer($perm_f)) echo "<div class='alert alert-danger'>Выставьте права 777 для {$perm_f}</div>";
-if (Permer($perm_c)) echo "<div class='alert alert-danger'>Выставьте права 777 для {$perm_c}</div>";
-if (Permer($perm_cp)) echo "<div class='alert alert-danger'>Выставьте права 777 для {$perm_cp}</div>";
 
 echo <<<HTML
 <form action="" method="post" class="systemsettings">

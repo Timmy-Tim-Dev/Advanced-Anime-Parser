@@ -7,124 +7,105 @@ if (!defined("DATALIFEENGINE")) {
 if ( !isset($aaparser_config_push) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config_push.php';
 
 if (!function_exists('limitTextLength')) {
-function limitTextLength($text, $count)
-{
-    $textLength = iconv_strlen($text, "utf-8");
-    if ($count < $textLength) {
-        $text = iconv_substr($text, 0, $count, "utf-8");
-    }
-    return $text;
-}
+	function limitTextLength($text, $count) {
+		$textLength = iconv_strlen($text, "utf-8");
+		if ($count < $textLength) $text = iconv_substr($text, 0, $count, "utf-8");
+		return $text;
+	}
 }
 
 if (!function_exists('sanitizeText')) {
-function sanitizeText($text)
-{
-    $text = stripslashes($text);
-    $text = str_replace('<br>', '', $text);
-    $text = str_replace('<br />', '', $text);
-    $text = str_replace('<p>', '', $text);
-    $text = str_replace('</p>', '', $text);
-    $text = str_replace('<span>', '', $text);
-    $text = str_replace('</span>', '', $text);
-    $text = html_entity_decode($text, ENT_QUOTES, "UTF-8");
-    $text = preg_replace("'\\[attachment=(.*?)\\]'si", "", $text);
-    $text = preg_replace("#\\[hide\\](.+?)\\[/hide\\]#ims", "", $text);
-    return $text;
-}
+	function sanitizeText($text) {
+		$text = stripslashes($text);
+		$text = str_replace('<br>', '', $text);
+		$text = str_replace('<br />', '', $text);
+		$text = str_replace('<p>', '', $text);
+		$text = str_replace('</p>', '', $text);
+		$text = str_replace('<span>', '', $text);
+		$text = str_replace('</span>', '', $text);
+		$text = html_entity_decode($text, ENT_QUOTES, "UTF-8");
+		$text = preg_replace("'\\[attachment=(.*?)\\]'si", "", $text);
+		$text = preg_replace("#\\[hide\\](.+?)\\[/hide\\]#ims", "", $text);
+		return $text;
+	}
 }
 
 if (!function_exists('postingCheckXfvalue')) {
-function postingCheckXfvalue($matches = [])
-{
-    global $xfieldsdata;
-    global $preg_safe_name;
-    global $value;
+	function postingCheckXfvalue($matches = []) {
+		global $xfieldsdata;
+		global $preg_safe_name;
+		global $value;
 
-    if (!empty($matches[1])) {
-        $matches[1] = trim($matches[1]);
+		if (!empty($matches[1])) {
+			$matches[1] = trim($matches[1]);
+			if (preg_match("#" . $preg_safe_name . "\\s*\\!\\=\\s*['\"](.+?)['\"]#i",$matches[1],$match)) return $xfieldsdata[$value[0]] != trim($match[1])? $matches[2]: "";
+			if (preg_match("#" . $preg_safe_name . "\\s*\\=\\s*['\"](.+?)['\"]#i",$matches[1],$match)) return $xfieldsdata[$value[0]] == trim($match[1])? $matches[2]: "";
+		}
 
-        if (preg_match("#" . $preg_safe_name . "\\s*\\!\\=\\s*['\"](.+?)['\"]#i",$matches[1],$match)) {
-            return $xfieldsdata[$value[0]] != trim($match[1])? $matches[2]: "";
-        }
-
-        if (preg_match("#" . $preg_safe_name . "\\s*\\=\\s*['\"](.+?)['\"]#i",$matches[1],$match)) {
-            return $xfieldsdata[$value[0]] == trim($match[1])? $matches[2]: "";
-        }
-    }
-
-    return $matches[0];
-}
+		return $matches[0];
+	}
 }
 
 if (!function_exists('processImages')) {
-function processImages($images, $homeUrl)
-{
-    $processedImages = [];
-    $processedImages["external"] = [];
+	function processImages($images, $homeUrl) {
+		$processedImages = [];
+		$processedImages["external"] = [];
 
-    foreach ($images as $key => $image) {
-        if (substr($image, 0, 1) == "/") {
-            $processedImages[$key] =
-                ROOT_DIR . str_replace(["thumbs/", "medium/"], "", $image);
-        } else {
-            if (strpos($image, $homeUrl) === false) {
-                $processedImages["external"][] = $key;
-                $imageExtension = pathinfo($image, PATHINFO_EXTENSION);
-                $file = ENGINE_DIR . "/cache/posting_temp_" . $key . "." . $imageExtension;
-                $ch = curl_init($image);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-                curl_setopt($ch, CURLOPT_USERAGENT, "Googlebot-Image/1.0");
-                curl_setopt($ch, CURLOPT_REFERER, $homeUrl);
-                $imageData = curl_exec($ch);
-                $fileHandle = fopen($file, "w");
-                fwrite($fileHandle, $imageData);
-                fclose($fileHandle);
-                $processedImages[$key] = $file;
-            } else {
-                $processedImages[$key] =
-                    ROOT_DIR .
-                    str_replace( [$homeUrl, "/thumbs/", "/medium/"], "/", $image );
-            }
-        }
-    }
-
-    return $processedImages;
-}
+		foreach ($images as $key => $image) {
+			if (substr($image, 0, 1) == "/") {
+				$processedImages[$key] = ROOT_DIR . str_replace(["thumbs/", "medium/"], "", $image);
+			} else {
+				if (strpos($image, $homeUrl) === false) {
+					$processedImages["external"][] = $key;
+					$imageExtension = pathinfo($image, PATHINFO_EXTENSION);
+					$file = ENGINE_DIR . "/cache/posting_temp_" . $key . "." . $imageExtension;
+					$ch = curl_init($image);
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+					curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+					curl_setopt($ch, CURLOPT_USERAGENT, "Googlebot-Image/1.0");
+					curl_setopt($ch, CURLOPT_REFERER, $homeUrl);
+					$imageData = curl_exec($ch);
+					$fileHandle = fopen($file, "w");
+					fwrite($fileHandle, $imageData);
+					fclose($fileHandle);
+					$processedImages[$key] = $file;
+				} else $processedImages[$key] = ROOT_DIR . str_replace( [$homeUrl, "/thumbs/", "/medium/"], "/", $image );
+			}
+		}
+		return $processedImages;
+	}
 }
 
 if (!function_exists('makeCurlRequest')) {
-function makeCurlRequest($url, $postParams = [], $proxy = [])
-{
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
+	function makeCurlRequest($url, $postParams = [], $proxy = []) {
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
 
-    if (!empty($proxy["ip"])) {
-        curl_setopt($ch, CURLOPT_PROXY, $proxy["ip"] . ":" . $proxy["port"]);
-        if (!empty($proxy["login"])) {
-            curl_setopt(
-                $ch,
-                CURLOPT_PROXYUSERPWD,
-                $proxy["login"] . ":" . $proxy["password"]
-            );
-        }
-        curl_setopt($ch, CURLOPT_PROXYTYPE, $proxy["type"]);
-    }
+		if (!empty($proxy["ip"])) {
+			curl_setopt($ch, CURLOPT_PROXY, $proxy["ip"] . ":" . $proxy["port"]);
+			if (!empty($proxy["login"])) {
+				curl_setopt(
+					$ch,
+					CURLOPT_PROXYUSERPWD,
+					$proxy["login"] . ":" . $proxy["password"]
+				);
+			}
+			curl_setopt($ch, CURLOPT_PROXYTYPE, $proxy["type"]);
+		}
 
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
-    if (!empty($postParams)) {
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postParams);
-    }
+		if (!empty($postParams)) {
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $postParams);
+		}
 
-    $result = curl_exec($ch);
-    curl_close($ch);
+		$result = curl_exec($ch);
+		curl_close($ch);
 
-    return $result;
-}
+		return $result;
+	}
 }
 
 if (!isset($tlg_news_id)) {
@@ -151,9 +132,7 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config_push[
                 $row["date"] = strtotime($row["date"]);
                 $full_link = $config["http_home_url"] . date("Y/m/d/", $row["date"]) . $row["alt_name"] . ".html";
             }
-        } else {
-            $full_link = $config["http_home_url"] . "index.php?newsid=" . $row["id"];
-        }
+        } else $full_link = $config["http_home_url"] . "index.php?newsid=" . $row["id"];
 		
       	$category_name = $category_name_hashtag = [];
         $category_list = explode(",", $row["category"]);
@@ -174,9 +153,7 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config_push[
                 $posters = [];
                 if ( strpos( $xfieldsdata[$aaparser_config_push['main_fields']['xf_poster']], "/uploads/posts/" ) === false ) {
                     $image = $config["http_home_url"] . "uploads/posts/" . $xfieldsdata[$aaparser_config_push['main_fields']['xf_poster']];
-                } else {
-                    $image = $xfieldsdata[$aaparser_config_push['main_fields']['xf_poster']];
-                }
+                } else $image = $xfieldsdata[$aaparser_config_push['main_fields']['xf_poster']];
                 $temp_image = explode("|", $image);
                 $posters[1] = $temp_image[0];
             } elseif ($aaparser_config_push['push_notifications']['tg_source_poster'] == "short_story") {
@@ -186,11 +163,8 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config_push[
             }
 
             $posterImg = [];
-            if ($posters[1]) {
-                $posterImg["poster"] = trim($posters[1]);
-            } else {
-                $posterImg["poster"] = trim($aaparser_config_push['main_fields']['poster_empty']);
-            }
+            if ($posters[1]) $posterImg["poster"] = trim($posters[1]);
+			else $posterImg["poster"] = trim($aaparser_config_push['main_fields']['poster_empty']);
             $posterImg = processImages($posterImg, $config["http_home_url"]);
         }
 
@@ -206,11 +180,8 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config_push[
                     $xfieldsdata[$value[0]] = $lang["xfield_xno"];
                 }
             } else {
-                if ($xfieldsdata[$value[0]] == "") {
-                    $xfgiven = false;
-                } else {
-                    $xfgiven = true;
-                }
+                if ($xfieldsdata[$value[0]] == "") $xfgiven = false;
+				else $xfgiven = true;
             }
             if (!$xfgiven) {
                 $aaparser_config_push['push_notifications'][$tlg_template] = preg_replace( "'\\[xfgiven_" . $preg_safe_name . "\\](.*?)\\[/xfgiven_" . $preg_safe_name . "\\]'is", "", $aaparser_config_push['push_notifications'][$tlg_template] );
@@ -230,9 +201,7 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config_push[
             foreach ($temporary_xf as $temporary_value) {
                 $temporary_hashtag[] = "#" . str_replace(" ", "_", trim($temporary_value));
             }
-            if ($temporary_hashtag) {
-                $aaparser_config_push['push_notifications'][$tlg_template] = str_replace( "[xfvalue_" . $value[0] . "_hashtag]", implode(", ", $temporary_hashtag), $aaparser_config_push['push_notifications'][$tlg_template] );
-            }
+            if ($temporary_hashtag) $aaparser_config_push['push_notifications'][$tlg_template] = str_replace( "[xfvalue_" . $value[0] . "_hashtag]", implode(", ", $temporary_hashtag), $aaparser_config_push['push_notifications'][$tlg_template] );
             if ( preg_match( "#\\[xfvalue_" . $value[0] . " limit=['\"](.+?)['\"]\\]#i", $aaparser_config_push['push_notifications'][$tlg_template], $matches ) ) {
                 $xfieldsdata[$value[0]] = strip_tags($xfieldsdata[$value[0]]);
                 $aaparser_config_push['push_notifications'][$tlg_template] = str_replace( $matches[0], limitTextLength($xfieldsdata[$value[0]], $matches[1]), $aaparser_config_push['push_notifications'][$tlg_template] );
@@ -305,11 +274,8 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config_push[
 
         $telegramCmd["parse_mode"] = "HTML";
         if ($aaparser_config_push['push_notifications']['tg_enable_poster'] && 0 < count($posterImg)) {
-            if (0 <= version_compare(PHP_VERSION, "5.5")) {
-                $telegramCmd["photo"] = new CURLFile($posterImg["poster"]);
-            } else {
-                $telegramCmd["photo"] = "@" . $posterImg["poster"];
-            }
+            if (0 <= version_compare(PHP_VERSION, "5.5")) $telegramCmd["photo"] = new CURLFile($posterImg["poster"]);
+            else $telegramCmd["photo"] = "@" . $posterImg["poster"];
             $telegramCmd["caption"] = $aaparser_config_push['push_notifications'][$tlg_template];
             $response = makeCurlRequest( $telegramUrl . "/sendPhoto", $telegramCmd, $postingProxy );
         } else {
@@ -321,20 +287,16 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config_push[
         $response = json_decode($response, true);
         if ($response["ok"]) {
             $message_id = intval($response["result"]["message_id"]);
-            if (0 < $message_id) {
-                $db->query( "DELETE FROM " . PREFIX . "_telegram_sender WHERE news_id='".$tlg_news_id."'" );
-            }
+            if (0 < $message_id) $db->query( "DELETE FROM " . PREFIX . "_telegram_sender WHERE news_id='".$tlg_news_id."'" );
           	if ( isset($working_mode) && $working_mode == 'cron' ) echo 'News id: '.$tlg_news_id.' - отправили пост в тг';
-        }
-		else {
+        } else {
             //$db->query("UPDATE ".PREFIX ."_telegram_sender SET error=1 WHERE news_id='".$tlg_news_id."'");
             $db->query( "DELETE FROM " . PREFIX . "_telegram_sender WHERE news_id='".$tlg_news_id."'" );
           	if ( isset($working_mode) && $working_mode == 'cron' ) echo 'News id: '.$tlg_news_id.' - ошибка отправки';
 			echo "<br/>Log:<br/><pre>";
-			var_dump ($response);
+			print_r ($response);
 			echo "</pre>";
         }
       	unset($row, $full_link, $main_category_link, $category_name, $category_name_hashtag, $category_list, $xfields, $xfieldsdata, $posters, $posterImg, $telegramCmd, $response);
     }
-}
-elseif ( !$tlg_news_id && isset($working_mode) && $working_mode == 'cron' ) echo 'В данный момент нет новостей в очереди на отправку в telegram';
+} elseif ( !$tlg_news_id && isset($working_mode) && $working_mode == 'cron' ) echo 'В данный момент нет новостей в очереди на отправку в telegram';

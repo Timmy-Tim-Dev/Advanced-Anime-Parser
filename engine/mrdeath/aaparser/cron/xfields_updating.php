@@ -101,10 +101,8 @@
             $db->query("UPDATE " . PREFIX . "_anime_list SET news_update=0 WHERE material_id='{$will_check['material_id']}'");
             clear_cache( array('news_', 'full_') );
             die('Проверка на обновление доп полей завершена');
-        }
-        else die('В очереди на обновление данных в доп полях нет новостей');
-    }
-    elseif ( $aaparser_config['update_news']['xf_check'] == 2 ) {
+        } else die('В очереди на обновление данных в доп полях нет новостей');
+    } elseif ( $aaparser_config['update_news']['xf_check'] == 2 ) {
         $will_check = $db->super_query( "SELECT * FROM " . PREFIX . "_anime_list WHERE news_id>0 AND news_update=1 LIMIT 1" );
         if ( $will_check ) {
             $news_row = $db->super_query( "SELECT id, xfields, title FROM " . PREFIX . "_post WHERE id='{$will_check['news_id']}'" );
@@ -143,14 +141,8 @@
                     if( array_key_exists($check_value, $xfields_list) ) unset($xfields_list[$check_value]);
                 }
                 
-                if ( $its_camrip === true && $aaparser_config['fields']['xf_camrip'] ) {
-	                $xfields_list[$aaparser_config['fields']['xf_camrip']] = 1;
-	            }
-                
-                if ( $its_lgbt === true && $aaparser_config['fields']['xf_lgbt'] ) {
-	                $xfields_list[$aaparser_config['fields']['xf_lgbt']] = 1;
-	            }
-	            
+                if ( $its_camrip === true && $aaparser_config['fields']['xf_camrip'] ) $xfields_list[$aaparser_config['fields']['xf_camrip']] = 1;
+                if ( $its_lgbt === true && $aaparser_config['fields']['xf_lgbt'] )$xfields_list[$aaparser_config['fields']['xf_lgbt']] = 1;
 	            if ( $shiki_id && $aaparser_config_push['main_fields']['xf_shikimori_id'] ) $xfields_list[$aaparser_config_push['main_fields']['xf_shikimori_id']] = $shiki_id;
 	            if ( $mdl_id && $aaparser_config_push['main_fields']['xf_mdl_id'] ) $xfields_list[$aaparser_config_push['main_fields']['xf_mdl_id']] = $mdl_id;
                 
@@ -185,7 +177,6 @@
 		            }
                 }
 	            if ( count($xf_search_words) AND $publish == 1 ) {
-		
 		            $temp_array = array();
 		
 		            foreach ( $xf_search_words as $value ) {
@@ -205,6 +196,5 @@
             $db->query("UPDATE " . PREFIX . "_anime_list SET news_update=0 WHERE material_id='{$will_check['material_id']}'");
             clear_cache( array('news_', 'full_') );
             die('Проверка на обновление доп полей завершена');
-        }
-        else die('В очереди на обновление данных в доп полях нет новостей');
+        } else die('В очереди на обновление данных в доп полях нет новостей');
     }

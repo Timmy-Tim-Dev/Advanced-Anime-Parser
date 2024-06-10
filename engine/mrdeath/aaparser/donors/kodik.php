@@ -57,8 +57,7 @@ if ($parse_action == 'search') {
 	    	if (isset($proverka['id']) && $proverka['id']) {
 	    	    $find_id = 'est';
 	    	    $edit_link = $config['http_home_url'].'admin.php?mod=editnews&action=editnews&id='.$proverka['id'];
-	    	}
-	    	else {
+	    	} else {
 	    	    $find_id = 'net';
 	    	    $edit_link = '';
 	    	}
@@ -90,8 +89,7 @@ if ($parse_action == 'search') {
 			);
         }
 	}
-}
-elseif ($parse_action == 'parse') {
+} elseif ($parse_action == 'parse') {
     
     if ( !isset($xfields_data) && !$xfields_data ) $xfields_data = [];
     
@@ -107,35 +105,26 @@ elseif ($parse_action == 'parse') {
             foreach ( $translators['seasons'] as $season => $episode ) {
                 foreach ( $episode['episodes'] as $ep_num => $episode_links ) {
                     $playlist[$season]['episodes'][$ep_num] = $ep_num;
-					if ($translators['translation']['id'] == '1858' && $translators['translation']['type'] == 'subtitles') {
-						$playlist_alt['autosubtitles'][$season]['episodes'][$ep_num] = $ep_num;
-					} elseif ($translators['translation']['id'] != '1858' && $translators['translation']['type'] == 'subtitles') {
-						$playlist_alt['subtitles'][$season]['episodes'][$ep_num] = $ep_num;
-					} elseif ($translators['translation']['type'] == 'voice') {
-						$playlist_alt['voice'][$season]['episodes'][$ep_num] = $ep_num;
-					}
+					if ($translators['translation']['id'] == '1858' && $translators['translation']['type'] == 'subtitles')$playlist_alt['autosubtitles'][$season]['episodes'][$ep_num] = $ep_num;
+					elseif ($translators['translation']['id'] != '1858' && $translators['translation']['type'] == 'subtitles') $playlist_alt['subtitles'][$season]['episodes'][$ep_num] = $ep_num;
+					elseif ($translators['translation']['type'] == 'voice') $playlist_alt['voice'][$season]['episodes'][$ep_num] = $ep_num;
+					
 					$translators_list[] = trim($translators['translation']['title']);
 					$translators_types[] = trim($translators['translation']['type']);
 					if ( $season > $last_season ) $last_season = $season;
-					if ($translators['translation']['type'] == 'voice' && $season > $last_tanslated_season) {
-					$last_tanslated_season = $season;
-					} elseif ($translators['translation']['type'] == 'subtitles' && $season > $last_subtitled_season) {
+					if ($translators['translation']['type'] == 'voice' && $season > $last_tanslated_season) $last_tanslated_season = $season;
+					elseif ($translators['translation']['type'] == 'subtitles' && $season > $last_subtitled_season) {
 						// Проверяем id для определения autosubtitles
-						if ($translators['translation']['id'] == '1858') {
-							$last_autosubtitled_season = $season;
-						} else {
-							$last_subtitled_season = $season;
-						}
+						if ($translators['translation']['id'] == '1858') $last_autosubtitled_season = $season;
+						else $last_subtitled_season = $season;
 					}
 				}
             }
         }
 		$translators_types = array_unique($translators_types);
 		$translators_list = array_unique($translators_list);
-        unset($translators);
-        unset($episode);
-    }
-	elseif ( isset( $kodik['results'] ) && $kodik['results'] ) {
+        unset($translators, $episode);
+    } elseif ( isset( $kodik['results'] ) && $kodik['results'] ) {
 	    
 		$translators_list = $translators_types = [];
 		
@@ -288,33 +277,24 @@ elseif ($parse_action == 'parse') {
 		if ( isset($playlist_alt['autosubtitles'][$last_autosubtitled_season]['episodes']) && $playlist_alt['autosubtitles'][$last_autosubtitled_season]['episodes'] ) {
 		    $xfields_data['kodik_last_season_autosubtitles'] = $last_autosubtitled_season;
 		    $xfields_data['kodik_last_episode_autosubtitles'] = max($playlist_alt['autosubtitles'][$last_autosubtitled_season]['episodes']);
-		} else {
-			$xfields_data['kodik_last_season_autosubtitles'] = '';
-			$xfields_data['kodik_last_episode_autosubtitles'] = '';
-		}
+		} else $xfields_data['kodik_last_season_autosubtitles'] = $xfields_data['kodik_last_episode_autosubtitles'] = '';
+		
 	}
 	
 	if (isset($kodik_data['episodes_count']) && $xfields_data['kodik_last_episode_translated'] != '' && $kodik_data['translation']['type'] == 'voice') {
 		$xfields_data['kodik_status_en_voice'] = ($xfields_data['kodik_last_episode_translated'] >= $kodik_data['episodes_count']) ? 'released' : (($xfields_data['kodik_last_episode_translated'] < $kodik_data['episodes_count']) ? 'ongoing' : '');
 		$xfields_data['kodik_status_ru_voice'] = ($xfields_data['kodik_last_episode_translated'] >= $kodik_data['episodes_count']) ? 'Завершён' : (($xfields_data['kodik_last_episode_translated'] < $kodik_data['episodes_count']) ? 'Онгоинг' : '');
-	} else {
-		$xfields_data['kodik_status_en_voice'] = '';
-		$xfields_data['kodik_status_ru_voice'] = '';
-	}
+	} else $xfields_data['kodik_status_en_voice'] = $xfields_data['kodik_status_ru_voice'] = '';
+	
 	if (isset($kodik_data['episodes_count']) && $xfields_data['kodik_last_episode_subtitles'] != '' && $kodik_data['translation']['type'] == 'subtitles' && $kodik_data['translation']['id'] != "1858") {
 		$xfields_data['kodik_status_en_sub'] = ($xfields_data['kodik_last_episode_subtitles'] >= $kodik_data['episodes_count']) ? 'released' : (($xfields_data['kodik_last_episode_subtitles'] < $kodik_data['episodes_count']) ? 'ongoing' : '');
 		$xfields_data['kodik_status_ru_sub'] = ($xfields_data['kodik_last_episode_subtitles'] >= $kodik_data['episodes_count']) ? 'Завершён' : (($xfields_data['kodik_last_episode_subtitles'] < $kodik_data['episodes_count']) ? 'Онгоинг' : '');
-	} else {
-		$xfields_data['kodik_status_en_sub'] = '';
-		$xfields_data['kodik_status_ru_sub'] = '';
-	}
+	} else $xfields_data['kodik_status_en_sub'] = $xfields_data['kodik_status_ru_sub'] = '';
+	
 	if (isset($kodik_data['episodes_count']) && $xfields_data['kodik_last_episode_autosubtitles'] != '' && $kodik_data['translation']['type'] == 'subtitles' && $kodik_data['translation']['id'] == "1858") {
 		$xfields_data['kodik_status_en_autosub'] = ($xfields_data['kodik_last_episode_autosubtitles'] >= $kodik_data['episodes_count']) ? 'released' : (($xfields_data['kodik_last_episode_autosubtitles'] < $kodik_data['episodes_count']) ? 'ongoing' : '');
 		$xfields_data['kodik_status_ru_autosub'] = ($xfields_data['kodik_last_episode_autosubtitles'] >= $kodik_data['episodes_count']) ? 'Завершён' : (($xfields_data['kodik_last_episode_autosubtitles'] < $kodik_data['episodes_count']) ? 'Онгоинг' : '');
-	} else {
-		$xfields_data['kodik_status_en_autosub'] = '';
-		$xfields_data['kodik_status_ru_autosub'] = '';
-	}
+	} else  $xfields_data['kodik_status_en_autosub'] = $xfields_data['kodik_status_ru_autosub'] = '';
 	
 	if ( isset($kodik_data['screenshots']) ) {
 		$xfields_data['kadr_1'] = $kodik_data['screenshots'][0];
@@ -326,8 +306,7 @@ elseif ($parse_action == 'parse') {
 	
 	if ( !isset($xfields_data['image']) && !$xfields_data['image'] && isset($kodik_data['material_data']['poster_url']) && $kodik_data['material_data']['poster_url'] ) $xfields_data['image'] = $kodik_data['material_data']['poster_url'];
   
-}
-elseif ( $parse_action == 'grab' && $kind == 'anime' ) {
+} elseif ( $parse_action == 'grab' && $kind == 'anime' ) {
     
     $anime_kind_add = $camrip_add = $lgbt_add = $years_add = $genres_add = $translators_add = '';
     if ( $aaparser_config['grabbing']['tv'] ) {
@@ -356,24 +335,16 @@ elseif ( $parse_action == 'grab' && $kind == 'anime' ) {
     }
     if ( !$aaparser_config['grabbing']['if_camrip'] ) $camrip_add = '&camrip=false';
     if ( !$aaparser_config['grabbing']['if_lgbt'] ) $lgbt_add = '&lgbt=false';
-    if ( $aaparser_config['grabbing']['years'] ) {
-        $years_add = '&year='.$aaparser_config['grabbing']['years'];
-    }
-    if ( $aaparser_config['grabbing']['genres'] ) {
-        $genres_add = '&all_genres='.$aaparser_config['grabbing']['genres'];
-    }
-    if ( $aaparser_config['grabbing']['translators'] ) {
-        $translators_add = '&translation_id='.$aaparser_config['grabbing']['translators'];
-    }
+    if ( $aaparser_config['grabbing']['years'] ) $years_add = '&year='.$aaparser_config['grabbing']['years'];
+    if ( $aaparser_config['grabbing']['genres'] ) $genres_add = '&all_genres='.$aaparser_config['grabbing']['genres'];
+    if ( $aaparser_config['grabbing']['translators'] ) $translators_add = '&translation_id='.$aaparser_config['grabbing']['translators'];
     
     if ( !$anime_kind_add ) die('Вы не выбрали ни одного типа аниме - сериал, фильм, ova, ona, спэшл или amv');
 
-			//sort
-			$film_sort_by = "";
-			if ($aaparser_config['settings']['film_sort_by']) {
-				$film_sort_by = '&sort='.$aaparser_config['settings']['film_sort_by'];
-			}
-			//
+	//sort
+	$film_sort_by = "";
+	if ($aaparser_config['settings']['film_sort_by']) $film_sort_by = '&sort='.$aaparser_config['settings']['film_sort_by'];
+	//
 	$kodik_log = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log' ), true );
 	if ( $kodik_log[$kind] ) $grab_url = $kodik_log[$kind];
 	else $grab_url = $kodik_api_domain.'list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100&types=anime,anime-serial'.$anime_kind_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add;
@@ -384,12 +355,9 @@ elseif ( $parse_action == 'grab' && $kind == 'anime' ) {
 		unset($kodik_log[$kind]);
 		file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log', json_encode( $kodik_log ));
         die('Балансер Kodik временно недоступен');
-    }
-    else {
-        $grab_info_old = '';
-		$grab_info_new = '';
-        $grab_num_old = 1;
-        $grab_num_new = 1;
+    } else {
+        $grab_info_old = $grab_info_new = '';
+        $grab_num_old = $grab_num_new = 1;
         foreach ($grab['results'] as $result) {
 			
 			if ( !$result['shikimori_id'] && !$result['mdl_id'] ) continue;
@@ -420,44 +388,29 @@ elseif ( $parse_action == 'grab' && $kind == 'anime' ) {
                 $cheking = $db->super_query( "SELECT * FROM " . PREFIX . "_anime_list WHERE ".$where );
                 if ( $cheking['material_id'] > 0 ) {
                     if ( $cheking["tv_status"] != $serial_status ) {
-                        if ( $cheking['news_id'] > 0 && $aaparser_config['update_news']['cat_check'] == 1 ) {
-                            $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$serial_status}', cat_check=1 WHERE material_id='{$cheking['material_id']}'");
-                        }
-                        elseif ( $cheking['news_id'] == 0 ) {
-                            $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$serial_status}' WHERE material_id='{$cheking['material_id']}'");
-                        }
+                        if ( $cheking['news_id'] > 0 && $aaparser_config['update_news']['cat_check'] == 1 ) $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$serial_status}', cat_check=1 WHERE material_id='{$cheking['material_id']}'");
+                        elseif ( $cheking['news_id'] == 0 ) $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$serial_status}' WHERE material_id='{$cheking['material_id']}'");
                     }
                     $grab_info_old .= $grab_num_old.'. Аниме '.$result['title'].' есть в базе модуля. Пропущено<br>';
                     $grab_num_old++;
-                }
-                else {
+                } else {
                     $db->query("INSERT INTO " . PREFIX . "_anime_list (shikimori_id, year, type, tv_status) VALUES( '{$shikimori_id}', '{$year}', '{$types}', '{$serial_status}' ) " );
                     $grab_info_new .= $grab_num_new.'. Аниме '.$result['title'].' добавлено в базу модуля<br>';
                     $grab_num_new++;
                 }
                 unset($cheking);
-            }
-            else {
-                continue;
-            }
+            } else continue;
         }
 		
 		if ( $grab['next_page'] ) $kodik_log[$kind] = $grab['next_page'];
 		else unset($kodik_log[$kind]);
 		file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log', json_encode( $kodik_log ));
-		if($grab_info_new != ''){
-			echo 'Добавлено:<br>';
-			echo $grab_info_new;
-			echo '<br>';
-		}
-		if($grab_info_old != ''){
-			echo 'Пропущено:<br>';
-			echo $grab_info_old;
-		}
+		if($grab_info_new != '') echo 'Добавлено:<br>' . $grab_info_new . '<br>';
+		if($grab_info_old != '') echo 'Пропущено:<br>' . $grab_info_old;
+		
         exit("<br>База аниме успешно обновлена!");
     }
-}
-elseif ( $parse_action == 'grab' && $kind == 'dorama' ) {
+} elseif ( $parse_action == 'grab' && $kind == 'dorama' ) {
     
     $kind_add = $country_add = $camrip_add = $lgbt_add = $years_add = $genres_add = $translators_add = '';
     if ( $aaparser_config['grabbing_doram']['tv'] ) {
@@ -500,17 +453,10 @@ elseif ( $parse_action == 'grab' && $kind == 'dorama' ) {
 
     if ( !$aaparser_config['grabbing_doram']['if_camrip'] ) $camrip_add = '&camrip=false';
     if ( !$aaparser_config['grabbing_doram']['if_lgbt'] ) $lgbt_add = '&lgbt=false';
-    if ( $aaparser_config['grabbing_doram']['years'] ) {
-        $years_add = '&year='.$aaparser_config['grabbing_doram']['years'];
-    }
-    if ( $aaparser_config['grabbing_doram']['genres'] ) {
-        $genres_add = '&all_genres='.$aaparser_config['grabbing_doram']['genres'];
-    }
-    if ( $aaparser_config['grabbing_doram']['translators'] ) {
-        $translators_add = '&translation_id='.$aaparser_config['grabbing_doram']['translators'];
-    }
+    if ( $aaparser_config['grabbing_doram']['years'] ) $years_add = '&year='.$aaparser_config['grabbing_doram']['years'];
+    if ( $aaparser_config['grabbing_doram']['genres'] ) $genres_add = '&all_genres='.$aaparser_config['grabbing_doram']['genres'];
+    if ( $aaparser_config['grabbing_doram']['translators'] ) $translators_add = '&translation_id='.$aaparser_config['grabbing_doram']['translators'];
     
-	
 	$kodik_log = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log' ), true );
 	if ( $kodik_log[$kind] ) $grab_url = $kodik_log[$kind];
 	else $grab_url = $kodik_api_domain.'list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100'.$kind_add.$country_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add;
@@ -521,8 +467,7 @@ elseif ( $parse_action == 'grab' && $kind == 'dorama' ) {
 		unset($kodik_log[$kind]);
 		file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log', json_encode( $kodik_log ));
         die('Балансер Kodik временно недоступен');
-    }
-    else {
+    } else {
         foreach ($grab['results'] as $result) {
 			
 			if ( !$result['shikimori_id'] && !$result['mdl_id'] ) continue;
@@ -556,16 +501,10 @@ elseif ( $parse_action == 'grab' && $kind == 'dorama' ) {
                 $cheking = $db->super_query( "SELECT * FROM " . PREFIX . "_anime_list WHERE ".$where );
                 if ( $cheking['material_id'] > 0 ) {
                     if ( $cheking["tv_status"] != $serial_status )
-                        if ( $cheking['news_id'] > 0 && $aaparser_config['update_news']['cat_check'] == 1 ) 
-                            $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$serial_status}', cat_check=1 WHERE material_id='{$cheking['material_id']}'");
-                        elseif ( $cheking['news_id'] == 0 )
-                            $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$serial_status}' WHERE material_id='{$cheking['material_id']}'");
-                        
-                }
-                else
-                    $db->query("INSERT INTO " . PREFIX . "_anime_list (shikimori_id, mdl_id, year, type, tv_status) VALUES( '{$shikimori_id}', '{$mdl_id}', '{$year}', '{$types}', '{$serial_status}' ) " );
-            }
-            else continue;
+                        if ( $cheking['news_id'] > 0 && $aaparser_config['update_news']['cat_check'] == 1 ) $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$serial_status}', cat_check=1 WHERE material_id='{$cheking['material_id']}'");
+                        elseif ( $cheking['news_id'] == 0 ) $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$serial_status}' WHERE material_id='{$cheking['material_id']}'");
+                } else $db->query("INSERT INTO " . PREFIX . "_anime_list (shikimori_id, mdl_id, year, type, tv_status) VALUES( '{$shikimori_id}', '{$mdl_id}', '{$year}', '{$types}', '{$serial_status}' ) " );
+            } else continue;
         }
 		
 		if ( $grab['next_page'] ) $kodik_log[$kind] = $grab['next_page'];

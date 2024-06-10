@@ -8,12 +8,12 @@ HTML;
 
 $cats_json = array();
 
-		foreach ($category_values as $key => $value) {
-			$item = array();
-			$item['name'] = $value;
-			$item['cat_id'] = $value;
-			$cats_json[] = $item;	
-		}	
+foreach ($category_values as $key => $value) {
+	$item = array();
+	$item['name'] = $value;
+	$item['cat_id'] = $value;
+	$cats_json[] = $item;	
+}	
 	
 		
 foreach ($cat_info as $cat) {
@@ -24,28 +24,22 @@ foreach ($cat_info as $cat) {
         $cat_id = $cat_info[$cat_id]["parentid"];
     }
 
-	
 	$options = [];
 	$mode = 1;
-	if ($aaparser_config['categories'][$cat["id"]] != "")
-	{
+	if ($aaparser_config['categories'][$cat["id"]] != "") {
 		$ar_ray = explode(',', $aaparser_config['categories'][$cat['id']]);
 
 		foreach ($category_values as $key => $value) {
 			if ( $mode == 1 ) $key = $value;
-			if (in_array($key, $ar_ray)) {
-
-				$options[] = '<option value="'.$key.'" selected>'.$value.'</option>';
-			}
+			if (in_array($key, $ar_ray)) $options[] = '<option value="'.$key.'" selected>'.$value.'</option>';
 		}		
 	}
 
-	if (count($options) == 0)
-	{
+	if (count($options) == 0) {
 		foreach ($category_values as $key => $value) {
 			if ( $mode == 1 ) $key = $value;
-				$options[] = '<option value="'.$key.'">'.$value.'</option>';
-				break;
+			$options[] = '<option value="'.$key.'">'.$value.'</option>';
+			break;
 		}		
 	}
 

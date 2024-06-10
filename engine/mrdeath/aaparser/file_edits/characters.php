@@ -48,16 +48,12 @@ if ($type == "people") {
 	$al_ids = [];
 	if (!is_null($json['roles'])) {
 		foreach ($json['roles'] as $role) {
-			if (isset($role['animes'])) {
-				$al_ids[] = $role['animes']['id'];
-			}
+			if (isset($role['animes'])) $al_ids[] = $role['animes']['id'];
 		}
 	}
 	if (!is_null($json['works'])) {
 		foreach ($json['works'] as $work) {
-			if (isset($work['anime'])) {
-				$al_ids[] = $work['anime']['id'];
-			}
+			if (isset($work['anime'])) $al_ids[] = $work['anime']['id'];
 		}
 	}
 	$al_ids = array_unique($al_ids);

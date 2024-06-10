@@ -34,50 +34,31 @@ $is_logged = false;
 date_default_timezone_set($config['date_adjust']);
 $_TIME = time();
 
-if (!$is_logged) {
-	$member_id['user_group'] = 5;
-}
+if (!$is_logged) $member_id['user_group'] = 5;
 
-if ($is_logged && $member_id['banned'] == 'yes') {
-	die('User banned');
-}
+if ($is_logged && $member_id['banned'] == 'yes') die('User banned');
 
 $user_group = get_vars('usergroup');
 
 if ( $action == "update" ) {
 	
 	$res = $db->query("SELECT * FROM ".PREFIX."_anime_list");
-	while ( $row = $db->get_array( $res ) )
-	{
+	while ( $row = $db->get_array( $res ) ) {
 		$is_post = $db->super_query("SELECT id FROM ".PREFIX."_post where id=".$row['news_id']);
-		
-		if (!$is_post['id'])
-		{
-			$db->query("DELETE FROM ".PREFIX."_anime_list WHERE news_id=".$row['news_id']);
-		}
+		if (!$is_post['id']) $db->query("DELETE FROM ".PREFIX."_anime_list WHERE news_id=".$row['news_id']);
 	}
 	
 	$db->query("DELETE FROM " . PREFIX . "_anime_list WHERE news_id=0");
 	file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log', "");
 	file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/shikimori.log', "");
-	die(json_encode(array(
-		'status' => 'ok'
-	)));
-}
-elseif ( $action == "update_xfields" ) {
+	die(json_encode(array( 'status' => 'ok' )));
+} elseif ( $action == "update_xfields" ) {
 	$db->query("UPDATE " . PREFIX . "_anime_list SET news_update=1 WHERE news_id>0");
-	die(json_encode(array(
-		'status' => 'ok'
-	)));
-}
-elseif ( $action == "update_cats" ) {
+	die(json_encode(array( 'status' => 'ok' )));
+} elseif ( $action == "update_cats" ) {
 	$db->query("UPDATE " . PREFIX . "_anime_list SET cat_check=1 WHERE news_id>0");
-	die(json_encode(array(
-		'status' => 'ok'
-	)));
-}
-elseif ( $action == "update_translations" ) {
-    
+	die(json_encode(array( 'status' => 'ok' )));
+} elseif ( $action == "update_translations" ) {
     if ( !$aaparser_config['settings']['kodik_api_key'] ) {
         die(json_encode(array(
 		    'status' => 'error',
@@ -95,8 +76,7 @@ elseif ( $action == "update_translations" ) {
     
     if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/translators_name.json') ) {
         file_put_contents(ENGINE_DIR.'/mrdeath/aaparser/data/translators_name.json', json_encode($translators_name, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
-    }
-    else {
+    } else {
         $fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/translators_name.json', "w+");
   	    fwrite($fp, json_encode($translators_name, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
   	    fclose($fp);
@@ -104,18 +84,14 @@ elseif ( $action == "update_translations" ) {
     
     if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/translators.json') ) {
         file_put_contents(ENGINE_DIR.'/mrdeath/aaparser/data/translators.json', json_encode($translators, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
-    }
-    else {
+    }  else {
         $fp2 = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/translators.json', "w+");
   	    fwrite($fp2, json_encode($translators, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
   	    fclose($fp2);
     }
 	
-	die(json_encode(array(
-		'status' => 'ok'
-	)));
-}
-elseif ( $action == "update_translations_dorama" ) {
+	die(json_encode(array( 'status' => 'ok' )));
+} elseif ( $action == "update_translations_dorama" ) {
     
     if ( !$aaparser_config['settings']['kodik_api_key'] ) {
         die(json_encode(array(
@@ -134,8 +110,7 @@ elseif ( $action == "update_translations_dorama" ) {
     
     if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/translators_name_dorama.json') ) {
         file_put_contents(ENGINE_DIR.'/mrdeath/aaparser/data/translators_name_dorama.json', json_encode($translators_name, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
-    }
-    else {
+    } else {
         $fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/translators_name_dorama.json', "w+");
   	    fwrite($fp, json_encode($translators_name, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
   	    fclose($fp);
@@ -143,8 +118,7 @@ elseif ( $action == "update_translations_dorama" ) {
     
     if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/translators_dorama.json') ) {
         file_put_contents(ENGINE_DIR.'/mrdeath/aaparser/data/translators_dorama.json', json_encode($translators, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
-    }
-    else {
+    } else {
         $fp2 = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/translators_dorama.json', "w+");
   	    fwrite($fp2, json_encode($translators, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
   	    fclose($fp2);
@@ -153,8 +127,7 @@ elseif ( $action == "update_translations_dorama" ) {
 	die(json_encode(array(
 		'status' => 'ok'
 	)));
-}
-elseif ( $action == "connect_base_get" ) {
+} elseif ( $action == "connect_base_get" ) {
 		
 		if ( !$aaparser_config_push['main_fields']['xf_shikimori_id'] && !$aaparser_config_push['main_fields']['xf_mdl_id'] ) {
 	        die(json_encode(array(
@@ -190,20 +163,11 @@ elseif ( $action == "connect_base_get" ) {
 			
 			$count++;
 		}
-		if ($count > 0)
-			echo json_encode($result_connect);
-		else
-			die(json_encode(array(
-		        'status' => 'fail'
-	        )));
-}
-elseif ( $action == "connect_base" ) {
+		if ($count > 0) echo json_encode($result_connect);
+		else die(json_encode(array( 'status' => 'fail' )));
+} elseif ( $action == "connect_base" ) {
 	
-	if ( !$aaparser_config_push['main_fields']['xf_shikimori_id'] && !$aaparser_config_push['main_fields']['xf_mdl_id'] ) {
-	   die(json_encode(array(
-		  'status' => 'fail'
-	   )));
-	}
+	if ( !$aaparser_config_push['main_fields']['xf_shikimori_id'] && !$aaparser_config_push['main_fields']['xf_mdl_id'] ) die(json_encode(array( 'status' => 'fail' )));
 	    
 	$news_id = $_GET['newsid'];
     $news_id = is_numeric($news_id) ? intval($news_id) : false;
@@ -228,16 +192,14 @@ elseif ( $action == "connect_base" ) {
 		    );
 		    $result = json_encode($result_work);
 		    echo $result;
-	    }
-	    elseif ( $base_check_db['shikimori_id'] == $shikimori_id && $base_check_db['news_id'] == $news_id ) {
+	    } elseif ( $base_check_db['shikimori_id'] == $shikimori_id && $base_check_db['news_id'] == $news_id ) {
 	        $result_work = array(
 			    'news_id' => $news_id,
 			    'status' => 'не требует связывания.'
 		    );
 		    $result = json_encode($result_work);
 		    echo $result;
-	    }
-	    else {
+	    } else {
 	        $shikimori = request($shikimori_api_domain.'api/animes/'.$shikimori_id);
 	        if ( $shikimori['aired_on'] ) {
 		        $aired = explode('-', $shikimori['aired_on']);
@@ -256,8 +218,7 @@ elseif ( $action == "connect_base" ) {
 		    $result = json_encode($result_work);
 		    echo $result;
 	    }
-	}
-	elseif ( $mdl_id ) {
+	} elseif ( $mdl_id ) {
 	    
 	    $base_check_db = $db->super_query( "SELECT mdl_id, news_id FROM " . PREFIX . "_anime_list WHERE mdl_id='{$mdl_id}'" );
 	
@@ -269,25 +230,20 @@ elseif ( $action == "connect_base" ) {
 		    );
 		    $result = json_encode($result_work);
 		    echo $result;
-	    }
-	    elseif ( $base_check_db['mdl_id'] == $mdl_id && $base_check_db['news_id'] == $news_id ) {
+	    } elseif ( $base_check_db['mdl_id'] == $mdl_id && $base_check_db['news_id'] == $news_id ) {
 	        $result_work = array(
 			    'news_id' => $news_id,
 			    'status' => 'не требует связывания.'
 		    );
 		    $result = json_encode($result_work);
 		    echo $result;
-	    }
-	    else {
-
-			
+	    } else {
 	        $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_material_data=true');
 	        
 	        if ( $kodik['results'][0]['year'] ) $year = $kodik['results'][0]['year'];
 	        else $year = 0;
 	        
 	        $status = $kodik['results'][0]['material_data']['all_status'];
-	        
 	        $db->query("INSERT INTO " . PREFIX . "_anime_list (mdl_id, year, news_id, tv_status, started) VALUES( '{$mdl_id}', '{$year}', '{$news_id}', '{$status}', '1' ) " );
 
 	        $result_work = array(
@@ -297,41 +253,26 @@ elseif ( $action == "connect_base" ) {
 		    $result = json_encode($result_work);
 		    echo $result;
 	    }
-	    unset($base_check_db);
-	    unset($news_id);
-	    unset($shikimori_id);
-	    unset($mdl_id);
+	    unset($base_check_db, $news_id, $shikimori_id, $mdl_id);
 	}
 
-}
-elseif ( $action == "clear_player_cache" ) {
+} elseif ( $action == "clear_player_cache" ) {
     require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
     kodik_clear_cache('playlist', 'player');
-	die(json_encode(array(
-		'status' => 'ok'
-	)));
-}
-elseif ( $action == "clear_personajes_cache" ) {
+	die(json_encode(array( 'status' => 'ok' )));
+} elseif ( $action == "clear_personajes_cache" ) {
     require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
     kodik_clear_cache('personas', 'personas_characters');
-	die(json_encode(array(
-		'status' => 'ok'
-	)));
-}
-elseif ( $action == "clear_page_cache" ) {
+	die(json_encode(array( 'status' => 'ok' )));
+} elseif ( $action == "clear_page_cache" ) {
     require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
     kodik_clear_cache('personas', 'personas_characters_page');
-	die(json_encode(array(
-		'status' => 'ok'
-	)));
-}
-elseif ( $action == "update_module" ) {
+	die(json_encode(array( 'status' => 'ok' )));
+} elseif ( $action == "update_module" ) {
 	$row = $db->super_query("SHOW TABLE STATUS WHERE Name = '" . PREFIX . "_post'");
 	$storage_engine = $row['Engine'];
 	
-	if( file_exists( ENGINE_DIR . "/mrdeath/aaparser/includes/upgrade/".$_GET['version'].".php" ) ) {
-		include ( ENGINE_DIR . "/mrdeath/aaparser/includes/upgrade/".$_GET['version'].".php" );
-	}
+	if( file_exists( ENGINE_DIR . "/mrdeath/aaparser/includes/upgrade/".$_GET['version'].".php" ) ) include ( ENGINE_DIR . "/mrdeath/aaparser/includes/upgrade/".$_GET['version'].".php" );
 }
 
 ?>

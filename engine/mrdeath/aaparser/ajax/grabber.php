@@ -22,13 +22,8 @@ require_once ENGINE_DIR . '/mrdeath/aaparser/functions/kodik_cache.php';
 
 if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log')) {
   	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log', "w+");
+	@chmod(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log', 0777);
   	fwrite($fp, "");
-  	fclose($fp);
-}
-
-if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json')) {
-  	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json', "w+");
-  	fwrite($fp, "[]");
   	fclose($fp);
 }
 
@@ -41,13 +36,10 @@ $user_group = array ();
 $db->query( "SELECT * FROM " . USERPREFIX . "_usergroups ORDER BY id ASC" );
 	
 while ( $row = $db->get_row() ) {
-		
 	$user_group[$row['id']] = array ();
-		
 	foreach ( $row as $key => $value ) {
 		$user_group[$row['id']][$key] = stripslashes($value);
 	}
-	
 }
 set_vars( "usergroup", $user_group );
 $db->free();
@@ -77,8 +69,7 @@ elseif ( $aaparser_config['settings']['working_mode'] == 2 ) {
     $temp_number = rand(1, 2);
     if ( $temp_number == 1 ) $kind = 'anime';
     else $kind = 'dorama';
-}
-else $kind = 'anime';
+} else $kind = 'anime';
 
 if ( $kind == 'anime' && $aaparser_config['settings']['working_mode'] == 1 ) die('В режиме работы модуля выбраны дорамы, граббинг аниме отключён');
 elseif ( $kind == 'dorama' && ( $aaparser_config['settings']['working_mode'] != 1 && $aaparser_config['settings']['working_mode'] != 2 ) ) die('В режиме работы модуля выбраны аниме, граббинг дорам отключён');
@@ -95,17 +86,12 @@ else $kodik_api_domain = 'https://kodikapi.com/';
 if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
     $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
     $shikimori_image_domain = 'https://'.clean_url($shikimori_api_domain);
-}
-else {
-    $shikimori_api_domain = 'https://shikimori.me/';
-    $shikimori_image_domain = 'https://shikimori.me';
-}
+} else  $shikimori_api_domain = $shikimori_image_domain = 'https://shikimori.me/';
 
 $cron_log['time'] = $_TIME;
 file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/cron.log', json_encode( $cron_log ));
 
 if ( $action == 'grabbing' ) {
-    
     $stop_time = time() - 3 * 24 * 3600;
     $db->query( "UPDATE " . PREFIX . "_anime_list SET started=0, error=0 WHERE ( error>'0' AND error<'".$stop_time."' ) AND started=1 AND news_id=0" );
     
@@ -117,38 +103,16 @@ if ( $action == 'grabbing' ) {
     
     $parse_action = 'grab';
     include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/kodik.php'));
-}
-elseif ( $action == 'update' && $kind == 'anime' ) {
-    include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/update_anime.php'));
-}
-elseif ( $action == 'update' && $kind == 'dorama' ) {
-    include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/update_dorama.php'));
-}
+} elseif ( $action == 'update' && $kind == 'anime' ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/update_anime.php'));
+elseif ( $action == 'update' && $kind == 'dorama' ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/update_dorama.php'));
 elseif ( $action == 'add') {
-	if (isset($aaparser_config['settings']['grab_on'])) {
-		include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/add_material.php'));
-	} else {
-		echo "Функционал граббинга отключен, пожалуйста включите это в настройках модуля!";
-	}
+	if (isset($aaparser_config['settings']['grab_on'])) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/add_material.php'));
+	else echo "Функционал граббинга отключен, пожалуйста включите это в настройках модуля!";
 }
-elseif ( $action == 'category_updating' ) {
-    include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/category_updating.php'));
-}
-elseif ( $action == 'xfields_updating' ) {
-    include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/xfields_updating.php'));
-}
-elseif ( $action == 'other' ) {
-    include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/other_actions.php'));
-}
-elseif ( $action == 'anons_shiki' ) {
-    include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/anons_shiki.php'));
-}
-elseif ( $action == 'anons_clean' ) {
-    include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/anons_clean.php'));
-}
-elseif ( $action == 'update_franchise' ) {
-    include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/update_franchise.php'));
-}
-else {
-    echo "Были переданы неверные параметры!";
-}
+elseif ( $action == 'category_updating' ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/category_updating.php'));
+elseif ( $action == 'xfields_updating' ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/xfields_updating.php'));
+elseif ( $action == 'other' ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/other_actions.php'));
+elseif ( $action == 'anons_shiki' ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/anons_shiki.php'));
+elseif ( $action == 'anons_clean' ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/anons_clean.php'));
+elseif ( $action == 'update_franchise' ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/update_franchise.php'));
+else echo "Были переданы неверные параметры!";

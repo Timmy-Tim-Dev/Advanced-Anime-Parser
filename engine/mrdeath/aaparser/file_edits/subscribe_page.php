@@ -26,8 +26,7 @@ if( $my_subscribes === false ) {
 	if ( $user_row['push_subscribe'] ) {
 		$my_subscribes = $user_row['push_subscribe'];
 	  	create_cache( "subscribes_".$member_name, $my_subscribes, false );
-	}
-  	else $error_subscribes = true;
+	} else $error_subscribes = true;
 }
 if ( $error_subscribes === false ) {
 
@@ -61,33 +60,19 @@ if ( $error_subscribes === false ) {
 
   	if ($config['allow_cache'] AND $cache_id <= $config['max_cache_pages']) {
 		$active = dle_cache( "subscribes_", $cache_prefix, true );
-		if( $active ) {
-			$active = json_decode($active, true);
-		}
+		if( $active ) $active = json_decode($active, true);
 		$short_news_cache = true;
-	} else {
-		$active = false;
-		$short_news_cache = false;
-	}
+	} else $active = $short_news_cache = false;
 
   	if ( is_array($active) ) {
 
-		if( isset( $active['content'] ) ) {
-			$tpl->result['content'] .= $active['content'];
-		}
+		if( isset( $active['content'] ) ) $tpl->result['content'] .= $active['content'];
 
-		if( isset($active['navigation']) ) {
-
-			$tpl->result['navigation'] = $active['navigation'];
-
-		} else $tpl->result['navigation'] = '';
+		if( isset($active['navigation']) ) $tpl->result['navigation'] = $active['navigation'];
+		else $tpl->result['navigation'] = '';
 
 		if( isset( $active['last-modified'] ) ) {
-
-			if( $active['last-modified'] > $_DOCUMENT_DATE ) {
-				$_DOCUMENT_DATE = $active['last-modified'];
-			}
-
+			if( $active['last-modified'] > $_DOCUMENT_DATE ) $_DOCUMENT_DATE = $active['last-modified'];
 		}
 
 		$active = null;
@@ -104,9 +89,8 @@ if ( $error_subscribes === false ) {
 
 		if (!$config['allow_quick_wysiwyg']) $allow_comments_ajax = false;
 
-		if ($config['files_allow']) if (strpos ( $tpl->result['content'], "[attachment=" ) !== false) {
-			$tpl->result['content'] = show_attach ( $tpl->result['content'], $attachments );
-		}
+		if ($config['files_allow']) if (strpos ( $tpl->result['content'], "[attachment=" ) !== false) $tpl->result['content'] = show_attach ( $tpl->result['content'], $attachments );
+
 		if ($news_found AND $cache_id <= $config['max_cache_pages'] ) create_cache ( "subscribes_", json_encode( array('content' => $tpl->result['content'], 'navigation' => $tpl->result['navigation'], 'description' => $page_description, 'last-modified' => $_DOCUMENT_DATE ) , JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ), $cache_prefix, true );
 	}
 

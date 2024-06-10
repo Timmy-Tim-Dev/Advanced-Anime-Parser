@@ -57,11 +57,7 @@ else $kodik_api_domain = 'https://kodikapi.com/';
 if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
     $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
     $shikimori_image_domain = 'https://'.clean_url($shikimori_api_domain);
-}
-else {
-    $shikimori_api_domain = 'https://shikimori.me/';
-    $shikimori_image_domain = 'https://shikimori.me';
-}
+} else $shikimori_api_domain = $shikimori_image_domain = 'https://shikimori.me/'; 
 
 if ( $action == "parser_search" ) {
     
@@ -71,8 +67,7 @@ if ( $action == "parser_search" ) {
     if ( $aaparser_config['settings']['working_mode'] == 1 || $aaparser_config['settings']['working_mode'] == 2 ) {
         include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/kodik.php'));
         $responseArray = unique_multidim_array($responseArray,'unique_id');
-    }
-    else {
+    } else {
         include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/shikimori.php'));
         $responseArray = unique_multidim_array($responseArray,'shiki_id');
     }
@@ -265,9 +260,7 @@ elseif ( $action == "parser_get" ) {
 		    if ( $finded ) $parse_cat_list[] = $key;
 		}
 		
-		if (is_array($parse_cat_list)) {
-			$parse_cat_list = implode(",", $parse_cat_list);
-		}
+		if (is_array($parse_cat_list)) $parse_cat_list = implode(",", $parse_cat_list);
 	
 	}
 	
@@ -306,9 +299,7 @@ elseif ( $action == "parser_get" ) {
     //Связывание изображений с новостью в бд
     
     if ( $xfields_data['image'] OR $xfields_data['kadr_1'] ) {
-        if ( $aaparser_config['grabbing']['author_name'] ) {
-            $author = $aaparser_config['grabbing']['author_name'];
-        }
+        if ( $aaparser_config['grabbing']['author_name'] ) $author = $aaparser_config['grabbing']['author_name'];
         else {
             $avtr = $db->super_query(" SELECT name, user_id FROM " . PREFIX . "_users WHERE user_id=1 ");
             $author = $avtr['name'];
@@ -328,22 +319,16 @@ elseif ( $action == "parser_get" ) {
 	    $rowz = $db->super_query(" SELECT * FROM " . PREFIX . "_images WHERE news_id='{$id_news}' AND author='{$author}' ");
 	
 	    if( $rowz['id'] ) {
-		    if ($rowz['images']) {
-		    	$db->query(" UPDATE " . PREFIX . "_images SET images=CONCAT(images, '|||', '".$images."') WHERE id='{$rowz['id']}'");
-		    } else {
-		    	$db->query(" UPDATE " . PREFIX . "_images SET images='{$images}' WHERE id='{$rowz['id']}'");
-		    }
-		
-	    } else {
-		    $db->query(" INSERT INTO " . PREFIX . "_images (images, news_id, author, date) VALUES ('{$images}', '0', '{$author}', '".time()."') ");
-	    }
+		    if ($rowz['images']) $db->query(" UPDATE " . PREFIX . "_images SET images=CONCAT(images, '|||', '".$images."') WHERE id='{$rowz['id']}'");
+		    else $db->query(" UPDATE " . PREFIX . "_images SET images='{$images}' WHERE id='{$rowz['id']}'");
+	    } else $db->query(" INSERT INTO " . PREFIX . "_images (images, news_id, author, date) VALUES ('{$images}', '0', '{$author}', '".time()."') ");
+	    
     }
     
     if ( $its_camrip === true && $aaparser_config['fields']['xf_camrip'] ) {
         $array_data2['is_camrip'] = 1;
         $array_data2['is_camrip_field'] = $aaparser_config['fields']['xf_camrip'];
-    }
-    else {
+    } else {
         $array_data2['is_camrip'] = '';
         $array_data2['is_camrip_field'] = '';
     }
@@ -351,33 +336,23 @@ elseif ( $action == "parser_get" ) {
     if ( $its_lgbt === true && $aaparser_config['fields']['xf_lgbt'] ) {
         $array_data2['is_lgbt'] = 1;
         $array_data2['is_lgbt_field'] = $aaparser_config['fields']['xf_lgbt'];
-    }
-    else {
+    } else {
         $array_data2['is_lgbt'] = '';
         $array_data2['is_lgbt_field'] = '';
     }
     
     if ($array_data2){
-
         die(json_encode(array(
             'status' => 'paste',
             'result' => $array_data2,
         ), JSON_UNESCAPED_UNICODE));
-
     } else {
-
         die(json_encode(array(
             'status' => 'error',
             'error' => '#02',
         )));
-
     }
-
-}
-else {
-
+} else {
     die('Hacking attempt!');
-
 }
-
 ?>

@@ -28,22 +28,17 @@ function custom_rooms( $matches=array() ) {
 	$ids_for_sort = false;
 
 	if( preg_match( "#newsid=['\"](.+?)['\"]#i", $param_str, $match ) ) {
-		$temp_array = array();
-		$where_id = array();
+		$temp_array = $where_id = array();
 		$match[1] = explode (',', trim($match[1]));
 
 		foreach ($match[1] as $value) {
-
 			if( count(explode('-', $value)) == 2 ) {
 				$value = explode('-', $value);
 				$where_id[] = "r.news_id >= '" . intval($value[0]) . "' AND r.news_id <= '".intval($value[1])."'";
-
 			} else $temp_array[] = intval($value);
-
 		}
 
 		if ( count($temp_array) ) {
-
 			$where_id[] = "r.news_id IN ('" . implode("','", $temp_array) . "')";
 			$ids_for_sort = "FIND_IN_SET(r.news_id, '".implode(",", $temp_array)."') ";
 		}
@@ -51,99 +46,70 @@ function custom_rooms( $matches=array() ) {
 		if ( count($where_id) ) {
 			$custom_id = "(".implode(' OR ', $where_id).")";
 			$where[] = $custom_id;
-
 		}
-
 	}
 
 	if( preg_match( "#newsidexclude=['\"](.+?)['\"]#i", $param_str, $match ) ) {
-
-		$temp_array = array();
-		$where_id = array();
+		$temp_array = $where_id = array();
 		$match[1] = explode (',', trim($match[1]));
 
 		foreach ($match[1] as $value) {
-
 			if( count(explode('-', $value)) == 2 ) {
 				$value = explode('-', $value);
 				$where_id[] = "(r.news_id < '" . intval($value[0]) . "' OR r.news_id > '".intval($value[1])."')";
-
 			} else $temp_array[] = intval($value);
-
 		}
 
-		if ( count($temp_array) ) {
-
-			$where_id[] = "r.news_id NOT IN ('" . implode("','", $temp_array) . "')";
-		}
+		if ( count($temp_array) ) $where_id[] = "r.news_id NOT IN ('" . implode("','", $temp_array) . "')";
 
 		if ( count($where_id) ) {
 			$custom_id = implode(' AND ', $where_id);
 			$where[] = $custom_id;
-
 		}
 	}
 
 	if( preg_match( "#leader=['\"](.+?)['\"]#i", $param_str, $match ) ) {
-
 		$match[1] = explode (',', $match[1]);
-
 		$temp_array = array();
 
 		foreach ($match[1] as $value) {
-
 			$value = $db->safesql(trim($value));
 			$temp_array[] = "r.leader = '{$value}'";
-
 		}
 
 		$where[] = "(".implode(' OR ', $temp_array).")";
-
-
 	}
 
 	if( preg_match( "#leaderexclude=['\"](.+?)['\"]#i", $param_str, $match ) ) {
-
 		$match[1] = explode (',', $match[1]);
-
 		$temp_array = array();
 
 		foreach ($match[1] as $value) {
-
 			$value = $db->safesql(trim($value));
 			$temp_array[] = "r.leader != '{$value}'";
-
 		}
 
 		$where[] = implode(' AND ', $temp_array);
-
-
 	}
 
-	if( preg_match( "#template=['\"](.+?)['\"]#i", $param_str, $match ) ) {
-		$custom_template = trim($match[1]);
-	} else $custom_template = "shortstory";
+	if( preg_match( "#template=['\"](.+?)['\"]#i", $param_str, $match ) ) $custom_template = trim($match[1]);
+	else $custom_template = "shortstory";
 
-  	if( preg_match( "#withcount=['\"](.+?)['\"]#i", $param_str, $match ) ) {
-		$withcount = trim($match[1]);
-	} else $withcount = false;
+  	if( preg_match( "#withcount=['\"](.+?)['\"]#i", $param_str, $match ) ) $withcount = trim($match[1]);
+	else $withcount = false;
 
-	$custom_from = 0;
-    $custom_all = 0;
+	$custom_from = $custom_all = 0;
 
-	if( preg_match( "#limit=['\"](.+?)['\"]#i", $param_str, $match ) ) {
-		$custom_limit = intval($match[1]);
-	} else $custom_limit = 1;
+	if( preg_match( "#limit=['\"](.+?)['\"]#i", $param_str, $match ) ) $custom_limit = intval($match[1]);
+	else $custom_limit = 1;
 
-  	if( preg_match( "#activetime=['\"](.+?)['\"]#i", $param_str, $match ) ) {
-		$activetime = intval($match[1]);
-	} else $activetime = 30;
+  	if( preg_match( "#activetime=['\"](.+?)['\"]#i", $param_str, $match ) ) $activetime = intval($match[1]);
+	else $activetime = 30;
 
 	if( preg_match( "#hideprivate=['\"](.+?)['\"]#i", $param_str, $match ) ) {
 		if ( $match[1] != "no" ) $where[] = "r.public = 0 AND r.leader_last_login>'".($_TIME-$activetime)."'";
       	else $where[] = "r.leader_last_login>'".($_TIME-$activetime)."'";
-	}
-	else $where[] = "r.public = 0 AND r.leader_last_login>'".($_TIME-$activetime)."'";
+	} else $where[] = "r.public = 0 AND r.leader_last_login>'".($_TIME-$activetime)."'";
 
   	$news_msort = 'DESC';
   	$news_sort = 'id';

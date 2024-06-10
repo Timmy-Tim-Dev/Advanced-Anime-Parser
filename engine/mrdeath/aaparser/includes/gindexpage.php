@@ -160,9 +160,8 @@ HTML;
 HTML;
 } else {
 	
-	if ($php_version < 74) {
-		showRow('Не поддерживаемая версия PHP', 'Модуль не поддерживается версией PHP ниже 7.4', '(Ваша версия php '.PHP_VERSION.')');
-	} else {
+	if ($php_version < 74) showRow('Не поддерживаемая версия PHP', 'Модуль не поддерживается версией PHP ниже 7.4', '(Ваша версия php '.PHP_VERSION.')');
+	else {
 		if ( file_exists(ENGINE_DIR.'/xoopw/indexing/init.php') ) {
 			showRow('У Вас имеется модуль Google Indexing от Xoo.Pw', 'Необходимо его выключить в плагигах если собираетесь пользоваться Google Indexing от этого модуля и удалить папку /engine/xoopw/', '<a href="'. $config["http_home_url"] .'admin?mod=plugins" class="btn bg-slate-600 btn-raised legitRipple">Плагины</a>');
 		}

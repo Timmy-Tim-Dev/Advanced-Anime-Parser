@@ -8,9 +8,7 @@
 =====================================================
 */
  
-if( ! defined( 'DATALIFEENGINE' ) ) {
-	die( "Hacking attempt!" );
-}
+if( ! defined( 'DATALIFEENGINE' ) ) die( "Hacking attempt!" );
 
 if( $config['allow_admin_wysiwyg'] == 0 ) {
 	$short_st = "$('#short_story').val(";

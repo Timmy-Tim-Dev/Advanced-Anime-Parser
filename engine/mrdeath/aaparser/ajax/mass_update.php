@@ -32,23 +32,14 @@ $is_logged = false;
 date_default_timezone_set($config['date_adjust']);
 $_TIME = time();
 
-if (!$is_logged) {
-	$member_id['user_group'] = 5;
-}
-
-if ($is_logged && $member_id['banned'] == 'yes') {
-	die('User banned');
-}
+if (!$is_logged) $member_id['user_group'] = 5;
+if ($is_logged && $member_id['banned'] == 'yes') die('User banned');
 
 $user_group = get_vars('usergroup');
 
 if ( $action == "update_news_get" ) {
 		
-		if ( !$aaparser_config_push['main_fields']['xf_shikimori_id'] && !$aaparser_config_push['main_fields']['xf_mdl_id'] ) {
-	        die(json_encode(array(
-		        'status' => 'fail'
-	        )));
-	    }
+		if ( !$aaparser_config_push['main_fields']['xf_shikimori_id'] && !$aaparser_config_push['main_fields']['xf_mdl_id'] ) die(json_encode(array( 'status' => 'fail' )));
 	
 	    if ( $aaparser_config_push['main_fields']['xf_shikimori_id'] && $aaparser_config_push['main_fields']['xf_mdl_id'] ) $where = "xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_shikimori_id']."|%' OR xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_mdl_id']."|%'";
 	    elseif ( $aaparser_config_push['main_fields']['xf_shikimori_id'] ) $where = "xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_shikimori_id']."|%'";
@@ -78,20 +69,11 @@ if ( $action == "update_news_get" ) {
 			
 			$count++;
 		}
-		if ($count > 0)
-			echo json_encode($result_connect);
-		else
-			die(json_encode(array(
-		        'status' => 'fail'
-	        )));
-}
-elseif ( $action == "update_news" ) {
+		if ($count > 0) echo json_encode($result_connect);
+		else die(json_encode(array( 'status' => 'fail' )));
+} elseif ( $action == "update_news" ) {
 	
-	if ( !isset($aaparser_config_push['main_fields']['xf_shikimori_id']) && !isset($aaparser_config_push['main_fields']['xf_mdl_id']) ) {
-	   die(json_encode(array(
-		  'status' => 'fail'
-	   )));
-	}
+	if ( !isset($aaparser_config_push['main_fields']['xf_shikimori_id']) && !isset($aaparser_config_push['main_fields']['xf_mdl_id']) ) die(json_encode(array( 'status' => 'fail' )));
 	    
 	$news_id = $_GET['newsid'];
     $news_id = is_numeric($news_id) ? intval($news_id) : false;
@@ -119,11 +101,7 @@ elseif ( $action == "update_news" ) {
 	if ( ( $shiki_id && !isset($xfields_data['shikimori_id']) ) || ( $shiki_id && isset($xfields_data['shikimori_id']) && $xfields_data['shikimori_id'] != $shiki_id ) ) return;
 	if ( ( $mdl_id && !isset($xfields_data['mydramalist_id']) ) || ( $mdl_id && isset($xfields_data['mydramalist_id']) && $xfields_data['mydramalist_id'] != $mdl_id ) ) return;
 	
-	$xfields_data['worldart_country'] = '';
-	$xfields_data['worldart_tags'] = '';
-	$xfields_data['worldart_plot'] = '';
-	$xfields_data['worldart_rating'] = '';
-	$xfields_data['worldart_votes'] = '';
+	$xfields_data['worldart_country'] =	$xfields_data['worldart_tags'] = $xfields_data['worldart_plot'] = $xfields_data['worldart_rating'] = $xfields_data['worldart_votes'] = '';
 	
 	$black_list_xfields = ['image', 'kadr_1', 'kadr_2', 'kadr_3', 'kadr_4', 'kadr_5'];
 	
@@ -145,14 +123,8 @@ elseif ( $action == "update_news" ) {
         if( array_key_exists($check_value, $xfields_list) ) unset($xfields_list[$check_value]);
     }
                 
-    if ( $its_camrip === true && $aaparser_config['fields']['xf_camrip'] ) {
-	    $xfields_list[$aaparser_config['fields']['xf_camrip']] = 1;
-	}
-                
-    if ( $its_lgbt === true && $aaparser_config['fields']['xf_lgbt'] ) {
-	    $xfields_list[$aaparser_config['fields']['xf_lgbt']] = 1;
-	}
-	            
+    if ( $its_camrip === true && $aaparser_config['fields']['xf_camrip'] ) $xfields_list[$aaparser_config['fields']['xf_camrip']] = 1;
+    if ( $its_lgbt === true && $aaparser_config['fields']['xf_lgbt'] ) $xfields_list[$aaparser_config['fields']['xf_lgbt']] = 1;
 	if ( $shiki_id && $aaparser_config_push['main_fields']['xf_shikimori_id'] ) $xfields_list[$aaparser_config_push['main_fields']['xf_shikimori_id']] = $shiki_id;
 	if ( $mdl_id && $aaparser_config_push['main_fields']['xf_mdl_id'] ) $xfields_list[$aaparser_config_push['main_fields']['xf_mdl_id']] = $mdl_id;
                 
@@ -195,7 +167,6 @@ elseif ( $action == "update_news" ) {
 		$temp_array = array();
 		
 		foreach ( $xf_search_words as $value ) {
-			
 			if ( $aaparser_config['integration']['latin_xfields'] == 1 ) $temp_array[] = "('" . $news_id . "', '" . $value[0] . "', '" . $value[1] . "', '" . $value[2] . "')";
 			else $temp_array[] = "('" . $news_id . "', '" . $value[0] . "', '" . $value[1] . "')";
 		}

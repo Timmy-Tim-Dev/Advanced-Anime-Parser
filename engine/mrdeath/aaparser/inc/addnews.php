@@ -8,19 +8,15 @@
 =====================================================
 */
  
-if( ! defined( 'DATALIFEENGINE' ) ) {
-	die( "Hacking attempt!" );
-}
+if( ! defined( 'DATALIFEENGINE' ) ) die( "Hacking attempt!" );
 
 if( $config['allow_admin_wysiwyg'] == 0 ) {
 	$short_st = "$('#short_story').val(";
 	$full_st = "$('#full_story').val(";
-}
-elseif( $config['allow_admin_wysiwyg'] == 1 ) {
+} elseif( $config['allow_admin_wysiwyg'] == 1 ) {
 	$short_st = "$('#short_story').froalaEditor('html.set', ";
 	$full_st = "$('#full_story').froalaEditor('html.set', ";
-}
-elseif( $config['allow_admin_wysiwyg'] == 2 ) {
+} elseif( $config['allow_admin_wysiwyg'] == 2 ) {
 	$short_st = "tinymce.get('short_story').setContent(";
 	$full_st = "tinymce.get('full_story').setContent(";
 }

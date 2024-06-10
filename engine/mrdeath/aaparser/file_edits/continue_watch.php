@@ -25,8 +25,7 @@ if ( $is_logged ) {
     if ( $member_id['watched_series'] ) {
         $watched_series = json_decode($member_id['watched_series'], true);
         $empty_saves = false;
-    }
-    else $watched_series = [];
+    } else $watched_series = [];
 }
 
 if ( $empty_saves === false ) {
@@ -74,9 +73,7 @@ if ( $empty_saves === false ) {
 
 	if (!$config['allow_quick_wysiwyg']) $allow_comments_ajax = false;
 
-	if ($config['files_allow']) if (strpos ( $tpl->result['content'], "[attachment=" ) !== false) {
-		$tpl->result['content'] = show_attach ( $tpl->result['content'], $attachments );
-	}
+	if ($config['files_allow']) if (strpos ( $tpl->result['content'], "[attachment=" ) !== false) $tpl->result['content'] = show_attach ( $tpl->result['content'], $attachments );
 	
 	//Кэш
 	if ( $news_found ) kodik_create_cache('continue_'.$member_name, json_encode($news_list, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ), false, 'continue_watch');

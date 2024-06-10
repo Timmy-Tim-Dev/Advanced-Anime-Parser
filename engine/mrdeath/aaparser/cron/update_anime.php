@@ -10,28 +10,24 @@
 
     if (file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json') && $aaparser_config_push['updates_block']['enable_history'] == 1) {
   	    $updates_history = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/updates_history.json' ), true );
-    }
-    else $updates_history = false;
+    } else $updates_history = false;
     
     $today_day_name = date('Y-m-d', $_TIME);
 
     if ( isset($aaparser_config['integration']['telegram_posting']) && $aaparser_config['integration']['telegram_posting'] == 1 && file_exists(ENGINE_DIR . "/inc/maharder/telegram/helpers/sender.php") ) {
         include_once (DLEPlugins::Check(ENGINE_DIR . "/inc/maharder/telegram/helpers/sender.php"));
         $send_to_telegram = true;
-    }
-    else $send_to_telegram = false;
+    } else $send_to_telegram = false;
     
     if ( isset($aaparser_config['integration']['social_posting']) && $aaparser_config['integration']['social_posting'] == 1 && file_exists(ENGINE_DIR.'/modules/socialposting/posting.php') ) {
         $send_to_social_posting = true;
-    }
-    else $send_to_social_posting = false;
+    } else $send_to_social_posting = false;
     
     if ( isset($aaparser_config['integration']['google_indexing']) && $aaparser_config['integration']['google_indexing'] == 1 && file_exists(ENGINE_DIR.'/xoopw/indexing/init.php') ) {
         include_once (DLEPlugins::Check(ENGINE_DIR . '/xoopw/indexing/init.php'));
         $indexing = new \XOO\Indexing\Indexing($db);
         $send_to_google_indexing = true;
-    }
-    else $send_to_google_indexing = false;
+    } else $send_to_google_indexing = false;
 	
 	$kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : '9a3a536a8be4b3d3f9f7bd28c1b74071';
 	
@@ -51,15 +47,13 @@
         else $need_update_history = false;
         $was_updated_history = false;
 		
-		$quality = '';
-		$xf_shiki = '';
+		$quality = $xf_shiki = '';
 		if ( !$anime_check['shikimori_id'] ) continue;
 		$xf_shiki = "xfields LIKE '%".$aaparser_config_push['main_fields']['xf_shikimori_id']."|".$anime_check['shikimori_id']."||%'";
 		$checking_post = $db->super_query( "SELECT id, xfields, title, approve, category, date, alt_name, short_story, full_story FROM " . PREFIX . "_post WHERE ".$xf_shiki );
 		if ( $checking_post['id'] > 0 ) $xfields_post = xfieldsdataload( $checking_post['xfields'] );
         else {
-			unset($checking_post);
-			unset($xf_shiki);
+			unset($checking_post, $xf_shiki);
 			continue;
 		}
 
@@ -93,8 +87,7 @@
 			$old_translations = explode(', ', $xfields_post[$aaparser_config_push['main_fields']['xf_translation']]);
 			if ( !in_array($last_translation, $old_translations) ) $old_translations[] = $last_translation;
 			$translation = implode(', ', $old_translations);
-		}
-		else $translation = '';
+		} else $translation = '';
 		
 		
 		$material_row =  $db->super_query( "SELECT * FROM " . PREFIX . "_anime_list WHERE shikimori_id={$anime_check['shikimori_id']}" );
@@ -103,9 +96,7 @@
 		    $material_row['cat_check'] = 1;
 		}
 		
-		$need_update = 0;
-		$need_update_date = 0;
-		$send_push = 0;
+		$need_update = $need_update_date = $send_push = 0;
         $news_id = $checking_post['id'];
 		$update_fields = [];
 		$reason_updation = '';
@@ -152,8 +143,7 @@
                 if ( $aaparser_config['updates']['xf_series_6'] ) $xfields_post[$aaparser_config['updates']['xf_series_6']] = generate_numbers($last_episode_k, 6);
                 if ( $aaparser_config['updates']['xf_series_7'] ) $xfields_post[$aaparser_config['updates']['xf_series_7']] = generate_numbers($last_episode_k, 7);
                 if ( $aaparser_config['updates']['xf_series_8'] ) $xfields_post[$aaparser_config['updates']['xf_series_8']] = generate_numbers($last_episode_k, 8);
-                $need_update = 1;
-                $send_push = 1;
+                $need_update = $send_push = 1;
                 if ( $aaparser_config['updates']['new_series'] == 1 ) $need_update_date = 1;
                 $reason_updation .= '. Добавлена '.$last_episode_k.' серия';
                 
@@ -180,8 +170,7 @@
                 if ( $aaparser_config['updates']['xf_season_6'] ) $xfields_post[$aaparser_config['updates']['xf_season_6']] = generate_numbers($last_season_k, 6);
                 if ( $aaparser_config['updates']['xf_season_7'] ) $xfields_post[$aaparser_config['updates']['xf_season_7']] = generate_numbers($last_season_k, 7);
                 if ( $aaparser_config['updates']['xf_season_8'] ) $xfields_post[$aaparser_config['updates']['xf_season_8']] = generate_numbers($last_season_k, 8);
-                $need_update = 1;
-                $send_push = 1;
+                $need_update = $send_push = 1;
                 if ( $aaparser_config['updates']['new_series'] == 1 ) $need_update_date = 1;
                 $reason_updation .= '. Добавлен '.$last_season_k.' сезон';
                 
@@ -204,14 +193,12 @@
                     $xfields_post[$aaparser_config['updates']['xf_season_translated']] = $anime_check['last_season'];
                     $need_update = 1;
                 }
-            }
-            elseif ( $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] != "1858" ) {
+            } elseif ( $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] != "1858" ) {
                 if ( $aaparser_config['updates']['xf_season_subtitles'] && (!$xfields_post[$aaparser_config['updates']['xf_season_subtitles']] || $xfields_post[$aaparser_config['updates']['xf_season_subtitles']] < $anime_check['last_season'] ) ) {
                     $xfields_post[$aaparser_config['updates']['xf_season_subtitles']] = $anime_check['last_season'];
                     $need_update = 1;
                 }
-            }
-            elseif ( $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] == "1858" ) {
+            } elseif ( $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] == "1858" ) {
                 if ( $aaparser_config['updates']['xf_season_autosubtitles'] && (!$xfields_post[$aaparser_config['updates']['xf_season_autosubtitles']] || $xfields_post[$aaparser_config['updates']['xf_season_autosubtitles']] < $anime_check['last_season'] ) ) {
                     $xfields_post[$aaparser_config['updates']['xf_season_autosubtitles']] = $anime_check['last_season'];
                     $need_update = 1;
@@ -227,14 +214,12 @@
                     $xfields_post[$aaparser_config['updates']['xf_series_translated']] = $anime_check['last_episode'];
                     $need_update = 1;
                 }
-            }
-            elseif ( $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] != "1858" ) {
+            } elseif ( $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] != "1858" ) {
                 if ( $aaparser_config['updates']['xf_series_subtitles'] && (!$xfields_post[$aaparser_config['updates']['xf_series_subtitles']] || $xfields_post[$aaparser_config['updates']['xf_series_subtitles']] < $anime_check['last_episode'] ) ) {
                     $xfields_post[$aaparser_config['updates']['xf_series_subtitles']] = $anime_check['last_episode'];
                     $need_update = 1;
                 }
-            }
-            elseif ( $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] == "1858" ) {
+            } elseif ( $anime_check['translation']['type'] == 'subtitles' && $anime_check['translation']['id'] == "1858" ) {
                 if ( $aaparser_config['updates']['xf_series_autosubtitles'] && (!$xfields_post[$aaparser_config['updates']['xf_series_autosubtitles']] || $xfields_post[$aaparser_config['updates']['xf_series_autosubtitles']] < $anime_check['last_episode'] ) ) {
                     $xfields_post[$aaparser_config['updates']['xf_series_autosubtitles']] = $anime_check['last_episode'];
                     $need_update = 1;
@@ -380,17 +365,7 @@
 			$update_fields['episode_6'] = generate_numbers($last_episode_k, 6);
 			$update_fields['episode_7'] = generate_numbers($last_episode_k, 7);
 			$update_fields['episode_8'] = generate_numbers($last_episode_k, 8);
-		} else {
-			$update_fields['episode'] = '';
-			$update_fields['episode_1'] = '';
-			$update_fields['episode_2'] = '';
-			$update_fields['episode_3'] = '';
-			$update_fields['episode_4'] = '';
-			$update_fields['episode_5'] = '';
-			$update_fields['episode_6'] = '';
-			$update_fields['episode_7'] = '';
-			$update_fields['episode_8'] = '';
-		}
+		} else $update_fields['episode'] = $update_fields['episode_1'] = $update_fields['episode_2'] = $update_fields['episode_3'] = $update_fields['episode_4'] = $update_fields['episode_5'] = $update_fields['episode_6'] = $update_fields['episode_7'] = $update_fields['episode_8'] = '';
 		if ( $last_season_k ) {
 			$update_fields['season'] = $last_season_k;
 			$update_fields['season_1'] = generate_numbers($last_season_k, 1);
@@ -401,17 +376,8 @@
 			$update_fields['season_6'] = generate_numbers($last_season_k, 6);
 			$update_fields['season_7'] = generate_numbers($last_season_k, 7);
 			$update_fields['season_8'] = generate_numbers($last_season_k, 8);
-		} else {
-			$update_fields['season'] = '';
-			$update_fields['season_1'] = '';
-			$update_fields['season_2'] = '';
-			$update_fields['season_3'] = '';
-			$update_fields['season_4'] = '';
-			$update_fields['season_5'] = '';
-			$update_fields['season_6'] = '';
-			$update_fields['season_7'] = '';
-			$update_fields['season_8'] = '';
-		}
+		} else $update_fields['season'] = $update_fields['season_1'] = $update_fields['season_2'] = $update_fields['season_3'] = $update_fields['season_4'] = $update_fields['season_5'] = $update_fields['season_6'] = $update_fields['season_7'] = $update_fields['season_8'] = '';
+		
 		if ( $serial_status_k ) $update_fields['status'] = $serial_status_k;
 		else $update_fields['status'] = '';
 		if ( $serial_status_ru_k ) $update_fields['status_ru'] = $serial_status_ru_k;
@@ -428,8 +394,7 @@
 		$descript = "";
 		// Проверка анонс
 		
-		if ($anime_check['material_data']['description'] !="" && $aaparser_config['settings_anons']['description_update'] == "1")
-		{ 
+		if ($anime_check['material_data']['description'] !="" && $aaparser_config['settings_anons']['description_update'] == "1") { 
 			$shiki_id = $anime_check['shikimori_id'];
 	        $parse_action = 'parse';
 			$parse_type = 'grabbing';
@@ -439,15 +404,8 @@
 		
 			$descript =  $db->safesql( check_if( $aaparser_config['settings_anons']['descript'], $xfields_data) );
 			$new_descript = $anime_check['material_data']['description'];
-			if (trim(strip_tags($checking_post['short_story'])) == trim(strip_tags( $descript )) || $checking_post['short_story'] == "")
-			{
-				$db->query("UPDATE ".PREFIX."_post set short_story='$new_descript' WHERE id=".$checking_post['id']);
-			}
-			if (trim(strip_tags($checking_post['full_story'])) == trim(strip_tags( $descript )) || $checking_post['full_story'] == "")
-			{
-				$db->query("UPDATE ".PREFIX."_post set full_story='$new_descript' WHERE id=".$checking_post['id']);
-			}	
-
+			if (trim(strip_tags($checking_post['short_story'])) == trim(strip_tags( $descript )) || $checking_post['short_story'] == "") $db->query("UPDATE ".PREFIX."_post set short_story='$new_descript' WHERE id=".$checking_post['id']);
+			if (trim(strip_tags($checking_post['full_story'])) == trim(strip_tags( $descript )) || $checking_post['full_story'] == "") $db->query("UPDATE ".PREFIX."_post set full_story='$new_descript' WHERE id=".$checking_post['id']);
 		}
 				
 		//
@@ -468,28 +426,28 @@
 			if ( $aaparser_config['updates']['change_title'] == 1 && $aaparser_config['updates']['title'] ) {
 				$and_title = $db->safesql( check_if($aaparser_config['updates']['title'], $update_fields) );
 				$set_title = ", title='".$and_title."'";
-			}
-			else $set_title = '';
+			} else $set_title = '';
+			
 			if ( $aaparser_config['updates']['change_cpu'] == 1 && $aaparser_config['updates']['cpu'] ) {
 				$and_cpu = $db->safesql( check_if($aaparser_config['updates']['cpu'], $update_fields) );
 				$set_cpu = ", alt_name='".$and_cpu."'";
-			}
-			else $set_cpu = '';
+			} else $set_cpu = '';
+			
 			if ( $aaparser_config['updates']['change_metatitle'] == 1 && $aaparser_config['updates']['metatitle'] ) {
 				$and_metatitle = $db->safesql( check_if($aaparser_config['updates']['metatitle'], $update_fields) );
 				$set_metatitle = ", metatitle='".$and_metatitle."'";
-			}
-			else $set_metatitle = '';
+			} else $set_metatitle = '';
+			
 			if ( $aaparser_config['updates']['change_metadescr'] == 1 && $aaparser_config['updates']['metadescr'] ) {
 				$and_metadescr = $db->safesql( check_if($aaparser_config['updates']['metadescr'], $update_fields) );
 				$set_metadescr = ", descr='".$and_metadescr."'";
-			}
-			else $set_metadescr = '';
+			} else $set_metadescr = '';
+			
 			if ( $aaparser_config['updates']['change_metakeywords'] == 1 && $aaparser_config['updates']['metakeywords'] ) {
 				$and_metakeywords = $db->safesql( check_if($aaparser_config['updates']['metakeywords'], $update_fields) );
 				$set_metakeywords = ", keywords='".$and_metakeywords."'";
-			}
-			else $set_metakeywords = '';
+			} else $set_metakeywords = '';
+			
 			$new_time = time();
             $new_date = date( "Y-m-d H:i:s", $new_time );
 	        $xfields_post = xfieldsdatasaved($xfields_post);
@@ -508,15 +466,9 @@
 					    if($cats_url) {
 						    $full_link = $config['http_home_url'] . $cats_url . "/" . $checking_post['id'] . "-" . $checking_post['alt_name'] . ".html";
 					    } else $full_link = $config['http_home_url'] . $checking_post['id'] . "-" . $checking_post['alt_name'] . ".html";
-				    } else {
-					    $full_link = $config['http_home_url'] . $checking_post['id'] . "-" . $checking_post['alt_name'] . ".html";
-				    }
-			    } else {
-				    $full_link = $config['http_home_url'] . date( 'Y/m/d/', strtotime( $checking_post['date'] ) ) . $checking_post['alt_name'] . ".html";
-			    }
-		    } else {
-			    $full_link = $config['http_home_url'] . "index.php?newsid=" . $checking_post['id'];
-		    }
+				    } else $full_link = $config['http_home_url'] . $checking_post['id'] . "-" . $checking_post['alt_name'] . ".html";
+			    } else $full_link = $config['http_home_url'] . date( 'Y/m/d/', strtotime( $checking_post['date'] ) ) . $checking_post['alt_name'] . ".html";
+		    } else $full_link = $config['http_home_url'] . "index.php?newsid=" . $checking_post['id'];
 		    
 		    $xfields_data = xfieldsdataload($xfields_post);
   		    if ( $aaparser_config_push['main_fields']['xf_poster'] && $xfields_data[$aaparser_config_push['main_fields']['xf_poster']] ) {
@@ -524,8 +476,7 @@
        		    else $image = $xfields_data[$aaparser_config_push['main_fields']['xf_poster']];
        		    $temp_image = explode('|', $image);
        		    $image = $temp_image[0];
-    	    }
-    	    elseif ( $aaparser_config_push['main_fields']['poster_empty'] ) $image = $aaparser_config_push['main_fields']['poster_empty'];
+    	    } elseif ( $aaparser_config_push['main_fields']['poster_empty'] ) $image = $aaparser_config_push['main_fields']['poster_empty'];
     	    else $image = '';
     	    
     	    if ( $checking_post['approve'] == 1 && $was_updated_history === true && isset($add_updates_history) && is_array($add_updates_history) ) {
@@ -554,17 +505,14 @@
   		            if ( $aaparser_config_push['push_notifications']['tv_title'] && $aaparser_config_push['push_notifications']['tv_text'] && $xfields_data[$aaparser_config_push['main_fields']['xf_series']] ) {
       		            $notification = str_replace( ['{episode}', '{season}', '{title}', '{translation}'], [$xfields_data[$aaparser_config_push['main_fields']['xf_series']],                   $xfields_data[$aaparser_config_push['main_fields']['xf_season']], $checking_post['title'], $xfields_data[$aaparser_config_push['main_fields']['xf_translation_last']]], $aaparser_config_push['push_notifications']['tv_text'] );
       		            DLE_Send_Push( $aaparser_config_push['push_notifications']['tv_title'], $notification, $full_link, $image, $users_list );
-    	            }
-  		            elseif ( $aaparser_config_push['push_notifications']['movie_title'] && $aaparser_config_push['push_notifications']['movie_text'] && $xfields_data[$aaparser_config_push['main_fields']['xf_quality']] ) {
+    	            } elseif ( $aaparser_config_push['push_notifications']['movie_title'] && $aaparser_config_push['push_notifications']['movie_text'] && $xfields_data[$aaparser_config_push['main_fields']['xf_quality']] ) {
       		            $notification = str_replace( ['{quality}', '{title}'], [$xfields_data[$aaparser_config_push['main_fields']['xf_quality']], $checking_post['title']], $aaparser_config_push['push_notifications']['movie_text'] );
       		            DLE_Send_Push( $aaparser_config_push['push_notifications']['movie_title'], $notification, $full_link, $image, $users_list );
     	            }
                 }
 			}
 			
-			if ( $send_to_telegram === true && $checking_post['approve'] == 1 ) {
-			    sendTelegram($news_id, "editnews");
-			}
+			if ( $send_to_telegram === true && $checking_post['approve'] == 1 ) sendTelegram($news_id, "editnews");
 			
 			if ( $send_to_social_posting === true && $checking_post['approve'] == 1 ) {
 			    $approve = 1;
@@ -573,9 +521,7 @@
                 include ENGINE_DIR.'/modules/socialposting/posting.php';
 			}
 			
-			if( $config['news_indexnow'] && $checking_post['approve'] == 1 ) {
-		        $result = DLESEO::IndexNow( $full_link );
-			}
+			if( $config['news_indexnow'] && $checking_post['approve'] == 1 ) $result = DLESEO::IndexNow( $full_link );
 			
 			if ( isset($aaparser_config_push['push_notifications']['google_indexing']) && $aaparser_config_push['push_notifications']['google_indexing'] == 1 && $checking_post['approve'] == 1 ) {
 		        $indexing_action = 'send';
@@ -594,25 +540,7 @@
             }
 			
         }
-		unset($xfields_post);
-		unset($title_en);
-		unset($title_ru);
-		unset($news_id);
-		unset($update_fields);
-		unset($checking_post);
-		unset($last_season_k);
-		unset($last_episode_k);
-		unset($serial_status_k);
-		unset($serial_status_ru_k);
-		unset($quality);
-		unset($translation);
-		unset($translation_type);
-		unset($translation_type_ru);
-		unset($playlist);
-		unset($translators_list);
-		unset($translators_types);
-		unset($need_update);
-		unset($material_row);
+		unset($xfields_post, $title_en, $title_ru, $news_id, $update_fields, $checking_post, $last_season_k, $last_episode_k, $serial_status_k, $serial_status_ru_k, $quality, $translation, $translation_type, $translation_type_ru, $playlist, $translators_list, $translators_types, $need_update, $material_row);
 	}
 	clear_cache( array('news_', 'full_', 'kodik_playlist_') );
     die('Проверка обновлений аниме завершена');

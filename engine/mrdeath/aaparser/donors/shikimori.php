@@ -48,8 +48,7 @@ if ( $parse_action == 'search' ) {
 			if ( isset($result['aired_on']) && $result['aired_on'] ) {
 				$date_arr = explode('-', $result['aired_on']);
 				$year = $date_arr[0];
-			}
-            else $year = '';
+			} else $year = '';
             
             $shiki_link = isset($result['url']) ? $shikimori_image_domain.$result['url'] : '';
 			
@@ -59,8 +58,7 @@ if ( $parse_action == 'search' ) {
 	    	if (isset($proverka['id']) && $proverka['id']) {
 	    	    $find_id = 'est';
 	    	    $edit_link = $config['http_home_url'].'admin.php?mod=editnews&action=editnews&id='.$proverka['id'];
-	    	}
-	    	else {
+	    	} else {
 	    	    $find_id = 'net';
 	    	    $edit_link = '';
 	    	}
@@ -91,8 +89,7 @@ if ( $parse_action == 'search' ) {
         }
     }
     
-}
-elseif ($parse_action == 'parse') {
+} elseif ($parse_action == 'parse') {
     
     $xfields_data = [];
     
@@ -161,8 +158,7 @@ elseif ($parse_action == 'parse') {
         $xfields_data['shikimori_duration_4'] = convert_duration($shikimori['duration'], 3);
         if ( $shikimori['kind'] == 'movie' && $shikimori['duration'] < 30 ) $movie_kind = 'Короткометражный фильм';
         elseif ( $shikimori['kind'] == 'movie' && $shikimori['duration'] >= 30 ) $movie_kind = 'Полнометражный фильм';
-      }
-      else $movie_kind = '';
+      } else $movie_kind = '';
 
       $xfields_data['shikimori_plot'] = isset($shikimori['description_html']) ? trim(strip_tags($shikimori['description_html'])) : '';
 
@@ -220,16 +216,13 @@ elseif ($parse_action == 'parse') {
           if ( in_array("Композитор гл. муз. темы", $role['roles_russian']) ) {
             if ( $role['person']['russian'] ) $anime_authors['composition'][] = $role['person']['russian'];
             else $anime_authors['composition'][] = $role['person']['name'];
-          }
-          elseif ( in_array("Сценарий", $role['roles_russian']) ) {
+          } elseif ( in_array("Сценарий", $role['roles_russian']) ) {
             if ( $role['person']['russian'] ) $anime_authors['script'][] = $role['person']['russian'];
             else $anime_authors['script'][] = $role['person']['name'];
-          }
-          elseif ( in_array("Продюсер", $role['roles_russian']) ) {
+          } elseif ( in_array("Продюсер", $role['roles_russian']) ) {
             if ( $role['person']['russian'] ) $anime_authors['producer'][] = $role['person']['russian'];
             else $anime_authors['producer'][] = $role['person']['name'];
-          }
-          elseif ( in_array("Режиссёр", $role['roles_russian']) ) {
+          } elseif ( in_array("Режиссёр", $role['roles_russian']) ) {
             if ( $role['person']['russian'] ) $anime_authors['director'][] = $role['person']['russian'];
             else $anime_authors['director'][] = $role['person']['name'];
           }

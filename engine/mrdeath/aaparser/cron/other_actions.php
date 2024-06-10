@@ -38,15 +38,9 @@
 					    if( $config['seo_type'] == 1 OR $config['seo_type'] == 2 ) {
 						    if( $news_row['category'] and $config['seo_type'] == 2 ) {
 							    $full_link = $config['http_home_url'] . get_url( $news_row['category'] ) . "/" . $news_row['id'] . "-" . $news_row['alt_name'] . ".html";
-						    } else {
-							    $full_link = $config['http_home_url'] . $news_row['id'] . "-" . $news_row['alt_name'] . ".html";
-						    }
-					    } else {
-						    $full_link = $config['http_home_url'] . date( 'Y/m/d/', $news_row['date'] ) . $news_row['alt_name'] . ".html";
-					    }
-				    } else {
-					    $full_link = $config['http_home_url'] . "index.php?newsid=" . $news_row['id'];
-				    }
+						    } else $full_link = $config['http_home_url'] . $news_row['id'] . "-" . $news_row['alt_name'] . ".html";
+					    } else $full_link = $config['http_home_url'] . date( 'Y/m/d/', $news_row['date'] ) . $news_row['alt_name'] . ".html";
+				    } else $full_link = $config['http_home_url'] . "index.php?newsid=" . $news_row['id'];
               	    $temp_xfields = xfieldsdataload($news_row['xfields']);
               	    $spisok_raspisaniy[$today_name][$temp_num]['news_id'] = $news_row['id'];
               	    $spisok_raspisaniy[$today_name][$temp_num]['shikimori_id'] = $api_anime['anime']['id'];

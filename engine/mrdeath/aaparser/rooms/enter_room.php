@@ -51,8 +51,7 @@ if ( $room_row ) {
   	    $tpl->set( '{public}', "checked" );
   	    $tpl->set( '[public]', "" );
 		$tpl->set( '[/public]', "" );
-  	}
-  	else {
+  	} else {
   	    $tpl->set( '{public}', "" );
   	    $tpl->set_block( "'\\[public\\](.*?)\\[/public\\]'si", "" );
   	}
@@ -63,19 +62,9 @@ if ( $room_row ) {
 
 	} else $tpl->set_block( "'\\[if_leader\\](.*?)\\[/if_leader\\]'si", "" );
 	
-	if( date( 'Ymd', $room_row['created'] ) == date( 'Ymd', $_TIME ) ) {
-				
-		$tpl->set( '{created}', $lang['time_heute'] . langdate( ", H:i", $room_row['created'] ) );
-			
-	} elseif( date( 'Ymd', $room_row['created'] ) == date( 'Ymd', ($_TIME - 86400) ) ) {
-				
-		$tpl->set( '{created}', $lang['time_gestern'] . langdate( ", H:i", $room_row['created'] ) );
-			
-	} else {
-				
-		$tpl->set( '{created}', langdate( $config['timestamp_active'], $room_row['created'] ) );
-			
-	}
+	if( date( 'Ymd', $room_row['created'] ) == date( 'Ymd', $_TIME ) ) $tpl->set( '{created}', $lang['time_heute'] . langdate( ", H:i", $room_row['created'] ) );
+	elseif( date( 'Ymd', $room_row['created'] ) == date( 'Ymd', ($_TIME - 86400) ) ) $tpl->set( '{created}', $lang['time_gestern'] . langdate( ", H:i", $room_row['created'] ) );
+	else $tpl->set( '{created}', langdate( $config['timestamp_active'], $room_row['created'] ) );
 	
 	$tpl->copy_template = preg_replace_callback ( "#\{created=(.+?)\}#i", "formdate", $tpl->copy_template );
   

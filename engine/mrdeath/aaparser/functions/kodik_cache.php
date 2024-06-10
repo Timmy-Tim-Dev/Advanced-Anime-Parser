@@ -34,9 +34,7 @@ function kodik_cache($prefix, $cache_id = false, $cache_folder) {
 	// }
 
 	$buffer = @file_get_contents( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $key . ".tmp" );
-
 	return $buffer;
-
 }
 
 function kodik_create_cache($prefix, $cache_text, $cache_id = false, $cache_folder) {
@@ -64,10 +62,8 @@ function kodik_create_cache($prefix, $cache_text, $cache_id = false, $cache_fold
 	// }
 
 	file_put_contents (ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $key . ".tmp", $cache_text, LOCK_EX);
-	@chmod( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $key . ".tmp", 0666 );
-	
+	@chmod( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $key . ".tmp", 0777 );
 	return true;
-	
 }
 
 function kodik_clear_cache($cache_areas = false, $cache_folder) {
@@ -86,25 +82,16 @@ function kodik_clear_cache($cache_areas = false, $cache_folder) {
 	}
 
 	if ( $cache_areas ) {
-		if(!is_array($cache_areas)) {
-			$cache_areas = array($cache_areas);
-		}
+		if(!is_array($cache_areas)) $cache_areas = array($cache_areas);
 	}
 		
 	$fdir = opendir( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder );
 		
 	while ( $file = readdir( $fdir ) ) {
 		if( $file != '.htaccess' AND !is_dir(ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $file) ) {
-			
-			if( $cache_areas ) {
-				foreach($cache_areas as $cache_area) if( stripos( $file, $cache_area ) !== false ) @unlink( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $file );
-			} else {
-				@unlink( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $file );
-			
-			}
+			if( $cache_areas ) foreach($cache_areas as $cache_area) if( stripos( $file, $cache_area ) !== false ) @unlink( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $file );
+			else @unlink( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" . $file );
 		}
 	}
-	
 	return true;
-
 }

@@ -39,8 +39,7 @@ if ( $action == 'send' ) {
 		'message' => $message_area,
 		'last_chat_id' => $last_chat_id
 	)));
-}
-elseif ( $action == 'check' ) {
+} elseif ( $action == 'check' ) {
     
     include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
     
@@ -112,41 +111,26 @@ elseif ( $action == 'check' ) {
 		'pause' => $room_row['pause'],
 		'last_chat_id' => $last_chat_id
 	)));
-}
-elseif ( $action == 'update_time' ) {
+} elseif ( $action == 'update_time' ) {
   	$room_time = $_GET['time']+1;
-  	
   	$db->query( "UPDATE " . PREFIX . "_rooms_list SET time='{$room_time}', leader_last_login='{$_TIME}' WHERE url='{$room_id}'" );
-  	die(json_encode(array(
-		'status' => 'updated'
-	)));
-}
-elseif ( $action == 'set_pause' ) {
+  	die(json_encode(array( 'status' => 'updated' )));
+} elseif ( $action == 'set_pause' ) {
     if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
   	$db->query( "UPDATE " . PREFIX . "_rooms_list SET pause=1, leader_last_login='{$_TIME}' WHERE url='{$room_id}'" );
   	$db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_id['name']}', '{$member_id['foto']}', '{$_TIME}', 'Поставил на паузу')" );
-  	die(json_encode(array(
-		'status' => 'paused'
-	)));
-}
-elseif ( $action == 'set_speed' ) {
+  	die(json_encode(array( 'status' => 'paused' )));
+} elseif ( $action == 'set_speed' ) {
 	$val_speed = $_GET['speed'];
     if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
   	$db->query( "UPDATE " . PREFIX . "_rooms_list SET speed='{$val_speed}', leader_last_login='{$_TIME}' WHERE url='{$room_id}'" );
-  	// $db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_id['name']}', '{$member_id['foto']}', '{$_TIME}', 'Изменил скорость на {$val_speed}')" );
-  	die(json_encode(array(
-		'speed' => $val_speed
-	)));
-}
-elseif ( $action == 'set_play' ) {
+  	die(json_encode(array( 'speed' => $val_speed )));
+} elseif ( $action == 'set_play' ) {
     if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
   	$db->query( "UPDATE " . PREFIX . "_rooms_list SET pause=0, leader_last_login='{$_TIME}' WHERE url='{$room_id}'" );
   	$db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_id['name']}', '{$member_id['foto']}', '{$_TIME}', 'Продолжил просмотр')" );
-  	die(json_encode(array(
-		'status' => 'play'
-	)));
-}
-elseif ( $action == 'set_episode' ) {
+  	die(json_encode(array( 'status' => 'play' )));
+} elseif ( $action == 'set_episode' ) {
     if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
     include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
     require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
@@ -181,11 +165,8 @@ elseif ( $action == 'set_episode' ) {
 		'status' => 'complete',
       	'episode' => $episode_num
 	)));
-}
-elseif ( $action == 'room_status' ) {
+} elseif ( $action == 'room_status' ) {
     if ( $_GET['room_status'] == "public" ) $db->query( "UPDATE " . PREFIX . "_rooms_list SET public=1 WHERE url='{$room_id}'" );
   	else $db->query( "UPDATE " . PREFIX . "_rooms_list SET public=0 WHERE url='{$room_id}'" );
-  	die(json_encode(array(
-		'status' => 'ok'
-	)));
+  	die(json_encode(array( 'status' => 'ok' )));
 }

@@ -49,31 +49,18 @@ while ( $row = $db->get_row( $sql_result ) ) {
   	    
   	    $tpl->set( '{count}', $visitors_count['count'] );
   	    
-	}
-	else $tpl->set( '{count}', '' );
+	} else $tpl->set( '{count}', '' );
 	
-	if( date( 'Ymd', $row['created'] ) == date( 'Ymd', $_TIME ) ) {
-				
-		$tpl->set( '{created}', $lang['time_heute'] . langdate( ", H:i", $row['created'] ) );
-			
-	} elseif( date( 'Ymd', $row['created'] ) == date( 'Ymd', ($_TIME - 86400) ) ) {
-				
-		$tpl->set( '{created}', $lang['time_gestern'] . langdate( ", H:i", $row['created'] ) );
-			
-	} else {
-				
-		$tpl->set( '{created}', langdate( $config['timestamp_active'], $row['created'] ) );
-			
-	}
+	if( date( 'Ymd', $row['created'] ) == date( 'Ymd', $_TIME ) ) $tpl->set( '{created}', $lang['time_heute'] . langdate( ", H:i", $row['created'] ) );
+	elseif( date( 'Ymd', $row['created'] ) == date( 'Ymd', ($_TIME - 86400) ) ) $tpl->set( '{created}', $lang['time_gestern'] . langdate( ", H:i", $row['created'] ) );
+	else $tpl->set( '{created}', langdate( $config['timestamp_active'], $row['created'] ) );
 	
 	$tpl->copy_template = preg_replace_callback ( "#\{created=(.+?)\}#i", "formdate", $tpl->copy_template );
 		
 	$tpl->compile( 'content', true, false );
-
 }
 
-if( $rooms_found === false && preg_match( "'\\[no-rooms\\](.*?)\\[/no-rooms\\]'si", $tpl->copy_template, $match ) )
-	$tpl->result['content'] = $match[1];
+if( $rooms_found === false && preg_match( "'\\[no-rooms\\](.*?)\\[/no-rooms\\]'si", $tpl->copy_template, $match ) ) $tpl->result['content'] = $match[1];
 
 $tpl->clear();
 $db->free( $sql_result );

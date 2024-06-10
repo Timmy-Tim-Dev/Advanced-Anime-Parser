@@ -70,36 +70,16 @@ echo <<<HTML
 			<table class="table table-striped">
 HTML;
 foreach ($main_fields as $key => $value) {
-	if ($key == 'title') {
-		showTrInline('Заголовок', '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
-	}
-	elseif ($key == 'short_story') {
-		showTrInline('Краткое описание', '', 'textarea', ['xfields['.$key.']', $aaparser_config['xfields'][$key]]);
-	}
-	elseif ($key == 'full_story') {
-		showTrInline('Полное описание', '', 'textarea', ['xfields['.$key.']', $aaparser_config['xfields'][$key]]);
-	}
-	elseif ($key == 'alt_name') {
-		showTrInline('ЧПУ URL статьи', '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
-	}
-	elseif ($key == 'tags') {
-		showTrInline('Ключевые слова для облака тегов', '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
-	}
-	elseif ($key == 'meta_title') {
-		showTrInline('Метатег Title', '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
-	}
-	elseif ($key == 'meta_description') {
-		showTrInline('Метатег Description', '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
-	}
-	elseif ($key == 'meta_keywords') {
-		showTrInline('Метатег Keywords', '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
-	}
-	elseif ($key == 'catalog') {
-		showTrInline('Буквенный каталог', '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
-	}
-	else {
-		showTrInline('Доп поле '.$value, '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
-	}
+	if ($key == 'title') showTrInline('Заголовок', '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
+	elseif ($key == 'short_story') showTrInline('Краткое описание', '', 'textarea', ['xfields['.$key.']', $aaparser_config['xfields'][$key]]);
+	elseif ($key == 'full_story') showTrInline('Полное описание', '', 'textarea', ['xfields['.$key.']', $aaparser_config['xfields'][$key]]);
+	elseif ($key == 'alt_name') showTrInline('ЧПУ URL статьи', '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
+	elseif ($key == 'tags') showTrInline('Ключевые слова для облака тегов', '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
+	elseif ($key == 'meta_title')showTrInline('Метатег Title', '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
+	elseif ($key == 'meta_description')showTrInline('Метатег Description', '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
+	elseif ($key == 'meta_keywords')showTrInline('Метатег Keywords', '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
+	elseif ($key == 'catalog')showTrInline('Буквенный каталог', '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
+	else showTrInline('Доп поле '.$value, '', 'input', ['xfields['.$key.']', 'text', $aaparser_config['xfields'][$key]]);
 }
 echo <<<HTML
 			</table>

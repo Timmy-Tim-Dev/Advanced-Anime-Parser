@@ -65,15 +65,9 @@ $new_array = [];
 foreach ($aaparser_config_push as $index => $item) {
 	foreach ($item as $key => $value) {
 		if ($value != '' && $value != '-') {
-			if (is_numeric($value)) {
-				$value = intval($value);
-			}
-			elseif (is_array($value)) {
-				$value = implode(',', $value);
-			}
-			else {
-				$value = strip_tags(stripslashes($value), '<li><br><p>');
-			}
+			if (is_numeric($value)) $value = intval($value);
+			elseif (is_array($value)) $value = implode(',', $value);
+			else $value = strip_tags(stripslashes($value), '<li><br><p>');
 			$new_array[$index][$key] = $value;
 		}
 	}

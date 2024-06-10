@@ -59,8 +59,7 @@ echo <<<HTML
         <td class="col-xs-2 col-md-5 settingstd "></td>
     </tr>
 HTML;
-}
-else {
+} else {
     echo <<<HTML
     <tr>
         <td class="col-xs-10 col-sm-6 col-md-7 "><button onclick="update_translations(); return false;" class="btn bg-slate-600 btn-raised legitRipple"><i class="fa fa-microphone position-left"></i>Получить озвучки</button><span class="note large"></span></td>
@@ -107,8 +106,7 @@ echo <<<HTML
         <td class="col-xs-2 col-md-5 settingstd "></td>
     </tr>
 HTML;
-}
-else {
+} else {
     echo <<<HTML
     <tr>
         <td class="col-xs-10 col-sm-6 col-md-7 "><button onclick="update_translations_dorama(); return false;" class="btn bg-slate-600 btn-raised legitRipple"><i class="fa fa-microphone position-left"></i>Получить озвучки дорам</button><span class="note large"></span></td>

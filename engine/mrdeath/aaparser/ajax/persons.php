@@ -27,28 +27,21 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 	
 	$shiki_id = isset($_POST['sh_id']) ? $_POST['sh_id'] : '';
 	
-	if ($shiki_id == '') {
-		die('Не был передан Shikimori id');
-	}
+	if ($shiki_id == '') die('Не был передан Shikimori id');
 	
 	//Проверяем наличие кеша
 	
 	if ( isset($aaparser_config_push['persons']['personas_cache']) && $aaparser_config_push['persons']['personas_cache'] == 1 ) {
 		$shiki_cache = kodik_cache('personas_'.$shiki_id, false, 'personas_characters');
-		if ($shiki_cache == '{"main_characters":"","sub_characters":"","persons":""}') {
-			$shiki_cache = false;
-		}
-	}
-	else $shiki_cache = false;
+		if ($shiki_cache == '{"main_characters":"","sub_characters":"","persons":""}') $shiki_cache = false;
+	} else $shiki_cache = false;
 	
 	//Если кеша нет или он отключён
 	
 	if ( $shiki_cache === false ) {
-	    
 	    $shiki_cache = [];
-	    
+		
 	    //Парсим данные
-	
 		$shiki_request = request($shikimori_api_domain. 'api/animes/'.$shiki_id.'/roles');
 		
 		if ( !$shiki_request['message'] || !$shiki_request['code'] ) {
@@ -132,8 +125,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 	                $tplmcharacters->set( '{main-characters-list}', $tplmcharactersone->result['main_characters_info'] );
 	                unset($tplmcharactersone);
 		            
-	            }
-	            else {
+	            } else {
 	                $tplmcharacters->set_block( "'\\[main-characters-list\\](.*?)\\[/main-characters-list\\]'si", "" );
 	                $tplmcharacters->set( '{main-characters-list}', '' );
 	            }
@@ -143,8 +135,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 	            unset($tplmcharacters);
 		        
 			    
-			}
-			else $shiki_cache['main_characters'] = '';
+			} else $shiki_cache['main_characters'] = '';
 			
 			//Если включёны второстепенные персонажи
 			if ( $aaparser_config_push['persons']['characters'] == 1 ) {
@@ -198,8 +189,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 	                $tplscharacters->set( '{sub-characters-list}', $tplscharactersone->result['sub_characters_info'] );
 	                unset($tplscharactersone);
 		            
-	            }
-	            else {
+	            } else {
 	                $tplscharacters->set_block( "'\\[sub-characters-list\\](.*?)\\[/sub-characters-list\\]'si", "" );
 	                $tplscharacters->set( '{sub-characters-list}', '' );
 	            }
@@ -209,8 +199,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 	            unset($tplscharacters);
 		        
 			    
-			}
-			else $shiki_cache['sub_characters'] = '';
+			} else $shiki_cache['sub_characters'] = '';
 			
 			//Если включёны персоны
 			if ( $aaparser_config_push['persons']['persons'] == 1 ) {
@@ -255,8 +244,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 	                $tplpersons->set( '{persons-list}', $tplpersonsone->result['persons_info'] );
 	                unset($tplpersonsone);
 		            
-	            }
-	            else {
+	            } else {
 	                $tplpersons->set_block( "'\\[persons-list\\](.*?)\\[/persons-list\\]'si", "" );
 	                $tplpersons->set( '{persons-list}', '' );
 	            }
@@ -266,8 +254,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 	            unset($tplpersons);
 		        
 			    
-			}
-			else $shiki_cache['persons'] = '';
+			} else $shiki_cache['persons'] = '';
 			
 		}
 		
@@ -323,9 +310,7 @@ elseif ($aaparser_config_push['persons']['personas_on_dorama'] == 1 && isset($_P
 	
 	$mdl_id = isset($_POST['mdl_id']) ? $_POST['mdl_id'] : '';
 	
-	if ($mdl_id == '') {
-		die('Не был передан Mydramalist id');
-	}
+	if ($mdl_id == '') die('Не был передан Mydramalist id');
 	
 	//Проверяем наличие кеша
 	
@@ -389,26 +374,23 @@ elseif ($aaparser_config_push['persons']['personas_on_dorama'] == 1 && isset($_P
 				    $tplactors->set( '[/personas_name_eng]', "" );
 				    $tplactors->set( '{personas_name_eng}', $data['name_eng'] );
 				    $tplactors->set_block( "'\\[not_personas_name_eng\\](.*?)\\[/not_personas_name_eng\\]'si", "" );
-		        }
-		        else {
+		        } else {
 		            $tplactors->set( '[not_personas_name_eng]', "" );
 				    $tplactors->set( '[/not_personas_name_eng]', "" );
 		            $tplactors->set_block( "'\\[personas_name_eng\\](.*?)\\[/personas_name_eng\\]'si", "" );
 		            $tplactors->set( '{personas_name_eng}', '' );
-		        }
-		        if ( $data['image_orig'] ) {
+		        } 
+				if ( $data['image_orig'] ) {
 		            $tplactors->set( '[personas_image_orig]', "" );
 				    $tplactors->set( '[/personas_image_orig]', "" );
 				    $tplactors->set( '{personas_image_orig}', $data['image_orig'] );
 				    $tplactors->set_block( "'\\[not_personas_image_orig\\](.*?)\\[/not_personas_image_orig\\]'si", "" );
-		        }
-		        elseif ( $aaparser_config_push['persons']['default_image_dorama'] ) {
+		        } elseif ( $aaparser_config_push['persons']['default_image_dorama'] ) {
 		            $tplactors->set( '[personas_image_orig]', "" );
 				    $tplactors->set( '[/personas_image_orig]', "" );
 				    $tplactors->set( '{personas_image_orig}', $aaparser_config_push['persons']['default_image_dorama'] );
 				    $tplactors->set_block( "'\\[not_personas_image_orig\\](.*?)\\[/not_personas_image_orig\\]'si", "" );
-		        }
-		        else {
+		        } else {
 		            $tplactors->set( '[not_personas_image_orig]', "" );
 				    $tplactors->set( '[/not_personas_image_orig]', "" );
 		            $tplactors->set_block( "'\\[personas_image_orig\\](.*?)\\[/personas_image_orig\\]'si", "" );
@@ -426,30 +408,20 @@ elseif ($aaparser_config_push['persons']['personas_on_dorama'] == 1 && isset($_P
 		    echo $tplpersons->result['persons_info'];
 		    unset($tplpersons);
 		    
-		}
-		else {
-		    echo "Shikimori/Mydramalist не вернул ничего";
-		}
-	}
-	else echo $mdl_request;
+		} else echo "Shikimori/Mydramalist не вернул ничего";
+	} else echo $mdl_request;
 }
 elseif ( isset($kodik_persons_dorama) && $kodik_persons_dorama == 'yes' ) {
-    
     if (!function_exists('kodik_cache')) require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
     
     $mdl_id = $xfieldsdata[$aaparser_config_push['main_fields']['xf_mdl_id']];
     
     //Проверяем наличие кеша
-	
 	if ( isset($aaparser_config_push['persons']['personas_cache_dorama']) && $aaparser_config_push['persons']['personas_cache_dorama'] == 1 ) $mdl_request = kodik_cache('personas_'.$mdl_id, false, 'personas_characters');
 	else $mdl_request = false;
 	
-	if ( $mdl_request === false ) {
-	    $tpl->set( '{kodik_persons_dorama}', '<div id="personas_block" data-mdl_id="'.$mdl_id.'" data-has_cache="no"></div>' );
-	}
-	else {
-	    $tpl->set( '{kodik_persons_dorama}', '<div id="personas_block" data-mdl_id="'.$mdl_id.'" data-has_cache="yes">'.$mdl_request.'</div>' );
-	}
+	if ( $mdl_request === false ) $tpl->set( '{kodik_persons_dorama}', '<div id="personas_block" data-mdl_id="'.$mdl_id.'" data-has_cache="no"></div>' );
+	else $tpl->set( '{kodik_persons_dorama}', '<div id="personas_block" data-mdl_id="'.$mdl_id.'" data-has_cache="yes">'.$mdl_request.'</div>' );
 }
 
 ?>

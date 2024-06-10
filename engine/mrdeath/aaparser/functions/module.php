@@ -47,12 +47,13 @@ if (!function_exists('LoadPage')) {
 	function LoadPage($url, $method, $headers) {
 
 		$options = array();
-		$options['http'] = array('method' => $method ,
-                             'header' => $headers   );
+		$options['http'] = array(
+			'method' => $method ,
+			'header' => $headers   
+		);
 		$context = stream_context_create($options);
-        $page    = file_get_contents($url,false,$context);
-		
-
+        $page = file_get_contents($url,false,$context);
+	
 		return $page;
 	}
 }
@@ -177,9 +178,7 @@ if (!function_exists('setPoster')) {
 	
 	    $area = 'xfieldsimage';
 	
-	    if ( $poster_name ) {
-	    	$xfparam = xfparamload($poster_name);
-	    }
+	    if ( $poster_name ) $xfparam = xfparamload($poster_name);
 	    else $xfparam = [];
 		
 	    $xfname = $xfparam[0];
@@ -199,14 +198,12 @@ if (!function_exists('setPoster')) {
 	    $make_medium = false;
 
 	    $t_size = explode("x", $t_size);
-	    if (count($t_size) == 2) {
-	    	$t_size = (int)$t_size[0] . "x" . (int)$t_size[1];
-	    } else $t_size = (int)$t_size[0];
+	    if (count($t_size) == 2) $t_size = (int)$t_size[0] . "x" . (int)$t_size[1];
+	    else $t_size = (int)$t_size[0];
 
 	    $m_size = explode("x", $m_size);
-	    if (count($m_size) == 2) {
-	    	$m_size = (int)$m_size[0] . "x" . (int)$m_size[1];
-	    } else $m_size = (int)$m_size[0];
+	    if (count($m_size) == 2) $m_size = (int)$m_size[0] . "x" . (int)$m_size[1];
+	    else $m_size = (int)$m_size[0];
 
         $author = $db->safesql($member_id['name']);
         
@@ -252,8 +249,7 @@ if (!function_exists('setPoster')) {
 
             @unlink($image);
             return $result;
-        }
-        else {
+        } else {
             @unlink($image);
             return '';
         }
@@ -292,15 +288,12 @@ if (!function_exists('request_file')) {
             @chmod($file, 0777);
             $info = @getimagesize($file);
             if(is_array($info)){
-                if( $info[2] == 2 ) {
-                    $ext = 'jpg';
-                } elseif( $info[2] == 3 ) {
-                    $ext =  'png';
-                } elseif( $info[2] == 1 ) {
-                    $ext = 'gif';
-                } elseif($info['mime'] == 'image/webp' or $info['mime'] == 'image/x-webp') {
-                    $ext = 'webp';    
-                } else $ext = 'jpg';
+                if( $info[2] == 2 ) $ext = 'jpg';
+                elseif( $info[2] == 3 ) $ext =  'png';
+                elseif( $info[2] == 1 ) $ext = 'gif';
+                elseif($info['mime'] == 'image/webp' or $info['mime'] == 'image/x-webp') $ext = 'webp';    
+                else $ext = 'jpg';
+				
                 $GLOBALS['EXT'] = $ext;
                 rename($file, $file.'.'.$ext);
                 return $file.'.'.$ext;
@@ -370,9 +363,7 @@ $langtranslit = array(
 	    $var = preg_replace( "/\s+/u", "-", $var );
 	    $var = str_replace( "/", "-", $var );
 	
-	    if (is_array($langtranslit) AND count($langtranslit) ) {
-	    	$var = strtr($var, $langtranslit);
-	    }
+	    if (is_array($langtranslit) AND count($langtranslit) ) $var = strtr($var, $langtranslit);
 
 	    if ( $punkt ) $var = preg_replace( "/[^a-z0-9\_\-.]+/mi", "", $var );
 	    else $var = preg_replace( "/[^a-z0-9\_\-]+/mi", "", $var );
@@ -386,13 +377,9 @@ $langtranslit = array(
 	    $var = str_ireplace( ".php", ".ppp", $var );
 
 	    if( strlen( $var ) > 200 ) {
-		
 	    	$var = substr( $var, 0, 200 );
-		
 	    	if( ($temp_max = strrpos( $var, '-' )) ) $var = substr( $var, 0, $temp_max );
-	
 	    }
-	
 	    return $var;
     }
 }
@@ -490,7 +477,6 @@ if (!function_exists('RenameGenres')) {
             if ( $fromto[$genre] ) $new_genres[$key] = $fromto[$genre];
             else $new_genres[$key] = $genre;
         }
-
         return array_unique($new_genres);
     }
 }

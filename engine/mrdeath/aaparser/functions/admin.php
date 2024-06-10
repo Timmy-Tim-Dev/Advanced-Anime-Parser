@@ -16,11 +16,8 @@ function Permer($fileperms) {
 	if (file_exists($fileperms)) {
 		// $permsString = substr(sprintf('%o', fileperms($fileperms)), -4);
 		// if (strpos($permsString, '777') != true || !is_writable($fileperms)) {
-    if (!is_writable($fileperms)) {
-			return true;
-		} else {
-			return false;
-		}
+		if (!is_writable($fileperms)) return true;
+		else return false;
 	}
 }
 
@@ -31,8 +28,7 @@ function showRow($title = "", $description = "", $field = "", $class = "") {
        </tr>";
 }
 
-function showInput($data)
-{
+function showInput($data) {
 	$input_elemet = $data[3] ? " placeholder=\"{$data[3]}\"" : '';
 	$input_elemet .= $data[4] ? ' disabled' : '';
 	if ($data[1] == 'range') {
@@ -50,8 +46,7 @@ return <<<HTML
 HTML;
 }
 
-function showtextarea($name)
-{
+function showtextarea($name) {
 echo <<<HTML
 <tr>
 	<td>
@@ -63,8 +58,7 @@ echo <<<HTML
 HTML;
 }
 
-function makeCheckBox($name, $selected, $function_name = false)
-{
+function makeCheckBox($name, $selected, $function_name = false) {
 		$selected = $selected ? "checked" : "";
 		if ( $function_name == "ShowOrHidePlayer" ) return "<input class=\"switch\" type=\"checkbox\" name=\"{$name}\" id=\"player_on_off\" value=\"1\" onchange=\"$function_name();\" {$selected}>";
 		elseif ( $function_name == "ShowOrHidePush" ) return "<input class=\"switch\" type=\"checkbox\" name=\"{$name}\" id=\"push_on_off\" value=\"1\" onchange=\"$function_name();\" {$selected}>";
@@ -74,8 +68,7 @@ function makeCheckBox($name, $selected, $function_name = false)
 		else return "<input class=\"switch\" type=\"checkbox\" name=\"{$name}\" value=\"1\" {$selected}>";
 }
 
-function showSelect($name, $value, $check = false)
-{
+function showSelect($name, $value, $check = false) {
 	if(!$check) $multiple = "multiple";
 	return "<select data-placeholder=\""."".$phrases_settings['category_chose']."\" name=\"{$name}\" id=\"category\" class=\"valueselect\" {$multiple} style=\"width:100%;max-width:350px;\">{$value}</select>";
 }
@@ -85,9 +78,7 @@ function makeDropDown($options, $name, $selected, $function_name = false) {
         else $output = "<select class=\"uniform\" style=\"min-width:100px;\" name=\"$name\" id=\"$name\">\r\n";
         foreach ( $options as $value => $description ) {
             $output .= "<option value=\"$value\"";
-            if( $selected == $value ) {
-                $output .= " selected ";
-            }
+            if( $selected == $value ) $output .= " selected ";
             $output .= ">$description</option>\n";
         }
         $output .= "</select>";
@@ -99,17 +90,14 @@ function makeDropDownAlt($options, $name, $selected) {
 	$output .= "<option value=''>Выберите файл</option>";
 	foreach ( $options as $value => $description ) {
 		$output .= "<option value=\"$description\"";
-		if( $selected == $description ) {
-			$output .= " selected ";
-		}
+		if( $selected == $description ) $output .= " selected ";
 		$output .= ">$description</option>\n";
 	}
 	$output .= "</select>";
 	return $output;
 }
 
-function showTrInline($name, $description, $type, $data)
-{
+function showTrInline($name, $description, $type, $data) {
 echo <<<HTML
 <tr>
 	<td>
@@ -131,8 +119,7 @@ echo <<<HTML
 HTML;
 }
 	
-function textareaForm($data)
-{
+function textareaForm($data) {
 	$input_elemet = $data[2] ? " placeholder=\"{$data[2]}\"" : '';
 	$input_elemet .= $data[3] ? ' disabled' : '';
 return <<<HTML
@@ -154,27 +141,19 @@ echo  <<<HTML
 HTML;
 }
 
-function ShowSelected($data)
-{
+function ShowSelected($data) {
 	foreach ($data[1] as $key => $val) {
-		if ($data[2]) {
-			$output .= "<option value=\"{$key}\"";
-		} else {
-			$output .= "<option value=\"{$val}\"";
-		}
+		if ($data[2]) $output .= "<option value=\"{$key}\"";
+		else $output .= "<option value=\"{$val}\"";
+		
 		if (is_array($data[3])) {
 			foreach ($data[3] as $element) {
-				if ($data[2] && $element == $key) {
-					$output .= " selected ";
-				} elseif (!$data[2] && $element == $val) {
-					$output .= " selected ";
-				}
+				if ($data[2] && $element == $key) $output .= " selected ";
+				elseif (!$data[2] && $element == $val) $output .= " selected ";
 			}
-		} elseif ($data[2] && $data[3] == $key) {
-			$output .= " selected ";
-		} elseif (!$data[2] && $data[3] == $val) {
-			$output .= " selected ";
-		}
+		} elseif ($data[2] && $data[3] == $key) $output .= " selected ";
+		elseif (!$data[2] && $data[3] == $val) $output .= " selected ";
+		
 		$output .= ">{$val}</option>\n";
 	}
 	$input_elemet = $data[5] ? ' disabled' : '';
@@ -187,18 +166,13 @@ return <<<HTML
 HTML;
 }
 
-function makeSelect($array, $name, $data, $placeholder, $mode)
-{
+function makeSelect($array, $name, $data, $placeholder, $mode) {
     $ar_ray = explode(',', $data);
     $options = [];
     foreach ($array as $key => $value) {
         if ( $mode == 1 ) $key = $value;
-	    if (in_array($key, $ar_ray)) {
-	    	$options[] = '<option value="'.$key.'" selected>'.$value.'</option>';
-	    }
-	    else {
-	    	$options[] = '<option value="'.$key.'">'.$value.'</option>';
-	    }
+	    if (in_array($key, $ar_ray)) $options[] = '<option value="'.$key.'" selected>'.$value.'</option>';
+	    else $options[] = '<option value="'.$key.'">'.$value.'</option>';
     }
     if ( $options ) return '<select data-placeholder="'.$placeholder.'" name="'.$name.'[]" id="'.$name.'" class="valuesselect" multiple style="width:100%;max-width:350px;">'.implode('', $options).'</select>';
     else return '<select data-placeholder="'.$placeholder.'" name="'.$name.'[]" id="'.$name.'" class="valuesselect" multiple style="width:100%;max-width:350px;"></select>';
@@ -209,12 +183,7 @@ $data_list_kodik = array( "shikimori_id", "mydramalist_id", "image", "kadr_1", "
 
 $xfield_list = xfieldsload();
 
-$xfields_list = ['-' => '-'];
-$xfield_image = ['-' => '-'];
-$xfield_gallery = ['-' => '-'];
-$xfield_yesorno = ['-' => '-'];
-$xfield_select = ['-' => '-'];
-$xfields_all_list = ['-' => '-'];
+$xfields_list = $xfield_image = $xfield_gallery = $xfield_yesorno = $xfield_select = $xfields_all_list = ['-' => '-'];
 $main_fields = [
     'title' => 'Заголовок',
     'short_story' => 'Краткое описание',
@@ -233,18 +202,10 @@ for ($i = 0; $i < count($xfield_list); $i++) {
 	    $main_fields[$xfield_list[$i][0]] = $xfield_list[$i][1];
 	    $xfields_list[$xfield_list[$i][0]] = $xfield_list[$i][1];
 	}
-	elseif ( $xfield_list[$i][3] == "image" ) {
-	    $xfield_image[$xfield_list[$i][0]] = $xfield_list[$i][1];
-	}
-	elseif ( $xfield_list[$i][3] == "imagegalery" ) {
-	    $xfield_gallery[$xfield_list[$i][0]] = $xfield_list[$i][1];
-	}
-	elseif ( $xfield_list[$i][3] == "yesorno" ) {
-	    $xfield_yesorno[$xfield_list[$i][0]] = $xfield_list[$i][1];
-	}
-	elseif ( $xfield_list[$i][3] == "select" ) {
-	    $xfield_select[$xfield_list[$i][0]] = $xfield_list[$i][1];
-	}
+	elseif ( $xfield_list[$i][3] == "image" ) $xfield_image[$xfield_list[$i][0]] = $xfield_list[$i][1];
+	elseif ( $xfield_list[$i][3] == "imagegalery" ) $xfield_gallery[$xfield_list[$i][0]] = $xfield_list[$i][1];
+	elseif ( $xfield_list[$i][3] == "yesorno" ) $xfield_yesorno[$xfield_list[$i][0]] = $xfield_list[$i][1];
+	elseif ( $xfield_list[$i][3] == "select" ) $xfield_select[$xfield_list[$i][0]] = $xfield_list[$i][1];
 }
 
 $cat_options = [];
@@ -259,8 +220,7 @@ $xf_fields_upd = array(0 => "выключено","1" => "перезаписыв�
 $working_mode = array(0 => "аниме","1" => "дорамы","2" => "аниме и дорамы");
 $fa_icons = array('fa' => 'fa','fas' => 'fas (Solid Style)','far' => 'far (Regular Style)','fal' => 'fal (Light Style)','fad' => 'fad (Duotone Style)');
 
-$year_array = array();
-$years_array = array();
+$year_array = $years_array = array();
 for ($i = 1910; $i <= (date("Y", time())+1); $i++) {
     $year_array[$i] = $i.' год';
     $years_array[] = $i;
@@ -287,9 +247,7 @@ if ($aaparser_config['settings']['working_mode'] == 1) {
 		}
 		file_put_contents(ENGINE_DIR.'/mrdeath/aaparser/data/translators_name_dorama.json', json_encode($translators_name, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
 		file_put_contents(ENGINE_DIR.'/mrdeath/aaparser/data/translators_dorama.json', json_encode($translators, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
-		unset ($translators_name);
-		unset ($translators);
-		unset ($cont);
+		unset ($translators_name, $translators, $cont);
 	}
 } elseif ($aaparser_config['settings']['working_mode'] == 2) {
 	if (!file_exists(ENGINE_DIR."/mrdeath/aaparser/data/translators_name.json") || !file_exists(ENGINE_DIR."/mrdeath/aaparser/data/translators_name_dorama.json") || filectime(ENGINE_DIR."/mrdeath/aaparser/data/translators_name.json") < $c_time || filectime(ENGINE_DIR."/mrdeath/aaparser/data/translators_name_dorama.json") < $c_time) {
@@ -309,9 +267,7 @@ if ($aaparser_config['settings']['working_mode'] == 1) {
 		}
 		file_put_contents(ENGINE_DIR.'/mrdeath/aaparser/data/translators_name_dorama.json', json_encode($translators_name, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
 		file_put_contents(ENGINE_DIR.'/mrdeath/aaparser/data/translators_dorama.json', json_encode($translators, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
-		unset ($translators_name);
-		unset ($translators);
-		unset ($cont);
+		unset ($translators_name, $translators, $cont);
 		//anime
 		if ($aaparser_config['settings']['kodik_api_domain'] != '') {
 			$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
@@ -328,9 +284,7 @@ if ($aaparser_config['settings']['working_mode'] == 1) {
 		}
 		file_put_contents(ENGINE_DIR.'/mrdeath/aaparser/data/translators_name.json', json_encode($translators_name, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
 		file_put_contents(ENGINE_DIR.'/mrdeath/aaparser/data/translators.json', json_encode($translators, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
-		unset ($translators_name);
-		unset ($translators);
-		unset ($cont);
+		unset ($translators_name, $translators, $cont);
 	}
 } else {
 	if (!file_exists(ENGINE_DIR."/mrdeath/aaparser/data/translators_name.json") || filectime(ENGINE_DIR."/mrdeath/aaparser/data/translators_name.json") < $c_time) {
@@ -350,9 +304,7 @@ if ($aaparser_config['settings']['working_mode'] == 1) {
 		}
 		file_put_contents(ENGINE_DIR.'/mrdeath/aaparser/data/translators_name.json', json_encode($translators_name, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
 		file_put_contents(ENGINE_DIR.'/mrdeath/aaparser/data/translators.json', json_encode($translators, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
-		unset ($translators_name);
-		unset ($translators);
-		unset ($cont);
+		unset ($translators_name, $translators, $cont);
 	}
 }
 
@@ -410,8 +362,7 @@ if (!file_exists(ENGINE_DIR."/mrdeath/aaparser/data/kinopoisk.json") || filectim
 }
 
 
-$genres_array_dorama = array();
-$genres_array = array();
+$genres_array_dorama = $genres_array = array();
 
 $mydramalist = file_get_contents(ROOT_DIR."/engine/mrdeath/aaparser/data/mydramalist.json");
 $mydramalist = json_decode($mydramalist, true);
@@ -422,8 +373,7 @@ foreach ($mydramalist['results'] as $item)
 
 $shikimori = file_get_contents(ROOT_DIR."/engine/mrdeath/aaparser/data/shikimori.json");
 $shikimori = json_decode($shikimori, true);
-foreach ($shikimori['results'] as $item)
-{
+foreach ($shikimori['results'] as $item) {
 	$genres_array[] = trim($item['title']);
 }
 $genres_array[] = 'магия';
@@ -431,21 +381,15 @@ $genres_array[] = 'магия';
 
 $kinopoisk = file_get_contents(ROOT_DIR."/engine/mrdeath/aaparser/data/kinopoisk.json");
 $kinopoisk = json_decode($kinopoisk, true);
-foreach ($kinopoisk['results'] as $item)
-{
+foreach ($kinopoisk['results'] as $item) {
 	$genres_array[] = trim($item['title']);
 	$genres_array_dorama[] = trim($item['title']);
 }
 
 
-
 $type_array = array("аниме", "ТВ-сериал", "OVA", "Фильм", "Полнометражный фильм", "Короткометражный фильм", "Спэшл", "ONA", "AMV", "Анонс", "Онгоинг", "Завершён", "Озвучка", "Субтитры");
 
 $type_array_dorama = array("дорама", "сериал", "фильм", "Анонс", "Онгоинг", "Завершён", "Озвучка", "Субтитры");
-
-//$genres_array = ["безумие","боевые искусства","вампиры","военное","гарем","гурман","демоны","детектив","детское","дзёсей","драма","игры","исторический","комедия","космос","магия","машины","меха","музыка","пародия","повседневность","полиция","приключения","психологическое","работа","романтика","самураи","сверхъестественное","спорт","супер сила","сэйнэн","сёдзё","сёдзё-ай","сёнен","сёнен-ай","триллер","ужасы","фантастика","фэнтези","школа","экшен","этти"];
-
-//$genres_array_dorama = ["sci-fi","бизнес","боевик","боевые искусства","взрослая жизнь","военное","война","восточные единоборства","документальный","драма","гурман","закон","исторический","комедия","криминал","медицина","мелодрама","мистика","молодость","музыка","повседневность","политика","приключения","психологическое","романтика","сверхъестественное","семейный","ситком","спорт","супер сила","триллер","ужасы","фэнтези"];
 
 $collections_array = ["футбол", "автогонки", "баскетбол", "бейсбол", "бокс", "теннис", "волейбол", "велоспорт", "маджонг", "фигурное катание", "карточные игры", "сёги", "регби", "спортивная борьба", "кэндо", "мотогонки", "плавание", "наше время", "будущее", "период Ямато", "период Нара", "период Хэйан", "период Камакура", "период Муромати", "период Сэнгоку", "период Эдо", "период Бакумацу", "период Мэйдзи", "первая половина 20 века", "вторая мировая война", "вторая половина 20 века", "Викторианская эпоха", "взрослый герой", "взрослая героиня", "школьница", "школьник", "студенты", "ребёнок и взрослый", "дети во взрослом мире", "сильная героиня", "сильный герой", "бисёнэны", "антигерой", "супергерой", "яндэрэ", "цундэрэ", "кудэрэ", "андрогин", "готическая лолита", "раздвоение личности", "дандэрэ", "генки", "брат и сестра", "братья", "сёстры", "близнецы", "сироты", "отаку", "хикикомори", "хулиганы", "лётчики", "полицейские", "военные", "айдолы", "морские пираты", "космические авантюристы", "мангаки", "шпионы", "учителя", "ниндзя", "самураи", "врачи", "оммёдзи", "горничная", "рыцари", "фермеры", "инопланетяне", "андроиды", "киборги", "вампиры", "драконы", "призраки", "зомби", "демоны", "зверолюди", "эльфы", "божества", "русалки", "ангелы", "ёкаи", "феи", "кентавры", "паропанк", "киберпанк", "космическая опера", "пилотируемые роботы", "экзоскелет", "дизельпанк", "тёмное фэнтези", "технофэнтези", "классическое фэнтези", "реверс-гарем", "гарем", "любовный треугольник", "сёдзё-ай", "сёнэн-ай", "ангст", "сюрреализм", "сатира / пародия", "притча", "кайдан / японские городские легенды", "нуар", "Европа: Россия", "Европа: Франция", "Европа: Италия", "Европа: Англия", "Европа: Греция", "Европа: Германия", "Европа: вымышленная страна", "Америка: США / Канада", "Китай", "Марс", "постапокалиптический мир", "вымышленный мир", "альтернативная история", "антиутопия", "mmorpg", "вестерн", "параллельные миры", "море", "под одной крышей", "космический корабль", "глубинка", "тюрьма", "театр кабуки", "академия магии", "университет", "музыкальная группа", "аниме-индустрия", "школьный клуб", "школа", "школьный совет", "3D-графика", "кукольная анимация", "сплошной позитив", "депрессивная атмосфера", "трагические сцены", "жестокие сцены", "политические интриги", "путешествие в другой мир", "кулинария", "дружба", "путешествие во времени", "суперсила", "достижение цели", "работа и карьера", "восстание", "поиск родителей", "гендерная интрига", "битва умов", "потеря памяти", "обмен телами", "турнир", "дилемма", "спасение мира", "компьютерные технологии", "преступные организации", "семейные отношения", "классическая музыка", "моэ / кавай", "королевская битва", "выживание", "месть", "хэнсин", "японская классическая литература", "роуд-муви", "животные и люди", "по произведениям западных авторов", "прокси-битвы", "внутренние монологи", "взросление", "только девушки", "только парни", "маньяки", "кроссовер", "откровенные сцены", "садомазохизм", "тяжелая болезнь", "разница в возрасте", "травля", "несколько сюжетных линий", "noitamina", "comicfesta", "супердеформ", "world masterpiece theater"];
 
@@ -484,7 +428,6 @@ $usergroups = [];
 foreach ( $user_group as $key => $value ) {
     $usergroups[$value['id']] = $value['group_name'];
 }
-
 
 $fields_description = [
     'id аниме на Shikimori',
@@ -692,8 +635,7 @@ function dir_size($dir) {
    return $totalsize;
 }
 
-function convert_bytes($size)
-{
+function convert_bytes($size) {
 	$i = 0;
 	while (floor($size / 1024) > 0) {
 		++$i;

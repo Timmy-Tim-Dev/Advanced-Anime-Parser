@@ -1,8 +1,6 @@
 <?php
 
-if (!defined("DATALIFEENGINE")) {
-    exit("Hacking attempt!");
-}
+if (!defined("DATALIFEENGINE")) exit("Hacking attempt!");
 
 if ( !isset($aaparser_config_push) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config_push.php';
 
@@ -10,7 +8,4 @@ if ( $aaparser_config_push['push_notifications']['enable_tgposting'] == 1 && $aa
   	$check = $db->super_query( "SELECT news_id FROM " . PREFIX . "_telegram_sender WHERE news_id='" .$tlg_news_id ."'");
   	if ( !isset($check['news_id']) && !$check['news_id'] ) $db->query( "INSERT INTO " . PREFIX . "_telegram_sender (news_id, settings) values ('{$tlg_news_id}', '{$tlg_template}')" );
   	unset($check, $tlg_news_id, $tlg_template);
-}
-elseif ( $aaparser_config_push['push_notifications']['enable_tgposting'] == 1 ) {
-  	require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend.php'));
-}
+} elseif ( $aaparser_config_push['push_notifications']['enable_tgposting'] == 1 ) require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend.php'));
