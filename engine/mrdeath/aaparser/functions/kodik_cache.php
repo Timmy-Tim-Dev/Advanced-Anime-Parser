@@ -12,7 +12,7 @@ if( !defined('DATALIFEENGINE' ) ) {
 	die('Hacking attempt!');
 }
 
-function kodik_cache($prefix, $cache_id = false, $cache_folder) {
+function kodik_cache($prefix, $cache_id = false, $cache_folder = "trash") {
 	global $config, $is_logged, $member_id, $dlefastcache;
   
   	if( !is_dir( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" ) ) {
@@ -37,7 +37,7 @@ function kodik_cache($prefix, $cache_id = false, $cache_folder) {
 	return $buffer;
 }
 
-function kodik_create_cache($prefix, $cache_text, $cache_id = false, $cache_folder) {
+function kodik_create_cache($prefix, $cache_text, $cache_id = false, $cache_folder = "trash") {
 	global $config, $is_logged, $member_id, $dlefastcache;
   
   	if( !is_dir( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" ) ) {
@@ -66,7 +66,7 @@ function kodik_create_cache($prefix, $cache_text, $cache_id = false, $cache_fold
 	return true;
 }
 
-function kodik_clear_cache($cache_areas = false, $cache_folder) {
+function kodik_clear_cache($cache_areas = false, $cache_folder = "trash") {
 	global $dlefastcache, $config;
   
   	if( !is_dir( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/" ) ) {

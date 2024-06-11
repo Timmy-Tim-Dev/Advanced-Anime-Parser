@@ -7,6 +7,9 @@
  This code is protected by copyright
 =====================================================
 */
+	$kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : '9a3a536a8be4b3d3f9f7bd28c1b74071';
+	$kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $aaparser_config['settings']['kodik_api_domain'] : 'https://kodikapi.com/';
+	$shikimori_api_domain = isset($aaparser_config['settings']['shikimori_api_domain']) ? $aaparser_config['settings']['shikimori_api_domain'] : 'https://shikimori.one/';
 
     if ( !$aaparser_config['update_news']['cat_check'] ) die('Обновление категорий отключено в настройках');
     elseif ( $aaparser_config['update_news']['cat_check'] == 1 ) {

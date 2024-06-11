@@ -85,7 +85,7 @@
 		    $material_row['cat_check'] = 1;
 		}
 		
-		$need_update, $need_update_date, $send_push = 0;
+		$need_update = $need_update_date = $send_push = 0;
         $news_id = $checking_post['id'];
 		$update_fields = [];
 		$reason_updation = '';

@@ -16,14 +16,10 @@
 require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/functions/module.php';
 
-if ( isset($aaparser_config['settings']['kodik_api_key']) ) $kodik_apikey = $aaparser_config['settings']['kodik_api_key'];
-else $kodik_apikey = '9a3a536a8be4b3d3f9f7bd28c1b74071';
 
-if ( isset($aaparser_config['settings']['kodik_api_domain']) ) $kodik_api_domain = $aaparser_config['settings']['kodik_api_domain'];
-else $kodik_api_domain = 'https://kodikapi.com/';
-
-if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
-else $shikimori_api_domain = 'https://shikimori.one/';
+$kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : '9a3a536a8be4b3d3f9f7bd28c1b74071';
+$kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $aaparser_config['settings']['kodik_api_domain'] : 'https://kodikapi.com/';
+$shikimori_api_domain = isset($aaparser_config['settings']['shikimori_api_domain']) ? $aaparser_config['settings']['shikimori_api_domain'] : 'https://shikimori.one/';
 
 $action = isset($_GET['action']) ? $_GET['action'] : null;
 
