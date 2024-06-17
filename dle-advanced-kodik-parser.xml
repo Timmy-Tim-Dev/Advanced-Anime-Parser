@@ -3,7 +3,7 @@
 	<name>Advanced Kodik Parser</name>
 	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, парсинг анонсов аниме, обновление новостей при выходе новой серии или лучшего качества, тонкие настройки работы cron.</description>
 	<icon>uploads/advanced-anime-parser-icon.png</icon>
-	<version>4.1.0</version>
+	<version>4.1.2</version>
 	<dleversion>15.0</dleversion>
 	<versioncompare>greater</versioncompare>
 	<upgradeurl>https://storage.kodik.biz/files/advanced-anime-parser/last_version.json</upgradeurl>
@@ -148,9 +148,10 @@ DROP TABLE IF EXISTS `{prefix}_raspisanie_ongoingov`;
 DROP TABLE IF EXISTS `{prefix}_shikimori_posts`;
 DROP TABLE IF EXISTS `{prefix}_subscribe_info`;
 DROP TABLE IF EXISTS `{prefix}_telegram_sender`;]]></mysqldelete>
-	<phpinstall><![CDATA[if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.log')) {
-  	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/version.log', "w+");
-  	fwrite($fp, '4.1.0');
+	<phpinstall><![CDATA[if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.php')) {
+  	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/version.php', "w+");
+  	@chmod(ENGINE_DIR.'/mrdeath/aaparser/data/version.php', 0777);
+  	fwrite($fp, '4.1.2');
   	fclose($fp);
 }]]></phpinstall>
 	<phpupgrade><![CDATA[]]></phpupgrade>
