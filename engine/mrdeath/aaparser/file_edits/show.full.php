@@ -70,11 +70,11 @@ if ( isset($aaparser_config['player']['player_method']) && $aaparser_config['pla
 }
 
 if ( isset($aaparser_config['persons']['personas_on']) && $aaparser_config['persons']['personas_on'] == 1 && isset($aaparser_config['main_fields']['xf_shikimori_id']) && isset($xfieldsdata[$aaparser_config['main_fields']['xf_shikimori_id']]) && $xfieldsdata[$aaparser_config['main_fields']['xf_shikimori_id']] ) {
-    if ( $aaparser_config['persons']['main_characters'] == 1 ) $tpl->set( '{kodik_main_characters}', '<div id="main_characters_block" data-sh_id="'.$xfieldsdata[$aaparser_config['main_fields']['xf_shikimori_id']].'">Загрузка...</div>' );
+    if ( $aaparser_config['persons']['main_characters'] == 1 ) $tpl->set( '{kodik_main_characters}', '<div id="main_characters_block" data-sh_id="'.strip_tags($xfieldsdata[$aaparser_config['main_fields']['xf_shikimori_id']]).'">Загрузка...</div>' );
     else $tpl->set( '{kodik_main_characters}', '' );
-    if ( $aaparser_config['persons']['characters'] == 1 ) $tpl->set( '{kodik_sub_characters}', '<div id="sub_characters_block" data-sh_id="'.$xfieldsdata[$aaparser_config['main_fields']['xf_shikimori_id']].'">Загрузка...</div>' );
+    if ( $aaparser_config['persons']['characters'] == 1 ) $tpl->set( '{kodik_sub_characters}', '<div id="sub_characters_block" data-sh_id="'.strip_tags($xfieldsdata[$aaparser_config['main_fields']['xf_shikimori_id']]).'">Загрузка...</div>' );
     else $tpl->set( '{kodik_sub_characters}', '' );
-    if ( $aaparser_config['persons']['persons'] == 1 ) $tpl->set( '{kodik_persons}', '<div id="persons_block" data-sh_id="'.$xfieldsdata[$aaparser_config['main_fields']['xf_shikimori_id']].'">Загрузка...</div>' );
+    if ( $aaparser_config['persons']['persons'] == 1 ) $tpl->set( '{kodik_persons}', '<div id="persons_block" data-sh_id="'.strip_tags($xfieldsdata[$aaparser_config['main_fields']['xf_shikimori_id']]).'">Загрузка...</div>' );
     else $tpl->set( '{kodik_persons}', '' );
 } else {
     $tpl->set( '{kodik_main_characters}', '' );
