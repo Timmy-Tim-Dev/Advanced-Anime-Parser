@@ -41,8 +41,6 @@ if ( $action == 'send' ) {
 	)));
 } elseif ( $action == 'check' ) {
     
-    include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
-    
   	$room_leader = $_GET['room_leader'];
   	$room_msg = $room_visitors = [];
     $last_chat_id = 0;
@@ -78,7 +76,7 @@ if ( $action == 'send' ) {
                '.$room_online_row['login'].'
             </div>
             <div class="room-user__role">
-               <i class="'.$aaparser_config_push['push_notifications']['fa_icons_rooms'].' fa-crown"></i>
+               <i class="'.$aaparser_config['push_notifications']['fa_icons_rooms'].' fa-crown"></i>
             </div>
          </div>';
       	else
@@ -132,7 +130,6 @@ if ( $action == 'send' ) {
   	die(json_encode(array( 'status' => 'play' )));
 } elseif ( $action == 'set_episode' ) {
     if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
-    include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
     require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
     
   	$room_episode = $_GET['episode'];

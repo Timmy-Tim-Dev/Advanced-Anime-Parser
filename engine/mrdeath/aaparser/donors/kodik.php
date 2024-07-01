@@ -29,8 +29,15 @@ $kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser
 
 if ($parse_action == 'search') {
     
-	if ( isset( $aaparser_config['settings']['working_mode'] ) && $aaparser_config['settings']['working_mode'] == 1 ) $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&title='.$search_name.'&types=foreign-movie,foreign-serial&with_material_data=true&limit=50');
-	else $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&title='.$search_name.'&with_material_data=true&limit=50');
+	if ( $search_name ) {
+	    if ( isset( $aaparser_config['settings']['working_mode'] ) && $aaparser_config['settings']['working_mode'] == 1 ) $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&title='.$search_name.'&types=foreign-movie,foreign-serial&with_material_data=true&limit=50');
+	    else $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&title='.$search_name.'&with_material_data=true&limit=50');
+    }
+    else {
+        if ( isset( $aaparser_config['settings']['working_mode'] ) && $aaparser_config['settings']['working_mode'] == 1 ) $kodik = request($kodik_api_domain.'list?token='.$kodik_apikey.'&types=foreign-movie,foreign-serial&with_material_data=true&sort=created_at&limit=100');
+        elseif ( isset( $aaparser_config['settings']['working_mode'] ) && $aaparser_config['settings']['working_mode'] == 2 ) $kodik = request($kodik_api_domain.'list?token='.$kodik_apikey.'&types=foreign-movie,foreign-serial,anime,anime-serial&with_material_data=true&sort=created_at&limit=100');
+	    else $kodik = request($kodik_api_domain.'list?token='.$kodik_apikey.'&types=anime,anime-serial&with_material_data=true&sort=created_at&limit=100');
+    }
 	
 	if ( $kodik['results'] ) {
 		foreach ( $kodik['results'] as $result ) {
@@ -46,8 +53,8 @@ if ($parse_action == 'search') {
             
             $where = [];
             
-            if ( $aaparser_config_push['main_fields']['xf_shikimori_id'] && $shikimori_id ) $where[] = "xfields LIKE '%".$aaparser_config_push['main_fields']['xf_shikimori_id']."|".$shikimori_id."||%'";
-            if ( $aaparser_config_push['main_fields']['xf_mdl_id'] && $mydramalist_id ) $where[] = "xfields LIKE '%".$aaparser_config_push['main_fields']['xf_mdl_id']."|".$mydramalist_id."||%'";
+            if ( $aaparser_config['main_fields']['xf_shikimori_id'] && $shikimori_id ) $where[] = "xfields LIKE '%".$aaparser_config['main_fields']['xf_shikimori_id']."|".$shikimori_id."||%'";
+            if ( $aaparser_config['main_fields']['xf_mdl_id'] && $mydramalist_id ) $where[] = "xfields LIKE '%".$aaparser_config['main_fields']['xf_mdl_id']."|".$mydramalist_id."||%'";
 			
 			if ( $where ) {
 			    $where = implode(' OR ', $where);

@@ -18,16 +18,16 @@ echo <<<HTML
 			<table class="table table-striped">
 HTML;
 
-showRow('Дополнительное поле с ID Shikimori', 'Выберите дополнительное поле, в котором содержится id аниме с Shikimori. Выберите если добавляете на сайт аниме', makeDropDown( $xfields_list, "main_fields[xf_shikimori_id]", $aaparser_config_push['main_fields']['xf_shikimori_id']));
-showRow('Дополнительное поле с ID MyDramaList', 'Выберите дополнительное поле, в котором содержится id дорам с MyDramaList. Выберите если добавляете на сайт дорамы', makeDropDown( $xfields_list, "main_fields[xf_mdl_id]", $aaparser_config_push['main_fields']['xf_mdl_id']));
-showRow('Дополнительное поле c плеером', 'Выберите дополнительное поле в котором содержится ссылка на плеер с балансера', makeDropDown( $xfields_list, "main_fields[xf_player]", $aaparser_config_push['main_fields']['xf_player']));
-showRow('Доп. поле с постером', 'Выберите дополнительное поле, в котором содержится постер (обложка)', makeDropDown( $xfields_all_list, "main_fields[xf_poster]", $aaparser_config_push['main_fields']['xf_poster']));
-showRow('Ссылка на картинку-заглушку', 'Введите ссылку на картинку-заглушку в случае отсутствия постера', showInput(['main_fields[poster_empty]', 'text', $aaparser_config_push['main_fields']['poster_empty']]));
-showRow('Дополнительное поле c последним вышедшим сезоном (обязательно)', 'Выберите дополнительное поле c последним вышедшим сезоном сериала (целое число)', makeDropDown( $xfields_list, "main_fields[xf_season]", $aaparser_config_push['main_fields']['xf_season']));
-showRow('Дополнительное поле c последней вышедшей серией (обязательно)', 'Выберите дополнительное поле c последней вышедшей серией сериала (целое число)', makeDropDown( $xfields_list, "main_fields[xf_series]", $aaparser_config_push['main_fields']['xf_series']));
-showRow('Дополнительное поле c качеством фильма', 'Выберите дополнительное поле c качеством фильма', makeDropDown( $xfields_list, "main_fields[xf_quality]", $aaparser_config_push['main_fields']['xf_quality']));
-showRow('Дополнительное поле cо всеми доступными озвучками', 'Выберите дополнительное поле в котором содержится перечень озвучек фильма или сериала', makeDropDown( $xfields_list, "main_fields[xf_translation]", $aaparser_config_push['main_fields']['xf_translation']));
-showRow('Дополнительное поле c последней добавленной озвучкой', 'Выберите дополнительное поле в котором содержиться озвучка последней добавленной в базу серии', makeDropDown( $xfields_list, "main_fields[xf_translation_last]", $aaparser_config_push['main_fields']['xf_translation_last']));
+showRow('Дополнительное поле с ID Shikimori', 'Выберите дополнительное поле, в котором содержится id аниме с Shikimori. Выберите если добавляете на сайт аниме', makeDropDown( $xfields_list, "main_fields[xf_shikimori_id]", $aaparser_config['main_fields']['xf_shikimori_id']));
+showRow('Дополнительное поле с ID MyDramaList', 'Выберите дополнительное поле, в котором содержится id дорам с MyDramaList. Выберите если добавляете на сайт дорамы', makeDropDown( $xfields_list, "main_fields[xf_mdl_id]", $aaparser_config['main_fields']['xf_mdl_id']));
+showRow('Дополнительное поле c плеером', 'Выберите дополнительное поле в котором содержится ссылка на плеер с балансера', makeDropDown( $xfields_list, "main_fields[xf_player]", $aaparser_config['main_fields']['xf_player']));
+showRow('Доп. поле с постером', 'Выберите дополнительное поле, в котором содержится постер (обложка)', makeDropDown( $xfields_all_list, "main_fields[xf_poster]", $aaparser_config['main_fields']['xf_poster']));
+showRow('Ссылка на картинку-заглушку', 'Введите ссылку на картинку-заглушку в случае отсутствия постера', showInput(['main_fields[poster_empty]', 'text', $aaparser_config['main_fields']['poster_empty']]));
+showRow('Дополнительное поле c последним вышедшим сезоном (обязательно)', 'Выберите дополнительное поле c последним вышедшим сезоном сериала (целое число)', makeDropDown( $xfields_list, "main_fields[xf_season]", $aaparser_config['main_fields']['xf_season']));
+showRow('Дополнительное поле c последней вышедшей серией (обязательно)', 'Выберите дополнительное поле c последней вышедшей серией сериала (целое число)', makeDropDown( $xfields_list, "main_fields[xf_series]", $aaparser_config['main_fields']['xf_series']));
+showRow('Дополнительное поле c качеством фильма', 'Выберите дополнительное поле c качеством фильма', makeDropDown( $xfields_list, "main_fields[xf_quality]", $aaparser_config['main_fields']['xf_quality']));
+showRow('Дополнительное поле cо всеми доступными озвучками', 'Выберите дополнительное поле в котором содержится перечень озвучек фильма или сериала', makeDropDown( $xfields_list, "main_fields[xf_translation]", $aaparser_config['main_fields']['xf_translation']));
+showRow('Дополнительное поле c последней добавленной озвучкой', 'Выберите дополнительное поле в котором содержиться озвучка последней добавленной в базу серии', makeDropDown( $xfields_list, "main_fields[xf_translation_last]", $aaparser_config['main_fields']['xf_translation_last']));
 
 echo <<<HTML
             </table>

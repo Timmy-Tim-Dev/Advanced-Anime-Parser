@@ -74,12 +74,12 @@ function kodik_clear_cache($cache_areas = false, $cache_folder = "trash") {
         @chmod( ENGINE_DIR . "/mrdeath/aaparser/cache/" . $cache_folder . "/", 0777 );
     }
 
-	if( $config['cache_type'] ) {
-		if( $dlefastcache->connection > 0 ) {
-			$dlefastcache->clear( $cache_areas );
-			return true;
-		}
-	}
+	//if( $config['cache_type'] ) {
+		//if( $dlefastcache->connection > 0 ) {
+			//$dlefastcache->clear( $cache_areas );
+			//return true;
+		//}
+	//}
 
 	if ( $cache_areas ) {
 		if(!is_array($cache_areas)) $cache_areas = array($cache_areas);

@@ -12,7 +12,6 @@ if( !defined('DATALIFEENGINE' ) ) {
 	die('Hacking attempt!');
 }
 
-require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
 
 if ( !isset($kodik_playlist_fullstory) ) {
@@ -54,12 +53,12 @@ $active_translator = isset($_POST['active_translator']) ? $_POST['active_transla
 if ( isset($aaparser_config['settings']['kodik_api_domain']) ) $kodik_api_domain = $aaparser_config['settings']['kodik_api_domain'];
 else $kodik_api_domain = 'https://kodikapi.com/';
     
-if ( isset($aaparser_config_push['player']['custom_cache']) && $aaparser_config_push['player']['custom_cache'] == 1 ) $playlist = kodik_cache('playlist_'.$news_id, false, 'player');
+if ( isset($aaparser_config['player']['custom_cache']) && $aaparser_config['player']['custom_cache'] == 1 ) $playlist = kodik_cache('playlist_'.$news_id, false, 'player');
 else $playlist = dle_cache('kodik_playlist', $news_id, false);
 
-if ( $aaparser_config_push['player']['enable'] != 1 ) die('stop');
+if ( $aaparser_config['player']['enable'] != 1 ) die('stop');
 elseif ( !$api_token ) die('stop');
-elseif ( !$aaparser_config_push['main_fields']['xf_shikimori_id'] && !$aaparser_config_push['main_fields']['xf_mdl_id'] && !$aaparser_config_push['player']['worldart_anime'] && !$aaparser_config_push['player']['worldart_cinema'] && !$aaparser_config_push['player']['kinopoisk_id'] && !$aaparser_config_push['player']['imdb_id'] ) die('stop');
+elseif ( !$aaparser_config['main_fields']['xf_shikimori_id'] && !$aaparser_config['main_fields']['xf_mdl_id'] && !$aaparser_config['player']['worldart_anime'] && !$aaparser_config['player']['worldart_cinema'] && !$aaparser_config['player']['kinopoisk_id'] && !$aaparser_config['player']['imdb_id'] ) die('stop');
 elseif ( $playlist !== false ) $playlist = json_decode($playlist, true);
 elseif ( $news_id ) {
     
@@ -68,38 +67,38 @@ elseif ( $news_id ) {
     
     $post_fields = xfieldsdataload($news_row['xfields']);
     
-    $translations_priority = $aaparser_config_push['player']['translations_priority'] ? '&prioritize_translations='.$aaparser_config_push['player']['translations_priority'] : '';
-    $translations_unpriority = $aaparser_config_push['player']['translations_unpriority'] ? '&unprioritize_translations='.$aaparser_config_push['player']['translations_unpriority'] : '';
-    $translations_hide = $aaparser_config_push['player']['translations_hide'] ? '&block_translations='.$aaparser_config_push['player']['translations_hide'] : '';
+    $translations_priority = $aaparser_config['player']['translations_priority'] ? '&prioritize_translations='.$aaparser_config['player']['translations_priority'] : '';
+    $translations_unpriority = $aaparser_config['player']['translations_unpriority'] ? '&unprioritize_translations='.$aaparser_config['player']['translations_unpriority'] : '';
+    $translations_hide = $aaparser_config['player']['translations_hide'] ? '&block_translations='.$aaparser_config['player']['translations_hide'] : '';
     
-    if ( $aaparser_config_push['main_fields']['xf_shikimori_id'] && $post_fields[$aaparser_config_push['main_fields']['xf_shikimori_id']] ) {
-        $translations_priority = $aaparser_config_push['player']['translations_priority'] ? '&prioritize_translations='.$aaparser_config_push['player']['translations_priority'] : '';
-        $translations_unpriority = $aaparser_config_push['player']['translations_unpriority'] ? '&unprioritize_translations='.$aaparser_config_push['player']['translations_unpriority'] : '';
-        $translations_hide = $aaparser_config_push['player']['translations_hide'] ? '&block_translations='.$aaparser_config_push['player']['translations_hide'] : '';
-        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&shikimori_id='.$post_fields[$aaparser_config_push['main_fields']['xf_shikimori_id']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
-    } elseif ( $aaparser_config_push['main_fields']['xf_mdl_id'] && $post_fields[$aaparser_config_push['main_fields']['xf_mdl_id']] ) {
-        $translations_priority = $aaparser_config_push['player']['translations_priority_dorama'] ? '&prioritize_translations='.$aaparser_config_push['player']['translations_priority_dorama'] : '';
-        $translations_unpriority = $aaparser_config_push['player']['translations_unpriority_dorama'] ? '&unprioritize_translations='.$aaparser_config_push['player']['translations_unpriority_dorama'] : '';
-        $translations_hide = $aaparser_config_push['player']['translations_hide_dorama'] ? '&block_translations='.$aaparser_config_push['player']['translations_hide_dorama'] : '';
-        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&mdl_id='.$post_fields[$aaparser_config_push['main_fields']['xf_mdl_id']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
-    } elseif ( $aaparser_config_push['player']['worldart_anime'] && $post_fields[$aaparser_config_push['player']['worldart_anime']] ) {
-        $translations_priority = $aaparser_config_push['player']['translations_priority'] ? '&prioritize_translations='.$aaparser_config_push['player']['translations_priority'] : '';
-        $translations_unpriority = $aaparser_config_push['player']['translations_unpriority'] ? '&unprioritize_translations='.$aaparser_config_push['player']['translations_unpriority'] : '';
-        $translations_hide = $aaparser_config_push['player']['translations_hide'] ? '&block_translations='.$aaparser_config_push['player']['translations_hide'] : '';
-        if ( stripos($post_fields[$aaparser_config_push['player']['worldart_anime']], 'world-art.ru') !== false )
-            $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_link='.$post_fields[$aaparser_config_push['player']['worldart_anime']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
-        else $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_animation_id='.$post_fields[$aaparser_config_push['player']['worldart_anime']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
-    } elseif ( $aaparser_config_push['player']['worldart_cinema'] && $post_fields[$aaparser_config_push['player']['worldart_cinema']] ) {
-        $translations_priority = $aaparser_config_push['player']['translations_priority_dorama'] ? '&prioritize_translations='.$aaparser_config_push['player']['translations_priority_dorama'] : '';
-        $translations_unpriority = $aaparser_config_push['player']['translations_unpriority_dorama'] ? '&unprioritize_translations='.$aaparser_config_push['player']['translations_unpriority_dorama'] : '';
-        $translations_hide = $aaparser_config_push['player']['translations_hide_dorama'] ? '&block_translations='.$aaparser_config_push['player']['translations_hide_dorama'] : '';
-        if ( stripos($post_fields[$aaparser_config_push['player']['worldart_cinema']], 'world-art.ru') !== false )
-            $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_link='.$post_fields[$aaparser_config_push['player']['worldart_cinema']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
-        else $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_cinema_id='.$post_fields[$aaparser_config_push['player']['worldart_cinema']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
-    } elseif ( $aaparser_config_push['player']['kinopoisk_id'] && $post_fields[$aaparser_config_push['player']['kinopoisk_id']] )
-        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&kinopoisk_id='.$post_fields[$aaparser_config_push['player']['kinopoisk_id']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
-    elseif ( $aaparser_config_push['player']['imdb_id'] && $post_fields[$aaparser_config_push['player']['imdb_id']] )
-        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&imdb_id='.$post_fields[$aaparser_config_push['player']['imdb_id']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
+    if ( $aaparser_config['main_fields']['xf_shikimori_id'] && $post_fields[$aaparser_config['main_fields']['xf_shikimori_id']] ) {
+        $translations_priority = $aaparser_config['player']['translations_priority'] ? '&prioritize_translations='.$aaparser_config['player']['translations_priority'] : '';
+        $translations_unpriority = $aaparser_config['player']['translations_unpriority'] ? '&unprioritize_translations='.$aaparser_config['player']['translations_unpriority'] : '';
+        $translations_hide = $aaparser_config['player']['translations_hide'] ? '&block_translations='.$aaparser_config['player']['translations_hide'] : '';
+        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&shikimori_id='.$post_fields[$aaparser_config['main_fields']['xf_shikimori_id']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
+    } elseif ( $aaparser_config['main_fields']['xf_mdl_id'] && $post_fields[$aaparser_config['main_fields']['xf_mdl_id']] ) {
+        $translations_priority = $aaparser_config['player']['translations_priority_dorama'] ? '&prioritize_translations='.$aaparser_config['player']['translations_priority_dorama'] : '';
+        $translations_unpriority = $aaparser_config['player']['translations_unpriority_dorama'] ? '&unprioritize_translations='.$aaparser_config['player']['translations_unpriority_dorama'] : '';
+        $translations_hide = $aaparser_config['player']['translations_hide_dorama'] ? '&block_translations='.$aaparser_config['player']['translations_hide_dorama'] : '';
+        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&mdl_id='.$post_fields[$aaparser_config['main_fields']['xf_mdl_id']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
+    } elseif ( $aaparser_config['player']['worldart_anime'] && $post_fields[$aaparser_config['player']['worldart_anime']] ) {
+        $translations_priority = $aaparser_config['player']['translations_priority'] ? '&prioritize_translations='.$aaparser_config['player']['translations_priority'] : '';
+        $translations_unpriority = $aaparser_config['player']['translations_unpriority'] ? '&unprioritize_translations='.$aaparser_config['player']['translations_unpriority'] : '';
+        $translations_hide = $aaparser_config['player']['translations_hide'] ? '&block_translations='.$aaparser_config['player']['translations_hide'] : '';
+        if ( stripos($post_fields[$aaparser_config['player']['worldart_anime']], 'world-art.ru') !== false )
+            $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_link='.$post_fields[$aaparser_config['player']['worldart_anime']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
+        else $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_animation_id='.$post_fields[$aaparser_config['player']['worldart_anime']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
+    } elseif ( $aaparser_config['player']['worldart_cinema'] && $post_fields[$aaparser_config['player']['worldart_cinema']] ) {
+        $translations_priority = $aaparser_config['player']['translations_priority_dorama'] ? '&prioritize_translations='.$aaparser_config['player']['translations_priority_dorama'] : '';
+        $translations_unpriority = $aaparser_config['player']['translations_unpriority_dorama'] ? '&unprioritize_translations='.$aaparser_config['player']['translations_unpriority_dorama'] : '';
+        $translations_hide = $aaparser_config['player']['translations_hide_dorama'] ? '&block_translations='.$aaparser_config['player']['translations_hide_dorama'] : '';
+        if ( stripos($post_fields[$aaparser_config['player']['worldart_cinema']], 'world-art.ru') !== false )
+            $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_link='.$post_fields[$aaparser_config['player']['worldart_cinema']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
+        else $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_cinema_id='.$post_fields[$aaparser_config['player']['worldart_cinema']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
+    } elseif ( $aaparser_config['player']['kinopoisk_id'] && $post_fields[$aaparser_config['player']['kinopoisk_id']] )
+        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&kinopoisk_id='.$post_fields[$aaparser_config['player']['kinopoisk_id']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
+    elseif ( $aaparser_config['player']['imdb_id'] && $post_fields[$aaparser_config['player']['imdb_id']] )
+        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&imdb_id='.$post_fields[$aaparser_config['player']['imdb_id']].'&with_episodes=true'.$translations_priority.$translations_unpriority.$translations_hide);
         
     if ( $kodik['results'] ) {
         if ( isset($kodik['results'][0]['last_episode']) ) {
@@ -128,9 +127,9 @@ elseif ( $news_id ) {
         
         $playlist['serial_name'] = $kodik['results'][0]['title'];
         $playlist['iframe'] = $kodik['results'][0]['link'];
-        if ( $aaparser_config_push['player']['add_params'] && $post_fields[$aaparser_config_push['player']['add_params']] ) $playlist['my_params'] = $post_fields[$aaparser_config_push['player']['add_params']];
-        if ( $aaparser_config_push['player']['geoblock'] && $post_fields[$aaparser_config_push['player']['geoblock']] ) $playlist['geoblock'] = $post_fields[$aaparser_config_push['player']['geoblock']];
-        if ( isset($aaparser_config_push['player']['custom_cache']) && $aaparser_config_push['player']['custom_cache'] == 1 ) kodik_create_cache('playlist_'.$news_id, json_encode($playlist, JSON_UNESCAPED_UNICODE), false, 'player');
+        if ( $aaparser_config['player']['add_params'] && $post_fields[$aaparser_config['player']['add_params']] ) $playlist['my_params'] = $post_fields[$aaparser_config['player']['add_params']];
+        if ( $aaparser_config['player']['geoblock'] && $post_fields[$aaparser_config['player']['geoblock']] ) $playlist['geoblock'] = $post_fields[$aaparser_config['player']['geoblock']];
+        if ( isset($aaparser_config['player']['custom_cache']) && $aaparser_config['player']['custom_cache'] == 1 ) kodik_create_cache('playlist_'.$news_id, json_encode($playlist, JSON_UNESCAPED_UNICODE), false, 'player');
         else create_cache('kodik_playlist', json_encode($playlist, JSON_UNESCAPED_UNICODE), $news_id, false);
         unset($translators, $episode, $kodik, $max_episodes, $max_seasons, $max_episode, $max_season);
     }
@@ -141,12 +140,12 @@ elseif ( isset($kodik_playlist_fullstory) && $kodik_playlist_fullstory == 'yes' 
     $news_id = $row['id'];
     $action = 'load_player';
     
-    if ( isset($aaparser_config_push['player']['custom_cache']) && $aaparser_config_push['player']['custom_cache'] == 1 ) $playlist = kodik_cache('playlist_'.$news_id, false, 'player');
+    if ( isset($aaparser_config['player']['custom_cache']) && $aaparser_config['player']['custom_cache'] == 1 ) $playlist = kodik_cache('playlist_'.$news_id, false, 'player');
     else $playlist = dle_cache('kodik_playlist', $news_id, false);
     if ( $playlist !== false ) $playlist = json_decode($playlist, true);
     else {
         $playlist = [];
-        if ( $aaparser_config_push['player']['preloader'] ) $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"><div class="loading-kodik"><div class="arc"></div><div class="arc"></div><div class="arc"></div></div></div>' );
+        if ( $aaparser_config['player']['preloader'] ) $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"><div class="loading-kodik"><div class="arc"></div><div class="arc"></div><div class="arc"></div></div></div>' );
         else $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"></div>' );
     }
     
@@ -175,8 +174,8 @@ if ( $is_logged ) {
 }
 
 
-if ( $playlist['geoblock'] && $aaparser_config_push['player']['geoblock_group'] ) {
-    $geoblock_group = explode(',', $aaparser_config_push['player']['geoblock_group']);
+if ( $playlist['geoblock'] && $aaparser_config['player']['geoblock_group'] ) {
+    $geoblock_group = explode(',', $aaparser_config['player']['geoblock_group']);
     if (in_array($member_id['user_group'], $geoblock_group)) $geoblock = '&geoblock='.$playlist['geoblock'];
     else $geoblock = '';
 } else $geoblock = '';
@@ -198,13 +197,13 @@ if ($playlist['movie'] && $action == 'load_player') {
                 $iframe_link = $episode_data['link'];
             } else $active_tr = "";
         }
-        $translators .= '<li id="translator-'.$episode_data['translation_id'].'" onclick="kodik_translates();" class="b-translator__item'.$active_tr.'" data-this_link="'.$episode_data['link'].'" data-this_translator="'.$episode_data['translation_name'].'">'.$episode_data['translation_name'].'</li>';
+        $translators .= '<li id="translator-'.$episode_data['translation_id'].'" onclick="kodik_translates();" class="b-translator__item'.$active_tr.'" data-this_link="'.$episode_data['link'].$add_params.$geoblock.'" data-this_translator="'.$episode_data['translation_name'].'">'.$episode_data['translation_name'].'</li>';
     }
     $translators = '<div class="b-translators__block"><div class="b-translators__title">В переводе:</div><ul id="translators-list" class="b-translators__list">'.$translators.'</ul></div>';
 
     $ajax_player = '<div id="player" class="b-player" style="text-align: center;">';
     
-    if ( $aaparser_config_push['player']['buttons'] == 1 && $iframe_link ) {
+    if ( $aaparser_config['player']['buttons'] == 1 && $iframe_link ) {
         $iframe_url = $iframe_link.$add_params.$geoblock;
         $iframe .= '<div id="ibox"><div id="player_kodik" style="height: 100%; margin: 0 auto; width: 100%;"><iframe src="'.$iframe_url.'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe></div>';
         $ajax_player = $ajax_player . $iframe;
@@ -252,7 +251,7 @@ if ($playlist['movie'] && $action == 'load_player') {
         //Кнопки серий
     
         $iframe_sublink = '';
-        if ( isset($aaparser_config_push['player']['vertical_eps']) && $aaparser_config_push['player']['vertical_eps'] && count($episodes_arr) > $aaparser_config_push['player']['vertical_eps'] ) $sub_class = ' show-flex-grid';
+        if ( isset($aaparser_config['player']['vertical_eps']) && $aaparser_config['player']['vertical_eps'] && count($episodes_arr) > $aaparser_config['player']['vertical_eps'] ) $sub_class = ' show-flex-grid';
         else $sub_class = '';
     
         if ( !$episode_num ) $episodes .= '<ul id="simple-episodes-list" class="season-tab-'.$season.' b-simple_episodes__list clearfix'.$sub_class.'">';
@@ -266,7 +265,7 @@ if ($playlist['movie'] && $action == 'load_player') {
                     $episode_num = $episode;
                     $iframe_sublink = $playlist['iframe'].'?season='.$season.'&episode='.$episode.'&only_episode=true';
                 } else $active_epzd = "";
-            } elseif ( $aaparser_config_push['player']['last_episode'] == 1 ) {
+            } elseif ( $aaparser_config['player']['last_episode'] == 1 ) {
                 if ( max(array_keys($playlist['episodes'][$season])) == $episode ) {
                     $active_epzd = " active";
                     $episode_num = $episode;
@@ -323,12 +322,12 @@ if ($playlist['movie'] && $action == 'load_player') {
         $lastepisodeout = '<div class="b-post__lastepisodeout"><h2><i class="fa fa-eye" style="font-size: 20px !important;"></i>  ' . $serial_name . '<span id="les">. Вы остановились на ' . $last_episode . ' серии в озвучке «' . $last_translator . '»</span><i class="fa fa-trash" onclick="del('.$news_id.');" id="lesc" title="Удалить отметку"></i></h2> </div>';
     } else $lastepisodeout = '';
 	
-	if (isset($aaparser_config_push['player']['auto_next']) && $aaparser_config_push['player']['auto_next'] == 1) $autonext = 'yes';
+	if (isset($aaparser_config['player']['auto_next']) && $aaparser_config['player']['auto_next'] == 1) $autonext = 'yes';
 	else $autonext = 'no';
 	
     $ajax_player = '<div id="player" class="b-player" style="text-align: center;" data-autonext="'. $autonext .'">';
     
-    if ( $aaparser_config_push['player']['buttons'] == 1 ) {
+    if ( $aaparser_config['player']['buttons'] == 1 ) {
         $iframe_url = $playlist['iframe'].'?season='.$season_num.'&episode='.$episode_num.'&only_translations='.$tr_id.'&hide_selectors=true'.$add_params.$geoblock;
         $iframe .= '<div id="ibox"><div id="player_kodik" style="height: 100%; margin: 0 auto; width: 100%;"><iframe src="'.$iframe_url.'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe></div>';
         if ( $show_seasons === true ) $ajax_player = $ajax_player . $seasons . $iframe . $episodes;
@@ -348,6 +347,6 @@ if ($playlist['movie'] && $action == 'load_player') {
     } else echo $ajax_player;
     
 } elseif ( isset($kodik_playlist_fullstory) && $kodik_playlist_fullstory == 'yes' ) {
-    if ( $aaparser_config_push['player']['preloader'] ) $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"><div class="loading-kodik"><div class="arc"></div><div class="arc"></div><div class="arc"></div></div></div>' );
+    if ( $aaparser_config['player']['preloader'] ) $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"><div class="loading-kodik"><div class="arc"></div><div class="arc"></div><div class="arc"></div></div></div>' );
     else $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"></div>' );
 }

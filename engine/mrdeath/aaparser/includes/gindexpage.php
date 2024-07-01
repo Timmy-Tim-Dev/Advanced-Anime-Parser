@@ -7,7 +7,7 @@ echo <<<HTML
 HTML;
 if ($php_version >= 74 && file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php')) {
 	// Проверяем есть ли файл GOOGLE INDEXING и версия PHP старше 7.4
-	showRow('Включить ускоренную индексацию при помощи Google Indexing Api?', 'Включив, модуль будет отправлять созданные, изменённые и удалённые страницы на индексацию при помощи Google Indexing Api. Прочесть о том что это вы можете <a href="https://developers.google.com/search/apis/indexing-api/v3/quickstart?hl=ru" target="_blank">по ссылке</a>', makeCheckBox('push_notifications[google_indexing]', $aaparser_config_push['push_notifications']['google_indexing'], 'ShowOrHideGindexing'));
+	showRow('Включить ускоренную индексацию при помощи Google Indexing Api?', 'Включив, модуль будет отправлять созданные, изменённые и удалённые страницы на индексацию при помощи Google Indexing Api. Прочесть о том что это вы можете <a href="https://developers.google.com/search/apis/indexing-api/v3/quickstart?hl=ru" target="_blank">по ссылке</a>', makeCheckBox('push_notifications[google_indexing]', $aaparser_config['push_notifications']['google_indexing'], 'ShowOrHideGindexing'));
 	echo <<<HTML
 				</table>
 			</div>

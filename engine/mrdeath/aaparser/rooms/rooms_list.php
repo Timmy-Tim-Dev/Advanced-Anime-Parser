@@ -17,8 +17,6 @@ if( !defined('DATALIFEENGINE') ) {
 $dle_module = 'rooms_list';
 
 if ( $member_id['user_group'] != 5 ) {
-    
-    if ( !$aaparser_config ) require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
   
   	$canonical = $config['http_home_url'].'rooms/';
   	$metatags['title'] = 'Совместный просмотр онлайн на растоянии';

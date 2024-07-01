@@ -19,8 +19,6 @@ ignore_user_abort(true);
 set_time_limit(500);
 session_write_close();
 
-include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
-
 @header('Content-type: text/html; charset=' . $config['charset']);
 
 date_default_timezone_set($config['date_adjust']);

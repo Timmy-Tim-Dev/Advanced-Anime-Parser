@@ -12,7 +12,7 @@ if (!defined('DATALIFEENGINE') OR !defined('LOGGED_IN')) {
 	die('Hacking attempt!');
 }
 
-$actual_module_version = '4.1.2';
+$actual_module_version = '4.1.3';
 $action = isset($_GET['action']) ? $_GET['action'] : false;
 
 $php_version = intval(str_replace(array(".",","),"",substr(PHP_VERSION,0,3)));
@@ -118,29 +118,8 @@ HTML;
   	fwrite($fp, $text);
   	fclose($fp);
   	unset($text);
-}
-
-if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php')) {
-$text = <<<HTML
-<?PHP
-
-//AAParser Push Settings 
-
-\$aaparser_config_push = array (
-  'push_notifications' => 
-  array (
-
-  )
-);
-
-?>
-HTML;
-
-  	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php', "w+");
-	@chmod(ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php', 0777);
-  	fwrite($fp, $text);
-  	fclose($fp);
-  	unset($text);
+  	
+  	require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
 }
 
 if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/kodik.log')) {
@@ -224,8 +203,6 @@ if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) 
     if ( !$aclist ) $aclist[] = 'Пусто';
 }
 
-require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
-require_once ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/functions/admin.php';
 
 if ( !file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) {
@@ -277,26 +254,26 @@ if ( $aaparser_config['update_news']['xf_check'] ) {
     if ( $xf_check_db['count'] > 0 ) $xf_check_status = '<div style="color:#f44336">Доп. поля новостей обновляются</div>';
     else $xf_check_status = '<div style="color:#009688">Доп. поля новостей обновлены</div>';
 }
-if ( $aaparser_config_push['main_fields']['xf_shikimori_id'] && $aaparser_config_push['main_fields']['xf_mdl_id'] ) {
-    $added_news = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE xfields LIKE '%".$aaparser_config_push['main_fields']['xf_shikimori_id']."|%' OR xfields LIKE '%".$aaparser_config_push['main_fields']['xf_mdl_id']."|%'" );
+if ( $aaparser_config['main_fields']['xf_shikimori_id'] && $aaparser_config['main_fields']['xf_mdl_id'] ) {
+    $added_news = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE xfields LIKE '%".$aaparser_config['main_fields']['xf_shikimori_id']."|%' OR xfields LIKE '%".$aaparser_config['main_fields']['xf_mdl_id']."|%'" );
     if ( $done['count'] && $added_news['count'] && $done['count'] < $added_news['count'] ) {
         $base_status = '<div style="color:#ef5350"><i class="fa fa-wrench position-left"></i>Требуется связывание, нажмите кнопку ниже</div>';
     }
 }
-elseif ( $aaparser_config_push['main_fields']['xf_shikimori_id'] ) {
-    $added_news = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE xfields LIKE '%".$aaparser_config_push['main_fields']['xf_shikimori_id']."|%'" );
+elseif ( $aaparser_config['main_fields']['xf_shikimori_id'] ) {
+    $added_news = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE xfields LIKE '%".$aaparser_config['main_fields']['xf_shikimori_id']."|%'" );
     if ( $done['count'] && $added_news['count'] && $done['count'] < $added_news['count'] ) {
         $base_status = '<div style="color:#ef5350"><i class="fa fa-wrench position-left"></i>Требуется связывание, нажмите кнопку ниже</div>';
     }
 }
-elseif ( $aaparser_config_push['main_fields']['xf_mdl_id'] ) {
-    $added_news = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE xfields LIKE '%".$aaparser_config_push['main_fields']['xf_mdl_id']."|%'" );
+elseif ( $aaparser_config['main_fields']['xf_mdl_id'] ) {
+    $added_news = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE xfields LIKE '%".$aaparser_config['main_fields']['xf_mdl_id']."|%'" );
     if ( $done['count'] && $added_news['count'] && $done['count'] < $added_news['count'] ) {
         $base_status = '<div style="color:#ef5350"><i class="fa fa-wrench position-left"></i>Требуется связывание, нажмите кнопку ниже</div>';
     }
 }
 
-if ( isset($aaparser_config_push['push_notifications']['fa_icons_rooms']) ) $fa_icons_rooms = $aaparser_config_push['push_notifications']['fa_icons_rooms'];
+if ( isset($aaparser_config['push_notifications']['fa_icons_rooms']) ) $fa_icons_rooms = $aaparser_config['push_notifications']['fa_icons_rooms'];
 else $fa_icons_rooms = 'fa';
 
 $now_year = date('Y');

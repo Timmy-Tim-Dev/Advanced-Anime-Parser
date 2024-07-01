@@ -15,7 +15,6 @@ if( !defined('DATALIFEENGINE') ) {
 }
 
 if ( $dle_module == 'enter_room' ) {
-  	require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
 
   	$kodik_player_js = <<<HTML
 <script>

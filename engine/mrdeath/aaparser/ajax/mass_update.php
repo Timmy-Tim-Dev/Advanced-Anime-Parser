@@ -13,7 +13,6 @@
 @ini_set('html_errors', false);
 @ini_set('error_reporting', E_ALL ^ E_WARNING ^ E_NOTICE);
 
-require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/functions/module.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/functions/public.php';
 
@@ -36,11 +35,11 @@ $user_group = get_vars('usergroup');
 
 if ( $action == "update_news_get" ) {
 		
-		if ( !$aaparser_config_push['main_fields']['xf_shikimori_id'] && !$aaparser_config_push['main_fields']['xf_mdl_id'] ) die(json_encode(array( 'status' => 'fail' )));
+		if ( !$aaparser_config['main_fields']['xf_shikimori_id'] && !$aaparser_config['main_fields']['xf_mdl_id'] ) die(json_encode(array( 'status' => 'fail' )));
 	
-	    if ( $aaparser_config_push['main_fields']['xf_shikimori_id'] && $aaparser_config_push['main_fields']['xf_mdl_id'] ) $where = "xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_shikimori_id']."|%' OR xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_mdl_id']."|%'";
-	    elseif ( $aaparser_config_push['main_fields']['xf_shikimori_id'] ) $where = "xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_shikimori_id']."|%'";
-	    else $where = "xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_mdl_id']."|%'";
+	    if ( $aaparser_config['main_fields']['xf_shikimori_id'] && $aaparser_config['main_fields']['xf_mdl_id'] ) $where = "xfields LIKE '%|".$aaparser_config['main_fields']['xf_shikimori_id']."|%' OR xfields LIKE '%|".$aaparser_config['main_fields']['xf_mdl_id']."|%'";
+	    elseif ( $aaparser_config['main_fields']['xf_shikimori_id'] ) $where = "xfields LIKE '%|".$aaparser_config['main_fields']['xf_shikimori_id']."|%'";
+	    else $where = "xfields LIKE '%|".$aaparser_config['main_fields']['xf_mdl_id']."|%'";
 	    $news = $db->query( "SELECT id, xfields FROM " . PREFIX . "_post WHERE ".$where );
 		
 		$news_count = $news->num_rows;
@@ -51,9 +50,9 @@ if ( $action == "update_news_get" ) {
 		while($temp_news = $db->get_row($news)) {
 			$id = intval($temp_news['id']);
 			$xfields = xfieldsdataload($temp_news['xfields']);
-			if ( $xfields[$aaparser_config_push['main_fields']['xf_shikimori_id']] ) $shikimori_id = $xfields[$aaparser_config_push['main_fields']['xf_shikimori_id']];
+			if ( $xfields[$aaparser_config['main_fields']['xf_shikimori_id']] ) $shikimori_id = $xfields[$aaparser_config['main_fields']['xf_shikimori_id']];
 			else $shikimori_id = 0;
-			if ( $xfields[$aaparser_config_push['main_fields']['xf_mdl_id']] ) $mdl_id = $xfields[$aaparser_config_push['main_fields']['xf_mdl_id']];
+			if ( $xfields[$aaparser_config['main_fields']['xf_mdl_id']] ) $mdl_id = $xfields[$aaparser_config['main_fields']['xf_mdl_id']];
 			else $mdl_id = 0;
 
 			if (!$shikimori_id && !$mdl_id) continue;			
@@ -70,7 +69,7 @@ if ( $action == "update_news_get" ) {
 		else die(json_encode(array( 'status' => 'fail' )));
 } elseif ( $action == "update_news" ) {
 	
-	if ( !isset($aaparser_config_push['main_fields']['xf_shikimori_id']) && !isset($aaparser_config_push['main_fields']['xf_mdl_id']) ) die(json_encode(array( 'status' => 'fail' )));
+	if ( !isset($aaparser_config['main_fields']['xf_shikimori_id']) && !isset($aaparser_config['main_fields']['xf_mdl_id']) ) die(json_encode(array( 'status' => 'fail' )));
 	    
 	$news_id = $_GET['newsid'];
     $news_id = is_numeric($news_id) ? intval($news_id) : false;
@@ -122,8 +121,8 @@ if ( $action == "update_news_get" ) {
                 
     if ( $its_camrip === true && $aaparser_config['fields']['xf_camrip'] ) $xfields_list[$aaparser_config['fields']['xf_camrip']] = 1;
     if ( $its_lgbt === true && $aaparser_config['fields']['xf_lgbt'] ) $xfields_list[$aaparser_config['fields']['xf_lgbt']] = 1;
-	if ( $shiki_id && $aaparser_config_push['main_fields']['xf_shikimori_id'] ) $xfields_list[$aaparser_config_push['main_fields']['xf_shikimori_id']] = $shiki_id;
-	if ( $mdl_id && $aaparser_config_push['main_fields']['xf_mdl_id'] ) $xfields_list[$aaparser_config_push['main_fields']['xf_mdl_id']] = $mdl_id;
+	if ( $shiki_id && $aaparser_config['main_fields']['xf_shikimori_id'] ) $xfields_list[$aaparser_config['main_fields']['xf_shikimori_id']] = $shiki_id;
+	if ( $mdl_id && $aaparser_config['main_fields']['xf_mdl_id'] ) $xfields_list[$aaparser_config['main_fields']['xf_mdl_id']] = $mdl_id;
                 
     $old_xfields = xfieldsdataload($news_row['xfields']);
                 

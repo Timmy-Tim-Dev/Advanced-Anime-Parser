@@ -13,7 +13,6 @@
 @ini_set('html_errors', false);
 @ini_set('error_reporting', E_ALL ^ E_WARNING ^ E_NOTICE);
 
-require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/functions/module.php';
 
 
@@ -125,15 +124,15 @@ if ( $action == "update" ) {
 	)));
 } elseif ( $action == "connect_base_get" ) {
 		
-		if ( !$aaparser_config_push['main_fields']['xf_shikimori_id'] && !$aaparser_config_push['main_fields']['xf_mdl_id'] ) {
+		if ( !$aaparser_config['main_fields']['xf_shikimori_id'] && !$aaparser_config['main_fields']['xf_mdl_id'] ) {
 	        die(json_encode(array(
 		        'status' => 'fail'
 	        )));
 	    }
 	
-	    if ( $aaparser_config_push['main_fields']['xf_shikimori_id'] && $aaparser_config_push['main_fields']['xf_mdl_id'] ) $where = "xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_shikimori_id']."|%' OR xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_mdl_id']."|%'";
-	    elseif ( $aaparser_config_push['main_fields']['xf_shikimori_id'] ) $where = "xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_shikimori_id']."|%'";
-	    else $where = "xfields LIKE '%|".$aaparser_config_push['main_fields']['xf_mdl_id']."|%'";
+	    if ( $aaparser_config['main_fields']['xf_shikimori_id'] && $aaparser_config['main_fields']['xf_mdl_id'] ) $where = "xfields LIKE '%|".$aaparser_config['main_fields']['xf_shikimori_id']."|%' OR xfields LIKE '%|".$aaparser_config['main_fields']['xf_mdl_id']."|%'";
+	    elseif ( $aaparser_config['main_fields']['xf_shikimori_id'] ) $where = "xfields LIKE '%|".$aaparser_config['main_fields']['xf_shikimori_id']."|%'";
+	    else $where = "xfields LIKE '%|".$aaparser_config['main_fields']['xf_mdl_id']."|%'";
 	    $news = $db->query( "SELECT id, xfields FROM " . PREFIX . "_post WHERE ".$where );
 		
 		$news_count = $news->num_rows;
@@ -144,9 +143,9 @@ if ( $action == "update" ) {
 		while($temp_news = $db->get_row($news)) {
 			$id = intval($temp_news['id']);
 			$xfields = xfieldsdataload($temp_news['xfields']);
-			if ( $xfields[$aaparser_config_push['main_fields']['xf_shikimori_id']] ) $shikimori_id = $xfields[$aaparser_config_push['main_fields']['xf_shikimori_id']];
+			if ( $xfields[$aaparser_config['main_fields']['xf_shikimori_id']] ) $shikimori_id = $xfields[$aaparser_config['main_fields']['xf_shikimori_id']];
 			else $shikimori_id = 0;
-			if ( $xfields[$aaparser_config_push['main_fields']['xf_mdl_id']] ) $mdl_id = $xfields[$aaparser_config_push['main_fields']['xf_mdl_id']];
+			if ( $xfields[$aaparser_config['main_fields']['xf_mdl_id']] ) $mdl_id = $xfields[$aaparser_config['main_fields']['xf_mdl_id']];
 			else $mdl_id = 0;
 
 			if (!$shikimori_id && !$mdl_id) continue;			
@@ -163,7 +162,7 @@ if ( $action == "update" ) {
 		else die(json_encode(array( 'status' => 'fail' )));
 } elseif ( $action == "connect_base" ) {
 	
-	if ( !$aaparser_config_push['main_fields']['xf_shikimori_id'] && !$aaparser_config_push['main_fields']['xf_mdl_id'] ) die(json_encode(array( 'status' => 'fail' )));
+	if ( !$aaparser_config['main_fields']['xf_shikimori_id'] && !$aaparser_config['main_fields']['xf_mdl_id'] ) die(json_encode(array( 'status' => 'fail' )));
 	    
 	$news_id = $_GET['newsid'];
     $news_id = is_numeric($news_id) ? intval($news_id) : false;

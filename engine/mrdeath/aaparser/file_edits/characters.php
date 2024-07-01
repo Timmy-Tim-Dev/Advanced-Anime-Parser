@@ -21,7 +21,6 @@ ini_set('max_execution_time',300);
 $type = $_GET['type'];
 $id = $_GET['id'];
 $newid = explode('-', $id)[0];
-require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/functions/module.php';
 require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
 if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
@@ -34,14 +33,14 @@ $current_url = $protocol . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 if ($type == "people") {
 	// Начало
 	$dle_module = 'people';
-	if ( isset($aaparser_config_push['persons']['persons_page_cache']) && $aaparser_config_push['persons']['persons_page_cache'] == 1 ) {
+	if ( isset($aaparser_config['persons']['persons_page_cache']) && $aaparser_config['persons']['persons_page_cache'] == 1 ) {
 		$json = kodik_cache('people_'.$newid, false, 'personas_characters_page');
 		$json = json_decode($json, true);
 	} else $json = false;
 	
 	if ($json === false || $json == '') {
 		$json = request($shikimori_api_domain . '/api/people/' . $newid);
-		if ( isset($aaparser_config_push['persons']['persons_page_cache']) && $aaparser_config_push['persons']['persons_page_cache'] == 1 && $json != '') kodik_create_cache('people_'.$newid, json_encode($json, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES), false, 'personas_characters_page');
+		if ( isset($aaparser_config['persons']['persons_page_cache']) && $aaparser_config['persons']['persons_page_cache'] == 1 && $json != '') kodik_create_cache('people_'.$newid, json_encode($json, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES), false, 'personas_characters_page');
 	}
 	
 	// Обработка данных
@@ -77,15 +76,15 @@ if ($type == "people") {
 	// change_tags($tpl, $json['description_source'], "description");
 	// Нету описания у авторов
 	
-	change_tags_img($tpl, $json['image']['original'], "image_orig", $aaparser_config_push['persons']['default_image']);
-	change_tags_img($tpl, $json['image']['preview'], "image_prev", $aaparser_config_push['persons']['default_image']);
-	change_tags_img($tpl, $json['image']['x96'], "image_x96", $aaparser_config_push['persons']['default_image']);
-	change_tags_img($tpl, $json['image']['x48'], "image_x48", $aaparser_config_push['persons']['default_image']);
+	change_tags_img($tpl, $json['image']['original'], "image_orig", $aaparser_config['persons']['default_image']);
+	change_tags_img($tpl, $json['image']['preview'], "image_prev", $aaparser_config['persons']['default_image']);
+	change_tags_img($tpl, $json['image']['x96'], "image_x96", $aaparser_config['persons']['default_image']);
+	change_tags_img($tpl, $json['image']['x48'], "image_x48", $aaparser_config['persons']['default_image']);
 	
 	$tpl->compile('content');
 	
 	// Карта сайта
-	if (isset($aaparser_config_push['persons']['persons_sitemap']) && $aaparser_config_push['persons']['persons_sitemap']) { 
+	if (isset($aaparser_config['persons']['persons_sitemap']) && $aaparser_config['persons']['persons_sitemap']) { 
 		$sitemapurl = ltrim($json['url'], '/');
 		$data = unserialize(file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/people.dat"));
 		if (!is_array($data)) $data = array();
@@ -104,14 +103,14 @@ if ($type == "people") {
 if ($type == "characters") {
 	// Начало
 	$dle_module = 'characters';
-	if ( isset($aaparser_config_push['persons']['persons_page_cache']) && $aaparser_config_push['persons']['persons_page_cache'] == 1 ) {
+	if ( isset($aaparser_config['persons']['persons_page_cache']) && $aaparser_config['persons']['persons_page_cache'] == 1 ) {
 		$json = kodik_cache('character_'.$newid, false, 'personas_characters_page');
 		$json = json_decode($json, true);
 	} else $json = false;
 
 	if ($json === false || $json == '') {
 		$json = request($shikimori_api_domain . '/api/characters/' . $newid);
-		if ( isset($aaparser_config_push['persons']['persons_page_cache']) && $aaparser_config_push['persons']['persons_page_cache'] == 1 && $json != '') kodik_create_cache('character_'.$newid, json_encode($json, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES), false, 'personas_characters_page');
+		if ( isset($aaparser_config['persons']['persons_page_cache']) && $aaparser_config['persons']['persons_page_cache'] == 1 && $json != '') kodik_create_cache('character_'.$newid, json_encode($json, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES), false, 'personas_characters_page');
 	}	
 	// Обработка данных
 	$al_id = $ml_id = '';
@@ -142,15 +141,15 @@ if ($type == "characters") {
 	change_tags($tpl, $descr_without_spoil, "description_no_spoiler");				
 	change_tags($tpl, $spoil, "spoiler");				
 	
-	change_tags_img($tpl, $json['image']['original'], "image_orig", $aaparser_config_push['persons']['default_image']);
-	change_tags_img($tpl, $json['image']['preview'], "image_prev", $aaparser_config_push['persons']['default_image']);
-	change_tags_img($tpl, $json['image']['x96'], "image_x96", $aaparser_config_push['persons']['default_image']);
-	change_tags_img($tpl, $json['image']['x48'], "image_x48", $aaparser_config_push['persons']['default_image']);
+	change_tags_img($tpl, $json['image']['original'], "image_orig", $aaparser_config['persons']['default_image']);
+	change_tags_img($tpl, $json['image']['preview'], "image_prev", $aaparser_config['persons']['default_image']);
+	change_tags_img($tpl, $json['image']['x96'], "image_x96", $aaparser_config['persons']['default_image']);
+	change_tags_img($tpl, $json['image']['x48'], "image_x48", $aaparser_config['persons']['default_image']);
 	
 	$tpl->compile('content');
 	
 	// Карта сайта
-	if (isset($aaparser_config_push['persons']['persons_sitemap']) && $aaparser_config_push['persons']['persons_sitemap']) { 
+	if (isset($aaparser_config['persons']['persons_sitemap']) && $aaparser_config['persons']['persons_sitemap']) { 
 		$sitemapurl = ltrim($json['url'], '/');
 		$data = unserialize(file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/characters.dat"));
 		if (!is_array($data)) $data = array();
@@ -182,15 +181,15 @@ $metajson['birth_on'] = isset($json['birth_on']) ? $birth_on : '';
 $metajson['job_title'] = isset($json['job_title']) ? $json['job_title'] : '';
 $metajson['website'] = isset($json['website']) ? $json['website'] : '';
 
-if ( isset($aaparser_config_push['persons']['metatitle']) && $aaparser_config_push['persons']['metatitle'] != '') {
-	$metatags['title'] = check_if($aaparser_config_push['persons']['metatitle'], $metajson);
+if ( isset($aaparser_config['persons']['metatitle']) && $aaparser_config['persons']['metatitle'] != '') {
+	$metatags['title'] = check_if($aaparser_config['persons']['metatitle'], $metajson);
 }
-if ( isset($aaparser_config_push['persons']['metadescr']) && $aaparser_config_push['persons']['metadescr'] != '') {
-	$description = check_if($aaparser_config_push['persons']['metadescr'], $metajson);
+if ( isset($aaparser_config['persons']['metadescr']) && $aaparser_config['persons']['metadescr'] != '') {
+	$description = check_if($aaparser_config['persons']['metadescr'], $metajson);
 	$metatags['description'] = mb_strlen($description) > 170 ? mb_substr($description, 0, 170) . '...' : $description;
 }
-if ( isset($aaparser_config_push['persons']['metakeyw']) && $aaparser_config_push['persons']['metakeyw'] != '') {
-	$metatags['keywords'] = check_if($aaparser_config_push['persons']['metakeyw'], $metajson);
+if ( isset($aaparser_config['persons']['metakeyw']) && $aaparser_config['persons']['metakeyw'] != '') {
+	$metatags['keywords'] = check_if($aaparser_config['persons']['metakeyw'], $metajson);
 }
 
 $canonical = $siteloc = $protocol . '://' . $site_url_domain . $json['url'];

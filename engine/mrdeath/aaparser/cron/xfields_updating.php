@@ -143,8 +143,8 @@
                 
                 if ( $its_camrip === true && $aaparser_config['fields']['xf_camrip'] ) $xfields_list[$aaparser_config['fields']['xf_camrip']] = 1;
                 if ( $its_lgbt === true && $aaparser_config['fields']['xf_lgbt'] )$xfields_list[$aaparser_config['fields']['xf_lgbt']] = 1;
-	            if ( $shiki_id && $aaparser_config_push['main_fields']['xf_shikimori_id'] ) $xfields_list[$aaparser_config_push['main_fields']['xf_shikimori_id']] = $shiki_id;
-	            if ( $mdl_id && $aaparser_config_push['main_fields']['xf_mdl_id'] ) $xfields_list[$aaparser_config_push['main_fields']['xf_mdl_id']] = $mdl_id;
+	            if ( $shiki_id && $aaparser_config['main_fields']['xf_shikimori_id'] ) $xfields_list[$aaparser_config['main_fields']['xf_shikimori_id']] = $shiki_id;
+	            if ( $mdl_id && $aaparser_config['main_fields']['xf_mdl_id'] ) $xfields_list[$aaparser_config['main_fields']['xf_mdl_id']] = $mdl_id;
                 
                 $old_xfields = xfieldsdataload($news_row['xfields']);
                 

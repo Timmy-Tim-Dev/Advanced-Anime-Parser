@@ -102,7 +102,7 @@ if ( $room_row ) {
                '.$room_online_row['login'].'
             </div>
             <div class="room-user__role">
-               <i class="'.$aaparser_config_push['push_notifications']['fa_icons_rooms'].' fa-crown"></i>
+               <i class="'.$aaparser_config['push_notifications']['fa_icons_rooms'].' fa-crown"></i>
             </div>
          </div>';
       	else

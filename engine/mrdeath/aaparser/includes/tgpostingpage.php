@@ -4,7 +4,7 @@ echo <<<HTML
 		<div class="table-responsive">
 			<table class="table table-striped">
 HTML;
-showRow('Включить постинг в Telegram?', 'Включив активируется система отправки сообщений в телеграм при редактировании, добавлении и обновлении новостей. <b>Перед включением следуйте инструкции ниже, вам нужно создать бота в Telegram и подключить его к вашей группе, указать bot token и id группы</b>', makeCheckBox('push_notifications[enable_tgposting]', $aaparser_config_push['push_notifications']['enable_tgposting'], 'ShowOrHideTg'));
+showRow('Включить постинг в Telegram?', 'Включив активируется система отправки сообщений в телеграм при редактировании, добавлении и обновлении новостей. <b>Перед включением следуйте инструкции ниже, вам нужно создать бота в Telegram и подключить его к вашей группе, указать bot token и id группы</b>', makeCheckBox('push_notifications[enable_tgposting]', $aaparser_config['push_notifications']['enable_tgposting'], 'ShowOrHideTg'));
 echo <<<HTML
 			</table>
 		</div>
@@ -12,18 +12,25 @@ echo <<<HTML
 		<div class="table-responsive" id="tgposting-settings-area">
 			<table class="table table-striped">
 HTML;
-showRow('Bot token', 'Введите токен вашего бота, полученный после его создания', showInput(['push_notifications[tg_bot_token]', 'text', $aaparser_config_push['push_notifications']['tg_bot_token']]));
-showRow('Имя канала с символом @', 'Введите имя канала в формате <b>@имяканала</b>, оно же является частью основной ссылки на приглашение - https://t.me/<b>имяканала</b>', showInput(['push_notifications[tg_chanel]', 'text', $aaparser_config_push['push_notifications']['tg_chanel']]));
-showRow('Прикреплять картинку-постер к посту телеграм?', '', makeCheckBox('push_notifications[tg_enable_poster]', $aaparser_config_push['push_notifications']['tg_enable_poster']));
-showRow('Источник постера', 'Выберите откуда модуль будет брать постер', makeDropDown( ['xfields' => 'доп. поле', 'short_story' => 'краткое описание', 'full_story' => 'полное описание'], "push_notifications[tg_source_poster]", $aaparser_config_push['push_notifications']['tg_source_poster']));
-showRow('Отправлять посты в телеграм при помощи крон?', 'Данная настройка влияет только на ручное добавление или редактирование новостей через админку. Если выключено, посты в телеграм будут отправлены сразу же в момент добавления или редактирования новости. Если включено, посты будут добавляться в очередь и отправляться при помощи крон задачи', makeCheckBox('push_notifications[tg_cron_enable]', $aaparser_config_push['push_notifications']['tg_cron_enable']));
-showRow('Укажите время с которого и по которое посты не будут отправляться в telegram', 'Для того, чтобы посты в telegram не отправлялись в ночное время, вы можете указать время начиная с которого и заканчивая которым посты перестанут отправляться. <b>Для отключения оставьте оба поля пустыми или же укажите 00:00 в обоих полях</b>', '<input type="time" autocomplete="off" style="float: right;width:100px" value="'.$aaparser_config_push['push_notifications']['stop_send_from'].'" class="form-control" name="push_notifications[stop_send_from]"><input type="time" autocomplete="off" style="float: right;width:100px" value="'.$aaparser_config_push['push_notifications']['stop_send_to'].'" class="form-control" name="push_notifications[stop_send_to]">');
-showRow('Включить отправку постов в Telegram при ручном добавлении новостей через админку?', '', makeCheckBox('push_notifications[tg_addnews]', $aaparser_config_push['push_notifications']['tg_addnews']));
-showRow('Сделать чекбокс по умолчанию включенным при ручном добавлении новостей через админку?', '', makeCheckBox('push_notifications[tg_addnews_cheched]', $aaparser_config_push['push_notifications']['tg_addnews_cheched']));
-showRow('Включить отправку постов в Telegram при ручном редактировании новостей через админку?', '', makeCheckBox('push_notifications[tg_editnews]', $aaparser_config_push['push_notifications']['tg_editnews']));
-showRow('Сделать чекбокс по умолчанию включенным при ручном редактировании новостей через админку?', '', makeCheckBox('push_notifications[tg_editnews_checked]', $aaparser_config_push['push_notifications']['tg_editnews_checked']));
-showRow('Включить отправку постов в Telegram при добавлении новостей модулем через крон?', '', makeCheckBox('push_notifications[tg_cron_modadd]', $aaparser_config_push['push_notifications']['tg_cron_modadd']));
-showRow('Включить отправку постов в Telegram при обновлении новостей модулем через крон?', '', makeCheckBox('push_notifications[tg_cron_modupdate]', $aaparser_config_push['push_notifications']['tg_cron_modupdate']));
+showRow('Bot token', 'Введите токен вашего бота, полученный после его создания', showInput(['push_notifications[tg_bot_token]', 'text', $aaparser_config['push_notifications']['tg_bot_token']]));
+showRow('Имя канала с символом @', 'Введите имя канала в формате <b>@имяканала</b>, оно же является частью основной ссылки на приглашение - https://t.me/<b>имяканала</b>', showInput(['push_notifications[tg_chanel]', 'text', $aaparser_config['push_notifications']['tg_chanel']]));
+showRow('Прикреплять картинку-постер к посту телеграм?', '', makeCheckBox('push_notifications[tg_enable_poster]', $aaparser_config['push_notifications']['tg_enable_poster']));
+showRow('Источник постера', 'Выберите откуда модуль будет брать постер', makeDropDown( ['xfields' => 'доп. поле', 'short_story' => 'краткое описание', 'full_story' => 'полное описание'], "push_notifications[tg_source_poster]", $aaparser_config['push_notifications']['tg_source_poster']));
+showRow('Отправлять посты в телеграм при помощи крон?', 'Данная настройка влияет только на ручное добавление или редактирование новостей через админку. Если выключено, посты в телеграм будут отправлены сразу же в момент добавления или редактирования новости. Если включено, посты будут добавляться в очередь и отправляться при помощи крон задачи', makeCheckBox('push_notifications[tg_cron_enable]', $aaparser_config['push_notifications']['tg_cron_enable']));
+
+showRow('Отправлять посты в телеграм при выходе нового эпизода?', '', makeCheckBox('push_notifications[updatetg_new_episode]', $aaparser_config['push_notifications']['updatetg_new_episode']));
+showRow('Отправлять посты в телеграм при выходе нового сезона?', '', makeCheckBox('push_notifications[updatetg_new_season]', $aaparser_config['push_notifications']['updatetg_new_season']));
+showRow('Отправлять посты в телеграм при выходе новой озвучки?', '', makeCheckBox('push_notifications[updatetg_new_voice]', $aaparser_config['push_notifications']['updatetg_new_voice']));
+showRow('Отправлять посты в телеграм при изменений качества материала?', '', makeCheckBox('push_notifications[updatetg_new_quality]', $aaparser_config['push_notifications']['updatetg_new_quality']));
+showRow('Отправлять посты в телеграм при изменений статуса материала?', '', makeCheckBox('push_notifications[updatetg_new_status]', $aaparser_config['push_notifications']['updatetg_new_status']));
+
+showRow('Укажите время с которого и по которое посты не будут отправляться в telegram', 'Для того, чтобы посты в telegram не отправлялись в ночное время, вы можете указать время начиная с которого и заканчивая которым посты перестанут отправляться. <b>Для отключения оставьте оба поля пустыми или же укажите 00:00 в обоих полях</b>', '<input type="time" autocomplete="off" style="float: right;width:100px" value="'.$aaparser_config['push_notifications']['stop_send_from'].'" class="form-control" name="push_notifications[stop_send_from]"><input type="time" autocomplete="off" style="float: right;width:100px" value="'.$aaparser_config['push_notifications']['stop_send_to'].'" class="form-control" name="push_notifications[stop_send_to]">');
+showRow('Включить отправку постов в Telegram при ручном добавлении новостей через админку?', '', makeCheckBox('push_notifications[tg_addnews]', $aaparser_config['push_notifications']['tg_addnews']));
+showRow('Сделать чекбокс по умолчанию включенным при ручном добавлении новостей через админку?', '', makeCheckBox('push_notifications[tg_addnews_cheched]', $aaparser_config['push_notifications']['tg_addnews_cheched']));
+showRow('Включить отправку постов в Telegram при ручном редактировании новостей через админку?', '', makeCheckBox('push_notifications[tg_editnews]', $aaparser_config['push_notifications']['tg_editnews']));
+showRow('Сделать чекбокс по умолчанию включенным при ручном редактировании новостей через админку?', '', makeCheckBox('push_notifications[tg_editnews_checked]', $aaparser_config['push_notifications']['tg_editnews_checked']));
+showRow('Включить отправку постов в Telegram при добавлении новостей модулем через крон?', '', makeCheckBox('push_notifications[tg_cron_modadd]', $aaparser_config['push_notifications']['tg_cron_modadd']));
+showRow('Включить отправку постов в Telegram при обновлении новостей модулем через крон?', '', makeCheckBox('push_notifications[tg_cron_modupdate]', $aaparser_config['push_notifications']['tg_cron_modupdate']));
 echo <<<HTML
 			</table>
 			<div class="alert alert-info alert-styled-left alert-arrow-left alert-component">Постинг в Telegram при добавлении или обновлении новостей модулем работает только при помощи крон. Это сделано для того, чтобы не отправлялось одновременно 10, 20, 50 постов. Если вы используете функционал автоматического добавления (граббинга) и/или обновления новостей модулем, то не забудьте добавить задачу в крон<br><b>{$config['http_home_url']}engine/ajax/controller.php?mod=anime_grabber&module=telegram_sender&key={$cron_key}</b> - время открытия ссылки выбирайте на своё усмотрение, оно же частота отправки одного поста в telegram</div>
@@ -32,10 +39,10 @@ echo <<<HTML
 		<div class="table-responsive" id="tgposting-templates-area">
 			<table class="table table-striped">
 HTML;
-showRow('Шаблон отправки сообщения в телеграм в момент ручного добавления новости через админку', '', textareaForm(['push_notifications[addnews]', $aaparser_config_push['push_notifications']['addnews'], 'Введите текст']));
-showRow('Шаблон отправки сообщения в телеграм в момент ручного редактирования новости через админку', '', textareaForm(['push_notifications[editnews]', $aaparser_config_push['push_notifications']['editnews'], 'Введите текст']));
-showRow('Шаблон отправки сообщения в телеграм в момент автоматического добавления новости модулем', '', textareaForm(['push_notifications[addnews_cron]', $aaparser_config_push['push_notifications']['addnews_cron'], 'Введите текст']));
-showRow('Шаблон отправки сообщения в телеграм в момент автоматического обновления новости модулем', '', textareaForm(['push_notifications[editnews_cron]', $aaparser_config_push['push_notifications']['editnews_cron'], 'Введите текст']));
+showRow('Шаблон отправки сообщения в телеграм в момент ручного добавления новости через админку', '', textareaForm(['push_notifications[addnews]', $aaparser_config['push_notifications']['addnews'], 'Введите текст']));
+showRow('Шаблон отправки сообщения в телеграм в момент ручного редактирования новости через админку', '', textareaForm(['push_notifications[editnews]', $aaparser_config['push_notifications']['editnews'], 'Введите текст']));
+showRow('Шаблон отправки сообщения в телеграм в момент автоматического добавления новости модулем', '', textareaForm(['push_notifications[addnews_cron]', $aaparser_config['push_notifications']['addnews_cron'], 'Введите текст']));
+showRow('Шаблон отправки сообщения в телеграм в момент автоматического обновления новости модулем', '', textareaForm(['push_notifications[editnews_cron]', $aaparser_config['push_notifications']['editnews_cron'], 'Введите текст']));
 echo <<<HTML
 			</table>
 			<div class="alert alert-info alert-styled-left alert-arrow-left alert-component">

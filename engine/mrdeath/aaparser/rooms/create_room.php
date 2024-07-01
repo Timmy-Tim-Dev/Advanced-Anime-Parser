@@ -14,8 +14,6 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
-
 function room_hash($length) {
     $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     $result = '';

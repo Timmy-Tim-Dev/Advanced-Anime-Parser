@@ -3,7 +3,7 @@
 	<name>Advanced Kodik Parser</name>
 	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, парсинг анонсов аниме, обновление новостей при выходе новой серии или лучшего качества, тонкие настройки работы cron.</description>
 	<icon>uploads/advanced-anime-parser-icon.png</icon>
-	<version>4.1.2</version>
+	<version>4.1.3</version>
 	<dleversion>15.0</dleversion>
 	<versioncompare>greater</versioncompare>
 	<upgradeurl>https://storage.kodik.biz/files/advanced-anime-parser/last_version.json</upgradeurl>
@@ -148,11 +148,20 @@ DROP TABLE IF EXISTS `{prefix}_raspisanie_ongoingov`;
 DROP TABLE IF EXISTS `{prefix}_shikimori_posts`;
 DROP TABLE IF EXISTS `{prefix}_subscribe_info`;
 DROP TABLE IF EXISTS `{prefix}_telegram_sender`;]]></mysqldelete>
-	<phpinstall><![CDATA[if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.php')) {
-  	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/version.php', "w+");
-  	@chmod(ENGINE_DIR.'/mrdeath/aaparser/data/version.php', 0777);
-  	fwrite($fp, '4.1.2');
-  	fclose($fp);
+	<phpinstall><![CDATA[$filePath = ENGINE_DIR . '/mrdeath/aaparser/data/version.php';
+if (!file_exists($filePath)) {
+   	if (!is_dir(ENGINE_DIR . '/mrdeath')) mkdir(ENGINE_DIR . '/mrdeath', 0777, true);
+ 	if (!is_dir(ENGINE_DIR . '/mrdeath/aaparser')) mkdir(ENGINE_DIR . '/mrdeath/aaparser', 0777, true);
+	if (!is_dir(ENGINE_DIR . '/mrdeath/aaparser/data')) mkdir(ENGINE_DIR . '/mrdeath/aaparser/data', 0777, true);
+  
+    $fp = fopen($filePath, "w+");
+    if ($fp) {
+        @chmod($filePath, 0777);
+        fwrite($fp, '4.1.3');
+        fclose($fp);
+    } else {
+        echo "Ошибка: Пожалуйста загрузите модуль через менеджер файлов или FTP. Система установки плагинов не может сделать запись";
+    }
 }]]></phpinstall>
 	<phpupgrade><![CDATA[]]></phpupgrade>
 	<phpenable><![CDATA[]]></phpenable>
@@ -179,11 +188,11 @@ DROP TABLE IF EXISTS `{prefix}_telegram_sender`;]]></mysqldelete>
 		</operation>
 		<operation action="after">
 			<searchcode><![CDATA[echo $categoryfilter;]]></searchcode>
-			<replacecode><![CDATA[require_once ENGINE_DIR . '/mrdeath/aaparser/inc/addnews.php';
+			<replacecode><![CDATA[require_once ENGINE_DIR . '/mrdeath/aaparser/file_edits/addeditnews.php';
 
-$kodik_xf_field = $aaparser_config_push['main_fields']['xf_player'];
-$xf_shikimori_id = $aaparser_config_push['main_fields']['xf_shikimori_id'];
-$xf_mdl_id = $aaparser_config_push['main_fields']['xf_mdl_id'];]]></replacecode>
+$kodik_xf_field = $aaparser_config['main_fields']['xf_player'];
+$xf_shikimori_id = $aaparser_config['main_fields']['xf_shikimori_id'];
+$xf_mdl_id = $aaparser_config['main_fields']['xf_mdl_id'];]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="after">
@@ -219,12 +228,11 @@ function updateKodikPlayer(xf)
 		</operation>
 		<operation action="after">
 			<searchcode><![CDATA[$id = $db->insert_id();]]></searchcode>
-			<replacecode><![CDATA[if ( !isset($aaparser_config) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
-if ( isset($aaparser_config_push['main_fields']['xf_shikimori_id']) ) {
-  	$xf_temp_fields = xfieldsdataload($filecontents);
-  	if ( isset($xf_temp_fields[$aaparser_config_push['main_fields']['xf_shikimori_id']]) ) {
+			<replacecode><![CDATA[$xf_temp_fields = xfieldsdataload($filecontents);
+if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
+  	if ( isset($xf_temp_fields[$aaparser_config['main_fields']['xf_shikimori_id']]) ) {
       	require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
-      	$shikimori_id = $xf_temp_fields[$aaparser_config_push['main_fields']['xf_shikimori_id']];
+      	$shikimori_id = $xf_temp_fields[$aaparser_config['main_fields']['xf_shikimori_id']];
       	$base_check_db = $db->super_query( "SELECT shikimori_id, news_id FROM " . PREFIX . "_anime_list WHERE shikimori_id='{$shikimori_id}'" );
       	if ( $base_check_db['shikimori_id'] == $shikimori_id && $base_check_db['news_id'] != $id )
           	$db->query("UPDATE " . PREFIX . "_anime_list SET news_id='{$id}', started=1 WHERE shikimori_id='{$shikimori_id}'");
@@ -242,11 +250,10 @@ if ( isset($aaparser_config_push['main_fields']['xf_shikimori_id']) ) {
         }
     }
 }
-elseif ( isset($aaparser_config_push['main_fields']['xf_mdl_id']) ) {
-  	$xf_temp_fields = xfieldsdataload($filecontents);
-  	if ( isset($xf_temp_fields[$aaparser_config_push['main_fields']['xf_mdl_id']]) ) {
+elseif ( isset($aaparser_config['main_fields']['xf_mdl_id']) ) {
+  	if ( isset($xf_temp_fields[$aaparser_config['main_fields']['xf_mdl_id']]) ) {
       	require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
-      	$mdl_id = $xf_temp_fields[$aaparser_config_push['main_fields']['xf_mdl_id']];
+      	$mdl_id = $xf_temp_fields[$aaparser_config['main_fields']['xf_mdl_id']];
       	$base_check_db = $db->super_query( "SELECT mdl_id, news_id FROM " . PREFIX . "_anime_list WHERE mdl_id='{$mdl_id}'" );
       	if ( $base_check_db['mdl_id'] == $mdl_id && $base_check_db['news_id'] != $id )
           	$db->query("UPDATE " . PREFIX . "_anime_list SET news_id='{$id}', started=1 WHERE mdl_id='{$mdl_id}'");
@@ -270,13 +277,12 @@ elseif ( isset($aaparser_config_push['main_fields']['xf_mdl_id']) ) {
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[$need_pass = "<div class]]></searchcode>
-			<replacecode><![CDATA[if ( !isset($aaparser_config_push) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config_push.php';
-if ( $aaparser_config_push['push_notifications']['google_indexing'] == 1 ) {
+			<replacecode><![CDATA[if ( $aaparser_config['push_notifications']['google_indexing'] == 1 ) {
   	$gindexing = "<div class=\"checkbox\"><label><input class=\"icheck\" type=\"checkbox\" id=\"gindexing\" name=\"gindexing\" value=\"1\" checked>Уведомить Google о странице через Indexing Api?</label></div>";
 }
 else $gindexing = "";
-if ( $aaparser_config_push['push_notifications']['enable_tgposting'] == 1 && $aaparser_config_push['push_notifications']['tg_addnews'] == 1 ) {
-  	if ( $aaparser_config_push['push_notifications']['tg_addnews_cheched'] == 1 ) $tlg_sender = "<div class=\"checkbox\"><label><input class=\"icheck\" type=\"checkbox\" id=\"tlg_sender\" name=\"tlg_sender\" value=\"1\" checked>Отправить пост в Telegram?</label></div>";
+if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparser_config['push_notifications']['tg_addnews'] == 1 ) {
+  	if ( $aaparser_config['push_notifications']['tg_addnews_cheched'] == 1 ) $tlg_sender = "<div class=\"checkbox\"><label><input class=\"icheck\" type=\"checkbox\" id=\"tlg_sender\" name=\"tlg_sender\" value=\"1\" checked>Отправить пост в Telegram?</label></div>";
   	else $tlg_sender = "<div class=\"checkbox\"><label><input class=\"icheck\" type=\"checkbox\" id=\"tlg_sender\" name=\"tlg_sender\" value=\"1\">Отправить пост в Telegram?</label></div>";
 }
 else $tlg_sender = "";]]></replacecode>
@@ -296,14 +302,13 @@ $tlg_sender = isset( $_POST['tlg_sender'] ) ? intval( $_POST['tlg_sender'] ) : 0
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[msg( "success"]]></searchcode>
-			<replacecode><![CDATA[if ( !isset($aaparser_config_push) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config_push.php';
-if ( $aaparser_config_push['push_notifications']['google_indexing'] == 1 && $gindexing == 1 ) {
+			<replacecode><![CDATA[if ( $aaparser_config['push_notifications']['google_indexing'] == 1 && $gindexing == 1 ) {
 	$indexing_action = 'send';
 	$indexing_type = 'URL_UPDATED';
 	$indexing_url = $full_link;
 	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/indexing.php'));
 }
-if ( $aaparser_config_push['push_notifications']['enable_tgposting'] == 1 && $aaparser_config_push['push_notifications']['tg_addnews'] == 1 && $tlg_sender == 1 ) {
+if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparser_config['push_notifications']['tg_addnews'] == 1 && $tlg_sender == 1 ) {
   	$tlg_news_id = $id;
   	$tlg_template = 'addnews';
 	require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_init.php'));
@@ -321,11 +326,11 @@ if ( $aaparser_config_push['push_notifications']['enable_tgposting'] == 1 && $aa
 		</operation>
 		<operation action="after">
 			<searchcode><![CDATA[echo $categoryfilter;]]></searchcode>
-			<replacecode><![CDATA[require_once ENGINE_DIR . '/mrdeath/aaparser/inc/editnews.php';
+			<replacecode><![CDATA[require_once ENGINE_DIR . '/mrdeath/aaparser/file_edits/addeditnews.php';
 
-$kodik_xf_field = $aaparser_config_push['main_fields']['xf_player'];
-$xf_shikimori_id = $aaparser_config_push['main_fields']['xf_shikimori_id'];
-$xf_mdl_id = $aaparser_config_push['main_fields']['xf_mdl_id'];]]></replacecode>
+$kodik_xf_field = $aaparser_config['main_fields']['xf_player'];
+$xf_shikimori_id = $aaparser_config['main_fields']['xf_shikimori_id'];
+$xf_mdl_id = $aaparser_config['main_fields']['xf_mdl_id'];]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="after">
@@ -377,16 +382,35 @@ if ( $base_check_db['news_id'] == $nws_id )
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[$need_pass = "<div class]]></searchcode>
-			<replacecode><![CDATA[if ( !isset($aaparser_config_push) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config_push.php';
-if ( $aaparser_config_push['push_notifications']['google_indexing'] == 1 ) {
+			<replacecode><![CDATA[if ( $aaparser_config['push_notifications']['google_indexing'] == 1 ) {
   	$gindexing = "<div class=\"checkbox\"><label><input class=\"icheck\" type=\"checkbox\" id=\"gindexing\" name=\"gindexing\" value=\"1\" checked>Уведомить Google о странице через Indexing Api?</label></div>";
 }
 else $gindexing = "";
-if ( $aaparser_config_push['push_notifications']['enable_tgposting'] == 1 && $aaparser_config_push['push_notifications']['tg_editnews'] == 1 ) {
-  	if ( $aaparser_config_push['push_notifications']['tg_editnews_checked'] == 1 ) $tlg_sender = "<div class=\"checkbox\"><label><input class=\"icheck\" type=\"checkbox\" id=\"tlg_sender\" name=\"tlg_sender\" value=\"1\" checked>Отправить пост в Telegram?</label></div>";
+if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparser_config['push_notifications']['tg_editnews'] == 1 ) {
+  	if ( $aaparser_config['push_notifications']['tg_editnews_checked'] == 1 ) $tlg_sender = "<div class=\"checkbox\"><label><input class=\"icheck\" type=\"checkbox\" id=\"tlg_sender\" name=\"tlg_sender\" value=\"1\" checked>Отправить пост в Telegram?</label></div>";
   	else $tlg_sender = "<div class=\"checkbox\"><label><input class=\"icheck\" type=\"checkbox\" id=\"tlg_sender\" name=\"tlg_sender\" value=\"1\">Отправить пост в Telegram?</label></div>";
 }
-else $tlg_sender = "";]]></replacecode>
+else $tlg_sender = "";
+
+if ( !isset($aaparser_config) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
+if ( $aaparser_config['integration']['ksep'] == 1 ) {
+	$generate_button = "<div class=\"form-group\">
+		<label class=\"control-label col-sm-2\">Генерация серий и сезонов</label>
+		<div class=\"col-sm-10\">
+            <input type=\"button\" id=\"generate_ksep_btn\" data-newsid=\"".$row['id']."\" class=\"visible-lg-inline-block btn bg-info-800 btn-sm btn-raised\" value=\"Сгенерировать серии для посерийки\"><i class=\"help-button visible-lg-inline-block text-primary-600 fa fa-question-circle position-right\" data-rel=\"popover\" data-trigger=\"hover\" data-placement=\"auto right\" data-content=\"После ручного добавления новостей через админку обязательно генерируйте серии для посерийки через данную кнопку\" ></i>
+            <span id=\"generate_ksep\" style=\"display:none\">
+            	<div class=\"update-status\">
+	            	<div class=\"update-status__current\" id=\"updated-current-episode\">0%</div>
+	                <div class=\"progress progress-success\">
+		            	<div class=\"bar\" id=\"updated-bar-episode\" style=\"width: 0%;\"></div>
+	                </div>
+	             	<div class=\"update-status__msg\" id=\"result-msg-update-episode\">Ожидаем запуска...</div>
+                </div>
+            </span>
+		</div>
+	</div>";
+}
+else $generate_button = "";]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="after">
@@ -403,14 +427,13 @@ $tlg_sender = isset( $_POST['tlg_sender'] ) ? intval( $_POST['tlg_sender'] ) : 0
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[msg( "success", $lang['edit_alleok']]]></searchcode>
-			<replacecode><![CDATA[if ( !isset($aaparser_config_push) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config_push.php';
-if ( $aaparser_config_push['push_notifications']['google_indexing'] == 1 && $gindexing == 1 ) {
+			<replacecode><![CDATA[if ( $aaparser_config['push_notifications']['google_indexing'] == 1 && $gindexing == 1 ) {
 	$indexing_action = 'send';
 	$indexing_type = 'URL_UPDATED';
 	$indexing_url = $full_link;
 	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/indexing.php'));
 }
-if ( $aaparser_config_push['push_notifications']['enable_tgposting'] == 1 && $aaparser_config_push['push_notifications']['tg_editnews'] == 1 && $tlg_sender == 1 ) {
+if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparser_config['push_notifications']['tg_editnews'] == 1 && $tlg_sender == 1 ) {
   	$tlg_news_id = $id;
   	$tlg_template = 'editnews';
 	require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_init.php'));
@@ -419,8 +442,7 @@ if ( $aaparser_config_push['push_notifications']['enable_tgposting'] == 1 && $aa
 		</operation>
 		<operation action="after">
 			<searchcode><![CDATA[deletenewsbyid( $item_db[0] );]]></searchcode>
-			<replacecode><![CDATA[if ( !isset($aaparser_config_push) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config_push.php';
-if ( $aaparser_config_push['push_notifications']['google_indexing'] == 1 ) {
+			<replacecode><![CDATA[if ( $aaparser_config['push_notifications']['google_indexing'] == 1 ) {
 	$row = $db->super_query( "SELECT id, date, category, alt_name FROM " . PREFIX . "_post WHERE id='{$item_db[0]}' LIMIT 1" );
 	$config['http_home_url'] = dle_strtolower($config['http_home_url']);
 
@@ -451,6 +473,12 @@ if ( $aaparser_config_push['push_notifications']['google_indexing'] == 1 ) {
 		<operation action="before">
 			<searchcode><![CDATA[<option value="mass_add_cat">{$lang['add_selcat']}</option>]]></searchcode>
 			<replacecode><![CDATA[<option value="mass_gindexing">Уведомить Google о странице через Indexing Api</option>]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[<div class="form-group">
+							  <label class="control-label col-sm-2">{$lang['edit_edate']}</label>]]></searchcode>
+			<replacecode><![CDATA[{$generate_button}]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -541,14 +569,14 @@ else {
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[if (stripos ( $tpl->copy_template, "{jsfiles}" ) !== false) {]]></searchcode>
-			<replacecode><![CDATA[if ( $aaparser_config_push['push_notifications']['enable'] && $is_logged) {
+			<replacecode><![CDATA[if ( $aaparser_config['push_notifications']['enable'] && $is_logged) {
 	$metatags .= <<<HTML
 <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
 <script>
 	var OneSignal = window.OneSignal || [];
 	OneSignal.push(function() {
 		OneSignal.init({
-			appId: "{$aaparser_config_push['push_notifications']['app_id']}",
+			appId: "{$aaparser_config['push_notifications']['app_id']}",
 		});
 	});
 	OneSignal.push(function() {
@@ -637,12 +665,12 @@ else {
 	$tpl->set('{watched_translator}', "");
 }
 
-if ( $aaparser_config_push['push_notifications']['enable'] && $is_logged ) {
+if ( $aaparser_config['push_notifications']['enable'] && $is_logged ) {
 	if ( $member_id['push_subscribe'] ) $push_subscribe = json_decode($member_id['push_subscribe'], true);
 	else $push_subscribe = [];
 
 	if ( in_array($row['id'], $push_subscribe) ) {
-  		$user_subscribed = '<div class="poster_subscribes"><div class="poster_subscribes-item" title="Вы подписаны"><span class="'.$aaparser_config_push['push_notifications']['fa_icons'].' fa-bell"></span></div></div>';
+  		$user_subscribed = '<div class="poster_subscribes"><div class="poster_subscribes-item" title="Вы подписаны"><span class="'.$aaparser_config['push_notifications']['fa_icons'].' fa-bell"></span></div></div>';
 	}
 	else {
   		$user_subscribed = '';
@@ -733,9 +761,10 @@ else]]></replacecode>
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[function totranslit]]></searchcode>
-			<replacecode><![CDATA[require_once ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php';
+			<replacecode><![CDATA[if ( file_exists(ENGINE_DIR . '/mrdeath/aaparser/data/config.php') ) require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
+else $aaparser_config = [];
 function DLE_Send_Onesignal ( $params ) {
-  	global $aaparser_config_push;
+  	global $aaparser_config;
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, 'https://onesignal.com/api/v1/notifications');
     curl_setopt(
@@ -743,7 +772,7 @@ function DLE_Send_Onesignal ( $params ) {
         CURLOPT_HTTPHEADER,
         [
             'Content-Type: application/json',
-            'Authorization: Basic '.$aaparser_config_push['push_notifications']['rest_api']
+            'Authorization: Basic '.$aaparser_config['push_notifications']['rest_api']
         ]
     );
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -759,9 +788,9 @@ function DLE_Send_Onesignal ( $params ) {
 }
 
 function DLE_Send_Push ( $title, $notification, $url = false, $image = false, $user_id = false ) {
-  	global $aaparser_config_push;
+  	global $aaparser_config;
   	$params = [
-            'app_id' => $aaparser_config_push['push_notifications']['app_id'],
+            'app_id' => $aaparser_config['push_notifications']['app_id'],
             'headings' => [
                 'en' => $title
             ],
@@ -1097,8 +1126,7 @@ include ENGINE_DIR . '/mrdeath/aaparser/file_edits/raspisanie_ongoingov.php';]]>
 		<operation action="before">
 			<searchcode><![CDATA[elseif( $action == "do_mass_edit_cloud" ) {]]></searchcode>
 			<replacecode><![CDATA[elseif( $action == "mass_gindexing" ) {
-  	require_once ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php';
-  	if ( $aaparser_config_push['push_notifications']['google_indexing'] == 1 ) {
+  	if ( $aaparser_config['push_notifications']['google_indexing'] == 1 ) {
 		$indexing_url = [];
 		$news_ids = implode(',', $selected_news);
 		$config['http_home_url'] = dle_strtolower($config['http_home_url']);
@@ -1232,6 +1260,14 @@ function generate_characters() {
 			<searchcode><![CDATA[$this->generate_static();	]]></searchcode>
 			<replacecode><![CDATA[$this->generate_characters();
 $this->generate_people();]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+	</file>
+	<file name="engine/inc/include/functions.inc.php">
+		<operation action="before">
+			<searchcode><![CDATA[function totranslit]]></searchcode>
+			<replacecode><![CDATA[if ( file_exists(ENGINE_DIR . '/mrdeath/aaparser/data/config.php') ) require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
+else $aaparser_config = [];]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>

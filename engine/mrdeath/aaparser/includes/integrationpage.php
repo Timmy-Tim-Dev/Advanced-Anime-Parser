@@ -5,6 +5,9 @@ echo <<<HTML
 		<div class="table-responsive">
 			<table class="table table-striped">
 HTML;
+if ( file_exists(ENGINE_DIR.'/mrdeath/ksep/data/config.php') ) {
+    showRow('Посерийный модуль Kodik', 'Включите в случае, если вы используете "Посерийный модуль Kodik"', makeCheckBox('integration[ksep]', $aaparser_config['integration']['ksep']));
+}
 showRow('Конвертация доп. полей в латиницу', 'Включите в случае, если вы используете <a href="https://lazydev.pro/fcode/22-latin-xfield-plugin.html" target="_blank">Плагин для конвертации ссылок в дополнительных полях в латиницу</a>', makeCheckBox('integration[latin_xfields]', $aaparser_config['integration']['latin_xfields']));
 showRow('Конвертация тегов в латиницу', 'Включите в случае, если вы используете <a href="https://lazydev.pro/fcode/23-latin-tags-plugin.html" target="_blank">Плагин для конвертации кириллицы в латиницу в тегах</a>', makeCheckBox('integration[latin_tags]', $aaparser_config['integration']['latin_tags']));
 showRow('Поддержка модуля Social Posting', 'Включите в случае, если вы используете <a href="https://0-web.ru/dle/mod-dle/467-dle-socialposting-v31.html" target="_blank">модуль SocialPosting</a>. Будет срабатывать в режиме обновления аниме по крону', makeCheckBox('integration[social_posting]', $aaparser_config['integration']['social_posting']));

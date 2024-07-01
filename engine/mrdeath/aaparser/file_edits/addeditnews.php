@@ -23,7 +23,14 @@ elseif( $config['allow_admin_wysiwyg'] == 2 ) {
 	$full_st = "tinymce.get('full_story').setContent(";
 }
 
-include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
+if ( isset($row['id']) && $row['id'] ) {
+    $aap_newsid = $row['id'];
+    $aap_mode = 'editnews';
+}
+else {
+    $aap_newsid = 0;
+    $aap_mode = 'addnews';
+}
 
 ?>
 <style>
@@ -182,6 +189,12 @@ span.material-info {
 .id-link .copy-id.middle{border-radius:0}
 .id-link .copy-id.copied{background-color:#9f9f9f}
 .pntr{cursor:pointer}
+.update-status{padding:10px;border-top:1px solid #ddd;position:relative}
+.update-status__current{position:absolute;width:100%;top:21px;font-weight:700;text-align:center;z-index:10}
+.update-status__msg{background:#89d6e2;padding:10px;-webkit-border-radius:4px;-moz-border-radius:4px;-ms-border-radius:4px;-o-border-radius:4px;border-radius:4px;    max-height: 500px;overflow-y: auto;}
+.progress{height:20px;-webkit-border-radius:4px;-moz-border-radius:4px;-ms-border-radius:4px;-o-border-radius:4px;border-radius:4px;margin-bottom:10px}
+.progress .bar{float:left;width:0;height:100%;font-size:12px;color:#fff;text-align:center;text-shadow:0 -1px 0 rgba(0,0,0,0.25);background-color:#0e90d2;background-image:-moz-linear-gradient(top,#149bdf,#0480be);background-image:-webkit-gradient(linear,0 0,0 100%,from(#149bdf),to(#0480be));background-image:-webkit-linear-gradient(top,#149bdf,#0480be);background-image:-o-linear-gradient(top,#149bdf,#0480be);background-image:linear-gradient(to bottom,#149bdf,#0480be);background-repeat:repeat-x;filter:progid:dximagetransform.microsoft.gradient(startColorstr='#ff149bdf',endColorstr='#ff0480be',GradientType=0);-webkit-box-shadow:inset 0 -1px 0 rgba(0,0,0,0.15);-moz-box-shadow:inset 0 -1px 0 rgba(0,0,0,0.15);box-shadow:inset 0 -1px 0 rgba(0,0,0,0.15);-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;-webkit-transition:width .6s ease;-moz-transition:width .6s ease;-o-transition:width .6s ease;transition:width .6s ease}
+.progress-success .bar,.progress .bar-success{background-color:#5eb95e;background-image:-moz-linear-gradient(top,#62c462,#57a957);background-image:-webkit-gradient(linear,0 0,0 100%,from(#62c462),to(#57a957));background-image:-webkit-linear-gradient(top,#62c462,#57a957);background-image:-o-linear-gradient(top,#62c462,#57a957);background-image:linear-gradient(to bottom,#62c462,#57a957);background-repeat:repeat-x;filter:progid:dximagetransform.microsoft.gradient(startColorstr='#ff62c462',endColorstr='#ff57a957',GradientType=0)}
 </style>
 <link rel="stylesheet" href="https://unpkg.com/balloon-css/balloon.min.css">
 <script type="text/javascript">
@@ -252,8 +265,8 @@ span.material-info {
 
         } else {
             
-            var id_news = '<?php echo $row['id']; ?>';
-            var mode = 'editnews';
+            var id_news = '<?php echo $aap_newsid; ?>';
+            var mode = '<?php echo $aap_mode; ?>';
 
             ShowLoading('');
             $.ajax({
@@ -355,4 +368,74 @@ span.material-info {
         document.body.removeChild(copyTextarea);
     }
 
+$(document).ready(function() {
+    $("#generate_ksep_btn").click(function() {
+        DLEconfirm("Вы уверены что хотите запустить генерацию серий?", "Подтвердите действие", async function YesImReady() {
+            try {
+                var nwsid = $("#generate_ksep_btn").attr("data-newsid");
+                let response = await $.ajax({
+                    url: '/engine/ajax/controller.php?mod=kodik_ajax_controller',
+                    data: {file: "mass_generation", newsid: nwsid, action: "generate_eps", user_hash: dle_login_hash},
+                    response: 'json',
+                    cache: false,
+                });
+
+                if (response !== 'empty') {
+                    $("#generate_ksep").show();
+                    await DoNewsGenerationEpisode(response);
+                    location.reload();
+                }
+                else {
+                    $("#generate_ksep").hide();
+                    Growl.error({
+				        title: 'Информация',
+				        text: 'В базе Kodik нет такого аниме/дорамы'
+			        });
+			        return false;
+                }
+            } catch (error) {
+                $("#generate_ksep").hide();
+                console.log(error);
+            }
+        });
+    });
+});
+
+async function DoNewsGenerationEpisode(data) {
+    if (!data) return false;
+
+    let eps_list = JSON.parse(data), all_eps = 0, current_percent_eps = 0, current_eps = 0;
+    if (eps_list['error']) {
+        alert(eps_list['error']);
+        return false;
+    }
+
+    all_eps = eps_list['ep_count'];
+
+    for (let index in eps_list['eps_list']) {
+        for (let index2 in eps_list['eps_list'][index]) {
+            let episode = eps_list['eps_list'][index][index2];
+            try {
+                let result = await $.ajax({
+                    url: '/engine/ajax/controller.php?mod=kodik_ajax_controller',
+                    data: {'file': "mass_generation", 'newsid': eps_list['news_id'], 'sez_num': index, 'ep_num': index2, 'ep_data': episode, 'sez_count': eps_list['sez_count'], 'material_title': eps_list['material_title'], action: "update_news_episode", user_hash: dle_login_hash},
+                    response: 'text'
+                });
+
+                if (result !== 'error') {
+                    $('#result-msg-update-episode').html('NewsID: ' + eps_list['news_id'] + ' ' + index + ' сезон ' + index2 + ' серия добавлена');
+                } else {
+                    $('#result-msg-update-episode').html('Возникла ошибка при попытке добавить NewsID: ' + eps_list['news_id'] + ' ' + index + ' сезон ' + index2 + ' серия. Попробуйте снова');
+                }
+
+                current_eps++;
+                current_percent_eps = Math.ceil((current_eps / all_eps) * 100);
+                $('#updated-current-episode').html(current_percent_eps + '%');
+                $('#updated-bar-episode').css('width', current_percent_eps + '%');
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }
+}
 </script>

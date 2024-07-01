@@ -4,7 +4,7 @@ echo <<<HTML
 		<div class="table-responsive">
 			<table class="table table-striped">
 HTML;
-showRow('Включить Push уведомления?', 'Включив активируется система подписок на уведомления через сервис OneSignal. При выходе новой серии аниме или лучшего качества подписавшиеся пользователи будут получать уведомления на своём смартфоне или пк. <b>Перед включением следуйте инструкции ниже, вам нужно создать приложение в сервисе OneSignal и указать OneSignal App ID и Rest API Key в поля ниже</b>', makeCheckBox('push_notifications[enable]', $aaparser_config_push['push_notifications']['enable'], 'ShowOrHidePush'));
+showRow('Включить Push уведомления?', 'Включив активируется система подписок на уведомления через сервис OneSignal. При выходе новой серии аниме или лучшего качества подписавшиеся пользователи будут получать уведомления на своём смартфоне или пк. <b>Перед включением следуйте инструкции ниже, вам нужно создать приложение в сервисе OneSignal и указать OneSignal App ID и Rest API Key в поля ниже</b>', makeCheckBox('push_notifications[enable]', $aaparser_config['push_notifications']['enable'], 'ShowOrHidePush'));
 echo <<<HTML
 			</table>
 		</div>
@@ -12,13 +12,13 @@ echo <<<HTML
 		<div class="table-responsive" id="push-settings-area">
 			<table class="table table-striped">
 HTML;
-showRow('Семейство иконок Font Awesome', 'Выберите семейство иконок Font Awesome, соответствующее иконкам используемым на сайте. Если у вас не подключена библиотека иконок то обязательно подключаем <a href="https://fontawesome.com/" target="_blank">по ссылке</a>', makeDropDown( $fa_icons, "push_notifications[fa_icons]", $aaparser_config_push['push_notifications']['fa_icons']));
-showRow('OneSignal App ID', 'Укажите OneSignal App ID вашего приложение', showInput(['push_notifications[app_id]', 'text', $aaparser_config_push['push_notifications']['app_id']]));
-showRow('Rest API Key', 'Укажите Rest API Key вашего приложения', showInput(['push_notifications[rest_api]', 'text', $aaparser_config_push['push_notifications']['rest_api']]));
-showRow('Заголовок уведомления для сериалов', 'Введите заголовок уведомления про обновление сериала.<br>Например: Обновился аниме сериал<br>Или: MySite(имя вашего сайта)', showInput(['push_notifications[tv_title]', 'text', $aaparser_config_push['push_notifications']['tv_title']]));
-showRow('Формат вывода уведомления для сериалов', 'Используйте теги: {episode}, {season}, {translation} и {title}<br>Например: Вышла {episode} серия {season} сезона аниме {title} в озвучке {translation}<br>Если оставить пустым - уведомление по сериалам отправляться не будет', showInput(['push_notifications[tv_text]', 'text', $aaparser_config_push['push_notifications']['tv_text']]));
-showRow('Заголовок уведомления для фильмов', 'Введите заголовок уведомления про обновление фильма.<br>Например: Обновился аниме фильм<br>Или: MySite(имя вашего сайта)', showInput(['push_notifications[movie_title]', 'text', $aaparser_config_push['push_notifications']['movie_title']]));
-showRow('Формат вывода уведомления для фильмов', 'Используйте теги: {quality} и {title}<br>Обновилось качество аниме фильма {title} до {quality}<br>Если оставить пустым - уведомление по смене качества аниме фильмов отправляться не будет', showInput(['push_notifications[movie_text]', 'text', $aaparser_config_push['push_notifications']['movie_text']]));
+showRow('Семейство иконок Font Awesome', 'Выберите семейство иконок Font Awesome, соответствующее иконкам используемым на сайте. Если у вас не подключена библиотека иконок то обязательно подключаем <a href="https://fontawesome.com/" target="_blank">по ссылке</a>', makeDropDown( $fa_icons, "push_notifications[fa_icons]", $aaparser_config['push_notifications']['fa_icons']));
+showRow('OneSignal App ID', 'Укажите OneSignal App ID вашего приложение', showInput(['push_notifications[app_id]', 'text', $aaparser_config['push_notifications']['app_id']]));
+showRow('Rest API Key', 'Укажите Rest API Key вашего приложения', showInput(['push_notifications[rest_api]', 'text', $aaparser_config['push_notifications']['rest_api']]));
+showRow('Заголовок уведомления для сериалов', 'Введите заголовок уведомления про обновление сериала.<br>Например: Обновился аниме сериал<br>Или: MySite(имя вашего сайта)', showInput(['push_notifications[tv_title]', 'text', $aaparser_config['push_notifications']['tv_title']]));
+showRow('Формат вывода уведомления для сериалов', 'Используйте теги: {episode}, {season}, {translation} и {title}<br>Например: Вышла {episode} серия {season} сезона аниме {title} в озвучке {translation}<br>Если оставить пустым - уведомление по сериалам отправляться не будет', showInput(['push_notifications[tv_text]', 'text', $aaparser_config['push_notifications']['tv_text']]));
+showRow('Заголовок уведомления для фильмов', 'Введите заголовок уведомления про обновление фильма.<br>Например: Обновился аниме фильм<br>Или: MySite(имя вашего сайта)', showInput(['push_notifications[movie_title]', 'text', $aaparser_config['push_notifications']['movie_title']]));
+showRow('Формат вывода уведомления для фильмов', 'Используйте теги: {quality} и {title}<br>Обновилось качество аниме фильма {title} до {quality}<br>Если оставить пустым - уведомление по смене качества аниме фильмов отправляться не будет', showInput(['push_notifications[movie_text]', 'text', $aaparser_config['push_notifications']['movie_text']]));
 echo <<<HTML
 			</table>
 		</div>

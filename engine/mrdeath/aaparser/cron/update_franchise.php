@@ -8,7 +8,7 @@
 =====================================================
 */
 
-$fran_name = $aaparser_config_push['main_fields']['xf_shikimori_id'];
+$fran_name = $aaparser_config['main_fields']['xf_shikimori_id'];
 
 $chekering = $db->query("SHOW COLUMNS FROM ".PREFIX."_post LIKE 'franchise_aap'");
 if ($chekering->num_rows == "0") $db->query("ALTER TABLE ".PREFIX."_post add `franchise_aap` varchar(700) NOT NULL DEFAULT ''");

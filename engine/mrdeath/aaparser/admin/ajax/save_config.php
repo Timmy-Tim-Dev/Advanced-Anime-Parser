@@ -27,7 +27,6 @@ if ($action == 'options') {
 	if ($data_form) parse_str($data_form, $array_post);
 	$new_array = [];
 	foreach ($array_post as $index => $item) {
-	    if ( $index == 'push_notifications' || $index == 'calendar_settings' || $index == 'main_fields' || $index == 'updates_block' || $index == 'player' || $index == 'persons' ) continue;
 		foreach ($item as $key => $value) {
 			if ($value != '' && $value != '-') {
 				if (is_numeric($value)) $value = intval($value);
@@ -40,24 +39,6 @@ if ($action == 'options') {
 	$handler = fopen(ENGINE_DIR . '/mrdeath/aaparser/data/config.php', "w");
 	@chmod(ENGINE_DIR.'/mrdeath/aaparser/data/config.php', 0777);
 	fwrite($handler, "<?PHP \n\n//AAParser Settings \n\n\$aaparser_config = ");
-	fwrite($handler, var_export($new_array, true));
-	fwrite($handler, ";\n\n?>");
-	fclose($handler);
-	$new_array = [];
-	foreach ($array_post as $index => $item) {
-	    if ( $index != 'push_notifications' && $index != 'calendar_settings' && $index != 'main_fields' && $index != 'updates_block' && $index != 'player' && $index != 'persons' ) continue;
-		foreach ($item as $key => $value) {
-			if ($value != '' && $value != '-') {
-				if (is_numeric($value)) $value = intval($value);
-				elseif (is_array($value)) $value = implode(',', $value);
-				else $value = strip_tags(stripslashes($value), '<li><br><p>');
-				$new_array[$index][$key] = $value;
-			}
-		}
-	}
-	$handler = fopen(ENGINE_DIR . '/mrdeath/aaparser/data/config_push.php', "w");
-	@chmod(ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php', 0777);
-	fwrite($handler, "<?PHP \n\n//AAParser Push Settings \n\n\$aaparser_config_push = ");
 	fwrite($handler, var_export($new_array, true));
 	fwrite($handler, ";\n\n?>");
 	fclose($handler);

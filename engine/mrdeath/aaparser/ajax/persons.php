@@ -12,9 +12,8 @@ if( !defined('DATALIFEENGINE' ) ) {
 	die('Hacking attempt!');
 }
 
-if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id']) && $_POST['sh_id']) {
+if ($aaparser_config['persons']['personas_on'] == 1 && isset($_POST['sh_id']) && $_POST['sh_id']) {
     
-    require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
 	require_once ENGINE_DIR.'/mrdeath/aaparser/functions/module.php';
 	require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
 	
@@ -31,7 +30,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 	
 	//Проверяем наличие кеша
 	
-	if ( isset($aaparser_config_push['persons']['personas_cache']) && $aaparser_config_push['persons']['personas_cache'] == 1 ) {
+	if ( isset($aaparser_config['persons']['personas_cache']) && $aaparser_config['persons']['personas_cache'] == 1 ) {
 		$shiki_cache = kodik_cache('personas_'.$shiki_id, false, 'personas_characters');
 		if ($shiki_cache == '{"main_characters":"","sub_characters":"","persons":""}') $shiki_cache = false;
 	} else $shiki_cache = false;
@@ -75,7 +74,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 			if ( !defined('TEMPLATE_DIR') ) define ( 'TEMPLATE_DIR', ROOT_DIR . '/templates/' . totranslit($config['skin'], false, false) );
 			
 			//Если включёны главные персонажи
-			if ( $aaparser_config_push['persons']['main_characters'] == 1 ) {
+			if ( $aaparser_config['persons']['main_characters'] == 1 ) {
 			    
 			    //Об'являем шаблон c блоком всех главных персонажей и подключаем шаблонизатор
 	
@@ -85,7 +84,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 	            
 	            if ( $main_characters ) {
 			    
-			        if ( $aaparser_config_push['persons']['main_characters_limit'] && count($main_characters) > $aaparser_config_push['persons']['main_characters_limit'] ) $main_characters = array_slice($main_characters, 0, $aaparser_config_push['persons']['main_characters_limit']);
+			        if ( $aaparser_config['persons']['main_characters_limit'] && count($main_characters) > $aaparser_config['persons']['main_characters_limit'] ) $main_characters = array_slice($main_characters, 0, $aaparser_config['persons']['main_characters_limit']);
 	            
 	                $tplmcharacters->set( '[main-characters-list]', "" );
 		            $tplmcharacters->set( '[/main-characters-list]', "" );
@@ -103,10 +102,10 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 						change_tags($tplmcharactersone, $main_character['data']['url'], 'characters_url', $protocol. '://' . $shikimori_url_domain);
 						change_tags($tplmcharactersone, $main_character['data']['url'], 'site_characters_url', $protocol. '://' . $site_url_domain);
 						
-						change_tags_img($tplmcharactersone, $main_character['data']['image']['original'], 'characters_image_orig', $aaparser_config_push['persons']['default_image']);
-						change_tags_img($tplmcharactersone, $main_character['data']['image']['preview'], 'characters_image_prev', $aaparser_config_push['persons']['default_image']);
-						change_tags_img($tplmcharactersone, $main_character['data']['image']['x96'], 'characters_image_x96', $aaparser_config_push['persons']['default_image']);
-						change_tags_img($tplmcharactersone, $main_character['data']['image']['x48'], 'characters_image_x48', $aaparser_config_push['persons']['default_image']);
+						change_tags_img($tplmcharactersone, $main_character['data']['image']['original'], 'characters_image_orig', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplmcharactersone, $main_character['data']['image']['preview'], 'characters_image_prev', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplmcharactersone, $main_character['data']['image']['x96'], 'characters_image_x96', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplmcharactersone, $main_character['data']['image']['x48'], 'characters_image_x48', $aaparser_config['persons']['default_image']);
 						
 	                    $tplmcharactersone->set( '[characters_role_eng]', "" );
 				        $tplmcharactersone->set( '[/characters_role_eng]', "" );
@@ -138,7 +137,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 			} else $shiki_cache['main_characters'] = '';
 			
 			//Если включёны второстепенные персонажи
-			if ( $aaparser_config_push['persons']['characters'] == 1 ) {
+			if ( $aaparser_config['persons']['characters'] == 1 ) {
 			    
 			    //Об'являем шаблон c блоком всех второстепенных персонажей и подключаем шаблонизатор
 	
@@ -148,7 +147,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 	            
 	            if ( $sub_characters ) {
 			    
-			        if ( $aaparser_config_push['persons']['characters_limit'] && count($sub_characters) > $aaparser_config_push['persons']['characters_limit'] ) $sub_characters = array_slice($sub_characters, 0, $aaparser_config_push['persons']['characters_limit']);
+			        if ( $aaparser_config['persons']['characters_limit'] && count($sub_characters) > $aaparser_config['persons']['characters_limit'] ) $sub_characters = array_slice($sub_characters, 0, $aaparser_config['persons']['characters_limit']);
 	            
 	                $tplscharacters->set( '[sub-characters-list]', "" );
 		            $tplscharacters->set( '[/sub-characters-list]', "" );
@@ -167,10 +166,10 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 						change_tags($tplscharactersone, $sub_character['data']['url'], 'characters_url', $protocol. '://' . $shikimori_url_domain);
 						change_tags($tplscharactersone, $sub_character['data']['url'], 'site_characters_url', $protocol. '://' . $site_url_domain);
 						
-						change_tags_img($tplscharactersone, $sub_character['data']['image']['original'], 'characters_image_orig', $aaparser_config_push['persons']['default_image']);
-						change_tags_img($tplscharactersone, $sub_character['data']['image']['preview'], 'characters_image_prev', $aaparser_config_push['persons']['default_image']);
-						change_tags_img($tplscharactersone, $sub_character['data']['image']['x96'], 'characters_image_x96', $aaparser_config_push['persons']['default_image']);
-						change_tags_img($tplscharactersone, $sub_character['data']['image']['x48'], 'characters_image_x48', $aaparser_config_push['persons']['default_image']);
+						change_tags_img($tplscharactersone, $sub_character['data']['image']['original'], 'characters_image_orig', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplscharactersone, $sub_character['data']['image']['preview'], 'characters_image_prev', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplscharactersone, $sub_character['data']['image']['x96'], 'characters_image_x96', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplscharactersone, $sub_character['data']['image']['x48'], 'characters_image_x48', $aaparser_config['persons']['default_image']);
 							
 	                    $tplscharactersone->set( '[characters_role_eng]', "" );
 				        $tplscharactersone->set( '[/characters_role_eng]', "" );
@@ -202,7 +201,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 			} else $shiki_cache['sub_characters'] = '';
 			
 			//Если включёны персоны
-			if ( $aaparser_config_push['persons']['persons'] == 1 ) {
+			if ( $aaparser_config['persons']['persons'] == 1 ) {
 			    
 			    //Об'являем шаблон c блоком всех персон и подключаем шаблонизатор
 	
@@ -212,7 +211,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 	            
 	            if ( $persons ) {
 			    
-			        if ( $aaparser_config_push['persons']['persons_limit'] && count($persons) > $aaparser_config_push['persons']['persons_limit'] ) $persons = array_slice($persons, 0, $aaparser_config_push['persons']['persons_limit']);
+			        if ( $aaparser_config['persons']['persons_limit'] && count($persons) > $aaparser_config['persons']['persons_limit'] ) $persons = array_slice($persons, 0, $aaparser_config['persons']['persons_limit']);
 	            
 	                $tplpersons->set( '[persons-list]', "" );
 		            $tplpersons->set( '[/persons-list]', "" );
@@ -230,10 +229,10 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 						change_tags($tplpersonsone, $person['data']['url'], 'persons_url', $protocol. '://' . $shikimori_url_domain);
 						change_tags($tplpersonsone, $person['data']['url'], 'site_persons_url', $protocol. '://' . $site_url_domain);
 						
-						change_tags_img($tplpersonsone, $person['data']['image']['original'], 'persons_image_orig', $aaparser_config_push['persons']['default_image']);
-						change_tags_img($tplpersonsone, $person['data']['image']['preview'], 'persons_image_prev', $aaparser_config_push['persons']['default_image']);
-						change_tags_img($tplpersonsone, $person['data']['image']['x96'], 'persons_image_x96', $aaparser_config_push['persons']['default_image']);
-						change_tags_img($tplpersonsone, $person['data']['image']['x48'], 'persons_image_x48', $aaparser_config_push['persons']['default_image']);
+						change_tags_img($tplpersonsone, $person['data']['image']['original'], 'persons_image_orig', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplpersonsone, $person['data']['image']['preview'], 'persons_image_prev', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplpersonsone, $person['data']['image']['x96'], 'persons_image_x96', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplpersonsone, $person['data']['image']['x48'], 'persons_image_x48', $aaparser_config['persons']['default_image']);
 							
 	                    change_tags($tplpersonsone, $person['role'], 'persons_role_eng');
 	                    change_tags($tplpersonsone, $person['role_rus'], 'persons_role_rus');
@@ -262,7 +261,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 		if ( isset($shiki_cache) && $shiki_cache ) {
 		    $shiki_cache = json_encode($shiki_cache, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
 			if ($shiki_cache != '{"main_characters":"","sub_characters":"","persons":""}') {
-				if ( isset($aaparser_config_push['persons']['personas_cache']) && $aaparser_config_push['persons']['personas_cache'] == 1 ) kodik_create_cache('personas_'.$shiki_id, $shiki_cache, false, 'personas_characters');
+				if ( isset($aaparser_config['persons']['personas_cache']) && $aaparser_config['persons']['personas_cache'] == 1 ) kodik_create_cache('personas_'.$shiki_id, $shiki_cache, false, 'personas_characters');
 			}
 			echo $shiki_cache;
 		}
@@ -275,7 +274,7 @@ if ($aaparser_config_push['persons']['personas_on'] == 1 && isset($_POST['sh_id'
 			    
 				
 }
-elseif ($aaparser_config_push['persons']['personas_on_dorama'] == 1 && isset($_POST['mdl_id']) && $_POST['mdl_id']) {
+elseif ($aaparser_config['persons']['personas_on_dorama'] == 1 && isset($_POST['mdl_id']) && $_POST['mdl_id']) {
     
     if (!function_exists('mdl_request')) {
         function mdl_request($url) {
@@ -314,7 +313,7 @@ elseif ($aaparser_config_push['persons']['personas_on_dorama'] == 1 && isset($_P
 	
 	//Проверяем наличие кеша
 	
-	if ( isset($aaparser_config_push['persons']['personas_cache_dorama']) && $aaparser_config_push['persons']['personas_cache_dorama'] == 1 ) $mdl_request = kodik_cache('personas_'.$mdl_id, false, 'personas_characters');
+	if ( isset($aaparser_config['persons']['personas_cache_dorama']) && $aaparser_config['persons']['personas_cache_dorama'] == 1 ) $mdl_request = kodik_cache('personas_'.$mdl_id, false, 'personas_characters');
 	else $mdl_request = false;
 	
 	//Если кеша нет или он отключён
@@ -385,10 +384,10 @@ elseif ($aaparser_config_push['persons']['personas_on_dorama'] == 1 && isset($_P
 				    $tplactors->set( '[/personas_image_orig]', "" );
 				    $tplactors->set( '{personas_image_orig}', $data['image_orig'] );
 				    $tplactors->set_block( "'\\[not_personas_image_orig\\](.*?)\\[/not_personas_image_orig\\]'si", "" );
-		        } elseif ( $aaparser_config_push['persons']['default_image_dorama'] ) {
+		        } elseif ( $aaparser_config['persons']['default_image_dorama'] ) {
 		            $tplactors->set( '[personas_image_orig]', "" );
 				    $tplactors->set( '[/personas_image_orig]', "" );
-				    $tplactors->set( '{personas_image_orig}', $aaparser_config_push['persons']['default_image_dorama'] );
+				    $tplactors->set( '{personas_image_orig}', $aaparser_config['persons']['default_image_dorama'] );
 				    $tplactors->set_block( "'\\[not_personas_image_orig\\](.*?)\\[/not_personas_image_orig\\]'si", "" );
 		        } else {
 		            $tplactors->set( '[not_personas_image_orig]', "" );
@@ -403,7 +402,7 @@ elseif ($aaparser_config_push['persons']['personas_on_dorama'] == 1 && isset($_P
 		    $tplpersons->compile( 'persons_info' );
 		    
 		    //Кешируем результат
-		    if ( isset($aaparser_config_push['persons']['personas_cache_dorama']) && $aaparser_config_push['persons']['personas_cache_dorama'] == 1 ) kodik_create_cache('personas_'.$mdl_id, $tplpersons->result['persons_info'], false, 'personas_characters');
+		    if ( isset($aaparser_config['persons']['personas_cache_dorama']) && $aaparser_config['persons']['personas_cache_dorama'] == 1 ) kodik_create_cache('personas_'.$mdl_id, $tplpersons->result['persons_info'], false, 'personas_characters');
 		    
 		    echo $tplpersons->result['persons_info'];
 		    unset($tplpersons);
@@ -414,10 +413,10 @@ elseif ($aaparser_config_push['persons']['personas_on_dorama'] == 1 && isset($_P
 elseif ( isset($kodik_persons_dorama) && $kodik_persons_dorama == 'yes' ) {
     if (!function_exists('kodik_cache')) require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
     
-    $mdl_id = $xfieldsdata[$aaparser_config_push['main_fields']['xf_mdl_id']];
+    $mdl_id = $xfieldsdata[$aaparser_config['main_fields']['xf_mdl_id']];
     
     //Проверяем наличие кеша
-	if ( isset($aaparser_config_push['persons']['personas_cache_dorama']) && $aaparser_config_push['persons']['personas_cache_dorama'] == 1 ) $mdl_request = kodik_cache('personas_'.$mdl_id, false, 'personas_characters');
+	if ( isset($aaparser_config['persons']['personas_cache_dorama']) && $aaparser_config['persons']['personas_cache_dorama'] == 1 ) $mdl_request = kodik_cache('personas_'.$mdl_id, false, 'personas_characters');
 	else $mdl_request = false;
 	
 	if ( $mdl_request === false ) $tpl->set( '{kodik_persons_dorama}', '<div id="personas_block" data-mdl_id="'.$mdl_id.'" data-has_cache="no"></div>' );

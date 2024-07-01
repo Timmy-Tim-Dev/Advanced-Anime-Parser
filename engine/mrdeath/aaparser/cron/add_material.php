@@ -32,7 +32,7 @@ if ( $kind == 'anime' ) {
 	else $db->query( "UPDATE " . PREFIX . "_anime_list SET started=1 WHERE material_id='{$material['material_id']}'" );
 
 	$shiki_id = $material['shikimori_id'];
-	$where_xf = "xfields LIKE '%".$aaparser_config_push['main_fields']['xf_shikimori_id']."|".$shiki_id."||%'";
+	$where_xf = "xfields LIKE '%".$aaparser_config['main_fields']['xf_shikimori_id']."|".$shiki_id."||%'";
 
 	$parse_action = 'parse';
 	$parse_type = 'grabbing';
@@ -56,7 +56,7 @@ else {
 	else $db->query( "UPDATE " . PREFIX . "_anime_list SET started=1 WHERE material_id='{$material['material_id']}'" );
 
 	$mdl_id = $material['mdl_id'];
-	$where_xf = "xfields LIKE '%".$aaparser_config_push['main_fields']['xf_mdl_id']."|".$mdl_id."||%'";
+	$where_xf = "xfields LIKE '%".$aaparser_config['main_fields']['xf_mdl_id']."|".$mdl_id."||%'";
 
 	$parse_action = 'parse';
 	$parse_type = 'grabbing';
@@ -362,8 +362,8 @@ foreach ( $delete_xf as $check_value ) {
 	if( array_key_exists($check_value, $xfields_list) ) unset($xfields_list[$check_value]);
 }
 
-if ( $aaparser_config_push['main_fields']['xf_shikimori_id'] && $xfields_data['shikimori_id'] ) $xfields_list[$aaparser_config_push['main_fields']['xf_shikimori_id']] = $xfields_data['shikimori_id'];
-if ( $aaparser_config_push['main_fields']['xf_mdl_id'] && $xfields_data['mydramalist_id'] ) $xfields_list[$aaparser_config_push['main_fields']['xf_mdl_id']] = $xfields_data['mydramalist_id'];
+if ( $aaparser_config['main_fields']['xf_shikimori_id'] && $xfields_data['shikimori_id'] ) $xfields_list[$aaparser_config['main_fields']['xf_shikimori_id']] = $xfields_data['shikimori_id'];
+if ( $aaparser_config['main_fields']['xf_mdl_id'] && $xfields_data['mydramalist_id'] ) $xfields_list[$aaparser_config['main_fields']['xf_mdl_id']] = $xfields_data['mydramalist_id'];
 if ( $aaparser_config['images']['xf_poster'] && $xfields_data['image']) $xfields_list[$aaparser_config['images']['xf_poster']] = $xfields_data['image'];
 if ( $aaparser_config['images']['xf_screens'] && $xfields_data['kadr_1']) $xfields_list[$aaparser_config['images']['xf_screens']] = $xf_screen_1.$xf_screen_2.$xf_screen_3.$xf_screen_4.$xf_screen_5;
 if ( $aaparser_config['fields']['xf_camrip'] && $is_camrip === true ) $xfields_list[$aaparser_config['fields']['xf_camrip']] = 1;
@@ -555,17 +555,27 @@ if( $config['allow_alt_url'] ) {
 
 if( $config['news_indexnow'] && $publish == 1 ) $result = DLESEO::IndexNow( $full_link );
 
-require_once ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php';
-
-if ( $aaparser_config_push['push_notifications']['google_indexing'] == 1 && $publish == 1 ) {
+if ( $aaparser_config['push_notifications']['google_indexing'] == 1 && $publish == 1 ) {
 	$indexing_action = 'send';
 	$indexing_type = 'URL_UPDATED';
 	$indexing_url = $full_link;
 	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/indexing.php'));
 }
 
-if ( $aaparser_config_push['push_notifications']['enable_tgposting'] == 1 && $aaparser_config_push['push_notifications']['tg_cron_modadd'] == 1 && $publish == 1 ) {
+if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparser_config['push_notifications']['tg_cron_modadd'] == 1 && $publish == 1 ) {
 	telegram_sender($id, 'addnews_cron');
+}
+    
+if ( $aaparser_config['integration']['ksep'] == 1 && file_exists(ENGINE_DIR.'/mrdeath/ksep/modules/aap.php') ) {
+    if ( isset($shiki_id) && $shiki_id ) $shikiid = $shiki_id;
+    else $shikiid = false;
+    if ( isset($mdl_id) && $mdl_id ) $mdlid = $mdl_id;
+    else $mdlid = false;
+    $rowid = $row['id'];
+    $required_from = 'aap';
+    require_once ENGINE_DIR.'/mrdeath/ksep/data/config.php';
+    require_once ENGINE_DIR.'/mrdeath/ksep/functions/module.php';
+    require_once ENGINE_DIR.'/mrdeath/ksep/modules/aap.php';
 }
 
 clear_cache( array('news_', 'tagscloud_', 'archives_', 'calendar_', 'topnews_', 'rss', 'stats') );

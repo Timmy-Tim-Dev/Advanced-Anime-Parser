@@ -18,7 +18,6 @@ $mode = isset($_GET['mode']) ? $_GET['mode'] : '';
 
 $is_logged = false;
 
-include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
 require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
 require_once ENGINE_DIR . '/mrdeath/aaparser/functions/public.php';
 
@@ -61,15 +60,23 @@ if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
 
 if ( $action == "parser_search" ) {
     
-    $search_name = str_replace(' ', '+', $title);
-    
-    $parse_action = 'search';
-    if ( $aaparser_config['settings']['working_mode'] == 1 || $aaparser_config['settings']['working_mode'] == 2 ) {
+    if ( $title ) {
+        $search_name = str_replace(' ', '+', $title);
+        $parse_action = 'search';
+        if ( $aaparser_config['settings']['working_mode'] == 1 || $aaparser_config['settings']['working_mode'] == 2 ) {
+            include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/kodik.php'));
+            $responseArray = unique_multidim_array($responseArray,'unique_id');
+        }
+        else {
+            include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/shikimori.php'));
+            $responseArray = unique_multidim_array($responseArray,'shiki_id');
+        }
+    }
+    else {
+        $search_name = '';
+        $parse_action = 'search';
         include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/kodik.php'));
         $responseArray = unique_multidim_array($responseArray,'unique_id');
-    } else {
-        include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/shikimori.php'));
-        $responseArray = unique_multidim_array($responseArray,'shiki_id');
     }
 	
 	if ($responseArray) {

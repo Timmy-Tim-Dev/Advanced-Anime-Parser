@@ -178,32 +178,34 @@ if (!function_exists('setPoster')) {
 	
 	    $area = 'xfieldsimage';
 	
-	    if ( $poster_name ) $xfparam = xfparamload($poster_name);
+	    if ( $poster_name ) {
+	    	$xfparam = xfparamload($poster_name);
+	    }
 	    else $xfparam = [];
+	    
+	    $_REQUEST['xfname'] = $xfparam[0];
 		
-	    $xfname = $xfparam[0];
-	    $t_seite = (int)$config['t_seite'];
-	    $m_seite = $t_seite;
-	    $t_size = $xfparam[13];
-	    $m_size = 0;
-	    if (isset($xfparam[9])) $config['max_up_side'] = $xfparam[9];
-	    elseif ( $image_kind == 'poster' ) $config['max_up_side'] = $aaparser_config['images']['poster_max_up_side'];
-	    elseif ( $image_kind == 'kadr' ) $config['max_up_side'] = $aaparser_config['images']['screens_max_up_side'];
-	    elseif ( $image_kind == 'logo' ) $config['max_up_side'] = $aaparser_config['images']['logo_max_up_side'];
-	    elseif ( $image_kind == 'cover' ) $config['max_up_side'] = $aaparser_config['images']['cover_max_up_side'];
-	    $config['max_up_size'] = 2048;
-	    $config['min_up_side'] = 0;
-	    $make_watermark = (bool)$xfparam[11];
-	    $make_thumb = (bool)$xfparam[12];
-	    $make_medium = false;
+	    $t_seite = $m_seite = intval($config['t_seite']);
+	    if ( isset($xfparam[13]) && $xfparam[13] ) $t_size = $xfparam[13];
+	    else $t_size = 0;
+		$m_size = 0;
+		$config['max_up_side'] = $xfparam[9];
+		$config['max_up_size'] = $xfparam[10];
+		$config['min_up_side'] = $xfparam[22];
+		$make_watermark = $xfparam[11] ? true : false;
+		$make_thumb = $xfparam[12] ? true : false;
+		$make_medium = false;
+		$hidpi = false;
 
 	    $t_size = explode("x", $t_size);
-	    if (count($t_size) == 2) $t_size = (int)$t_size[0] . "x" . (int)$t_size[1];
-	    else $t_size = (int)$t_size[0];
+	    if (count($t_size) == 2) {
+	    	$t_size = intval($t_size[0]) . "x" . intval($t_size[1]);
+	    } else $t_size = intval($t_size[0]);
 
 	    $m_size = explode("x", $m_size);
-	    if (count($m_size) == 2) $m_size = (int)$m_size[0] . "x" . (int)$m_size[1];
-	    else $m_size = (int)$m_size[0];
+	    if (count($m_size) == 2) {
+	    	$m_size = intval($m_size[0]) . "x" . intval($m_size[1]);
+	    } else $m_size = intval($m_size[0]);
 
         $author = $db->safesql($member_id['name']);
         
@@ -231,7 +233,7 @@ if (!function_exists('setPoster')) {
             
         $new_poster = ROOT_DIR . '/uploads/files/' . $poster_title;
             
-        $image = request_file($poster_url, $new_poster);
+        $image = downloadImage($poster_url, $poster_title);
             
         if ( isset($image) && $image ) {
             $exif = exif_read_data($image);
@@ -244,22 +246,32 @@ if (!function_exists('setPoster')) {
                 'size' => $exif['FileSize']
             ];
             
-            $uploader = new FileUploader($area, $news_id, $author, $t_size, $t_seite, $make_thumb, $make_watermark, $m_size, $m_seite, $make_medium);
+            $uploader = new FileUploader($area, $news_id, $author, $t_size, $t_seite, $make_thumb, $make_watermark, $m_size, $m_seite, $make_medium, $hidpi);
             $result = json_decode($uploader->FileUpload(), true);
 
             @unlink($image);
             return $result;
-        } else {
+        }
+        else {
             @unlink($image);
             return '';
         }
     }
 }
 
-if (!function_exists('request_file')) {
-    function request_file($url, $file = false){
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL,$url);
+if (!function_exists('downloadImage')) {
+    function downloadImage($imageUrl, $newFileName) {
+        // Устанавливаем директорию для загрузки
+        $uploadDir = ROOT_DIR . '/uploads/files/';
+
+        // Создаем директорию, если она не существует
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+            chmod($uploadDir, 0777);
+        }
+
+        // Используем cURL для загрузки изображения
+        $ch = curl_init($imageUrl);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60 );
@@ -267,42 +279,50 @@ if (!function_exists('request_file')) {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 
-        $headers = array(
-            'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.2924.87 Safari/537.36',
-            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language: ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
-            'Connection: keep-alive',
-            'Cache-Control: max-age=0',
-            'Upgrade-Insecure-Requests: 1'
-        );
-        if($file){
-			@chmod( ROOT_DIR . "/uploads/files/", 0777 );
-            $fp = fopen($file, "wb");
-            curl_setopt($ch, CURLOPT_FILE, $fp);
+        $imageData = curl_exec($ch);
+        if(curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+            return false;
         }
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $res = curl_exec($ch);
         curl_close($ch);
-        if($file) {
-            fclose($fp);
-            @chmod($file, 0777);
-            $info = @getimagesize($file);
-            if(is_array($info)){
-                if( $info[2] == 2 ) $ext = 'jpg';
-                elseif( $info[2] == 3 ) $ext =  'png';
-                elseif( $info[2] == 1 ) $ext = 'gif';
-                elseif($info['mime'] == 'image/webp' or $info['mime'] == 'image/x-webp') $ext = 'webp';    
-                else $ext = 'jpg';
-				
-                $GLOBALS['EXT'] = $ext;
-                rename($file, $file.'.'.$ext);
-                return $file.'.'.$ext;
-            } else {
-                @unlink($file);
-                return false;
-            }
+
+        // Определяем расширение файла на основе MIME-типа
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->buffer($imageData);
+        $extension = '';
+
+        switch ($mimeType) {
+            case 'image/jpeg':
+                $extension = 'jpeg';
+                break;
+            case 'image/jpg':
+                $extension = 'jpg';
+                break;
+            case 'image/png':
+                $extension = 'png';
+                break;
+            case 'image/gif':
+                $extension = 'gif';
+                break;
+            case 'image/webp':
+                $extension = 'webp';
+                break;
+            default:
+                return false; // неподдерживаемый тип изображения
         }
-        return $res;
+
+        // Генерируем новое имя файла с расширением
+        $newFileNameWithExtension = $newFileName . '.' . $extension;
+
+        // Путь к новому файлу
+        $newFilePath = $uploadDir . $newFileNameWithExtension;
+
+        // Сохраняем изображение в директорию
+        file_put_contents($newFilePath, $imageData);
+        chmod($newFilePath, 0777);
+
+        // Возвращаем путь к новому файлу
+        return $newFilePath;
     }
 }
 
@@ -499,7 +519,7 @@ function change_tags ($type, $needVal, $nameTag, $urlPrefix = '') {
 }
 
 function change_tags_img($type, $needVal, $nameTag, $defaultImage = '') {
-    global $shikimori_url_domain, $aaparser_config_push;
+    global $shikimori_url_domain, $aaparser_config;
     
     if ($needVal) {
         $type->set("[" . $nameTag . "]", "");

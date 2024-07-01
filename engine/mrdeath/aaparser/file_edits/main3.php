@@ -14,7 +14,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-if ( $aaparser_config_push['calendar_settings']['enable_schedule'] && $aaparser_config_push['calendar_settings']['schedule_main'] ) {
+if ( $aaparser_config['calendar_settings']['enable_schedule'] && $aaparser_config['calendar_settings']['schedule_main'] ) {
 	$raspisanie_ongoingov = dle_cache( "raspisanie_ongoingov", false );
 	if( $raspisanie_ongoingov === false ) {
 		$raspisanie_ongoingov = [];
@@ -115,7 +115,7 @@ else {
 	$tpl->set ( '{tomorrow-ongoings}', '' );
 }
 
-if (file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json') && $aaparser_config_push['updates_block']['enable_history'] == 1) {
+if (file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json') && $aaparser_config['updates_block']['enable_history'] == 1) {
     $updates_history = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/updates_history.json' ), true );
     if ( is_array($updates_history) && $updates_history ) {
         $kodik_updates_block = '';

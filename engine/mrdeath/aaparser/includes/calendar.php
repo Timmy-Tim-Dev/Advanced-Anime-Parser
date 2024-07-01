@@ -5,8 +5,8 @@ echo <<<HTML
 		<div class="table-responsive anime-settings">
 			<table class="table table-striped">
 HTML;
-showRow('Включить функционал расписания выхода серий аниме?', 'Включив, модуль будет собирать данные про расписание выхода онгоингов аниме с Shikimori и выводить его на отдельной странице <a href="'. $config["http_home_url"] .'schedule/" target="_blank">'. $config["http_home_url"] .'schedule/</a>. Инструкция по настройке находится ниже', makeCheckBox('calendar_settings[enable_schedule]', $aaparser_config_push['calendar_settings']['enable_schedule']));
-showRow('Доп. поле с постером', 'Выберите дополнительное поле, в котором содержится постер', makeDropDown( $xfields_all_list, "settings[poster]", $aaparser_config_push['main_fields']['xf_poster']));
+showRow('Включить функционал расписания выхода серий аниме?', 'Включив, модуль будет собирать данные про расписание выхода онгоингов аниме с Shikimori и выводить его на отдельной странице <a href="'. $config["http_home_url"] .'schedule/" target="_blank">'. $config["http_home_url"] .'schedule/</a>. Инструкция по настройке находится ниже', makeCheckBox('calendar_settings[enable_schedule]', $aaparser_config['calendar_settings']['enable_schedule']));
+showRow('Доп. поле с постером', 'Выберите дополнительное поле, в котором содержится постер', makeDropDown( $xfields_all_list, "settings[poster]", $aaparser_config['main_fields']['xf_poster']));
 echo <<<HTML
             </table>
             <div class="alert alert-info alert-styled-left alert-arrow-left alert-component">Инструкция по настройке расписания:<br>1. <b>Если ваш сервер работает на apache</b>, то добавляем следующее правило ниже строчки <b>RewriteEngine On</b><br><textarea style="width:100%;height:50px;" disabled>RewriteRule ^schedule(/?)+$ index.php?do=schedule [L]</textarea><br><b>Если ваш сервер работает на nginx</b>, то добавляем следующее правило<br><textarea style="width:100%;height:50px;" disabled>rewrite "^/schedule(/?)+$" /index.php?do=schedule break;</textarea><br>
@@ -28,7 +28,7 @@ echo <<<HTML
 		    </div>
             <table class="table table-striped">
 HTML;
-showRow('Включить вывод расписания на главной странице сайта?', 'Включив, модуль будет выводить расписание выхода онгоингов за сегодня и вчера на главной странице вашего сайта', makeCheckBox('calendar_settings[schedule_main]', $aaparser_config_push['calendar_settings']['schedule_main']));
+showRow('Включить вывод расписания на главной странице сайта?', 'Включив, модуль будет выводить расписание выхода онгоингов за сегодня и вчера на главной странице вашего сайта', makeCheckBox('calendar_settings[schedule_main]', $aaparser_config['calendar_settings']['schedule_main']));
 echo <<<HTML
 			</table>
 			<div class="alert alert-info alert-styled-left alert-arrow-left alert-component">Инструкция по настройке вывода расписания на главной:<br>В файле main.tpl в нужное место вставьте код вывода расписания<br>

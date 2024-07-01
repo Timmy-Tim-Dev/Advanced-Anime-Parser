@@ -16,10 +16,7 @@ $news_id = intval($_REQUEST['news_id']);
 $kodik_data = $_REQUEST['kodik_data'];
 $action = $_REQUEST['action'];
 
-require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
-require_once ENGINE_DIR.'/mrdeath/aaparser/data/config_push.php';
-
-if ($news_id && $action == 'voicerate' && $kodik_data && $aaparser_config_push['player']['voicerate_mod'] == 1) {
+if ($news_id && $action == 'voicerate' && $kodik_data && $aaparser_config['player']['voicerate_mod'] == 1) {
 	require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
 	
 	$voice_cache = kodik_cache('voicerate_'.$news_id, false, 'voicerate');
@@ -34,7 +31,7 @@ if ($news_id && $action == 'voicerate' && $kodik_data && $aaparser_config_push['
 	die($voice_cache);
 }
 
-if ($news_id && $action == 'voicerate_take' && $aaparser_config_push['player']['voicerate_mod'] == 1) {
+if ($news_id && $action == 'voicerate_take' && $aaparser_config['player']['voicerate_mod'] == 1) {
 	require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
 	
 	$voice_cache = kodik_cache('voicerate_'.$news_id, false, 'voicerate');
@@ -43,7 +40,7 @@ if ($news_id && $action == 'voicerate_take' && $aaparser_config_push['player']['
 }
 
 
-$maximum_animes = $aaparser_config_push['player']['max_remembers'];
+$maximum_animes = $aaparser_config['player']['max_remembers'];
 
 if ( $is_logged && $member_id['user_id'] && $news_id && $kodik_data && $maximum_animes ) {
     

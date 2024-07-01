@@ -14,7 +14,6 @@ ignore_user_abort(true);
 set_time_limit(600);
 session_write_close();
 
-include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
 require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
 require_once ENGINE_DIR . '/mrdeath/aaparser/functions/public.php';
 require_once ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_functions.php';
