@@ -12,6 +12,23 @@ showRow('Максимально допустимые размеры постер
 echo <<<HTML
 			</table>
 		</div>
+				<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Массовое проставление картинок</div>
+		<div class="table-responsive">
+			<table class="table table-striped">
+HTML;
+showRow( 'Активация массового проставления картинок', 'Перед тем как запустить проставление убедитесь что вы корректно настроили модуль. Обращаем ваше внимание на то, что старые картинки будут заменены на новые. ', '<button type="button" class="btn bg-slate-600 btn-raised legitRipple" id="mass-update-images"><i class="fa fa-wrench position-left"></i>Запуск проставления</button>', "", "" );
+showRow( 'Новостей для проставления', 'Общее кол-во полученных новостей для проставления', '<span id="news-img-count-update">0</span>', "", "" );
+showRow( 'Обработано новостей', 'Кол-во новостей, которые были обработаны', '<span id="current-updated-news-img">0</span>', "", "" );
+echo <<<HTML
+			</table>
+			<div class="update-status">
+	            <div class="update-status__current" id="updated-current-img">0%</div>
+	            <div class="progress progress-success">
+		            <div class="bar" id="updated-bar-img" style="width: 0%;"></div>
+	            </div>
+	            <div class="update-status__msg" id="result-msg-update-img">Запустите проставление...После запуска не закрывайте данную страницу пока проставление не будет полностью готово!</div>
+            </div>
+		</div>
 		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Настройка скриншотов</div>
 		<div class="table-responsive">
 			<table class="table table-striped">

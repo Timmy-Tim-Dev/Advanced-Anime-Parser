@@ -44,7 +44,7 @@ $(document).ready(function() {
 			}
 		});		
 	});
-	
+	// Массовое обновление доп полей
 	$( "#mass-update" ).click(function() {
 	    DLEconfirm("Данное действие необратимо. Сделайте резервную копию базы данных. Вы уверены что хотите запустить массовое проставление данных в доп. поля?", "Подтвердите действие", function YesImReady() {
 		    $.ajax({
@@ -53,6 +53,32 @@ $(document).ready(function() {
 			    response: 'json',
 			    success: function (data) {
 				    DoNewsUpdate(data);
+			    }
+		    });
+	    });
+	});
+	// Массовое обновление картинок
+	$( "#mass-update-images" ).click(function() {
+	    DLEconfirm("Данное действие необратимо. Сделайте резервную копию базы данных. Вы уверены что хотите запустить массовое проставление данных в доп. поля?", "Подтвердите действие", function YesImReady() {
+		    $.ajax({
+			    url: '/engine/ajax/controller.php?mod=anime_grabber&module=kodik_mass_update',
+			    data: {action: "update_news_get", user_hash: dle_login_hash},
+			    response: 'json',
+			    success: function (data) {
+				    DoNewsUpdateImages(data);
+			    }
+		    });
+	    });
+	});
+	// Массовое обновление метатегов
+	$( "#mass-update-metas" ).click(function() {
+	    DLEconfirm("Данное действие необратимо. Сделайте резервную копию базы данных. Вы уверены что хотите запустить массовое проставление данных в доп. поля?", "Подтвердите действие", function YesImReady() {
+		    $.ajax({
+			    url: '/engine/ajax/controller.php?mod=anime_grabber&module=kodik_mass_update',
+			    data: {action: "update_news_get", user_hash: dle_login_hash},
+			    response: 'json',
+			    success: function (data) {
+				    DoNewsUpdateMetas(data);
 			    }
 		    });
 	    });
@@ -142,6 +168,76 @@ function DoNewsUpdate(data) {
 			current_percent = Math.ceil((current / all_news) * 100, 1);			
 			$('#updated-current').html(current_percent + '%');
 			$('#updated-bar').css('width', current_percent + '%');
+		});	
+	});
+}
+
+function DoNewsUpdateImages(data) {
+	if (!data) 
+		return false;
+	var list_news = JSON.parse(data), all_news = 0, current_percent = 0 , current = 0, current_upd = 0, result_list;
+	if (list_news['error']) {
+		alert(list_news['error']);
+		return false;
+	}
+	all_news = list_news.length;
+	$('#news-img-count-update').html(all_news);
+	promise = $.when();
+	$.each(list_news, function(index, temp){
+		promise = promise.then(function(){
+			return $.ajax({			
+				url: '/engine/ajax/controller.php?mod=anime_grabber&module=kodik_mass_update',
+				data: {'newsid': temp['id'], 'shikiid': temp['shikimori_id'], 'mdlid': temp['mdl_id'], action: "update_news_img", user_hash: dle_login_hash},
+				response: 'text',
+			})
+		}).then(function(result){
+			if (result != 'error') {
+				result_list = JSON.parse(result);
+				current_upd++;
+				$('#current-updated-news-img').html(current_upd);
+				document.getElementById('result-msg-update-img').innerHTML += '<br/>'+'NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];				
+			} else {
+				document.getElementById('result-msg-update-img').innerHTML += '<br/>'+'Данные в новости ' + temp['id'] + ' не были проставлены. Возможно в новости указан не существующий id Shikimori/MyDramaList.';
+			}
+			current++;
+			current_percent = Math.ceil((current / all_news) * 100, 1);			
+			$('#updated-current-img').html(current_percent + '%');
+			$('#updated-bar-img').css('width', current_percent + '%');
+		});	
+	});
+}
+
+function DoNewsUpdateMetas(data) {
+	if (!data) 
+		return false;
+	var list_news = JSON.parse(data), all_news = 0, current_percent = 0 , current = 0, current_upd = 0, result_list;
+	if (list_news['error']) {
+		alert(list_news['error']);
+		return false;
+	}
+	all_news = list_news.length;
+	$('#news-metas-count-update').html(all_news);
+	promise = $.when();
+	$.each(list_news, function(index, temp){
+		promise = promise.then(function(){
+			return $.ajax({			
+				url: '/engine/ajax/controller.php?mod=anime_grabber&module=kodik_mass_update',
+				data: {'newsid': temp['id'], 'shikiid': temp['shikimori_id'], 'mdlid': temp['mdl_id'], action: "update_news_metas", user_hash: dle_login_hash},
+				response: 'text',
+			})
+		}).then(function(result){
+			if (result != 'error') {
+				result_list = JSON.parse(result);
+				current_upd++;
+				$('#current-updated-news-metas').html(current_upd);
+				document.getElementById('result-msg-update-metas').innerHTML += '<br/>'+'NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];				
+			} else {
+				document.getElementById('result-msg-update-metas').innerHTML += '<br/>'+'Данные в новости ' + temp['id'] + ' не были проставлены. Возможно в новости указан не существующий id Shikimori/MyDramaList.';
+			}
+			current++;
+			current_percent = Math.ceil((current / all_news) * 100, 1);			
+			$('#updated-current-metas').html(current_percent + '%');
+			$('#updated-bar-metas').css('width', current_percent + '%');
 		});	
 	});
 }

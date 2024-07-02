@@ -233,8 +233,7 @@ if (!function_exists('setPoster')) {
             
         $new_poster = ROOT_DIR . '/uploads/files/' . $poster_title;
             
-        $image = downloadImage($poster_url, $poster_title);
-            
+        $image = downloadImage($poster_url, $poster_title);   
         if ( isset($image) && $image ) {
             $exif = exif_read_data($image);
 

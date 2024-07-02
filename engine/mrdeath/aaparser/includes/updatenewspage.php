@@ -42,6 +42,23 @@ echo <<<HTML
 	            <div class="update-status__msg" id="result-msg-update">Запустите проставление...После запуска не закрывайте данную страницу пока проставление не будет полностью готово!</div>
             </div>
 		</div>
+		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Массовое проставление метатегов</div>
+		<div class="table-responsive">
+			<table class="table table-striped">
+HTML;
+showRow( 'Активация массового проставления метатегов', 'Перед тем как запустить проставление убедитесь что вы корректно настроили метатеги во вкладке "Поднятие новостей". Обращаем ваше внимание на то, что старые метатеги будут заменены на новые. <br/><i>Заполняет те метатеги которые не пустые, соответсвенно если не хотите менять какой либо метатег, оставьте пустым.</i>', '<button type="button" class="btn bg-slate-600 btn-raised legitRipple" id="mass-update-metas"><i class="fa fa-wrench position-left"></i>Запуск проставления</button>', "", "" );
+showRow( 'Новостей для проставления', 'Общее кол-во полученных новостей для проставления', '<span id="news-metas-count-update">0</span>', "", "" );
+showRow( 'Обработано новостей', 'Кол-во новостей, которые были обработаны', '<span id="current-updated-news-metas">0</span>', "", "" );
+echo <<<HTML
+			</table>
+			<div class="update-status">
+	            <div class="update-status__current" id="updated-current-metas">0%</div>
+	            <div class="progress progress-success">
+		            <div class="bar" id="updated-bar-metas" style="width: 0%;"></div>
+	            </div>
+	            <div class="update-status__msg" id="result-msg-update-metas">Запустите проставление...После запуска не закрывайте данную страницу пока проставление не будет полностью готово!</div>
+            </div>
+		</div>
 	</div>
 HTML;
 ?>
