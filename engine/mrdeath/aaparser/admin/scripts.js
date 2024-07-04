@@ -364,25 +364,6 @@ function update_translations_dorama() {
 	});
 }
 
-function ShowOrHideTg() {
-    var checkbox = document.getElementById("tg_on_off");
-	if( checkbox.checked === true ) {
-		$("#tgposting-settings").show();
-		$("#tgposting-settings-area").show();
-		$("#tgposting-templates").show();
-		$("#tgposting-templates-area").show();
-		$("#tgposting-info").show();
-		$("#tgposting-info-area").show();
-	} else {
-		$("#tgposting-settings").hide();
-		$("#tgposting-settings-area").hide();
-		$("#tgposting-templates").hide();
-		$("#tgposting-templates-area").hide();
-		$("#tgposting-info").hide();
-		$("#tgposting-info-area").hide();
-	}
-}
-
 function ShowOrHideCatStatus(value) {
 	if( value == '1' ) {
 		$("#cat_check_status").show();
@@ -456,49 +437,54 @@ function ShowOrHideXfStatus(value) {
 function ShowOrHidePlayer() {
     var checkbox = document.getElementById("player_on_off");
 	if( checkbox.checked === true ) {
-		$("#kodik-player").show();
-		$("#kodik-player-settings").show();
-		$("#kodik-player-anime").show();
-		$("#kodik-player-settings-anime").show();
-		$("#kodik-player-dorama").show();
-		$("#kodik-player-settings-dorama").show();
+		$("#show-hide-player").show();
 	} else {
-	    $("#kodik-player").hide();
-		$("#kodik-player-settings").hide();
-		$("#kodik-player-anime").hide();
-		$("#kodik-player-settings-anime").hide();
-		$("#kodik-player-dorama").hide();
-		$("#kodik-player-settings-dorama").hide();
+	    $("#show-hide-player").hide();
 	}
 }
 
 function ShowOrHidePush() {
     var checkbox = document.getElementById("push_on_off");
 	if( checkbox.checked === true ) {
-		$("#push-settings").show();
-		$("#push-settings-area").show();
-		$("#push-info").show();
-		$("#push-info-area").show();
+		$("#show-hide-push").show();
 	} else {
-		$("#push-settings").hide();
-		$("#push-settings-area").hide();
-		$("#push-info").hide();
-		$("#push-info-area").hide();
+	    $("#show-hide-push").hide();
+	}
+}
+
+function ShowOrHideCalendar() {
+    var checkbox = document.getElementById("calendar_on_off");
+	if( checkbox.checked === true ) {
+		$("#show-hide-calendar").show();
+	} else {
+	    $("#show-hide-calendar").hide();
+	}
+}
+
+function ShowOrHideUpdblock() {
+    var checkbox = document.getElementById("updblock_on_off");
+	if( checkbox.checked === true ) {
+		$("#show-hide-updblock").show();
+	} else {
+	    $("#show-hide-updblock").hide();
 	}
 }
 
 function ShowOrHideRooms() {
     var checkbox = document.getElementById("rooms_on_off");
 	if( checkbox.checked === true ) {
-		$("#rooms-settings").show();
-		$("#rooms-settings-area").show();
-		$("#rooms-info").show();
-		$("#rooms-info-area").show();
+		$("#show-hide-rooms").show();
 	} else {
-		$("#rooms-settings").hide();
-		$("#rooms-settings-area").hide();
-		$("#rooms-info").hide();
-		$("#rooms-info-area").hide();
+		$("#show-hide-rooms").hide();
+	}
+}
+
+function ShowOrHideTg() {
+    var checkbox = document.getElementById("tg_on_off");
+	if( checkbox.checked === true ) {
+		$("#show-hide-tgposting").show();
+	} else {
+		$("#show-hide-tgposting").hide();
 	}
 }
 

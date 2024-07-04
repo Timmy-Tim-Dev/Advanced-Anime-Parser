@@ -48,6 +48,8 @@ if ( $is_logged && $member_id['user_id'] && $news_id && $kodik_data && $maximum_
     
   	if ( $member_id['watched_series'] ) $watched_series = json_decode($member_id['watched_series'], true);
   	else $watched_series = [];
+  	
+  	if ( !is_array($watched_series) ) $watched_series = array();
   
   	foreach ( $watched_series as $key => $value ) {
       	if ( $value['news_id'] == $news_id ) unset($watched_series[$key]);
@@ -62,9 +64,10 @@ if ( $is_logged && $member_id['user_id'] && $news_id && $kodik_data && $maximum_
         'translation' => trim($kodik_translation_title[0])
     ];
   	
-  	array_unshift($watched_series, $new_serie);
+  	if ( is_array($watched_series) && $watched_series ) array_unshift($watched_series, $new_serie);
+	elseif ( is_array($watched_series) ) $watched_series[] = $new_serie;
   
-  	if ( $maximum_animes > 0 ) $watched_series = array_slice($watched_series, 0, $maximum_animes);
+  	if ( is_array( $watched_series ) && $maximum_animes > 0 && count($watched_series) > $maximum_animes ) $watched_series = array_slice($watched_series, 0, $maximum_animes);
   
   	$my_watched_series = json_encode($watched_series, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 	$my_watched_series = str_replace("'", "\'", $my_watched_series);
@@ -100,6 +103,8 @@ if ( $is_logged && $member_id['user_id'] && $news_id && $kodik_data && $maximum_
 if ( $is_logged && $member_id['user_id'] && $news_id && $action == 'delete_watched' ) {
     if ( $member_id['watched_series'] ) $watched_series = json_decode($member_id['watched_series'], true);
   	else $watched_series = [];
+  	
+  	if ( !is_array($watched_series) ) $watched_series = array();
   
   	foreach ( $watched_series as $key => $value ) {
       	if ( $value['news_id'] == $news_id ) unset($watched_series[$key]);

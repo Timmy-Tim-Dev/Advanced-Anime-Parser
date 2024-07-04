@@ -312,6 +312,18 @@ if ($parse_action == 'search') {
 	}
 	
 	if ( !isset($xfields_data['image']) && !$xfields_data['image'] && isset($kodik_data['material_data']['poster_url']) && $kodik_data['material_data']['poster_url'] ) $xfields_data['image'] = $kodik_data['material_data']['poster_url'];
+	
+	//Новые теги - длительность сериала и длительность серии
+    if ( isset($kodik_data['material_data']['episodes_total']) && $kodik_data['material_data']['episodes_total'] && intval($kodik_data['material_data']['episodes_total']) > 1 ) {
+        if ( intval($kodik_data['material_data']['episodes_total']) <= 13 ) $xfields_data['kodik_tv_length'] = 'короткие (до 13 эп.)';
+        elseif ( intval($kodik_data['material_data']['episodes_total']) > 13 && intval($kodik_data['material_data']['episodes_total']) <= 30 ) $xfields_data['kodik_tv_length'] = 'средние (от 14 до 30 эп.)';
+        elseif ( intval($kodik_data['material_data']['episodes_total']) > 30 ) $xfields_data['kodik_tv_length'] = 'длинные (более 30 эп.)';
+    }
+    if ( isset($kodik_data['material_data']['duration']) && $kodik_data['material_data']['duration'] && intval($kodik_data['material_data']['duration']) > 0 ) {
+        if ( intval($kodik_data['material_data']['duration']) <= 10 ) $xfields_data['kodik_duration_length'] = 'до 10 мин.';
+        elseif ( intval($kodik_data['material_data']['duration']) > 10 && intval($kodik_data['material_data']['duration']) <= 30 ) $xfields_data['kodik_duration_length'] = 'от 11 до 30 мин.';
+        elseif ( intval($kodik_data['material_data']['duration']) > 30 ) $xfields_data['kodik_duration_length'] = 'свыше 30 мин.';
+    }
   
 } elseif ( $parse_action == 'grab' && $kind == 'anime' ) {
     

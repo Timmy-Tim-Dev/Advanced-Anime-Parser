@@ -5,98 +5,243 @@ echo <<<HTML
 		<div class="table-responsive">
 			<table class="table table-striped">
 HTML;
-showRow('Вести историю для блока обновления серий сериалов?', 'Если включено, будет вестись история обновления серий сериалов, которую вы сможете отобразить на главной странице сайта. Инструкция находится внизу', makeCheckBox('updates_block[enable_history]', $aaparser_config['updates_block']['enable_history']));
+showRow('Вести историю для блока обновления серий сериалов?', 'Если включено, будет вестись история обновления серий сериалов, которую вы сможете отобразить на главной странице сайта. Инструкция находится внизу', makeCheckBox('updates_block[enable_history]', $aaparser_config['updates_block']['enable_history'], 'ShowOrHideUpdblock'));
+echo <<<HTML
+            </table>
+        </div>
+        <div id="show-hide-updblock">
+            <div class="table-responsive">
+			    <table class="table table-striped">
+HTML;
 showRow('Вести историю в случае если в последней вышедшей серии добавлена новая озвучка?', 'Если включено, в историю будет записано каждое добавление новой озвучки в одной и той же серии, следовательно один сериал в блоке будет показан несколько раз. Если выключено, сериал будет показан в блоке лишь раз по факту обновления серии.<br><b>Будет срабатывать только если во вкладке "Поднятия новостей" активирован пункт "Поднимать в случае если в последней вышедшей серии добавлена новая озвучка?" и выбрано доп. поле "Дополнительное поле c историей добавленных озвучек последней доступной серии"</b>', makeCheckBox('updates_block[new_translation_history]', $aaparser_config['updates_block']['new_translation_history']));
 showRow('За сколько дней вести историю?', 'Введите количество дней, 1 - сегодня, 2 - сегодня и вчера, и так далее', showInput(['updates_block[count_days]', 'number', $aaparser_config['updates_block']['count_days']]));
 showRow('Лимит записей за день', 'Вы можете задать лимит записей истории обновлений за день. Для отключения лимита выставьте 0', showInput(['updates_block[count_history]', 'number', $aaparser_config['updates_block']['count_history']]));
 echo <<<HTML
-			</table>
-		</div>
-		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Инструкция по выводу на сайте</div>
-		<div class="table-responsive">
-			<table class="table table-striped">
-                <tbody>
-                    <tr>
-                        <td style="width:100%">
-                            1. Создайте в корне папки с шаблоном файл под названием kodik_updates_block.tpl.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:100%">
-                            2. Переходим в раздел <a href="https://dashboard.onesignal.com/apps" target="_blank">управления приложениями</a>.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:100%">
-                            3. Нажимаем кнопку <b>New App/Website</b>. <a href="https://prnt.sc/N1X8bGwrLPS-" target="_blank">(скриншот)</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:100%">
-                            4. Вводим любое название в поле <b>Name of your app or website</b> и выбираем <b>Web</b> в <b>Set up web push or mobile push. You can set up more later</b>.  <a href="https://prnt.sc/Depu23wPK9KN" target="_blank">(скриншот)</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:100%">
-                            5. На следующем шаге создания приложения в пункте 1 выбираем <b>Typical Site</b> <a href="https://prnt.sc/xNU08XgX_Y_h" target="_blank">(скриншот)</a><br>
-                             - В пункте 2 заполняем имя сайта, ссылку на сайт а так же ссылку на лого сайта <a href="https://prnt.sc/doTi3zbMimWA" target="_blank">(скриншот)</a><br>
-                             - В пункте 3 жмём на три точки, выбираем Edit <a href="https://prnt.sc/DFzfpYonZ_z3" target="_blank">(скриншот)</a> . Далее активируем чекбокс Customize и меняем текст-предложение подписаться на свой <a href="https://prnt.sc/ixbnzz1-_0uD" target="_blank">(скриншот)</a><br>
-                             - Пункт 4 не обязательный, тут вы можете настроить приветственное уведомление с благодарностью за подписку. Активируем чекбокс, вводим название сайта и сообщение, или же деактивируем чекбокс <a href="https://prnt.sc/oSxIW1w75O6g" target="_blank">(скриншот)</a><br>
-                             - В пункте 5 ничего не меняем, жмём Save.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:100%">
-                            6. На следующем шаге скачиваем архив <b>OneSignal SDK Files</b>, распаковываем файл <b>OneSignalSDKWorker.js</b> и загружаем его <b>в корень вашего сайта</b>, так чтобы он был доступен по ссылке ваш.сайт/OneSignalSDKWorker.js . После этого нажимаем Finish. Приложение создано. Нажимаем на пункт меню <b>Keys & IDs</b> и копируем-вставляем в админке OneSignal App ID и Rest API Key <a href="https://prnt.sc/-bhnqRTJ0Av3" target="_blank">(скриншот)</a>. После всех этих действий вы можете активировать чекбокс включения Push уведомления 
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:100%">
-                            7. В файл шаблона полной новости fullstory.tpl в нужное место, где будет выведена кнопка (например под постером) вставляем тег:<br>
-                            <textarea style="width:100%;height:50px;" disabled>
-[push_subscribe]{push_subscribe}[/push_subscribe]
-                            </textarea>
-                        </td>
-                    </tr>
-                    
-                    <tr>
-                        <td style="width:100%">
-                            8. <b>Далее не обязательные пункты</b>, проделайте их если вы хотите добавить страницу всех аниме, на которые подписан пользователь. Данная страница удобна тем, что можно визуально увидеть свои подписки и отписаться от того, на что не хочется больше получать уведомления. Приступим<br>Если у вас apache, то открываем .htaccess в корне сайта и ниже строчки <b>RewriteEngine On</b> вставляем правила<br>
-                            <textarea style="width:100%;height:80px;" disabled>
-RewriteRule ^subscribes/page/([0-9]+)(/?)+$ index.php?do=subscribe_page&cstart=$1 [L]
-RewriteRule ^subscribes(/?)+$ index.php?do=subscribe_page [L]
-                            </textarea>
-                            <br>Если у вас сайт работает на nginx то правила такие<br>
-                            <textarea style="width:100%;height:80px;" disabled>
-rewrite ^/subscribes/page/([0-9]+)(/?)+$ /index.php?do=subscribe_page&cstart=$1 last;
-rewrite ^/subscribes/*$ /index.php?do=subscribe_page last;
-                            </textarea>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:100%">
-                            9. В корне папки с вашим шаблоном создайте файл <b>shortstory_subscribes.tpl</b> и перенесите в него содержимое вашего <b>shortstory.tpl</b>, оформите как вам нужно. Данный файл отвечает за показ кратких новостей на странице подписок, в нём работают все стандартные теги краткой новости.<br>
-							- Для просмотренного материала <b>[subscribe_viewed]</b> Материал просмотрен <b>[/subscribe_viewed]</b><br>
-							- Для не просмотренного материала <b>[subscribe_notviewed]</b> Материал НЕ просмотрен <b>[/subscribe_notviewed]</b>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:100%">
-                            10. Страница всех подписок доступна по ссылке <a href="{$config["http_home_url"]}subscribes/" target="_blank">{$config["http_home_url"]}subscribes/</a> для авторизованного пользователя. Разместите данную ссылку в нужном вам месте, не забудьте обернуть в тег <b>[not-group=5]</b>...<b>[/not-group]</b>. Для визуального оформления страницы в main.tpl используйте тег <b>[available=subscribe_page]</b>...<b>[/available]</b>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:100%">
-                            11. Для вывода колокольчика <a href="https://prnt.sc/zOGW-gRNleVN" target="_blank">(скриншот)</a> на постере/обложке аниме, в шаблонах <b>shortstory.tpl, fullstory.tpl, shortstory_subscribes.tpl</b> а также в шаблонах выводимых тегом <b>{custom}</b> вам доступен тег <b>{user_subscribed}</b>, вставьте его ниже тега вывода постера/обложки - под/ниже img. 
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:100%">
-                            12. Для вывода количества подписанных новостей <b>{subscribe-total}</b> у пользователя. А так же, <b>{subscribe-notification-count}</b> для вывода не просмотренных уведомлении пользователя.
-                        </td>
-                    </tr>
-                </tbody>
-			</table>
+			    </table>
+		    </div>
+		    <div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Инструкция по выводу на сайте</div>
+		    <div class="table-responsive">
+			    <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <td style="width:100%">
+                                1. В подключённый файл стилей css добавьте следующие стили:
+                                <textarea style="width:100%;height:300px;" disabled>
+.card {
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, .125);
+    border-radius: 2px;
+    position: relative;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+}
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, .125);
+    margin-bottom: 0;
+    padding: .75rem 1rem;
+    background-color: rgba(0, 0, 0, .03);
+}
+.card-header:first-child {
+    border-radius: calc(2px - 1px) calc(2px - 1px) 0 0;
+}
+.card-title {
+    margin-bottom: 0;
+}
+.list-group {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-direction: column;
+    padding-left: 0;
+    margin-bottom: 0;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+}
+.last-update-header {
+    background-color: rgba(0, 0, 0, .15);
+}
+.align-items-center {
+    -webkit-box-align: center !important;
+    -ms-flex-align: center !important;
+    align-items: center !important;
+}
+.di-flex {
+    display: -webkit-box !important;
+    display: -ms-flexbox !important;
+    display: flex !important;
+}
+.mr-1 {
+    margin-right: .25rem !important;
+}
+.d-none {
+    display: none !important;
+}
+@media (min-width: 1200px) {
+    .d-xl-inline {
+        display: inline !important;
+    }
+}
+.bb-dashed-1 {
+    border-bottom: 1px dashed;
+    color: #ff5c57;
+    text-decoration: none;
+    background-color: transparent;
+    -webkit-text-decoration-skip: objects;
+}
+.bb-dashed-1:before {
+    content: attr(data-effect-close);
+}
+.collapse {
+    display: none;
+}
+.collapse.show {
+    display: block;
+}
+.scroll {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
+}
+.list-group-item {
+    position: relative;
+    display: block;
+    padding: .75rem 1.25rem;
+    margin-bottom: -1px;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, .125);
+}
+.list-group-item-action {
+    width: 100%;
+    color: #212529;
+    text-align: inherit;
+}
+.list-group-item:first-child {
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+.border-left-0 {
+    border-left: 0 !important;
+}
+.border-bottom-0 {
+    border-bottom: 0 !important;
+}
+.border-right-0 {
+    border-right: 0 !important;
+}
+.border-top-0 {
+    border-top: 0 !important;
+}
+.media {
+    display: flex;
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+}
+.w-100 {
+    width: 100% !important;
+}
+.last-update-img {
+    width: 48px;
+    margin-right: .5rem !important;
+}
+.img-square {
+    padding-bottom: 100%;
+    width: 100%;
+    height: 0;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-size: cover;
+    border-radius: 50%;
+}
+.media-body {
+    min-width: 0;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+.mr-auto {
+    margin-right: auto !important;
+}
+.bg-transparent {
+    background-color: transparent !important;
+}
+.last-update-title {
+    max-height: 46px;
+    overflow: hidden;
+    font-weight: 600;
+}
+.text-right {
+    text-align: right !important;
+}
+.text-truncate {
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.text-gray-dark-6 {
+    color: rgba(0, 0, 0, .6);
+}
+.media-body .season-info {
+    display:none;
+}
+                                </textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:100%">
+                                2. В подключённый к шаблону файл js скриптов добавьте следующий скрипты:
+                                <textarea style="width:100%;height:300px;" disabled>
+function kodik_block_collapse(id, parent)
+{	
+    var _self = $(this);
+    if ( $("#kodik_block_day_"+id).hasClass("show") ) {
+        $("#kodik_block_day_"+id).removeClass('show');
+        $(parent).html('Развернуть');
+    }
+    else {
+        $("#kodik_block_day_"+id).addClass('show');
+        $(parent).html('Свернуть');
+    }
+}
+                                </textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:100%">
+                                3. В любом месте сайта, в файле шаблона tpl, там где будет выведен блок обновлений сериалов вставьте код:
+                                <textarea style="width:100%;height:300px;" disabled>
+                     [kodik_updates_block]
+						<div class="anime-updates">
+   							<div class="card">
+      							<div class="card-header">
+         							<h3 class="card-title">Обновления аниме</h3>
+      							</div>
+      							<div class="last-update">
+         							<div class="list-group">
+            							{kodik_updates_block}
+         							</div>
+      							</div>
+   							</div>
+						</div>
+                     [/kodik_updates_block]
+                                </textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+			    </table>
+		    </div>
 		</div>
 	</div>
 HTML;

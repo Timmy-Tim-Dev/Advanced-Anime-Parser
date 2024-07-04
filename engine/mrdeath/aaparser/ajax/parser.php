@@ -250,6 +250,12 @@ elseif ( $action == "parser_get" ) {
     
 	if ( $xfields_data['kodik_translation_types_ru'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['kodik_translation_types_ru'])));
 	
+	if ( $xfields_data['shikimori_tv_length'] ) $tags_array[] = $xfields_data['shikimori_tv_length'];
+	elseif ( $xfields_data['kodik_tv_length'] ) $tags_array[] = $xfields_data['kodik_tv_length'];
+	
+	if ( $xfields_data['shikimori_duration_length'] ) $tags_array[] = $xfields_data['shikimori_duration_length'];
+	elseif ( $xfields_data['kodik_duration_length'] ) $tags_array[] = $xfields_data['kodik_duration_length'];
+	
 	if ( $aaparser_config['categories'] AND $tags_array ) {
 		
 		foreach ( $aaparser_config['categories'] as $key => $value ) {

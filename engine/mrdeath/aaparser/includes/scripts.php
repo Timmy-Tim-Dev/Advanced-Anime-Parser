@@ -6,6 +6,8 @@ echo <<<HTML
     ShowOrHideMode({$aaparser_config['settings']['working_mode']});
     ShowOrHidePlayer();
     ShowOrHidePush();
+    ShowOrHideCalendar();
+    ShowOrHideUpdblock();
     ShowOrHideRooms();
     ShowOrHideTg();
 	

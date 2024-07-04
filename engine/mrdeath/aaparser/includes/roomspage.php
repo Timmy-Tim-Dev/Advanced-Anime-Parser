@@ -8,8 +8,9 @@ showRow('Включить комнаты совместного просмотр
 echo <<<HTML
 			</table>
 		</div>
-		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;" id="rooms-settings">Настройка совместного просмотра</div>
-		<div class="table-responsive" id="rooms-settings-area">
+		<div id="show-hide-rooms">
+		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Настройка совместного просмотра</div>
+		<div class="table-responsive">
 			<table class="table table-striped">
 HTML;
 showRow('Семейство иконок Font Awesome', 'Выберите семейство иконок Font Awesome, соответствующее иконкам используемым на сайте. Если у вас не подключена библиотека иконок то обязательно подключаем <a href="https://fontawesome.com/" target="_blank">по ссылке</a>', makeDropDown( $fa_icons, "push_notifications[fa_icons_rooms]", $aaparser_config['push_notifications']['fa_icons_rooms']));
@@ -20,8 +21,8 @@ showRow('Считать комнату активной если её созда
 echo <<<HTML
 			</table>
 		</div>
-		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;" id="rooms-info">Инструкция по настройке</div>
-		<div class="table-responsive" id="rooms-info-area">
+		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Инструкция по настройке</div>
+		<div class="table-responsive">
 			<table class="table table-striped">
                 <tbody>
                     <tr>
@@ -223,6 +224,7 @@ rewrite ^/rooms(/?)+$ /index.php?do=rooms_list last;
                     
                 </tbody>
 			</table>
+		</div>
 		</div>
 	</div>
 HTML;

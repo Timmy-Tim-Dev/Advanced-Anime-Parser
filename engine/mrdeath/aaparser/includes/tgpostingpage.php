@@ -8,8 +8,9 @@ showRow('Включить постинг в Telegram?', 'Включив акти
 echo <<<HTML
 			</table>
 		</div>
-		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;" id="tgposting-settings">Настройка постинга в Telegram</div>
-		<div class="table-responsive" id="tgposting-settings-area">
+		<div id="show-hide-tgposting">
+		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Настройка постинга в Telegram</div>
+		<div class="table-responsive">
 			<table class="table table-striped">
 HTML;
 showRow('Bot token', 'Введите токен вашего бота, полученный после его создания', showInput(['push_notifications[tg_bot_token]', 'text', $aaparser_config['push_notifications']['tg_bot_token']]));
@@ -35,8 +36,8 @@ echo <<<HTML
 			</table>
 			<div class="alert alert-info alert-styled-left alert-arrow-left alert-component">Постинг в Telegram при добавлении или обновлении новостей модулем работает только при помощи крон. Это сделано для того, чтобы не отправлялось одновременно 10, 20, 50 постов. Если вы используете функционал автоматического добавления (граббинга) и/или обновления новостей модулем, то не забудьте добавить задачу в крон<br><b>{$config['http_home_url']}engine/ajax/controller.php?mod=anime_grabber&module=telegram_sender&key={$cron_key}</b> - время открытия ссылки выбирайте на своё усмотрение, оно же частота отправки одного поста в telegram</div>
 		</div>
-		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;" id="tgposting-templates">Настройка постинга в Telegram</div>
-		<div class="table-responsive" id="tgposting-templates-area">
+		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Настройка постинга в Telegram</div>
+		<div class="table-responsive">
 			<table class="table table-striped">
 HTML;
 showRow('Шаблон отправки сообщения в телеграм в момент ручного добавления новости через админку', '', textareaForm(['push_notifications[addnews]', $aaparser_config['push_notifications']['addnews'], 'Введите текст']));
@@ -87,8 +88,8 @@ echo <<<HTML
 			    Результат - <a href="https://prnt.sc/VBg9iuOwYmhj" target="_blank">скрин</a>
 			</div>
 		</div>
-		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;" id="tgposting-info">Инструкция по созданию бота</div>
-		<div class="table-responsive" id="tgposting-info-area">
+		<div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Инструкция по созданию бота</div>
+		<div class="table-responsive">
 			<table class="table table-striped">
                 <tbody>
                     <tr>
@@ -133,6 +134,7 @@ echo <<<HTML
                     </tr>
                 </tbody>
 			</table>
+		</div>
 		</div>
 	</div>
 HTML;

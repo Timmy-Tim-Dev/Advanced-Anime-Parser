@@ -341,5 +341,17 @@ if ( $parse_action == 'search' ) {
         else $xfields_data[$aaparser_config['settings']['next_episode_date_new']] = '';
       }
       else $xfields_data[$aaparser_config['settings']['next_episode_date_new']] = '';
+      
+      //Новые теги - длительность сериала и длительность серии
+      if ( isset($shikimori['episodes']) && $shikimori['episodes'] && intval($shikimori['episodes']) > 1 ) {
+          if ( intval($shikimori['episodes']) <= 13 ) $xfields_data['shikimori_tv_length'] = 'короткие (до 13 эп.)';
+          elseif ( intval($shikimori['episodes']) > 13 && intval($shikimori['episodes']) <= 30 ) $xfields_data['shikimori_tv_length'] = 'средние (от 14 до 30 эп.)';
+          elseif ( intval($shikimori['episodes']) > 30 ) $xfields_data['shikimori_tv_length'] = 'длинные (более 30 эп.)';
+      }
+      if ( isset($shikimori['duration']) && $shikimori['duration'] && intval($shikimori['duration']) > 0 ) {
+          if ( intval($shikimori['duration']) <= 10 ) $xfields_data['shikimori_duration_length'] = 'до 10 мин.';
+          elseif ( intval($shikimori['duration']) > 10 && intval($shikimori['duration']) <= 30 ) $xfields_data['shikimori_duration_length'] = 'от 11 до 30 мин.';
+          elseif ( intval($shikimori['duration']) > 30 ) $xfields_data['shikimori_duration_length'] = 'свыше 30 мин.';
+      }
 	}
 }

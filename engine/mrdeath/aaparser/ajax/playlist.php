@@ -273,10 +273,10 @@ if ($playlist && $action == 'load_player') {
     $episodes .= '</div><div class="nextpl" onclick="nextpl();">&rsaquo;</div></div>';
     
     if (isset($last_season) && isset($last_translator) && isset($last_episode) && $show_seasons === true) {
-        $lastepisodeout = '<div class="b-post__lastepisodeout"><h2><i class="fa fa-eye" style="font-size: 20px !important;"></i>  ' . $serial_name . '<span id="les">. Вы остановились на ' . $last_season . ' сезоне ' . $last_episode . ' серии в озвучке «' . $last_translator . '»</span><i class="fa fa-trash" onclick="del('.$news_id.');" id="lesc" title="Удалить отметку"></i></h2> </div>';
+        $lastepisodeout = '<div class="b-post__lastepisodeout"><h2><i class="'.$aaparser_config['player']['fa_icons'].' fa-eye" style="font-size: 20px !important;"></i>  ' . $serial_name . '<span id="les">. Вы остановились на ' . $last_season . ' сезоне ' . $last_episode . ' серии в озвучке «' . $last_translator . '»</span><i class="'.$aaparser_config['player']['fa_icons'].' fa-trash" onclick="del('.$news_id.');" id="lesc" title="Удалить отметку"></i></h2> </div>';
     }
     elseif (isset($last_season) && isset($last_translator) && isset($last_episode)) {
-        $lastepisodeout = '<div class="b-post__lastepisodeout"><h2><i class="fa fa-eye" style="font-size: 20px !important;"></i>  ' . $serial_name . '<span id="les">. Вы остановились на ' . $last_episode . ' серии в озвучке «' . $last_translator . '»</span><i class="fa fa-trash" onclick="del('.$news_id.');" id="lesc" title="Удалить отметку"></i></h2> </div>';
+        $lastepisodeout = '<div class="b-post__lastepisodeout"><h2><i class="'.$aaparser_config['player']['fa_icons'].' fa-eye" style="font-size: 20px !important;"></i>  ' . $serial_name . '<span id="les">. Вы остановились на ' . $last_episode . ' серии в озвучке «' . $last_translator . '»</span><i class="'.$aaparser_config['player']['fa_icons'].' fa-trash" onclick="del('.$news_id.');" id="lesc" title="Удалить отметку"></i></h2> </div>';
     }
     else $lastepisodeout = '';
     
