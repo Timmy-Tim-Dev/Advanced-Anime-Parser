@@ -123,6 +123,7 @@ if ( $action == "update_news_get" ) {
     if ( $its_lgbt === true && $aaparser_config['fields']['xf_lgbt'] ) $xfields_list[$aaparser_config['fields']['xf_lgbt']] = 1;
 	if ( $shiki_id && $aaparser_config['main_fields']['xf_shikimori_id'] ) $xfields_list[$aaparser_config['main_fields']['xf_shikimori_id']] = $shiki_id;
 	if ( $mdl_id && $aaparser_config['main_fields']['xf_mdl_id'] ) $xfields_list[$aaparser_config['main_fields']['xf_mdl_id']] = $mdl_id;
+	if ( isset($next_episode_date) && $next_episode_date ) $xfields_list[$aaparser_config['settings']['next_episode_date_new']] = $next_episode_date;
                 
     $old_xfields = xfieldsdataload($news_row['xfields']);
                 

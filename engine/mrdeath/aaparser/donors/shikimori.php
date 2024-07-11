@@ -353,5 +353,51 @@ if ( $parse_action == 'search' ) {
           elseif ( intval($shikimori['duration']) > 10 && intval($shikimori['duration']) <= 30 ) $xfields_data['shikimori_duration_length'] = 'от 11 до 30 мин.';
           elseif ( intval($shikimori['duration']) > 30 ) $xfields_data['shikimori_duration_length'] = 'свыше 30 мин.';
       }
+      
+      //Парсинг жанров напрямую со страницы аниме
+      if ( $aaparser_config['settings']['parse_shikimori_genres'] == 1 && isset($shikimori['url']) ) {
+          $shikimori_link = $shikimori_api_domain.$shikimori['url'];
+          $shikimori_link = str_replace(['.me//', '.one//'], ['.me/', '.one/'], $shikimori_link);
+          $shikimori_page = file_get_contents($shikimori_link);
+          if ( strpos($shikimori_page, 'genre-ru') !== false ) {
+              preg_match_all("|<span class='genre-ru'>(.*)<\/span>|U", $shikimori_page, $genresru, PREG_PATTERN_ORDER);
+              if ( is_array($genresru) && isset($genresru[1]) ) {
+                  $alt_genres = [];
+                  foreach ( $genresru[1] as $gnru ) {
+                      $alt_genres[] = mb_strtolower(trim($gnru));
+                  }
+                  if ( $alt_genres ) {
+                      $alt_genres = array_unique($alt_genres);
+                      if ( isset($xfields_data['shikimori_genres']) && $xfields_data['shikimori_genres'] ) {
+                          $new_genres = [];
+                          $old_genres = explode(', ', $xfields_data['shikimori_genres']);
+                          foreach ( $old_genres as $old_genre ) {
+                              $new_genres[] = $old_genre;
+                          }
+                          foreach ( $alt_genres as $alt_genre ) {
+                              $new_genres[] = $alt_genre;
+                          }
+                          $new_genres = array_unique($new_genres);
+                          $xfields_data['shikimori_genres'] = implode(', ', $new_genres);
+                      }
+                      else $xfields_data['shikimori_genres'] = implode(', ', $alt_genres);
+                  }
+              }
+          }
+      }
+      
+      //Парсинг с jikan
+      if ( $shiki_id ) {
+	    $jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
+	    if ( isset( $aaparser_config['settings']['parse_jikan'] ) && isset( $jikan_api['data']['images']['jpg']['large_image_url'] ) && $jikan_api['data']['images']['jpg']['large_image_url'] ) 
+	        $xfields_data['image'] = $jikan_api['data']['images']['jpg']['large_image_url'];
+	    if ( isset( $jikan_api['data']['trailer']['embed_url'] ) && $jikan_api['data']['trailer']['embed_url'] ) 
+	        $xfields_data['youtube_trailer'] = $jikan_api['data']['trailer']['embed_url'];
+	    if ( isset( $jikan_api['data']['score'] ) && $jikan_api['data']['score'] ) 
+	        $xfields_data['myanimelist_rating'] = $jikan_api['data']['score'];
+	    if ( isset( $jikan_api['data']['scored_by'] ) && $jikan_api['data']['scored_by'] ) 
+	        $xfields_data['myanimelist_votes'] = $jikan_api['data']['scored_by'];
+	  }
+      
 	}
 }

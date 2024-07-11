@@ -115,12 +115,6 @@ elseif ( $action == "parser_get" ) {
 	
 	//Работа с картинками
 	
-	if ( isset( $aaparser_config['settings']['parse_jikan'] ) && $shiki_id ) {
-	    $jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
-	    if ( isset( $jikan_api['data']['images']['jpg']['large_image_url'] ) && $jikan_api['data']['images']['jpg']['large_image_url'] ) 
-	        $xfields_data['image'] = $jikan_api['data']['images']['jpg']['large_image_url'];
-	}
-	
 	$_REQUEST['module'] = 'aaparser';
 	include_once(DLEPlugins::Check(ENGINE_DIR . '/classes/uploads/upload.class.php'));
 	
@@ -242,7 +236,7 @@ elseif ( $action == "parser_get" ) {
     if ( $xfields_data['kodik_countries'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['kodik_countries'])));
     
     if ( $xfields_data['shikimori_genres'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['shikimori_genres'])));
-    elseif ( $xfields_data['kodik_genres'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['kodik_genres'])));
+    if ( $xfields_data['kodik_genres'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['kodik_genres'])));
     
     if ( $xfields_data['worldart_tags'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['worldart_tags'])));
     

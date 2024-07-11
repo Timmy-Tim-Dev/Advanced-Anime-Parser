@@ -104,31 +104,40 @@
 	                if ( $aaparser_config['settings']['parse_wa'] == 1 && $shiki_id ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/world_art.php'));
 	            }
                 
-                $tags_array = array();
+    //Обработка категорий
 	
-	            if ( $xfields_data['shikimori_id'] ) $tags_array[] = 'аниме';
-	            elseif ( $xfields_data['mydramalist_id'] ) $tags_array[] = 'дорама';
+	$tags_array = array();
 	
-	            if ( $xfields_data['shikimori_year'] ) $tags_array[] = $xfields_data['shikimori_year'];
-	            elseif ( $xfields_data['kodik_year'] ) $tags_array[] = $xfields_data['kodik_year'];
+	if ( $xfields_data['shikimori_id'] || $shiki_id ) $tags_array[] = 'аниме';
+	elseif ( $xfields_data['mydramalist_id'] ) $tags_array[] = 'дорама';
 	
-                if ( $xfields_data['shikimori_kind_ru'] ) $tags_array[] = $xfields_data['shikimori_kind_ru'];
+	if ( $xfields_data['shikimori_year'] ) $tags_array[] = $xfields_data['shikimori_year'];
+	elseif ( $xfields_data['kodik_year'] ) $tags_array[] = $xfields_data['kodik_year'];
+	
+    if ( $xfields_data['shikimori_kind_ru'] ) $tags_array[] = $xfields_data['shikimori_kind_ru'];
+    elseif ( $xfields_data['kodik_video_type'] ) $tags_array[] = $xfields_data['kodik_video_type'];
     
-                if ( $xfields_data['shikimori_status_ru'] ) $tags_array[] = $xfields_data['shikimori_status_ru'];
-                elseif ( $xfields_data['kodik_status_ru'] ) $tags_array[] = $xfields_data['kodik_status_ru'];
+    if ( $xfields_data['shikimori_status_ru'] ) $tags_array[] = $xfields_data['shikimori_status_ru'];
+    elseif ( $xfields_data['kodik_status_ru'] ) $tags_array[] = $xfields_data['kodik_status_ru'];
     
-                if ( $movie_kind ) $tags_array[] = $movie_kind;
+    if ( $movie_kind ) $tags_array[] = $movie_kind;
     
-                if ( $xfields_data['kodik_countries'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['kodik_countries'])));
+    if ( $xfields_data['kodik_countries'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['kodik_countries'])));
     
-                if ( $xfields_data['shikimori_genres'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['shikimori_genres'])));
-                elseif ( $xfields_data['kodik_genres'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['kodik_genres'])));
+    if ( $xfields_data['shikimori_genres'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['shikimori_genres'])));
+    if ( $xfields_data['kodik_genres'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['kodik_genres'])));
     
-                if ( $xfields_data['worldart_tags'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['worldart_tags'])));
+    if ( $xfields_data['worldart_tags'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['worldart_tags'])));
     
-                if ( $xfields_data['kodik_translation'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['kodik_translation'])));
+    if ( $xfields_data['kodik_translation'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['kodik_translation'])));
     
-	            if ( $xfields_data['kodik_translation_types_ru'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['kodik_translation_types_ru'])));
+	if ( $xfields_data['kodik_translation_types_ru'] ) $tags_array = array_unique(array_merge($tags_array,explode(', ', $xfields_data['kodik_translation_types_ru'])));
+	
+	if ( $xfields_data['shikimori_tv_length'] ) $tags_array[] = $xfields_data['shikimori_tv_length'];
+	elseif ( $xfields_data['kodik_tv_length'] ) $tags_array[] = $xfields_data['kodik_tv_length'];
+	
+	if ( $xfields_data['shikimori_duration_length'] ) $tags_array[] = $xfields_data['shikimori_duration_length'];
+	elseif ( $xfields_data['kodik_duration_length'] ) $tags_array[] = $xfields_data['kodik_duration_length'];
 	
 	            if ( $aaparser_config['categories'] AND $tags_array ) {
 		
