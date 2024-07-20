@@ -141,7 +141,27 @@ if ( $action == "update_news_get" ) {
     $new_xfields = xfieldsdatasaved($old_xfields);
 	$new_xfields = $db->safesql( $new_xfields );
 	            
-	$db->query("UPDATE " . PREFIX . "_post SET xfields='{$new_xfields}' WHERE id='{$news_id}'");
+	if (isset($aaparser_config['settings']['weak_mysql']) && $aaparser_config['settings']['weak_mysql'] == 1) {
+		if (!function_exists('splitStrings')) {
+			function splitStrings($string, $chunkSize) {
+				$parts = str_split($string, $chunkSize);
+				return $parts;
+			}
+		}
+		$weak_mysql_count = $aaparser_config['settings']['weak_mysql_count'] ? $aaparser_config['settings']['weak_mysql_count'] : 1024;
+
+		$xfields_parts = splitStrings($new_xfields, $weak_mysql_count);   
+		foreach ($xfields_parts as $index => $part) {
+			if ($index == 0) $db->query("UPDATE " . PREFIX . "_post SET `xfields` = '{$part}' WHERE id = '{$news_id}'");
+			else $db->query("UPDATE " . PREFIX . "_post SET `xfields` = CONCAT(`xfields`, '{$part}') WHERE id = '{$news_id}'");
+		 
+			if ($db->error) {
+				echo "Ошибка при отправке запроса: " . $db->error ."<br/>Попробуйте выключить слабый режим MYSQL или разбитие уменьшить";
+				break;
+			}
+		}	
+	} else $db->query("UPDATE " . PREFIX . "_post SET xfields='{$new_xfields}' WHERE id='{$news_id}'");
+	
 	$db->query("DELETE FROM " . PREFIX . "_xfsearch WHERE news_id='{$news_id}'");
 	            
 	$newpostedxfields = xfieldsdataload($new_xfields);
@@ -381,7 +401,27 @@ if ( $action == "update_news_get" ) {
 
 	$db->query(" DELETE FROM " . PREFIX . "_images WHERE news_id = '{$news_id}'");
 	$db->query(" INSERT INTO " . PREFIX . "_images (images, news_id, author, date) VALUES ('{$images}', '{$news_id}', '{$author}', '".time()."') ");
-	$db->query(" UPDATE " . PREFIX . "_post SET xfields='{$xfields_post}' WHERE id='{$news_id}'");
+	
+	if (isset($aaparser_config['settings']['weak_mysql']) && $aaparser_config['settings']['weak_mysql'] == 1) {
+		if (!function_exists('splitStrings')) {
+			function splitStrings($string, $chunkSize) {
+				$parts = str_split($string, $chunkSize);
+				return $parts;
+			}
+		}
+		$weak_mysql_count = $aaparser_config['settings']['weak_mysql_count'] ? $aaparser_config['settings']['weak_mysql_count'] : 1024;
+
+		$xfields_parts = splitStrings($xfields_post, $weak_mysql_count);   
+		foreach ($xfields_parts as $index => $part) {
+			if ($index == 0) $db->query("UPDATE " . PREFIX . "_post SET `xfields` = '{$part}' WHERE id = '{$news_id}'");
+			else $db->query("UPDATE " . PREFIX . "_post SET `xfields` = CONCAT(`xfields`, '{$part}') WHERE id = '{$news_id}'");
+		 
+			if ($db->error) {
+				echo "Ошибка при отправке запроса: " . $db->error ."<br/>Попробуйте выключить слабый режим MYSQL или разбитие уменьшить";
+				break;
+			}
+		}	
+	} else $db->query("UPDATE " . PREFIX . "_post SET xfields='{$xfields_post}' WHERE id='{$news_id}'");
 
 	clear_cache( array('news_', 'full_'.$news_id) );
 	

@@ -473,9 +473,36 @@
 	        $xfields_post = xfieldsdatasaved($xfields_post);
 	        $xfields_post = $db->safesql( $xfields_post );
 	        
-	        if ( $need_update_date == 1 ) $db->query( "UPDATE " . PREFIX . "_post SET xfields='{$xfields_post}', date='{$new_date}' {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
-	        else $db->query( "UPDATE " . PREFIX . "_post SET xfields='{$xfields_post}' {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
-	        $db->query( "UPDATE " . PREFIX . "_post_extras SET editdate='{$new_time}' WHERE news_id='{$news_id}'" );
+			if (isset($aaparser_config['settings']['weak_mysql']) && $aaparser_config['settings']['weak_mysql'] == 1) {
+				if (!function_exists('splitStrings')) {
+					function splitStrings($string, $chunkSize) {
+						$parts = str_split($string, $chunkSize);
+						return $parts;
+					}
+				}
+				$weak_mysql_count = $aaparser_config['settings']['weak_mysql_count'] ? $aaparser_config['settings']['weak_mysql_count'] : 1024;
+
+				$xfields_parts = splitStrings($xfields_post, $weak_mysql_count);   
+				foreach ($xfields_parts as $index => $part) {
+					if ($index == 0) {
+						if ( $need_update_date == 1 ) $db->query( "UPDATE " . PREFIX . "_post SET `xfields` = '{$part}', date='{$new_date}' {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
+						else $db->query( "UPDATE " . PREFIX . "_post SET `xfields` = '{$part}' {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
+					} else {
+						if ( $need_update_date == 1 ) $db->query( "UPDATE " . PREFIX . "_post SET `xfields` = CONCAT(`xfields`, '{$part}'), date='{$new_date}' {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
+						else $db->query( "UPDATE " . PREFIX . "_post SET `xfields` = CONCAT(`xfields`, '{$part}') {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
+					}
+				 
+					if ($db->error) {
+						echo "Ошибка при отправке запроса: " . $db->error ."<br/>Попробуйте выключить слабый режим MYSQL или разбитие уменьшить";
+						break;
+					}
+				}	
+			} else {			
+				if ( $need_update_date == 1 ) $db->query( "UPDATE " . PREFIX . "_post SET xfields='{$xfields_post}', date='{$new_date}' {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
+				else $db->query( "UPDATE " . PREFIX . "_post SET xfields='{$xfields_post}' {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
+	        }	
+			
+			$db->query( "UPDATE " . PREFIX . "_post_extras SET editdate='{$new_time}' WHERE news_id='{$news_id}'" );
 			if ( $need_update_date == 1 ) echo 'Обновилось аниме '.$checking_post['title'].$reason_updation.'. Новость была апнута<br>';
 			else echo 'Обновилось аниме '.$checking_post['title'].$reason_updation.'<br>';
 			
