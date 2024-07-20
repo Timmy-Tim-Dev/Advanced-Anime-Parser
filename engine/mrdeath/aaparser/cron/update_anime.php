@@ -8,6 +8,14 @@
 =====================================================
 */
 
+    if ( $aaparser_config['integration']['ksep'] == 1 && file_exists(ENGINE_DIR.'/mrdeath/ksep/modules/aap.php') ) {
+  	    $required_from = 'aap';
+  	    require_once ENGINE_DIR.'/mrdeath/ksep/data/config.php';
+  	    require_once ENGINE_DIR.'/mrdeath/ksep/functions/module.php';
+  	    $ksep_enabled = true;
+    }
+    else $ksep_enabled = false;
+
     if (file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json') && $aaparser_config['updates_block']['enable_history'] == 1) {
   	    $updates_history = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/updates_history.json' ), true );
     } else $updates_history = false;
@@ -555,14 +563,11 @@
 			
         }
         
-        if ( $aaparser_config['integration']['ksep'] == 1 && file_exists(ENGINE_DIR.'/mrdeath/ksep/modules/aap.php') ) {
+        if ( $ksep_enabled === true ) {
   	        $shikiid = $anime_check['shikimori_id'];
   	        $mdlid = false;
   	        $rowid = $checking_post['id'];
-  	        $required_from = 'aap';
-  	        require_once ENGINE_DIR.'/mrdeath/ksep/data/config.php';
-  	        require_once ENGINE_DIR.'/mrdeath/ksep/functions/module.php';
-	        require_once ENGINE_DIR.'/mrdeath/ksep/modules/aap.php';
+	        require ENGINE_DIR.'/mrdeath/ksep/modules/aap.php';
         }
         
 		unset($xfields_post, $title_en, $title_ru, $news_id, $update_fields, $checking_post, $last_season_k, $last_episode_k, $serial_status_k, $serial_status_ru_k, $quality, $translation, $translation_type, $translation_type_ru, $playlist, $translators_list, $translators_types, $need_update, $material_row);

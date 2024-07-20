@@ -17,8 +17,11 @@ $cat_type = [
     'movie' => 'Фильм',
     'ova' => 'OVA',
     'ona' => 'ONA',
-    'special' => 'Спэшл',
-    'music' => 'AMV'
+    'special' => 'Спецвыпуск',
+    'tv_special' => 'TV Спецвыпуск',
+    'music' => 'Клип',
+    'pv' => 'Проморолик',
+    'cm' => 'Реклама',
 ];
 
 $status_type = [
