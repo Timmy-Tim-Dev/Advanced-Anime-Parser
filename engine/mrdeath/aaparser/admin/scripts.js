@@ -1,36 +1,40 @@
 function ChangeOption(obj, selectedOption) {
-	$('#option_menu li').removeClass('active');
-	$(obj).parent().addClass('active');
-	document.getElementById('settings').style.display = 'none';
-	document.getElementById('grabbing').style.display = 'none';
-	document.getElementById('updates').style.display = 'none';
-	document.getElementById('update_news').style.display = 'none';
-	document.getElementById('integration').style.display = 'none';
-	document.getElementById('xfields').style.display = 'none';
-	document.getElementById('categories').style.display = 'none';
-	document.getElementById('images').style.display = 'none';
-	document.getElementById('cronik').style.display = 'none';
-	document.getElementById('anonsik').style.display = 'none';
-	document.getElementById('faq').style.display = 'none';
-	document.getElementById('modules').style.display = 'none';
-	document.getElementById(selectedOption).style.display = '';
+    $('#option_menu li').removeClass('active');
+    $(obj).parent().addClass('active');
 
-	return false;
+    const elementIds = [
+        'settings', 'grabbing', 'updates', 'update_news', 'integration',
+        'xfields', 'categories', 'images', 'cronik', 'anonsik', 'faq', 'modules'
+    ];
+
+    elementIds.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.style.display = 'none';
+    });
+
+    const selectedElement = document.getElementById(selectedOption);
+    if (selectedElement) selectedElement.style.display = '';
+
+    return false;
 }
-function ChangeOptionModules(obj, selectedOption) {
-	$('#option_menu_modules li').removeClass('active');
-	$(obj).parent().addClass('active');
-	document.getElementById('player').style.display = 'none';
-	document.getElementById('calendar').style.display = 'none';
-	document.getElementById('updates_block').style.display = 'none';
-	document.getElementById('push').style.display = 'none';
-	document.getElementById('rooms').style.display = 'none';
-	document.getElementById('gindexing').style.display = 'none';
-	document.getElementById('tgposting').style.display = 'none';
-	document.getElementById('personajes').style.display = 'none';
-	document.getElementById(selectedOption).style.display = '';
 
-	return false;
+
+function ChangeOptionModules(obj, selectedOption) {
+    $('#option_menu_modules li').removeClass('active');
+    $(obj).parent().addClass('active');
+
+    const elements = [
+        'player', 'calendar', 'updates_block', 'push', 'rooms',
+        'gindexing', 'tgposting', 'personajes'
+    ];
+    elements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.style.display = 'none';
+    });
+    const selectedElement = document.getElementById(selectedOption);
+    if (selectedElement) selectedElement.style.display = '';
+
+    return false;
 }
 
 $(document).ready(function() {
@@ -364,6 +368,25 @@ function update_translations_dorama() {
 	});
 }
 
+function ShowOrHideTg() {
+    var checkbox = document.getElementById("tg_on_off");
+	if( checkbox.checked === true ) {
+		$("#tgposting-settings").show();
+		$("#tgposting-settings-area").show();
+		$("#tgposting-templates").show();
+		$("#tgposting-templates-area").show();
+		$("#tgposting-info").show();
+		$("#tgposting-info-area").show();
+	} else {
+		$("#tgposting-settings").hide();
+		$("#tgposting-settings-area").hide();
+		$("#tgposting-templates").hide();
+		$("#tgposting-templates-area").hide();
+		$("#tgposting-info").hide();
+		$("#tgposting-info-area").hide();
+	}
+}
+
 function ShowOrHideCatStatus(value) {
 	if( value == '1' ) {
 		$("#cat_check_status").show();
@@ -437,54 +460,49 @@ function ShowOrHideXfStatus(value) {
 function ShowOrHidePlayer() {
     var checkbox = document.getElementById("player_on_off");
 	if( checkbox.checked === true ) {
-		$("#show-hide-player").show();
+		$("#kodik-player").show();
+		$("#kodik-player-settings").show();
+		$("#kodik-player-anime").show();
+		$("#kodik-player-settings-anime").show();
+		$("#kodik-player-dorama").show();
+		$("#kodik-player-settings-dorama").show();
 	} else {
-	    $("#show-hide-player").hide();
+	    $("#kodik-player").hide();
+		$("#kodik-player-settings").hide();
+		$("#kodik-player-anime").hide();
+		$("#kodik-player-settings-anime").hide();
+		$("#kodik-player-dorama").hide();
+		$("#kodik-player-settings-dorama").hide();
 	}
 }
 
 function ShowOrHidePush() {
     var checkbox = document.getElementById("push_on_off");
 	if( checkbox.checked === true ) {
-		$("#show-hide-push").show();
+		$("#push-settings").show();
+		$("#push-settings-area").show();
+		$("#push-info").show();
+		$("#push-info-area").show();
 	} else {
-	    $("#show-hide-push").hide();
-	}
-}
-
-function ShowOrHideCalendar() {
-    var checkbox = document.getElementById("calendar_on_off");
-	if( checkbox.checked === true ) {
-		$("#show-hide-calendar").show();
-	} else {
-	    $("#show-hide-calendar").hide();
-	}
-}
-
-function ShowOrHideUpdblock() {
-    var checkbox = document.getElementById("updblock_on_off");
-	if( checkbox.checked === true ) {
-		$("#show-hide-updblock").show();
-	} else {
-	    $("#show-hide-updblock").hide();
+		$("#push-settings").hide();
+		$("#push-settings-area").hide();
+		$("#push-info").hide();
+		$("#push-info-area").hide();
 	}
 }
 
 function ShowOrHideRooms() {
     var checkbox = document.getElementById("rooms_on_off");
 	if( checkbox.checked === true ) {
-		$("#show-hide-rooms").show();
+		$("#rooms-settings").show();
+		$("#rooms-settings-area").show();
+		$("#rooms-info").show();
+		$("#rooms-info-area").show();
 	} else {
-		$("#show-hide-rooms").hide();
-	}
-}
-
-function ShowOrHideTg() {
-    var checkbox = document.getElementById("tg_on_off");
-	if( checkbox.checked === true ) {
-		$("#show-hide-tgposting").show();
-	} else {
-		$("#show-hide-tgposting").hide();
+		$("#rooms-settings").hide();
+		$("#rooms-settings-area").hide();
+		$("#rooms-info").hide();
+		$("#rooms-info-area").hide();
 	}
 }
 

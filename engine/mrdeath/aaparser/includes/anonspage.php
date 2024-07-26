@@ -14,7 +14,12 @@ foreach ($cat_info as $cat_arr) {
 	else $anons_category_values[] = '<option value="'.$cat_arr['id'].'">'.$cat_arr['name'].'</option>';
 	$anons_category_values[] = $cat_arr['name'];
 }
-showRow('Выберите категорию', 'Выберите категорию которую необходимо добавить при добавлении материала </br><span style="color:red">При проставлении категориев, в будущем при изменении статуса аниме или же его описания, оно будет проверяться по этой категории</span>', '<select data-placeholder="Выберите Категорию" name="settings_anons[cat_id]" id="settings_anons[cat_id]" class="valuesselect" multiple style="width:100%;max-width:350px;">'.implode('', $anons_category_values).'</select>');
+if (!is_array($anons_category_values)) {
+    $anons_category_values = array($anons_category_values);
+}
+
+$categoryOptions = implode('', $anons_category_values);
+showRow('Выберите категорию', 'Выберите категорию которую необходимо добавить при добавлении материала </br><span style="color:red">При проставлении категориев, в будущем при изменении статуса аниме или же его описания, оно будет проверяться по этой категории</span>', '<select data-placeholder="Выберите Категорию" name="settings_anons[cat_id]" id="settings_anons[cat_id]" class="valuesselect" multiple style="width:100%;max-width:350px;">'.$categoryOptions.'</select>');
 showRow('Опубликовать новость на сайте', '', makeCheckBox('settings_anons[publish]', $aaparser_config['settings_anons']['publish']));
 showRow('На модерацию без постера', '', makeCheckBox('settings_anons[publish_image]', $aaparser_config['settings_anons']['publish_image']));
 showRow('На модерацию без описания(сюжета)', '', makeCheckBox('settings_anons[publish_plot]', $aaparser_config['settings_anons']['publish_plot']));
