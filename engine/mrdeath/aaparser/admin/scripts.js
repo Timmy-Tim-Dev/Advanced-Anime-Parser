@@ -1,41 +1,34 @@
+function hideElement(id) {
+	const element = document.getElementById(id);
+	if (element) element.style.display = 'none';
+}
+
 function ChangeOption(obj, selectedOption) {
     $('#option_menu li').removeClass('active');
     $(obj).parent().addClass('active');
-
-    const elementIds = [
-        'settings', 'grabbing', 'updates', 'update_news', 'integration',
+    const sections = [
+        'settings', 'grabbing', 'updates', 'update_news', 'integration', 
         'xfields', 'categories', 'images', 'cronik', 'anonsik', 'faq', 'modules'
     ];
-
-    elementIds.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) element.style.display = 'none';
-    });
-
+    sections.forEach(section => hideElement(section));
     const selectedElement = document.getElementById(selectedOption);
     if (selectedElement) selectedElement.style.display = '';
-
     return false;
 }
-
 
 function ChangeOptionModules(obj, selectedOption) {
     $('#option_menu_modules li').removeClass('active');
     $(obj).parent().addClass('active');
-
-    const elements = [
+    const sections = [
         'player', 'calendar', 'updates_block', 'push', 'rooms',
         'gindexing', 'tgposting', 'personajes'
     ];
-    elements.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) element.style.display = 'none';
-    });
+    sections.forEach(section => hideElement(section));
     const selectedElement = document.getElementById(selectedOption);
     if (selectedElement) selectedElement.style.display = '';
-
     return false;
 }
+
 
 $(document).ready(function() {
     $( "#connect-base" ).click(function() {
@@ -369,23 +362,14 @@ function update_translations_dorama() {
 }
 
 function ShowOrHideTg() {
-    var checkbox = document.getElementById("tg_on_off");
-	if( checkbox.checked === true ) {
-		$("#tgposting-settings").show();
-		$("#tgposting-settings-area").show();
-		$("#tgposting-templates").show();
-		$("#tgposting-templates-area").show();
-		$("#tgposting-info").show();
-		$("#tgposting-info-area").show();
-	} else {
-		$("#tgposting-settings").hide();
-		$("#tgposting-settings-area").hide();
-		$("#tgposting-templates").hide();
-		$("#tgposting-templates-area").hide();
-		$("#tgposting-info").hide();
-		$("#tgposting-info-area").hide();
-	}
+    var elements = [
+        'tgposting-settings', 'tgposting-settings-area', 'tgposting-templates',
+        'tgposting-templates-area', 'tgposting-info', 'tgposting-info-area'
+    ];
+    var action = document.getElementById("tg_on_off").checked ? 'show' : 'hide';
+    elements.forEach(id => {$("#" + id)[action]();});
 }
+
 
 function ShowOrHideCatStatus(value) {
 	if( value == '1' ) {
@@ -458,73 +442,36 @@ function ShowOrHideXfStatus(value) {
 }
 
 function ShowOrHidePlayer() {
-    var checkbox = document.getElementById("player_on_off");
-	if( checkbox.checked === true ) {
-		$("#kodik-player").show();
-		$("#kodik-player-settings").show();
-		$("#kodik-player-anime").show();
-		$("#kodik-player-settings-anime").show();
-		$("#kodik-player-dorama").show();
-		$("#kodik-player-settings-dorama").show();
-	} else {
-	    $("#kodik-player").hide();
-		$("#kodik-player-settings").hide();
-		$("#kodik-player-anime").hide();
-		$("#kodik-player-settings-anime").hide();
-		$("#kodik-player-dorama").hide();
-		$("#kodik-player-settings-dorama").hide();
-	}
+    var elements = [
+        'kodik-player', 'kodik-player-settings', 'kodik-player-anime',
+        'kodik-player-settings-anime', 'kodik-player-dorama', 'kodik-player-settings-dorama'
+    ];
+    var action = document.getElementById("player_on_off").checked ? 'show' : 'hide';
+    elements.forEach(id => {$("#" + id)[action]();});
 }
+
 
 function ShowOrHidePush() {
-    var checkbox = document.getElementById("push_on_off");
-	if( checkbox.checked === true ) {
-		$("#push-settings").show();
-		$("#push-settings-area").show();
-		$("#push-info").show();
-		$("#push-info-area").show();
-	} else {
-		$("#push-settings").hide();
-		$("#push-settings-area").hide();
-		$("#push-info").hide();
-		$("#push-info-area").hide();
-	}
+    var elements = ['push-settings', 'push-settings-area', 'push-info', 'push-info-area'];
+    var action = document.getElementById("push_on_off").checked ? 'show' : 'hide';
+    elements.forEach(id => {$("#" + id)[action]();});
 }
+
 
 function ShowOrHideRooms() {
-    var checkbox = document.getElementById("rooms_on_off");
-	if( checkbox.checked === true ) {
-		$("#rooms-settings").show();
-		$("#rooms-settings-area").show();
-		$("#rooms-info").show();
-		$("#rooms-info-area").show();
-	} else {
-		$("#rooms-settings").hide();
-		$("#rooms-settings-area").hide();
-		$("#rooms-info").hide();
-		$("#rooms-info-area").hide();
-	}
+    var elements = ['rooms-settings', 'rooms-settings-area', 'rooms-info','rooms-info-area'];
+    var action = document.getElementById("rooms_on_off").checked ? 'show' : 'hide';
+    elements.forEach(id => {$("#" + id)[action]();});
 }
 
+
 function ShowOrHideGindexing() {
-    var checkbox = document.getElementById("google_indexing");
-	if( checkbox.checked === true ) {
-		$("#gindexing-settings").show();
-		$("#gindexing-status-info").show();
-		$("#gindexing-status").show();
-		$("#gindexing-mass-info").show();
-		$("#gindexing-mass").show();
-		$("#gindexing-guide-info").show();
-		$("#gindexing-guide").show();
-	} else {
-		$("#gindexing-settings").hide();
-		$("#gindexing-status-info").hide();
-		$("#gindexing-status").hide();
-		$("#gindexing-mass-info").hide();
-		$("#gindexing-mass").hide();
-		$("#gindexing-guide-info").hide();
-		$("#gindexing-guide").hide();
-	}
+    var elements = [
+        'gindexing-settings', 'gindexing-status-info', 'gindexing-status', 'gindexing-mass-info',
+        'gindexing-mass', 'gindexing-guide-info', 'gindexing-guide'
+    ];
+    var action = document.getElementById("google_indexing").checked ? 'show' : 'hide';
+    elements.forEach(id => {$("#" + id)[action]();});
 }
 
 function saveAcc(acc) {
@@ -741,13 +688,11 @@ function clear_page_cache() {
 
 $(document).ready(function(){
 	$(".rcol-2col-header").click (function(){
-
 		$(this).next(".rcol-2col-body").stop().slideToggle(300);
 		if ($(this).children('.show-hide').text() == 'Show') {
-		$(this).children('.show-hide').text('Hide');
-		}
-		else {
-		$(this).children('.show-hide').text('Show');
+			$(this).children('.show-hide').text('Hide');
+		} else {
+			$(this).children('.show-hide').text('Show');
 		}
 	});
    
