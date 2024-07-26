@@ -80,6 +80,27 @@ $(document).ready(function() {
 		    });
 	    });
 	});
+	// Создание базы данных заново
+	$( "#external-create-bd" ).click(function() {
+	    DLEconfirm("Данное действие необратимо. Сделайте резервную копию базы данных. Вы уверены что хотите запустить создания базы данных заново?", "Подтвердите действие", function YesImReady() {
+		    ShowLoading('');
+			$.ajax({
+			    url: '/engine/ajax/controller.php?mod=anime_grabber&module=kodik_mass_update',
+			    data: {action: "external_create_bd", user_hash: dle_login_hash},
+			    response: 'json',
+			    success: function (data) {
+				    if ( data == "ok" ) {
+                	Growl.info({
+						title: 'База создана снова!',
+						text: 'Проверьте сайт и убедитесь что всё нормально'
+					});
+					HideLoading('');
+					return false;
+				}
+			    }
+		    });
+	    });
+	});
 });
 
 function senddata(ind, list_news, current_upd, current) {
