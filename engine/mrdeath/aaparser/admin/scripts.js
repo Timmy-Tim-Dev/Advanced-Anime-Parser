@@ -382,16 +382,6 @@ function update_translations_dorama() {
 	});
 }
 
-function ShowOrHideTg() {
-    var elements = [
-        'tgposting-settings', 'tgposting-settings-area', 'tgposting-templates',
-        'tgposting-templates-area', 'tgposting-info', 'tgposting-info-area'
-    ];
-    var action = document.getElementById("tg_on_off").checked ? 'show' : 'hide';
-    elements.forEach(id => {$("#" + id)[action]();});
-}
-
-
 function ShowOrHideCatStatus(value) {
 	if( value == '1' ) {
 		$("#cat_check_status").show();
@@ -463,28 +453,40 @@ function ShowOrHideXfStatus(value) {
 }
 
 function ShowOrHidePlayer() {
-    var elements = [
-        'kodik-player', 'kodik-player-settings', 'kodik-player-anime',
-        'kodik-player-settings-anime', 'kodik-player-dorama', 'kodik-player-settings-dorama'
-    ];
-    var action = document.getElementById("player_on_off").checked ? 'show' : 'hide';
-    elements.forEach(id => {$("#" + id)[action]();});
+    var checkbox = document.getElementById("player_on_off");
+	if( checkbox.checked === true ) $("#show-hide-player").show();
+	else $("#show-hide-player").hide();
 }
-
 
 function ShowOrHidePush() {
-    var elements = ['push-settings', 'push-settings-area', 'push-info', 'push-info-area'];
-    var action = document.getElementById("push_on_off").checked ? 'show' : 'hide';
-    elements.forEach(id => {$("#" + id)[action]();});
+    var checkbox = document.getElementById("push_on_off");
+	if( checkbox.checked === true ) $("#show-hide-push").show();
+	else $("#show-hide-push").hide();
 }
 
+function ShowOrHideCalendar() {
+    var checkbox = document.getElementById("calendar_on_off");
+	if( checkbox.checked === true ) $("#show-hide-calendar").show();
+	else $("#show-hide-calendar").hide();
+}
+
+function ShowOrHideUpdblock() {
+    var checkbox = document.getElementById("updblock_on_off");
+	if( checkbox.checked === true ) $("#show-hide-updblock").show();
+	else $("#show-hide-updblock").hide();
+}
 
 function ShowOrHideRooms() {
-    var elements = ['rooms-settings', 'rooms-settings-area', 'rooms-info','rooms-info-area'];
-    var action = document.getElementById("rooms_on_off").checked ? 'show' : 'hide';
-    elements.forEach(id => {$("#" + id)[action]();});
+    var checkbox = document.getElementById("rooms_on_off");
+	if( checkbox.checked === true ) $("#show-hide-rooms").show();
+	else $("#show-hide-rooms").hide();
 }
 
+function ShowOrHideTg() {
+    var checkbox = document.getElementById("tg_on_off");
+	if( checkbox.checked === true ) $("#show-hide-tgposting").show();
+	else $("#show-hide-tgposting").hide();
+}
 
 function ShowOrHideGindexing() {
     var elements = [
