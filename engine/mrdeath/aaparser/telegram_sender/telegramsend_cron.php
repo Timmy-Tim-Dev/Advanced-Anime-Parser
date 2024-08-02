@@ -29,6 +29,6 @@ if ( $stop_send_from && $stop_send_to && $stop_send_from < $stop_send_to ) if ( 
 
 $working_mode = 'cron';
 
-require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend.php'));
+require (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend.php'));
 
 ?>

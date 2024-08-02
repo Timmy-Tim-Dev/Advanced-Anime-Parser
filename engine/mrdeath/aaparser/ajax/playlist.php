@@ -12,7 +12,7 @@ if( !defined('DATALIFEENGINE' ) ) {
 	die('Hacking attempt!');
 }
 
-require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php'));
 
 if ( !isset($kodik_playlist_fullstory) ) {
   

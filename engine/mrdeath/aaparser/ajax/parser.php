@@ -18,8 +18,8 @@ $mode = isset($_GET['mode']) ? $_GET['mode'] : '';
 
 $is_logged = false;
 
-require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
-require_once ENGINE_DIR . '/mrdeath/aaparser/functions/public.php';
+require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/module.php'));
+require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/public.php'));
 
 @header('Content-type: text/html; charset=' . $config['charset']);
 

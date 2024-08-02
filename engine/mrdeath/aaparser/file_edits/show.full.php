@@ -62,8 +62,8 @@ if ( $aaparser_config['push_notifications']['enable'] && $is_logged ) {
 
 if ( isset($aaparser_config['player']['player_method']) && $aaparser_config['player']['player_method'] == 1 ) {
     $kodik_playlist_fullstory = 'yes';
-    if ( $aaparser_config['player']['method'] == 1 ) include ENGINE_DIR.'/mrdeath/aaparser/ajax/playlist_new.php';
-    else include ENGINE_DIR.'/mrdeath/aaparser/ajax/playlist.php';
+    if ( $aaparser_config['player']['method'] == 1 ) include (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/ajax/playlist_new.php'));
+    else include (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/ajax/playlist.php'));
 } else {
     if ( $aaparser_config['player']['preloader'] ) $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"><div class="loading-kodik"><div class="arc"></div><div class="arc"></div><div class="arc"></div></div></div>' );
     else $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"></div>' );
@@ -87,5 +87,5 @@ if (isset($aaparser_config['player']['voicerate_mod']) && $aaparser_config['play
 
 if ( isset($aaparser_config['persons']['personas_on_dorama']) && $aaparser_config['persons']['personas_on_dorama'] == 1 && isset($aaparser_config['main_fields']['xf_mdl_id']) && isset($xfieldsdata[$aaparser_config['main_fields']['xf_mdl_id']]) && $xfieldsdata[$aaparser_config['main_fields']['xf_mdl_id']] ) {
     $kodik_persons_dorama = 'yes';
-    include ENGINE_DIR.'/mrdeath/aaparser/ajax/persons.php';
+    include (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/ajax/persons.php'));
 } else $tpl->set( '{kodik_persons_dorama}', '' );

@@ -188,7 +188,7 @@ if (!file_exists($filePath)) {
 		</operation>
 		<operation action="after">
 			<searchcode><![CDATA[echo $categoryfilter;]]></searchcode>
-			<replacecode><![CDATA[require_once ENGINE_DIR . '/mrdeath/aaparser/file_edits/addeditnews.php';
+			<replacecode><![CDATA[require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/addeditnews.php'));
 
 $kodik_xf_field = $aaparser_config['main_fields']['xf_player'];
 $xf_shikimori_id = $aaparser_config['main_fields']['xf_shikimori_id'];
@@ -231,7 +231,7 @@ function updateKodikPlayer(xf)
 			<replacecode><![CDATA[$xf_temp_fields = xfieldsdataload($filecontents);
 if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
   	if ( isset($xf_temp_fields[$aaparser_config['main_fields']['xf_shikimori_id']]) ) {
-      	require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
+      	require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/module.php'));
       	$shikimori_id = $xf_temp_fields[$aaparser_config['main_fields']['xf_shikimori_id']];
       	$base_check_db = $db->super_query( "SELECT shikimori_id, news_id FROM " . PREFIX . "_anime_list WHERE shikimori_id='{$shikimori_id}'" );
       	if ( $base_check_db['shikimori_id'] == $shikimori_id && $base_check_db['news_id'] != $id )
@@ -252,7 +252,7 @@ if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
 }
 elseif ( isset($aaparser_config['main_fields']['xf_mdl_id']) ) {
   	if ( isset($xf_temp_fields[$aaparser_config['main_fields']['xf_mdl_id']]) ) {
-      	require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
+      	require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/module.php'));
       	$mdl_id = $xf_temp_fields[$aaparser_config['main_fields']['xf_mdl_id']];
       	$base_check_db = $db->super_query( "SELECT mdl_id, news_id FROM " . PREFIX . "_anime_list WHERE mdl_id='{$mdl_id}'" );
       	if ( $base_check_db['mdl_id'] == $mdl_id && $base_check_db['news_id'] != $id )
@@ -326,7 +326,7 @@ if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparse
 		</operation>
 		<operation action="after">
 			<searchcode><![CDATA[echo $categoryfilter;]]></searchcode>
-			<replacecode><![CDATA[require_once ENGINE_DIR . '/mrdeath/aaparser/file_edits/addeditnews.php';
+			<replacecode><![CDATA[require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/addeditnews.php'));
 
 $kodik_xf_field = $aaparser_config['main_fields']['xf_player'];
 $xf_shikimori_id = $aaparser_config['main_fields']['xf_shikimori_id'];
@@ -494,7 +494,7 @@ if (!$user_group[$member_id['user_group']]['admin_complaint']) {
 	msg('error', $lang['index_denied'], $lang['index_denied']);
 }
 
-include ENGINE_DIR . '/mrdeath/aaparser/admin/index.php';
+include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/admin/index.php'));
 
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -508,23 +508,23 @@ if( !defined('DATALIFEENGINE' ) ) {
 	die('Hacking attempt!');
 }
 
-if (isset($_GET['module']) == false) include ENGINE_DIR . '/mrdeath/aaparser/ajax/grabber.php';
+if (isset($_GET['module']) == false) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/grabber.php'));
 else {
   	if ($user_group[$member_id['user_group']]['admin_complaint']) {
-      	if ($_GET['module'] == "anime_parser") include ENGINE_DIR . '/mrdeath/aaparser/ajax/parser.php';
-        if ($_GET['module'] == "aaparser_save") include ENGINE_DIR . '/mrdeath/aaparser/admin/ajax/save_config.php';
-        if ($_GET['module'] == "aaparser_clear") include ENGINE_DIR . '/mrdeath/aaparser/ajax/update_queue.php';
-      	if ($_GET['module'] == "kodik_mass_update") include ENGINE_DIR . '/mrdeath/aaparser/ajax/mass_update.php';
+      	if ($_GET['module'] == "anime_parser") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/parser.php'));
+        if ($_GET['module'] == "aaparser_save") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/admin/ajax/save_config.php'));
+        if ($_GET['module'] == "aaparser_clear") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/update_queue.php'));
+      	if ($_GET['module'] == "kodik_mass_update") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/mass_update.php'));
       	if ($_GET['module'] == "gindexing" && file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php')) {
-            include ENGINE_DIR . '/mrdeath/aaparser/google_indexing/ajax/save.php';
+            include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/ajax/save.php'));
         }
   	}
-  	if ($_GET['module'] == "kodik_playlist_ajax") include ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist.php';
-  	if ($_GET['module'] == "kodik_playlist_ajax_new") include ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist_new.php';
-  	if ($_GET['module'] == "telegram_sender") include ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_cron.php';
-  	if ($_GET['module'] == "push_subscribe") include ENGINE_DIR . '/mrdeath/aaparser/ajax/push_subscribe.php';
-  	if ($_GET['module'] == "kodik_watched") include ENGINE_DIR . '/mrdeath/aaparser/ajax/save_watched.php';
-  	if ($_GET['module'] == "persons") include ENGINE_DIR . '/mrdeath/aaparser/ajax/persons.php';
+  	if ($_GET['module'] == "kodik_playlist_ajax") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist.php'));
+  	if ($_GET['module'] == "kodik_playlist_ajax_new") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist_new.php'));
+  	if ($_GET['module'] == "telegram_sender") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_cron.php'));
+  	if ($_GET['module'] == "push_subscribe") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/push_subscribe.php'));
+  	if ($_GET['module'] == "kodik_watched") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/save_watched.php'));
+  	if ($_GET['module'] == "persons") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/persons.php'));
 }
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -564,7 +564,7 @@ else {
 	<file name="engine/modules/main.php">
 		<operation action="before">
 			<searchcode><![CDATA[echo $tpl->result['main'];]]></searchcode>
-			<replacecode><![CDATA[include ENGINE_DIR . '/mrdeath/aaparser/file_edits/main.php';]]></replacecode>
+			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/main.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="before">
@@ -589,12 +589,12 @@ HTML;
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[$js_array = build_css($css_array, $config)."\n".build_js($js_array, $config);]]></searchcode>
-			<replacecode><![CDATA[include ENGINE_DIR . '/mrdeath/aaparser/file_edits/main2.php';]]></replacecode>
+			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/main2.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[$tpl->set ( '{content}', $tpl->result['content'] );]]></searchcode>
-			<replacecode><![CDATA[include ENGINE_DIR . '/mrdeath/aaparser/file_edits/main3.php';]]></replacecode>
+			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/main3.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="before">
@@ -630,7 +630,7 @@ HTML;
 	<file name="engine/modules/show.full.php">
 		<operation action="before">
 			<searchcode><![CDATA[$tpl->set( '{short-story}', $row['short_story'] );]]></searchcode>
-			<replacecode><![CDATA[include ENGINE_DIR . '/mrdeath/aaparser/file_edits/show.full.php';]]></replacecode>
+			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/show.full.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -850,7 +850,7 @@ function DLE_Send_Push ( $title, $notification, $url = false, $image = false, $u
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[function custom_print( $matches=array() ) {]]></searchcode>
-			<replacecode><![CDATA[include ENGINE_DIR . '/mrdeath/aaparser/file_edits/functions.php';]]></replacecode>
+			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/functions.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="replace">
@@ -863,7 +863,7 @@ function DLE_Send_Push ( $title, $notification, $url = false, $image = false, $u
 		<operation action="before">
 			<searchcode><![CDATA[case "unsubscribe" :]]></searchcode>
 			<replacecode><![CDATA[case "subscribe_page" :
-		if ($is_logged) include (DLEPlugins::Check(ENGINE_DIR . '/modules/subscribe_page.php'));
+		if ($is_logged) include_once (DLEPlugins::Check(ENGINE_DIR . '/modules/subscribe_page.php'));
 		else {
 			@header( "HTTP/1.1 403 Forbidden" );
 			msgbox ( $lang['all_err_1'], $lang['fav_error'] );
@@ -871,7 +871,7 @@ function DLE_Send_Push ( $title, $notification, $url = false, $image = false, $u
 		break;
 
 case "enter_room" :
-		if ($is_logged) include (DLEPlugins::Check(ENGINE_DIR . '/modules/enter_room.php'));
+		if ($is_logged) include_once (DLEPlugins::Check(ENGINE_DIR . '/modules/enter_room.php'));
 		else {
 			@header( "HTTP/1.1 403 Forbidden" );
 			msgbox ( $lang['all_err_1'], $lang['fav_error'] );
@@ -879,7 +879,7 @@ case "enter_room" :
 		break;
 
 case "rooms_list" :
-		if ($is_logged) include (DLEPlugins::Check(ENGINE_DIR . '/modules/rooms_list.php'));
+		if ($is_logged) include_once (DLEPlugins::Check(ENGINE_DIR . '/modules/rooms_list.php'));
 		else {
 			@header( "HTTP/1.1 403 Forbidden" );
 			msgbox ( $lang['all_err_1'], $lang['fav_error'] );
@@ -888,15 +888,15 @@ case "rooms_list" :
 
 			
 case "characters" :
-		include (DLEPlugins::Check(ENGINE_DIR . '/modules/characters.php'));
+		include_once (DLEPlugins::Check(ENGINE_DIR . '/modules/characters.php'));
 		break;
 
 case "schedule" :
-		include (DLEPlugins::Check(ENGINE_DIR . '/modules/raspisanie_ongoingov.php'));
+		include_once (DLEPlugins::Check(ENGINE_DIR . '/modules/raspisanie_ongoingov.php'));
 		break;
 
 case "continue_watch" :
-		if ($is_logged) include (DLEPlugins::Check(ENGINE_DIR . '/modules/continue_watch.php'));
+		if ($is_logged) include_once (DLEPlugins::Check(ENGINE_DIR . '/modules/continue_watch.php'));
 		else {
 			@header( "HTTP/1.1 403 Forbidden" );
 			msgbox ( $lang['all_err_1'], $lang['fav_error'] );
@@ -915,7 +915,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-include ENGINE_DIR . '/mrdeath/aaparser/file_edits/subscribe_page.php';]]></replacecode>
+include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/subscribe_page.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -938,7 +938,7 @@ if($_GET['user_hash'] == "" OR $_GET['user_hash'] != $dle_login_hash)
 	die('Hacking attempt!');
 }
 
-include ENGINE_DIR . '/mrdeath/aaparser/rooms/create_room.php';
+include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/rooms/create_room.php'));
 
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -954,7 +954,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-include ENGINE_DIR . '/mrdeath/aaparser/rooms/enter_room.php';
+include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/rooms/enter_room.php'));
 
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -979,7 +979,7 @@ if($_GET['user_hash'] == "" OR $_GET['user_hash'] != $dle_login_hash)
 	die('Hacking attempt!');
 }
 
-include ENGINE_DIR . '/mrdeath/aaparser/rooms/message_room.php';
+include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/rooms/message_room.php'));
 
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -995,7 +995,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-include ENGINE_DIR . '/mrdeath/aaparser/rooms/rooms_list.php';
+include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/rooms/rooms_list.php'));
 
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -1102,7 +1102,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-include ENGINE_DIR . '/mrdeath/aaparser/rooms/rooms_custom.php';
+include (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/rooms/rooms_custom.php'));
 
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -1118,7 +1118,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-include ENGINE_DIR . '/mrdeath/aaparser/file_edits/raspisanie_ongoingov.php';]]></replacecode>
+include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/raspisanie_ongoingov.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -1169,7 +1169,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-include ENGINE_DIR . '/mrdeath/aaparser/file_edits/continue_watch.php';]]></replacecode>
+include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/continue_watch.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -1183,7 +1183,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
   
-include ENGINE_DIR . '/mrdeath/aaparser/file_edits/characters.php';
+include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/characters.php'));
 		
 ?>]]></replacecode>
 			<enabled>1</enabled>

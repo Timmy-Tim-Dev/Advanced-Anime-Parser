@@ -14,8 +14,8 @@ if( !defined('DATALIFEENGINE' ) ) {
 
 if ($aaparser_config['persons']['personas_on'] == 1 && isset($_POST['sh_id']) && $_POST['sh_id']) {
     
-	require_once ENGINE_DIR.'/mrdeath/aaparser/functions/module.php';
-	require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+	require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/module.php'));
+	require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php'));
 	
 	if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
 	else $shikimori_api_domain = 'https://shikimori.one/';
@@ -305,7 +305,7 @@ elseif ($aaparser_config['persons']['personas_on_dorama'] == 1 && isset($_POST['
         }
     }
     
-	require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+	require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php'));
 	
 	$mdl_id = isset($_POST['mdl_id']) ? $_POST['mdl_id'] : '';
 	
@@ -411,7 +411,7 @@ elseif ($aaparser_config['persons']['personas_on_dorama'] == 1 && isset($_POST['
 	} else echo $mdl_request;
 }
 elseif ( isset($kodik_persons_dorama) && $kodik_persons_dorama == 'yes' ) {
-    if (!function_exists('kodik_cache')) require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+    if (!function_exists('kodik_cache')) require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php'));
     
     $mdl_id = $xfieldsdata[$aaparser_config['main_fields']['xf_mdl_id']];
     

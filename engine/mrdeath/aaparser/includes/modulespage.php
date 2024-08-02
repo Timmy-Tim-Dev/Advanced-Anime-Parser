@@ -16,14 +16,14 @@ echo <<<HTML
 	    </div>
     </div>
 HTML;
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/playerpage.php'; //Вывод плеера
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/calendar.php'; //Расписание серий
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/updates_block_page.php'; //Блок обновления сериалов
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/pushpage.php'; //Push уведомления
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/roomspage.php'; //Совместный просмотр
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/gindexpage.php'; //Google indexing
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/tgpostingpage.php'; //Постинг в Telegram
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/personajespage.php'; //Актёры и персонажи
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/playerpage.php')); //Вывод плеера
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/calendar.php')); //Расписание серий
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/updates_block_page.php')); //Блок обновления сериалов
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/pushpage.php')); //Push уведомления
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/roomspage.php')); //Совместный просмотр
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/gindexpage.php')); //Google indexing
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/tgpostingpage.php')); //Постинг в Telegram
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/personajespage.php')); //Актёры и персонажи
 echo <<<HTML
 </div>
 HTML;

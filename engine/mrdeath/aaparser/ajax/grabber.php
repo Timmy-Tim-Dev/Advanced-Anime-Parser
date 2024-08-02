@@ -14,10 +14,10 @@ ignore_user_abort(true);
 set_time_limit(600);
 session_write_close();
 
-require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
-require_once ENGINE_DIR . '/mrdeath/aaparser/functions/public.php';
-require_once ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_functions.php';
-require_once ENGINE_DIR . '/mrdeath/aaparser/functions/kodik_cache.php';
+require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/module.php'));
+require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/public.php'));
+require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_functions.php'));
+require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/kodik_cache.php'));
 
 if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log')) {
   	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log', "w+");

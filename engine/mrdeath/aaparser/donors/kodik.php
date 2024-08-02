@@ -157,7 +157,7 @@ if ($parse_action == 'search') {
 	$xfields_data['kodik_mydramalist_tags'] = isset($kodik_data['material_data']['mydramalist_tags']) ? implode(', ', $kodik_data['material_data']['mydramalist_tags']) : '';
 	if ( $xfields_data['kodik_mydramalist_tags'] && isset($aaparser_config['settings']['tags_tolower']) && $aaparser_config['settings']['tags_tolower'] == 1 ) $xfields_data['kodik_mydramalist_tags'] = mb_strtolower($xfields_data['kodik_mydramalist_tags'], 'UTF-8');
 	if ( $xfields_data['kodik_mydramalist_tags'] && isset($aaparser_config['settings']['translate_tags']) && $aaparser_config['settings']['translate_tags'] == 1 ) {
-	    require_once ENGINE_DIR . '/mrdeath/aaparser/functions/GoogleTranslateForFree.php';
+	    require ENGINE_DIR . '/mrdeath/aaparser/functions/GoogleTranslateForFree.php';
 	    $tr = new GoogleTranslateForFree();
 	    $tranlsted_mdl_tags = $tr->translate('en', 'ru', $xfields_data['kodik_mydramalist_tags'], 5);
 	    if ( $tranlsted_mdl_tags ) {

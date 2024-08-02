@@ -13,8 +13,8 @@
 @ini_set('html_errors', false);
 @ini_set('error_reporting', E_ALL ^ E_WARNING ^ E_NOTICE);
 
-require_once ENGINE_DIR.'/mrdeath/aaparser/functions/module.php';
-require_once ENGINE_DIR.'/mrdeath/aaparser/functions/public.php';
+require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/module.php'));
+require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/public.php'));
 
 $kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : '9a3a536a8be4b3d3f9f7bd28c1b74071';
 $kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $aaparser_config['settings']['kodik_api_domain'] : 'https://kodikapi.com/';

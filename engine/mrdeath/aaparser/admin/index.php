@@ -136,6 +136,13 @@ if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log')) {
   	fclose($fp);
 }
 
+if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json') && $aaparser_config['updates_block']['enable_history'] == 1 ) {
+  	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json', "w+");
+	@chmod(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json', 0777);
+  	fwrite($fp, "[]");
+  	fclose($fp);
+}
+
 if (file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.php')) {
 	$log_module_version = file_get_contents(ENGINE_DIR.'/mrdeath/aaparser/data/version.php');
 } elseif (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.php') && file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/version.log')) {
@@ -203,7 +210,7 @@ if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) 
     if ( !$aclist ) $aclist[] = 'Пусто';
 }
 
-require_once ENGINE_DIR.'/mrdeath/aaparser/functions/admin.php';
+require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/admin.php'));
 
 if ( !file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') ) {
 	if (isset($aaparser_config['settings_gindexing']['account'])){
@@ -281,18 +288,18 @@ $now_year = date('Y');
 echo <<<HTML
 <style>
 HTML;
-require_once ENGINE_DIR .'/mrdeath/aaparser/admin/styles.css';
+require_once (DLEPlugins::Check(ENGINE_DIR .'/mrdeath/aaparser/admin/styles.css'));
 echo <<<HTML
 </style>
 
 <script>
 HTML;
-require_once ENGINE_DIR .'/mrdeath/aaparser/admin/scripts.js';
+require_once (DLEPlugins::Check(ENGINE_DIR .'/mrdeath/aaparser/admin/scripts.js'));
 echo <<<HTML
 </script>
 
 HTML;
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/navbar.php'; //Навигация
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/navbar.php')); //Навигация
 
 // Проверка доступа к Data и его элементам
 $data_items = glob( ENGINE_DIR . "/mrdeath/aaparser/data/*");
@@ -305,23 +312,23 @@ if (Permer($perm_f)) echo "<div class='alert alert-danger'>Выставьте п
 echo <<<HTML
 <form action="" method="post" class="systemsettings">
 HTML;
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/mainpage.php'; //Основные настройки
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/grabpage.php'; //Настройки граббинга
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/updatenewspage.php'; //Обновление новостей
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/updatespage.php'; //Поднятие новостей
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/xfieldspage.php'; //Основные и доп поля
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/catspage.php'; //Категории
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/imagespage.php'; //Изображения
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/integrationpage.php'; //Интеграция
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/cronpage.php'; //Настройки планировщика
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/anonspage.php'; //Настройки Анонса
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/faqpage.php'; //Часто задаваемые вопросы
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/modulespage.php'; //Модули
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/mainpage.php')); //Основные настройки
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/grabpage.php')); //Настройки граббинга
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/updatenewspage.php')); //Обновление новостей
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/updatespage.php')); //Поднятие новостей
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/xfieldspage.php')); //Основные и доп поля
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/catspage.php')); //Категории
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/imagespage.php')); //Изображения
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/integrationpage.php')); //Интеграция
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/cronpage.php')); //Настройки планировщика
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/anonspage.php')); //Настройки Анонса
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/faqpage.php')); //Часто задаваемые вопросы
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/modulespage.php')); //Модули
 echo <<<HTML
     <button type="submit" class="btn bg-teal btn-raised position-left"><i class="fa fa-floppy-o position-left"></i>{$lang['user_save']}</button>
 </form>
 HTML;
-include_once ENGINE_DIR.'/mrdeath/aaparser/includes/scripts.php'; // Скрипты 
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/scripts.php')); // Скрипты 
 echo <<<HTML
 <div class="panel" style="margin-top: 20px;">
 	<div class="panel-content">

@@ -13,7 +13,7 @@
 @ini_set('html_errors', false);
 @ini_set('error_reporting', E_ALL ^ E_WARNING ^ E_NOTICE);
 
-require_once ENGINE_DIR.'/mrdeath/aaparser/functions/module.php';
+require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/module.php'));
 
 
 $kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : '9a3a536a8be4b3d3f9f7bd28c1b74071';
@@ -252,15 +252,15 @@ if ( $action == "update" ) {
 	}
 
 } elseif ( $action == "clear_player_cache" ) {
-    require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+    require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php'));
     kodik_clear_cache('playlist', 'player');
 	die(json_encode(array( 'status' => 'ok' )));
 } elseif ( $action == "clear_personajes_cache" ) {
-    require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+    require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php'));
     kodik_clear_cache('personas', 'personas_characters');
 	die(json_encode(array( 'status' => 'ok' )));
 } elseif ( $action == "clear_page_cache" ) {
-    require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+    require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php'));
     kodik_clear_cache('personas', 'personas_characters_page');
 	die(json_encode(array( 'status' => 'ok' )));
 } elseif ( $action == "update_module" ) {

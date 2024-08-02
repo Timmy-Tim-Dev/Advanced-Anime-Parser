@@ -11,7 +11,7 @@
     if ( $aaparser_config['integration']['ksep'] == 1 && file_exists(ENGINE_DIR.'/mrdeath/ksep/modules/aap.php') ) {
   	    $required_from = 'aap';
   	    require_once ENGINE_DIR.'/mrdeath/ksep/data/config.php';
-  	    require_once ENGINE_DIR.'/mrdeath/ksep/functions/module.php';
+  	    require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/ksep/functions/module.php'));
   	    $ksep_enabled = true;
     }
     else $ksep_enabled = false;
@@ -508,7 +508,7 @@
   	        $shikiid = false;
   	        $mdlid = $anime_check['mdl_id'];
   	        $rowid = $checking_post['id'];
-	        require ENGINE_DIR.'/mrdeath/ksep/modules/aap.php';
+	        require (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/ksep/modules/aap.php'));
         }
         
 		unset($xfields_post, $title_en, $title_ru, $news_id, $update_fields, $checking_post, $last_season_k, $last_episode_k, $serial_status_k, $serial_status_ru_k, $quality, $translation, $translation_type, $translation_type_ru, $playlist, $translators_list, $translators_types, $need_update, $material_row);

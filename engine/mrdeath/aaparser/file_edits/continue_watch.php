@@ -18,7 +18,7 @@ if( !defined('DATALIFEENGINE') ) {
 $empty_saves = true;
 $dle_module = 'continue_watch';
 
-require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php'));
 
 //Проверка авторизованности
 if ( $is_logged ) {

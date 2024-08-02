@@ -130,7 +130,7 @@ if ( $action == 'send' ) {
   	die(json_encode(array( 'status' => 'play' )));
 } elseif ( $action == 'set_episode' ) {
     if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
-    require_once ENGINE_DIR . '/mrdeath/aaparser/functions/module.php';
+    require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/module.php'));
     
   	$room_episode = $_GET['episode'];
   	$shikimori_id = $_GET['shikimori_id'];

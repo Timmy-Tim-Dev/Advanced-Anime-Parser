@@ -17,7 +17,7 @@ $kodik_data = $_REQUEST['kodik_data'];
 $action = $_REQUEST['action'];
 
 if ($news_id && $action == 'voicerate' && $kodik_data && $aaparser_config['player']['voicerate_mod'] == 1) {
-	require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+	require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php'));
 	
 	$voice_cache = kodik_cache('voicerate_'.$news_id, false, 'voicerate');
 	if ($voice_cache === false) $voice_cache = [];
@@ -32,7 +32,7 @@ if ($news_id && $action == 'voicerate' && $kodik_data && $aaparser_config['playe
 }
 
 if ($news_id && $action == 'voicerate_take' && $aaparser_config['player']['voicerate_mod'] == 1) {
-	require_once ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php';
+	require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php'));
 	
 	$voice_cache = kodik_cache('voicerate_'.$news_id, false, 'voicerate');
 	if ($voice_cache === false) die(json_encode('Нету кэша'));
