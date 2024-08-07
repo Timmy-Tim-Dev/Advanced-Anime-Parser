@@ -32,6 +32,10 @@ $status_type = [
 ];
 
 $kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : '9a3a536a8be4b3d3f9f7bd28c1b74071';
+if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
+    $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
+    $shikimori_image_domain = 'https://'.clean_url($shikimori_api_domain);
+} else $shikimori_api_domain = $shikimori_image_domain = 'https://shikimori.me/';
 
 if ( $parse_action == 'search' ) {
     

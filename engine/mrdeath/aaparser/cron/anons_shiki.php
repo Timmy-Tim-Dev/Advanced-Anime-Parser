@@ -30,7 +30,10 @@ while ( $shiki_row = $db->get_row ($res_shiki) ) {
 $exclude_ids = implode(",",$exclude_ids);
 
 if ($exclude_ids != "") $exclude_ids = "&exclude_ids=".$exclude_ids;
-
+if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
+    $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
+    $shikimori_image_domain = 'https://'.clean_url($shikimori_api_domain);
+} else $shikimori_api_domain = $shikimori_image_domain = 'https://shikimori.me/';
 $shikimori = request($shikimori_api_domain.'api/animes?status=anons&rating=!rx&order='.$anons_film_sort_by . $kinder . $exclude_ids);
 
 if ( $shikimori ) {

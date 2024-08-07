@@ -599,31 +599,7 @@ HTML;
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[echo $tpl->result['main'];]]></searchcode>
-			<replacecode><![CDATA[if ($is_logged) {
-	$subs_count = $db->super_query("SELECT count(*) as count FROM ".PREFIX."_subscribe_info where user_id=".$member_id['user_id']);
-	$push_subscribe = json_decode($member_id['push_subscribe'], true);
-  
-	$tpl->result['main'] = str_replace( '{subscribe-notification-count}', $subs_count['count'], $tpl->result['main'] );
-	if ($push_subscribe !== null) {
-		$subscribe_count = count($push_subscribe);
-	} else {
-		$subscribe_count = 0;
-	}
-  	$tpl->result['main'] = str_replace('{subscribe-total}', $subscribe_count, $tpl->result['main']);
-	$tpl->result['main'] = str_replace( '[is_logged]', '', $tpl->result['main'] );
-	$tpl->result['main'] = str_replace( '[/is_logged]', '', $tpl->result['main'] );
-	
-	$checkernewsid = $db->super_query("select id FROM ".PREFIX."_post where id=".$newsid);
-  	
-	if ($checker_newsid && $newsid>0) {
-		$is_viewed = $db->super_query("select count(*) as count FROM ".PREFIX."_subscribe_info where user_id={$member_id['user_id']} and post_id=".$newsid);
-		if ($is_viewed['count'] > 0) {
-			$db->query("DELETE FROM ".PREFIX."_subscribe_info where user_id={$member_id['user_id']} and post_id=".$newsid);
-		}
-	}
-} else {
-	$tpl->result['main'] = preg_replace( "'\\[is_logged\\](.*?)\\[/is_logged\\]'is", "", $tpl->result['main'] );
-}]]></replacecode>
+			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/main4.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -719,8 +695,14 @@ else]]></replacecode>
 		<operation action="after">
 			<searchcode><![CDATA[while ( $row = $db->get_row( $sql_result ) ) {]]></searchcode>
 			<replacecode><![CDATA[		if ($do == "subscribe_page" && $is_logged) {
-			$is_viewed = $db->super_query("select count(*) as count FROM ".PREFIX."_subscribe_info where user_id={$member_id['user_id']} and post_id=".$row['id']);
-			
+			$cache_filer = ENGINE_DIR . "/cache/member_{$member_id['user_id']}.tmp";
+          	if (file_exists($cache_filer) && (filemtime($cache_filer) + 60 > time())) {
+              	$is_viewed = unserialize(dle_cache( "member_".$member_id['user_id'], false ));
+            } else {
+          		$is_viewed = $db->super_query("select count(*) as count FROM ".PREFIX."_subscribe_info where user_id={$member_id['user_id']} and post_id=".$row['id']);
+              	create_cache("member_".$member_id['user_id'], serialize($is_viewed), false );
+            }
+
 			if ($is_viewed['count'] > 0) {
 				$tpl->set("[subscribe_notviewed]", "");
 				$tpl->set("[/subscribe_notviewed]", "");
@@ -1193,8 +1175,13 @@ include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/chara
 		<operation action="after">
 			<searchcode><![CDATA[while ( $row = $db->get_row( $sql_result ) ) {]]></searchcode>
 			<replacecode><![CDATA[		if ($do == "subscribe_page" && $is_logged) {
-			$is_viewed = $db->super_query("select count(*) as count FROM ".PREFIX."_subscribe_info where user_id={$member_id['user_id']} and post_id=".$row['id']);
-			
+			$cache_filer = ENGINE_DIR . "/cache/member_{$member_id['user_id']}.tmp";
+          	if (file_exists($cache_filer) && (filemtime($cache_filer) + 60 > time())) {
+              	$is_viewed = unserialize(dle_cache( "member_".$member_id['user_id'], false ));
+            } else {
+          		$is_viewed = $db->super_query("select count(*) as count FROM ".PREFIX."_subscribe_info where user_id={$member_id['user_id']} and post_id=".$row['id']);
+              	create_cache("member_".$member_id['user_id'], serialize($is_viewed), false );
+            }
 			if ($is_viewed['count'] > 0) {
 				$tpl->set("[subscribe_notviewed]", "");
 				$tpl->set("[/subscribe_notviewed]", "");

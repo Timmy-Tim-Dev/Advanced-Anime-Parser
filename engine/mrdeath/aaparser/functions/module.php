@@ -189,7 +189,8 @@ if (!function_exists('setPoster')) {
 	    if ( isset($xfparam[13]) && $xfparam[13] ) $t_size = $xfparam[13];
 	    else $t_size = 0;
 		$m_size = 0;
-		$config['max_up_side'] = $xfparam[9];
+		if (isset($aaparser_config["images"]["poster_max_up_side"]) && $aaparser_config["images"]["poster_max_up_side"] != 0) $config['max_up_side'] = str_replace("х", "x", $aaparser_config["images"]["poster_max_up_side"]);
+		else $config['max_up_side'] = $xfparam[9];
 		$config['max_up_size'] = $xfparam[10];
 		$config['min_up_side'] = $xfparam[22];
 		$make_watermark = $xfparam[11] ? true : false;

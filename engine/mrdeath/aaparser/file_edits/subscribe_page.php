@@ -34,7 +34,6 @@ if ( $error_subscribes === false ) {
 
   	$list_link = $config['http_home_url'].'subscribes/';
   	$canonical = $list_link;
-
   	$metatags['title'] = 'Подписки на уведомления пользователя '.$user_title;
 
   	$page_description = $metatags_description = $metatags['title'];
@@ -54,11 +53,10 @@ if ( $error_subscribes === false ) {
 	else $cache_id = 1;
 
   	$cache_prefix = $member_name."_".$cache_id;
-
   	$config['max_cache_pages'] = intval($config['max_cache_pages']);
 	if($config['max_cache_pages'] < 3) $config['max_cache_pages'] = 3;
-
-  	if ($config['allow_cache'] AND $cache_id <= $config['max_cache_pages']) {
+	$cache_filew = ENGINE_DIR . "/cache/subscribes__".md5($cache_prefix)."_".$cache_id.".tmp";
+  	if ($config['allow_cache'] AND $cache_id <= $config['max_cache_pages'] AND file_exists($cache_filew) AND (filemtime($cache_filew) + 60 > time())) {
 		$active = dle_cache( "subscribes_", $cache_prefix, true );
 		if( $active ) $active = json_decode($active, true);
 		$short_news_cache = true;
@@ -90,7 +88,7 @@ if ( $error_subscribes === false ) {
 		if (!$config['allow_quick_wysiwyg']) $allow_comments_ajax = false;
 
 		if ($config['files_allow']) if (strpos ( $tpl->result['content'], "[attachment=" ) !== false) $tpl->result['content'] = show_attach ( $tpl->result['content'], $attachments );
-
+		
 		if ($news_found AND $cache_id <= $config['max_cache_pages'] ) create_cache ( "subscribes_", json_encode( array('content' => $tpl->result['content'], 'navigation' => $tpl->result['navigation'], 'description' => $page_description, 'last-modified' => $_DOCUMENT_DATE ) , JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ), $cache_prefix, true );
 	}
 
