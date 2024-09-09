@@ -200,7 +200,7 @@ span.material-info {
 <script type="text/javascript">
 
     function parser_search(){
-
+			$('#parser_result').appendTo('.panel-body .form-group:first');
             ShowLoading('');
             $.ajax({
                 url: "/engine/ajax/controller.php?mod=anime_grabber&module=anime_parser",

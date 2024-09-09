@@ -311,7 +311,28 @@ if ($parse_action == 'search') {
 		$xfields_data['kadr_5'] = $kodik_data['screenshots'][4];
 	}
 	
-	if ( !isset($xfields_data['image']) && !$xfields_data['image'] && isset($kodik_data['material_data']['poster_url']) && $kodik_data['material_data']['poster_url'] ) $xfields_data['image'] = $kodik_data['material_data']['poster_url'];
+	$checked_poster = 0;
+	
+	if ($aaparser_config['settings']['working_mode'] == 0 && isset($kodik_data['material_data']['anime_poster_url']) && $kodik_data['material_data']['anime_poster_url'] && $aaparser_config['grabbing']['poster_source'] == 1) {
+		if (!isset($xfields_data['image']) && !$xfields_data['image']) {
+			if ($kodik_data['material_data']['anime_poster_url'] == "https://shikimori.one/assets/globals/missing_original.jpg") $xfields_data['image'] = $kodik_data['material_data']['poster_url'];
+			else $xfields_data['image'] = $kodik_data['material_data']['anime_poster_url'];
+			$checked_poster = 1;
+		}
+	}
+	
+	if ( $aaparser_config['settings']['working_mode'] == 1 && isset($kodik_data['material_data']['drama_poster_url']) && $kodik_data['material_data']['drama_poster_url'] && $aaparser_config['grabbing']['poster_source'] == 1) {
+		if (!isset($xfields_data['image']) && !$xfields_data['image']) {
+			$xfields_data['image'] = $kodik_data['material_data']['drama_poster_url'];
+			$checked_poster = 1;
+		}
+	}
+
+	if ( $checked_poster == 0 && !isset($aaparser_config['grabbing']['poster_source']) && !$aaparser_config['grabbing']['poster_source']) {
+		if ( isset($kodik_data['material_data']['poster_url']) && $kodik_data['material_data']['poster_url']) {
+			$xfields_data['image'] = $kodik_data['material_data']['poster_url'];
+		}
+	}
 	
 	//Новые теги - длительность сериала и длительность серии
     if ( isset($kodik_data['material_data']['episodes_total']) && $kodik_data['material_data']['episodes_total'] && intval($kodik_data['material_data']['episodes_total']) > 1 ) {
