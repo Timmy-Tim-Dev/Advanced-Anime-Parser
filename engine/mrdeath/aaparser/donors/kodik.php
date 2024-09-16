@@ -314,9 +314,11 @@ if ($parse_action == 'search') {
 	$checked_poster = 0;
 	
 	if ($aaparser_config['settings']['working_mode'] == 0 && isset($kodik_data['material_data']['anime_poster_url']) && $kodik_data['material_data']['anime_poster_url'] && $aaparser_config['grabbing']['poster_source'] == 1) {
-		if (!isset($xfields_data['image']) && !$xfields_data['image']) {
-			if ($kodik_data['material_data']['anime_poster_url'] == "https://shikimori.one/assets/globals/missing_original.jpg") $xfields_data['image'] = $kodik_data['material_data']['poster_url'];
-			else $xfields_data['image'] = $kodik_data['material_data']['anime_poster_url'];
+		if (isset($xfields_data['image']) && $xfields_data['image'] && strpos($xfields_data['image'], "missing_original") == true) {
+			$xfields_data['image'] = $kodik_data['material_data']['poster_url'];
+			$checked_poster = 1;
+		} else {
+			$xfields_data['image'] = $kodik_data['material_data']['anime_poster_url'];
 			$checked_poster = 1;
 		}
 	}

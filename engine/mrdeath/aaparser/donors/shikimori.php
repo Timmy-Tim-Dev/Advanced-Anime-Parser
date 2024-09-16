@@ -335,7 +335,8 @@ if ( $parse_action == 'search' ) {
         unset($shiki_api, $movies_id, $part_id);
       }
 
-      if ( isset($shikimori['image']['original']) && $shikimori['image']['original'] ) $xfields_data['image'] = $shikimori_image_domain.$shikimori['image']['original'];
+      if ( isset($shikimori['image']['original']) && $shikimori['image']['original'] && strpos($shikimori['image']['original'], "missing_original") !== false) $xfields_data['image'] = $shikimori_image_domain.$shikimori['image']['original'];
+	  else unset($xfields_data['image']);
 
       $next_episode_date = '';
 
