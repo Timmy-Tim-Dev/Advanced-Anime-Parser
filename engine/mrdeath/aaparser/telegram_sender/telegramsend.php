@@ -296,5 +296,8 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config['push
 			echo "</pre>";
         }
       	unset($row, $full_link, $main_category_link, $category_name, $category_name_hashtag, $category_list, $xfields, $xfieldsdata, $posters, $posterImg, $telegramCmd, $response);
-    }
+    } else {
+		$db->query( "DELETE FROM " . PREFIX . "_telegram_sender WHERE news_id='".$tlg_news_id."'" );
+		echo "В данный момент не смог обработать новость id='" . $tlg_news_id . "'";
+	}
 } elseif ( !$tlg_news_id && isset($working_mode) && $working_mode == 'cron' ) echo 'В данный момент нет новостей в очереди на отправку в telegram';
