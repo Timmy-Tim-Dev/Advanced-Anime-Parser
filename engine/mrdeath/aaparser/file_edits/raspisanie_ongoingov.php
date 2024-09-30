@@ -66,6 +66,7 @@ foreach ( $raspisanie_ongoingov as $rnum => $raspisanie ) {
           	$temp_poster = explode('|', $anime_item['image']);
           	if ( strpos($temp_poster[0], '/uploads/posts/') == false ) $poster = '/uploads/posts/'.$temp_poster[0];
           	else $poster = $temp_poster[0];
+			if (strpos($poster, 'posts/http') == true) $poster = preg_replace('/^.*?(http.*)$/', '$1', $poster);
         } else $poster = '';
       	if ( in_array($anime_item['news_id'], $my_list) ) $add_to_list = '<div id="watchlist-on-'.$anime_item['news_id'].'" style="display:none;" onclick="FastList(\''.$anime_item['news_id'].'\', \'plus\'); return false;" class="calendar__item-bookmark watchlist_btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24" fill="none">
