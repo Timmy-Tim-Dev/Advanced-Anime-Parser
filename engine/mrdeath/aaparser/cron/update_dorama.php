@@ -52,8 +52,13 @@
 		$checking_post = $db->super_query( "SELECT id, xfields, title, approve, category, date, alt_name FROM " . PREFIX . "_post WHERE ".$xf_shiki );
 		if ( $checking_post['id'] > 0 ) $xfields_post = xfieldsdataload( $checking_post['xfields'] );
         else {
-			unset($checking_post, $xf_shiki);
-			continue;
+			$xf_shiki = "xfields LIKE '%".$aaparser_config['main_fields']['xf_mdl_id']."|".$anime_check['mdl_id']."'";
+			$checking_post = $db->super_query( "SELECT id, xfields, title, approve, category, date, alt_name FROM " . PREFIX . "_post WHERE ".$xf_shiki );
+			if ( $checking_post['id'] > 0 ) $xfields_post = xfieldsdataload( $checking_post['xfields'] );
+			else {
+				unset($checking_post, $xf_shiki);
+				continue;
+			}
 		}
 		
 		if (in_array($checking_post['id'], $updated_news_list)) continue;
