@@ -5,7 +5,7 @@ echo <<<HTML
 		<div class="table-responsive faq-block">
 HTML;
 
-ShowFaq('', '', 'Есть быстрый старт?',
+ShowFaq('5', '', 'Есть быстрый старт?',
 'Да есть, Но! <b style="color:red">ВНИМАНИЕ! Вы потеряете все свои категории, дополнительные поля и настройки модуля, так как они заменятся на новые которые сконфигурированные. А так же удалятся все Ваши новости с вашего сайта.</b><br/>
 Это надо использовать если Вы только установили <b>чистую систему DLE и установили модуль.</b><br/>
 Ссылка для скачивания плагина для быстрого старта -> <a href="//github.com/Timmy-Tim-Dev/Auto-Settings-for-Advanced-Anime-Parser/blob/main/avto-ustanovka-advanced-kodik-parser.xml" target="_blank" style="font-weight: bold;">Ссылка</a><br/>

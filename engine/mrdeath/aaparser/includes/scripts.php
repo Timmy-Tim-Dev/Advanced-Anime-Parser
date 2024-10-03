@@ -1,4 +1,53 @@
 <?php
+if (isset($aaparser_config['settings']['first_time']) && $aaparser_config['settings']['first_time'] == 1) {
+	echo <<<HTML
+	<div id="aapfirsttimesettings">
+		Приветствую Вас! Вижу Вы только установили модуль, если хотите сами всё настроить, то просто закройте окно, а если хотите чтобы модуль автоматически настроился, то нажмите приступить!
+	</div>
+<script>
+$(document).ready(function() {
+	$("#aapfirsttimesettings").dialog({
+		autoOpen: true,
+		title: "Автоматическая настройка",
+		width: 600,
+		height: 190,
+		resizable: false,
+		buttons: [
+		{
+		  text: "Приступить",
+		  icon: "ui-icon-check",
+		  click: function() {
+			$( this ).dialog( "close" );
+			ChangeOption($("ul.nav.navbar-nav li[data-original-title='FAQ']"), 'faq');
+			$("#faq_id_5").addClass('faq-open');
+			$("#faq_id_5").children('.faq-answer').slideDown(200);
+		  }
+		},
+		{
+		  text: "Закрыть",
+		  icon: "ui-icon-close",
+		  click: function() {
+			$( this ).dialog( "close" );
+		  }
+		}
+		],
+		dialogClass: "modalfixed dle-popup-quickedit",
+		dragStart: function(e, t) {
+			o = $(".modalfixed").css("box-shadow"), $(".modalfixed").css("box-shadow", "none")
+		},
+		dragStop: function(e, t) {
+			$(".modalfixed").css("box-shadow", o)
+		},
+		close: function(e, t) {
+			$(this).dialog("destroy"), $("#modal-overlay").fadeOut(function() {
+				$("#modal-overlay").remove()
+			})
+		}
+	});
+});
+</script>	
+HTML;
+}
 echo <<<HTML
 <script>
     ShowOrHideCatStatus({$aaparser_config['update_news']['cat_check']});

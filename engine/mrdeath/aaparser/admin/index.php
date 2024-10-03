@@ -27,6 +27,7 @@ $text = <<<HTML
 \$aaparser_config = array (
   'settings' => 
   array (
+	'first_time' => 1,
     'kodik_api_key' => '',
     'kodik_api_domain' => 'https://kodikapi.com/',
     'shikimori_api_domain' => 'https://shikimori.me/',
