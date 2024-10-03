@@ -8,8 +8,7 @@ HTML;
 ShowFaq('5', '', 'Есть быстрый старт?',
 'Да есть, Но! <b style="color:red">ВНИМАНИЕ! Вы потеряете все свои категории, дополнительные поля и настройки модуля, так как они заменятся на новые которые сконфигурированные. А так же удалятся все Ваши новости с вашего сайта.</b><br/>
 Это надо использовать если Вы только установили <b>чистую систему DLE и установили модуль.</b><br/>
-Ссылка для скачивания плагина для быстрого старта -> <a href="//github.com/Timmy-Tim-Dev/Auto-Settings-for-Advanced-Anime-Parser/blob/main/avto-ustanovka-advanced-kodik-parser.xml" target="_blank" style="font-weight: bold;">Ссылка</a><br/>
-<i>Для того чтобы скачать нажмите кнопку "Download raw file"</i>');
+Ссылка для скачивания плагина для быстрого старта -> <a href="/engine/ajax/controller.php?mod=anime_grabber&module=push_subscribe&action=download-autoinstall" style="font-weight: bold;" target="_blank">Ссылка</a>');
 
 ShowFaq('', '', 'Как обновится?',
 '1. Залить архив через установщик в разделе <a href="'. $config["http_home_url"] .'admin.php?mod=plugins">Управление плагинами</a><br/>
