@@ -86,7 +86,7 @@ echo <<<HTML
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border-bottom: 3px solid var(--primary-color);
+  border-bottom: 3px solid #fff;
 }
 .loading-kodik .arc:nth-child(1) {
   animation: rotate1 1.15s linear infinite;
