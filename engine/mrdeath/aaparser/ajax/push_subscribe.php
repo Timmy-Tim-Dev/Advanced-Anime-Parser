@@ -12,6 +12,15 @@ if( !defined('DATALIFEENGINE' ) ) {
 	die('Hacking attempt!');
 }
 
+if ($_REQUEST['action'] == "download-autoinstall") { 
+$fileUrl = 'https://storage.kodik.biz/files/advanced-anime-parser/auto-install/auto-install-1.0.0.xml';
+header('Content-Type: application/xml');
+header('Content-Disposition: attachment; filename="autoinstall.xml"');
+readfile($fileUrl);
+exit;
+die("Вы скачали Файл!"); // На всякий случай
+}
+
 if (!$config['allow_registration'])   $dle_login_hash = sha1( SECURE_AUTH_KEY . $_IP );
 if($_REQUEST['user_hash'] == "" OR $_REQUEST['user_hash'] != $dle_login_hash) die('Hacking attempt!');
 

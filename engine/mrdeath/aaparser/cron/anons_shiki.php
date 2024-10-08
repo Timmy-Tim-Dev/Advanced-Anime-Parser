@@ -595,6 +595,7 @@ $remove_kodik_tags[] = "kodik_quality";
 $remove_kodik_tags[] = "kodik_worldart_link";
 $remove_kodik_tags[] = "kodik_mydramalist_tags";
 $remove_kodik_tags[] = "kodik_editors";
+$remove_kodik_tags[] = "worldart_plot";
 
 function replaceKodikByShikimori($zna4enie, $tagKodik, $tagShikimori) {
 	$zna4enie = str_replace("{".$tagKodik."}", "{".$tagShikimori."}", $zna4enie);
