@@ -308,7 +308,7 @@ if ( $action == "update_news_get" ) {
 } elseif ( $action == "update_news_img" ) {
 	
 	if ( !isset($aaparser_config['main_fields']['xf_shikimori_id']) && !isset($aaparser_config['main_fields']['xf_mdl_id']) ) die(json_encode(array( 'status' => 'fail' )));
-
+	if (!isset($aaparser_config['images']['xf_poster']) && !isset($aaparser_config['images']['xf_poster_text'])) die(json_encode(array( 'status' => 'У Вас не выбран хотя-бы одно дополнительное поле с постером' )));
 	$news_id = $_GET['newsid'];
     $news_id = is_numeric($news_id) ? intval($news_id) : false;
     
@@ -326,7 +326,10 @@ if ( $action == "update_news_get" ) {
 
 	if ($shiki_id && !$mdl_id) $kodik_updates_api = request($kodik_api_domain."search?token=". $kodik_apikey . $shiki_id ."&with_episodes=true&with_material_data=true");
 	if ($mdl_id && !$shiki_id) $kodik_updates_api = request($kodik_api_domain."search?token=". $kodik_apikey . $mdl_id ."&with_episodes=true&with_material_data=true");
-	$kodik_updates = array_reverse($kodik_updates_api['results']);
+	if ($_GET['shikiid'] == $_GET['mdlid']) $kodik_updates_api = request($kodik_api_domain."search?token=". $kodik_apikey . $shiki_id ."&with_episodes=true&with_material_data=true");
+	
+	if ($kodik_updates_api === null) die(json_encode(array( 'status' => 'Попытайтесь снова, что-то пошло не так!' )));
+	else $kodik_updates = array_reverse($kodik_updates_api['results']);
 	if (empty($kodik_updates)) {
 		$result_work = array(
 			'news_id' => $news_id,
@@ -352,7 +355,11 @@ if ( $action == "update_news_get" ) {
 	
 	if ( $update_fields['title_ru'] ) $poster_file = totranslit_it($update_fields['title_ru'], true, false);
 	elseif ( $update_fields['title'] ) $poster_file = totranslit_it($update_fields['title'], true, false);
-	$poster = setPoster($masserimage['image'], $poster_file, 'poster', $aaparser_config['images']['xf_poster'], $news_id);
+	if (isset($aaparser_config['images']['xf_poster'])) {
+		$poster = setPoster($masserimage['image'], $poster_file, 'poster', $aaparser_config['images']['xf_poster'], $news_id);
+	} elseif (isset($aaparser_config['images']['xf_poster_text'])) {
+		$poster = setPoster($masserimage['image'], $poster_file, 'poster', $aaparser_config['images']['xf_poster_text'], $news_id);
+	}
 	
 	if ( isset($poster) && is_array($poster) ) {
 		if ( $aaparser_config['images']['xf_poster'] ) $masserimage['image'] = $poster['xfvalue'];
@@ -381,22 +388,43 @@ if ( $action == "update_news_get" ) {
 	$images = array();
 	if ($xf_poster) $images[] = $xf_poster;
 	$images = implode('|||', $images);
-
-	if (isset($xfields_post[$aaparser_config['images']['xf_poster']])) {
-		$delpart = explode('|', $xfields_post[$aaparser_config['images']['xf_poster']]);
-		$monthpart = explode('/', $delpart[0]);
-		if (file_exists(ROOT_DIR . '/uploads/posts/'.$delpart[0])) {
-			@unlink(ROOT_DIR . '/uploads/posts/'.$delpart[0]);
-			@unlink(ROOT_DIR . '/uploads/posts/'.$monthpart[0].'/thumbs/'. $monthpart[1]);
+	
+	if (isset($aaparser_config['images']['xf_poster'])) {
+			if (isset($xfields_post[$aaparser_config['images']['xf_poster']])) {
+			$delpart = explode('|', $xfields_post[$aaparser_config['images']['xf_poster']]);
+			$monthpart = explode('/', $delpart[0]);
+			if (file_exists(ROOT_DIR . '/uploads/posts/'.$delpart[0])) {
+				@unlink(ROOT_DIR . '/uploads/posts/'.$delpart[0]);
+				@unlink(ROOT_DIR . '/uploads/posts/'.$monthpart[0].'/thumbs/'. $monthpart[1]);
+			}
 		}
 	}
-
+	
+	if (isset($aaparser_config['images']['xf_poster_text'])) {
+		if (preg_match('/\.webp\|[^|]+\|[^|]+\|/', $xf_poster)) {
+			$xf_poster = preg_replace('/\.webp\|[^|]+\|[^|]+\|.*/', '.webp', $xf_poster);
+			$xf_poster = $config['http_home_url']. 'uploads/posts/'.$xf_poster;
+		}
+		if (isset($xfields_post['poster'])) {
+			$take_poster_url = str_replace($config['http_home_url'], '', $xfields_post['poster']);
+			$take_poster_name = explode('/', $take_poster_url);
+			if (file_exists(ROOT_DIR . '/uploads/posts/'.$take_poster_name[2])) {
+				@unlink(ROOT_DIR . '/'. $take_poster_url);
+				@unlink(ROOT_DIR . '/uploads/posts/'.$take_poster_name[2].'/thumbs/'. $take_poster_name[3]);
+			}
+		}
+	}
+	
 	$delete_xf = ['title', 'short_story', 'full_story', 'alt_name', 'tags', 'meta_title', 'meta_description', 'meta_keywords', 'catalog'];
     foreach ( $delete_xf as $check_value ) {
         if( array_key_exists($check_value, $xfields_post) ) unset($xfields_post[$check_value]);
     }
-
-	$xfields_post[$aaparser_config['images']['xf_poster']] = $xf_poster;
+	if (isset($aaparser_config['images']['xf_poster'])) {
+		$xfields_post[$aaparser_config['images']['xf_poster']] = $xf_poster;
+	}
+	if (isset($aaparser_config['images']['xf_poster_text'])) {
+		$xfields_post[$aaparser_config['images']['xf_poster_text']] = $xf_poster;
+	}
 	$xfields_post = $db->safesql(xfieldsdatasaved($xfields_post));
 
 	$db->query(" DELETE FROM " . PREFIX . "_images WHERE news_id = '{$news_id}'");
@@ -413,9 +441,13 @@ if ( $action == "update_news_get" ) {
 
 		$xfields_parts = splitStrings($xfields_post, $weak_mysql_count);   
 		foreach ($xfields_parts as $index => $part) {
-			if ($index == 0) $db->query("UPDATE " . PREFIX . "_post SET `xfields` = '{$part}' WHERE id = '{$news_id}'");
-			else $db->query("UPDATE " . PREFIX . "_post SET `xfields` = CONCAT(`xfields`, '{$part}') WHERE id = '{$news_id}'");
-		 
+			if ($config['charset'] == 'utf-8') {
+				if ($index == 0) $db->query("UPDATE " . PREFIX . "_post SET `xfields` = CONVERT('{$part}' USING utf8mb4) WHERE id = '{$news_id}'");
+				else $db->query("UPDATE " . PREFIX . "_post SET `xfields` = CONCAT(`xfields`, CONVERT('{$part}' USING utf8mb4)) WHERE id = '{$news_id}'");
+			} else {
+				if ($index == 0) $db->query("UPDATE " . PREFIX . "_post SET `xfields` = '{$part}' WHERE id = '{$news_id}'");
+				else $db->query("UPDATE " . PREFIX . "_post SET `xfields` = CONCAT(`xfields`, '{$part}') WHERE id = '{$news_id}'");
+			}
 			if ($db->error) {
 				echo "Ошибка при отправке запроса: " . $db->error ."<br/>Попробуйте выключить слабый режим MYSQL или разбитие уменьшить";
 				break;

@@ -63,7 +63,7 @@ if ($parse_action == 'search') {
 			
 	    	if (isset($proverka['id']) && $proverka['id']) {
 	    	    $find_id = 'est';
-	    	    $edit_link = $config['http_home_url'].'admin.php?mod=editnews&action=editnews&id='.$proverka['id'];
+	    	    $edit_link = $config['http_home_url'].$config['admin_path'].'?mod=editnews&action=editnews&id='.$proverka['id'];
 	    	} else {
 	    	    $find_id = 'net';
 	    	    $edit_link = '';
@@ -312,8 +312,8 @@ if ($parse_action == 'search') {
 	}
 	
 	$checked_poster = 0;
-	
-	if ($aaparser_config['settings']['working_mode'] == 0 && isset($kodik_data['material_data']['anime_poster_url']) && $kodik_data['material_data']['anime_poster_url'] && $aaparser_config['grabbing']['poster_source'] == 1) {
+	if ($jikan_poster == 1) $checked_poster = 1;
+	if ($checked_poster == 0 && $aaparser_config['settings']['working_mode'] == 0 && isset($kodik_data['material_data']['anime_poster_url']) && $kodik_data['material_data']['anime_poster_url'] && $aaparser_config['grabbing']['poster_source'] == 1) {
 		if (isset($xfields_data['image']) && $xfields_data['image'] && strpos($xfields_data['image'], "missing_original") == true) {
 			$xfields_data['image'] = $kodik_data['material_data']['poster_url'];
 			$checked_poster = 1;
@@ -323,14 +323,14 @@ if ($parse_action == 'search') {
 		}
 	}
 	
-	if ( $aaparser_config['settings']['working_mode'] == 1 && isset($kodik_data['material_data']['drama_poster_url']) && $kodik_data['material_data']['drama_poster_url'] && $aaparser_config['grabbing']['poster_source'] == 1) {
+	if ($checked_poster == 0 && $aaparser_config['settings']['working_mode'] == 1 && isset($kodik_data['material_data']['drama_poster_url']) && $kodik_data['material_data']['drama_poster_url'] && $aaparser_config['grabbing']['poster_source'] == 1) {
 		if (!isset($xfields_data['image']) && !$xfields_data['image']) {
 			$xfields_data['image'] = $kodik_data['material_data']['drama_poster_url'];
 			$checked_poster = 1;
 		}
 	}
 
-	if ( $checked_poster == 0 && !isset($aaparser_config['grabbing']['poster_source']) && !$aaparser_config['grabbing']['poster_source']) {
+	if ($checked_poster == 0 && !isset($aaparser_config['grabbing']['poster_source']) && !$aaparser_config['grabbing']['poster_source']) {
 		if ( isset($kodik_data['material_data']['poster_url']) && $kodik_data['material_data']['poster_url']) {
 			$xfields_data['image'] = $kodik_data['material_data']['poster_url'];
 		}

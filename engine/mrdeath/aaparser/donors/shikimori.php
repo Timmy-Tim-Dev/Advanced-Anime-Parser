@@ -64,7 +64,7 @@ if ( $parse_action == 'search' ) {
 			
 	    	if (isset($proverka['id']) && $proverka['id']) {
 	    	    $find_id = 'est';
-	    	    $edit_link = $config['http_home_url'].'admin.php?mod=editnews&action=editnews&id='.$proverka['id'];
+	    	    $edit_link = $config['http_home_url'].$config['admin_path'].'?mod=editnews&action=editnews&id='.$proverka['id'];
 	    	} else {
 	    	    $find_id = 'net';
 	    	    $edit_link = '';
@@ -399,6 +399,7 @@ if ( $parse_action == 'search' ) {
 	    $jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
 	    if ( isset( $aaparser_config['settings']['parse_jikan'] ) && isset( $jikan_api['data']['images']['jpg']['large_image_url'] ) && $jikan_api['data']['images']['jpg']['large_image_url'] ) 
 	        $xfields_data['image'] = $jikan_api['data']['images']['jpg']['large_image_url'];
+			$jikan_poster = 1;
 	    if ( isset( $jikan_api['data']['trailer']['embed_url'] ) && $jikan_api['data']['trailer']['embed_url'] ) 
 	        $xfields_data['youtube_trailer'] = $jikan_api['data']['trailer']['embed_url'];
 	    if ( isset( $jikan_api['data']['score'] ) && $jikan_api['data']['score'] ) 
