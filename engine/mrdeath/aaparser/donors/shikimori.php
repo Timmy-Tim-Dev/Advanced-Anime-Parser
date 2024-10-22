@@ -99,8 +99,8 @@ if ( $parse_action == 'search' ) {
 } elseif ($parse_action == 'parse') {
     
     $xfields_data = [];
-    
     $shikimori = request($shikimori_api_domain.'api/animes/'.$shiki_id);
+	
     if ($shikimori['code'] != "404") {
       $xfields_data['shikimori_id'] = isset($shiki_id) ? $shiki_id : '';
       $xfields_data['shikimori_name'] = isset($shikimori['name']) ? $shikimori['name'] : '';
@@ -109,6 +109,7 @@ if ( $parse_action == 'search' ) {
       $xfields_data['shikimori_japanese'] = (isset($shikimori['japanese']) && $shikimori['japanese']) ? implode(', ', $shikimori['japanese']) : '';
       $xfields_data['shikimori_synonyms'] = (isset($shikimori['synonyms']) && $shikimori['synonyms']) ? implode(', ', $shikimori['synonyms']) : '';
       $xfields_data['shikimori_license_name_ru'] = isset($shikimori['license_name_ru']) ? $shikimori['license_name_ru'] : '';
+	  if ( isset($shikimori['licensors']) && $shikimori['licensors'] ) $xfields_data['shikimori_licensors'] = implode(', ', $shikimori['licensors']);
       $xfields_data['shikimori_kind'] = isset($shikimori['kind']) ? $shikimori['kind'] : '';
       $xfields_data['shikimori_kind_ru'] = isset($shikimori['kind']) ? $cat_type[$shikimori['kind']] : '';
       $xfields_data['shikimori_score'] = (isset($shikimori['score']) && $shikimori['score'] != '0.0') ? $shikimori['score'] : '';
@@ -196,7 +197,7 @@ if ( $parse_action == 'search' ) {
       //Ссылки на прочие ресурсы
       if ( isset($aaparser_config['settings']['other_sites']) && $aaparser_config['settings']['other_sites'] == 1 ) {
         $shikimori_links = request($shikimori_api_domain.'api/animes/'.$shiki_id.'/external_links');
-
+		
         $xfields_data['myanimelist_id'] = isset($shikimori['myanimelist_id']) ? $shikimori['myanimelist_id'] : '';
         $source_kind = [];
         foreach ( $shikimori_links as $source_link ) {
@@ -216,7 +217,7 @@ if ( $parse_action == 'search' ) {
       //Авторский состав
       if ( isset($aaparser_config['settings']['parse_authors']) && $aaparser_config['settings']['parse_authors'] == 1 ) {
         $shikimori_roles = request($shikimori_api_domain.'api/animes/'.$shiki_id.'/roles');
-
+		
         $anime_authors = [];
         foreach ( $shikimori_roles as $role ) {
           if ( !$role['person'] ) continue;
@@ -257,6 +258,7 @@ if ( $parse_action == 'search' ) {
       //Франшизы
       if ( isset($aaparser_config['settings']['parse_franshise']) && $aaparser_config['settings']['parse_franshise'] == 1 ) {
         $shiki_api = request($shikimori_api_domain."api/animes/".$shikimori['id']."/franchise");
+		
         $movies_id = [];
 
         if ( $shiki_api['nodes'] ) {
@@ -302,6 +304,7 @@ if ( $parse_action == 'search' ) {
       //Похожие аниме
       if ( isset($aaparser_config['settings']['parse_similar']) && $aaparser_config['settings']['parse_similar'] == 1 ) {
         $shiki_api = request($shikimori_api_domain."api/animes/".$shikimori['id']."/similar");
+		
         $movies_id = [];
 
         if ( $shiki_api ) {
@@ -320,6 +323,7 @@ if ( $parse_action == 'search' ) {
       //Связанные аниме
       if ( isset($aaparser_config['settings']['parse_related']) && $aaparser_config['settings']['parse_related'] == 1 ) {
         $shiki_api = request($shikimori_api_domain."api/animes/".$shikimori['id']."/related");
+		
         $movies_id = [];
 
         if ( $shiki_api ) {
