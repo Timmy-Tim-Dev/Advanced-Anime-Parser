@@ -399,18 +399,42 @@ if ( $parse_action == 'search' ) {
       }
       
       //Парсинг с jikan
-		if ( $shiki_id && isset($aaparser_config['settings']['parse_jikan']) && $aaparser_config['settings']['parse_jikan']) {
-	    $jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
-	    if (isset( $jikan_api['data']['images']['jpg']['large_image_url'] ) && $jikan_api['data']['images']['jpg']['large_image_url'] ) 
-	        $xfields_data['image'] = $jikan_api['data']['images']['jpg']['large_image_url'];
-			$jikan_poster = 1;
-	    if ( isset( $jikan_api['data']['trailer']['embed_url'] ) && $jikan_api['data']['trailer']['embed_url'] ) 
-	        $xfields_data['youtube_trailer'] = $jikan_api['data']['trailer']['embed_url'];
-	    if ( isset( $jikan_api['data']['score'] ) && $jikan_api['data']['score'] ) 
-	        $xfields_data['myanimelist_rating'] = $jikan_api['data']['score'];
-	    if ( isset( $jikan_api['data']['scored_by'] ) && $jikan_api['data']['scored_by'] ) 
-	        $xfields_data['myanimelist_votes'] = $jikan_api['data']['scored_by'];
-	  }
+	  $jikan_poster = 0;
+		if ( $shiki_id && isset($aaparser_config['settings']['parse_jikan']) && $aaparser_config['settings']['parse_jikan'] == 1) {
+			$jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
+			if (isset( $jikan_api['data']['images']['jpg']['large_image_url'] ) && $jikan_api['data']['images']['jpg']['large_image_url'] ) 
+				$xfields_data['image'] = $jikan_api['data']['images']['jpg']['large_image_url'];
+				$jikan_poster = 1;
+			if ( isset( $jikan_api['data']['trailer']['embed_url'] ) && $jikan_api['data']['trailer']['embed_url'] ) 
+				$xfields_data['youtube_trailer'] = $jikan_api['data']['trailer']['embed_url'];
+			if ( isset( $jikan_api['data']['score'] ) && $jikan_api['data']['score'] ) 
+				$xfields_data['myanimelist_rating'] = $jikan_api['data']['score'];
+			if ( isset( $jikan_api['data']['scored_by'] ) && $jikan_api['data']['scored_by'] ) 
+				$xfields_data['myanimelist_votes'] = $jikan_api['data']['scored_by'];
+		}
       
+	}
+} elseif ( $parse_action == 'takeimage' ) {
+	$xfields_data = [];
+    
+    $shikimori = request($shikimori_api_domain.'api/animes/'.$shiki_id);
+    if ($shikimori['code'] != "404") {
+		if ( isset($shikimori['image']['original']) && $shikimori['image']['original'] && strpos($shikimori['image']['original'], "missing_original") !== false) $xfields_data['image'] = $shikimori_image_domain.$shikimori['image']['original'];
+		else unset($xfields_data['image']);
+		$xfields_data['shikimori_name'] = isset($shikimori['name']) ? $shikimori['name'] : '';
+		$xfields_data['shikimori_russian'] = isset($shikimori['russian']) ? $shikimori['russian'] : '';
+	}
+	$jikan_poster = 0;
+	if ( $shiki_id && isset($aaparser_config['settings']['parse_jikan']) && $aaparser_config['settings']['parse_jikan'] == 1) {
+		$jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
+		if (isset( $jikan_api['data']['images']['jpg']['large_image_url'] ) && $jikan_api['data']['images']['jpg']['large_image_url'] ) 
+			$xfields_data['image'] = $jikan_api['data']['images']['jpg']['large_image_url'];
+			$jikan_poster = 1;
+		if ( isset( $jikan_api['data']['trailer']['embed_url'] ) && $jikan_api['data']['trailer']['embed_url'] ) 
+			$xfields_data['youtube_trailer'] = $jikan_api['data']['trailer']['embed_url'];
+		if ( isset( $jikan_api['data']['score'] ) && $jikan_api['data']['score'] ) 
+			$xfields_data['myanimelist_rating'] = $jikan_api['data']['score'];
+		if ( isset( $jikan_api['data']['scored_by'] ) && $jikan_api['data']['scored_by'] ) 
+			$xfields_data['myanimelist_votes'] = $jikan_api['data']['scored_by'];
 	}
 }

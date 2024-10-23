@@ -18,6 +18,10 @@ require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/public.p
 
 $kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : '9a3a536a8be4b3d3f9f7bd28c1b74071';
 $kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $aaparser_config['settings']['kodik_api_domain'] : 'https://kodikapi.com/';
+if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
+    $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
+    $shikimori_image_domain = 'https://'.clean_url($shikimori_api_domain);
+} else $shikimori_api_domain = $shikimori_image_domain = 'https://shikimori.me/'; 
 
 $action = isset($_GET['action']) ? $_GET['action'] : null;
 
@@ -314,9 +318,9 @@ if ( $action == "update_news_get" ) {
     
     if(!$news_id) return;
     
-	if ( $_GET['shikiid'] && $_GET['shikiid'] != 0 && $_GET['shikiid'] != '0' ) $shiki_id = "&shikimori_id=".$_GET['shikiid'];
+	if ( $_GET['shikiid'] && $_GET['shikiid'] != 0 && $_GET['shikiid'] != '0' ) $shiki_id = $_GET['shikiid'];
 	else $shiki_id = 0;
-	if ( $_GET['mdlid'] && $_GET['mdlid'] != 0 && $_GET['mdlid'] != '0' ) $mdl_id = "&mdl_id=".$_GET['mdlid'];
+	if ( $_GET['mdlid'] && $_GET['mdlid'] != 0 && $_GET['mdlid'] != '0' ) $mdl_id = $_GET['mdlid'];
 	else $mdl_id = 0;
 	if( !$shiki_id && !$mdl_id ) return;
 	
@@ -324,60 +328,39 @@ if ( $action == "update_news_get" ) {
 	if ( !$news_row['xfields'] ) return;
 	$xfields_post = xfieldsdataload( $news_row['xfields'] );
 
-	if ($shiki_id && !$mdl_id) $kodik_updates_api = request($kodik_api_domain."search?token=". $kodik_apikey . $shiki_id ."&with_episodes=true&with_material_data=true");
-	if ($mdl_id && !$shiki_id) $kodik_updates_api = request($kodik_api_domain."search?token=". $kodik_apikey . $mdl_id ."&with_episodes=true&with_material_data=true");
-	if ($_GET['shikiid'] == $_GET['mdlid']) $kodik_updates_api = request($kodik_api_domain."search?token=". $kodik_apikey . $shiki_id ."&with_episodes=true&with_material_data=true");
-	
-	if ($kodik_updates_api === null) die(json_encode(array( 'status' => 'Попытайтесь снова, что-то пошло не так!' )));
-	else $kodik_updates = array_reverse($kodik_updates_api['results']);
-	if (empty($kodik_updates)) {
+	$parse_action = 'takeimage';
+	if ( $aaparser_config['settings']['working_mode'] == 1 ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/kodik.php'));
+	else {
+        if ( $shiki_id ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/shikimori.php'));
+	    include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/kodik.php'));
+	    if ( $aaparser_config['settings']['parse_wa'] == 1 && $shiki_id ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/world_art.php'));
+	}
+	if(!isset($xfields_data['image'])) { 
 		$result_work = array(
 			'news_id' => $news_id,
-			'status' => 'Не найден по базе. S-'. $shiki_id
+			'status' => 'Не найден по базе.',
+			'shiki_id' => $shiki_id,
+			'mdl_id' => $mdl_id
 		);
 		$result = json_encode($result_work);
 		echo $result;
 		return;
 	}
-
-	$masserimage['image'] = $kodik_updates[0]['material_data']['poster_url'];
-	if ( isset( $aaparser_config['settings']['parse_jikan'] ) && $shiki_id ) {
-		$jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
-		if ( isset( $jikan_api['data']['images']['jpg']['large_image_url'] ) && $jikan_api['data']['images']['jpg']['large_image_url'] ) 
-			$masserimage['image'] = $jikan_api['data']['images']['jpg']['large_image_url'];
-	}
-
+	
 	$member_id['user_group'] = 1;
 	include_once(DLEPlugins::Check(ENGINE_DIR . '/classes/uploads/upload.class.php'));
 	
-	$update_fields['title'] = $kodik_updates[0]['title_orig'] ? $kodik_updates[0]['title_orig'] : '';
-	$update_fields['title_ru'] = $kodik_updates[0]['title'] ? $kodik_updates[0]['title'] : '';
+	if ( $xfields_data['shikimori_russian'] ) $poster_file = totranslit_it($xfields_data['shikimori_russian'], true, false);
+	elseif ( $xfields_data['shikimori_name'] ) $poster_file = totranslit_it($xfields_data['shikimori_name'], true, false);
+	elseif ( $xfields_data['kodik_title'] ) $poster_file = totranslit_it($xfields_data['kodik_title'], true, false);
+	else $poster_file = totranslit_it($xfields_data['kodik_title_orig'], true, false);
 	
-	if ( $update_fields['title_ru'] ) $poster_file = totranslit_it($update_fields['title_ru'], true, false);
-	elseif ( $update_fields['title'] ) $poster_file = totranslit_it($update_fields['title'], true, false);
-	if (isset($aaparser_config['images']['xf_poster'])) {
-		$poster = setPoster($masserimage['image'], $poster_file, 'poster', $aaparser_config['images']['xf_poster'], $news_id);
-	} elseif (isset($aaparser_config['images']['xf_poster_text'])) {
-		$poster = setPoster($masserimage['image'], $poster_file, 'poster', $aaparser_config['images']['xf_poster_text'], $news_id);
-	}
-	
+	$poster = setPoster($xfields_data['image'], $poster_file, 'poster', $aaparser_config['images']['xf_poster'], $id_news);
 	if ( isset($poster) && is_array($poster) ) {
-		if ( $aaparser_config['images']['xf_poster'] ) $masserimage['image'] = $poster['xfvalue'];
-		else $masserimage['image'] = $poster['link'];
+		$xfields_data['image'] = $poster['link'];
 		$xf_poster = $poster['xfvalue'];
 		$poster_code = $poster['returnbox'];
 	}
-
-	if(isset($poster['error'])) {
-		$result_work = array(
-			'news_id' => $news_id,
-			'status' => 'Ошибка связанная с постером.'
-		);
-		$result = json_encode($result_work);
-		echo $result;
-		return;
-	}
-	
 	if ( $aaparser_config['grabbing']['author_name'] ) $author = $aaparser_config['grabbing']['author_name'];
 	else {
 		$avtr = $db->super_query(" SELECT name, user_id FROM " . PREFIX . "_users WHERE user_id=1 ");
@@ -403,6 +386,18 @@ if ( $action == "update_news_get" ) {
 	if (isset($aaparser_config['images']['xf_poster_text'])) {
 		if (preg_match('/\.webp\|[^|]+\|[^|]+\|/', $xf_poster)) {
 			$xf_poster = preg_replace('/\.webp\|[^|]+\|[^|]+\|.*/', '.webp', $xf_poster);
+			$xf_poster = $config['http_home_url']. 'uploads/posts/'.$xf_poster;
+		}
+		if (preg_match('/\.jpg\|[^|]+\|[^|]+\|/', $xf_poster)) {
+			$xf_poster = preg_replace('/\.jpg\|[^|]+\|[^|]+\|.*/', '.jpg', $xf_poster);
+			$xf_poster = $config['http_home_url']. 'uploads/posts/'.$xf_poster;
+		}
+		if (preg_match('/\.avif\|[^|]+\|[^|]+\|/', $xf_poster)) {
+			$xf_poster = preg_replace('/\.avif\|[^|]+\|[^|]+\|.*/', '.avif', $xf_poster);
+			$xf_poster = $config['http_home_url']. 'uploads/posts/'.$xf_poster;
+		}
+		if (preg_match('/\.png\|[^|]+\|[^|]+\|/', $xf_poster)) {
+			$xf_poster = preg_replace('/\.png\|[^|]+\|[^|]+\|.*/', '.png', $xf_poster);
 			$xf_poster = $config['http_home_url']. 'uploads/posts/'.$xf_poster;
 		}
 		if (isset($xfields_post['poster'])) {

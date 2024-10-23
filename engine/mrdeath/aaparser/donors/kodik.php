@@ -311,9 +311,10 @@ if ($parse_action == 'search') {
 		$xfields_data['kadr_5'] = $kodik_data['screenshots'][4];
 	}
 	
+	
 	$checked_poster = 0;
 	if ($jikan_poster == 1) $checked_poster = 1;
-	if ($checked_poster == 0 && $aaparser_config['settings']['working_mode'] == 0 && isset($kodik_data['material_data']['anime_poster_url']) && $kodik_data['material_data']['anime_poster_url'] && $aaparser_config['grabbing']['poster_source'] == 1) {
+	if ($checked_poster == 0 && ($aaparser_config['settings']['working_mode'] == 0 || $aaparser_config['settings']['working_mode'] == 2) && isset($kodik_data['material_data']['anime_poster_url']) && $kodik_data['material_data']['anime_poster_url'] && $aaparser_config['grabbing']['poster_source'] == 1) {
 		if (isset($xfields_data['image']) && $xfields_data['image'] && strpos($xfields_data['image'], "missing_original") == true) {
 			$xfields_data['image'] = $kodik_data['material_data']['poster_url'];
 			$checked_poster = 1;
@@ -323,7 +324,7 @@ if ($parse_action == 'search') {
 		}
 	}
 	
-	if ($checked_poster == 0 && $aaparser_config['settings']['working_mode'] == 1 && isset($kodik_data['material_data']['drama_poster_url']) && $kodik_data['material_data']['drama_poster_url'] && $aaparser_config['grabbing']['poster_source'] == 1) {
+	if ($checked_poster == 0 && ($aaparser_config['settings']['working_mode'] == 1 || $aaparser_config['settings']['working_mode'] == 2) && isset($kodik_data['material_data']['drama_poster_url']) && $kodik_data['material_data']['drama_poster_url'] && $aaparser_config['grabbing']['poster_source'] == 1) {
 		if (!isset($xfields_data['image']) && !$xfields_data['image']) {
 			$xfields_data['image'] = $kodik_data['material_data']['drama_poster_url'];
 			$checked_poster = 1;
@@ -335,7 +336,6 @@ if ($parse_action == 'search') {
 			$xfields_data['image'] = $kodik_data['material_data']['poster_url'];
 		}
 	}
-	
 	//Новые теги - длительность сериала и длительность серии
     if ( isset($kodik_data['material_data']['episodes_total']) && $kodik_data['material_data']['episodes_total'] && intval($kodik_data['material_data']['episodes_total']) > 1 ) {
         if ( intval($kodik_data['material_data']['episodes_total']) <= 13 ) $xfields_data['kodik_tv_length'] = 'короткие (до 13 эп.)';
@@ -555,4 +555,38 @@ if ($parse_action == 'search') {
 		
         exit("База дорам успешно обновлена!");
     }
+} elseif ( $parse_action == 'takeimage' ) {
+	if ( !isset($xfields_data) && !$xfields_data ) $xfields_data = [];
+    
+	if ( $shiki_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&shikimori_id='.$shiki_id.'&with_episodes=true&with_material_data=true');
+    elseif ( $mdl_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_episodes=true&with_material_data=true');
+	if ( isset( $kodik['results'] ) && $kodik['results']) {
+		$kodik_data = array_shift($kodik['results']);
+		$xfields_data['kodik_title'] = isset($kodik_data['title']) ? $kodik_data['title'] : '';
+		$xfields_data['kodik_title_orig'] = isset($kodik_data['title_orig']) ? $kodik_data['title_orig'] : '';
+		$checked_poster = 0;
+		if ($jikan_poster == 1) $checked_poster = 1;
+		if ($checked_poster == 0 && ($aaparser_config['settings']['working_mode'] == 0 || $aaparser_config['settings']['working_mode'] == 2) && isset($kodik_data['material_data']['anime_poster_url']) && $kodik_data['material_data']['anime_poster_url'] && $aaparser_config['grabbing']['poster_source'] == 1) {
+			if (isset($xfields_data['image']) && $xfields_data['image'] && strpos($xfields_data['image'], "missing_original") == true) {
+				$xfields_data['image'] = $kodik_data['material_data']['poster_url'];
+				$checked_poster = 1;
+			} else {
+				$xfields_data['image'] = $kodik_data['material_data']['anime_poster_url'];
+				$checked_poster = 1;
+			}
+		}
+		
+		if ($checked_poster == 0 && ($aaparser_config['settings']['working_mode'] == 1 || $aaparser_config['settings']['working_mode'] == 2) && isset($kodik_data['material_data']['drama_poster_url']) && $kodik_data['material_data']['drama_poster_url'] && $aaparser_config['grabbing']['poster_source'] == 1) {
+			if (!isset($xfields_data['image']) && !$xfields_data['image']) {
+				$xfields_data['image'] = $kodik_data['material_data']['drama_poster_url'];
+				$checked_poster = 1;
+			}
+		}
+
+		if ($checked_poster == 0 && !isset($aaparser_config['grabbing']['poster_source']) && !$aaparser_config['grabbing']['poster_source']) {
+			if ( isset($kodik_data['material_data']['poster_url']) && $kodik_data['material_data']['poster_url']) {
+				$xfields_data['image'] = $kodik_data['material_data']['poster_url'];
+			}
+		}
+	}
 }
