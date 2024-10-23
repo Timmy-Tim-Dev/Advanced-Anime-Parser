@@ -326,18 +326,17 @@ elseif ( $xfields_data['kodik_duration_length'] ) $tags_array[] = $xfields_data[
 if ( $aaparser_config['categories'] AND $tags_array ) {
 	$tags_array = CheckGenres($tags_array);
 	foreach ( $aaparser_config['categories'] as $key => $value ) {
-		$finded = true;
+		$finded = false;
 		if ( strpos($value, ',') ) {
 			$value2 = explode(',', $value);
 			foreach ( $value2 as $value3 ) {
-				if ( !in_arrayi($value3, $tags_array) ) {
-					$finded = false;
+				if (in_arrayi($value3, $tags_array)) {
+					$finded = true;
 					break;
 				}
 			}
-		}
-		elseif( !in_arrayi($value, $tags_array) ) $finded = false;
-		if ( $finded ) $parse_cat_list[] = $key;
+		} elseif (in_arrayi($value, $tags_array)) $finded = true;
+		if ($finded) $parse_cat_list[] = $key;
 	}
 
 }

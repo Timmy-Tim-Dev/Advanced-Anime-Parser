@@ -142,21 +142,19 @@
 	            if ( $aaparser_config['categories'] AND $tags_array ) {
 					$tags_array = CheckGenres($tags_array);
 		            foreach ( $aaparser_config['categories'] as $key => $value ) {
-		                $finded = true;
-		                if ( strpos($value, ',') ) {
-		                    $value2 = explode(',', $value);
-		                    foreach ( $value2 as $value3 ) {
-		                        if ( !in_arrayi($value3, $tags_array) ) {
-		                            $finded = false;
-		                            break;
-		                        }
-		                    }   
-		                }
-		                elseif( !in_arrayi($value, $tags_array) ) $finded = false;
-		                if ( $finded ) $parse_cat_list[] = $key;
-		            }
-		
-		            $parse_cat_list = implode(",", $parse_cat_list);
+						$finded = false;
+						if ( strpos($value, ',') ) {
+							$value2 = explode(',', $value);
+							foreach ( $value2 as $value3 ) {
+								if (in_arrayi($value3, $tags_array)) {
+									$finded = true;
+									break;
+								}
+							}
+						} elseif (in_arrayi($value, $tags_array)) $finded = true;
+						if ($finded) $parse_cat_list[] = $key;
+					}
+					if (is_array($parse_cat_list)) $parse_cat_list = implode(",", $parse_cat_list);
 		            
 		            $db->query("UPDATE " . PREFIX . "_post SET category='{$parse_cat_list}' WHERE id='{$news_row['id']}'");
 	                clear_cache( array('news_', 'tagscloud_', 'archives_', 'calendar_', 'topnews_', 'rss', 'stats', 'full_') );

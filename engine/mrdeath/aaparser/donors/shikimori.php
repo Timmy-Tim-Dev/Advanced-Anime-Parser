@@ -399,9 +399,9 @@ if ( $parse_action == 'search' ) {
       }
       
       //Парсинг с jikan
-      if ( $shiki_id ) {
+		if ( $shiki_id && isset($aaparser_config['settings']['parse_jikan']) && $aaparser_config['settings']['parse_jikan']) {
 	    $jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
-	    if ( isset( $aaparser_config['settings']['parse_jikan'] ) && isset( $jikan_api['data']['images']['jpg']['large_image_url'] ) && $jikan_api['data']['images']['jpg']['large_image_url'] ) 
+	    if (isset( $jikan_api['data']['images']['jpg']['large_image_url'] ) && $jikan_api['data']['images']['jpg']['large_image_url'] ) 
 	        $xfields_data['image'] = $jikan_api['data']['images']['jpg']['large_image_url'];
 			$jikan_poster = 1;
 	    if ( isset( $jikan_api['data']['trailer']['embed_url'] ) && $jikan_api['data']['trailer']['embed_url'] ) 
