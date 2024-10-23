@@ -412,41 +412,7 @@ if (!function_exists('RenameGenres')) {
         $delete = ['аниме', 'мультфильм', 'хентай', 'юри', 'яой'];
         
         foreach ( $oldgenres as $key => $genres ) {
-            if ( in_array($genres, $delete) ) {
-				unset($oldgenres[$key]);
-				continue;
-			}
-			$genres = trim(mb_strtolower($genres));
-			if ($genres == 'военное' || $genres == 'военный') {
-				unset($oldgenres[$key]);
-				if (!in_array('военное', $oldgenres)) $oldgenres[] = 'военное';
-				if (!in_array('военный', $oldgenres)) $oldgenres[] = 'военный';
-			}
-			if ($genres == 'история' || $genres == 'исторический') {
-				unset($oldgenres[$key]);
-				if (!in_array('история', $oldgenres)) $oldgenres[] = 'история';
-				if (!in_array('исторический', $oldgenres)) $oldgenres[] = 'исторический';
-			}
-			if ($genres == 'детский' || $genres == 'детское') {
-				unset($oldgenres[$key]);
-				if (!in_array('детский', $oldgenres)) $oldgenres[] = 'детский';
-				if (!in_array('детское', $oldgenres)) $oldgenres[] = 'детское';
-			}
-			if ($genres == 'игра' || $genres == 'игры') {
-				unset($oldgenres[$key]);
-				if (!in_array('игра', $oldgenres)) $oldgenres[] = 'игра';
-				if (!in_array('игры', $oldgenres)) $oldgenres[] = 'игры';
-			}
-			if ($genres == 'игра' || $genres == 'игры') {
-				unset($oldgenres[$key]);
-				if (!in_array('игра', $oldgenres)) $oldgenres[] = 'игра';
-				if (!in_array('игры', $oldgenres)) $oldgenres[] = 'игры';
-			}
-			if ($genres == 'психологическое' || $genres == 'психология') {
-				unset($oldgenres[$key]);
-				if (!in_array('психологическое', $oldgenres)) $oldgenres[] = 'психологическое';
-				if (!in_array('психология', $oldgenres)) $oldgenres[] = 'психология';
-			}
+            if ( in_array($genres, $delete) ) unset($oldgenres[$key]);
         }
         $fromto = [
             'sci-fi' => 'sci-fi',
@@ -571,4 +537,43 @@ function change_tags_img($type, $needVal, $nameTag, $defaultImage = '') {
         $type->set_block("'\\[" . $nameTag . "\\](.*?)\\[/" . $nameTag . "\\]'si", "");
         $type->set("{" . $nameTag . "}", "");
     }
+}
+
+if (!function_exists('CheckGenres')) {
+    function CheckGenres($takethiscats) {
+		foreach ( $takethiscats as $tags_key => $tags_genres ) {
+			$tags_genres = trim(mb_strtolower($tags_genres));
+			if ($tags_genres == 'военное' || $tags_genres == 'военный') {
+				unset($takethiscats[$tags_key]);
+				if (!in_array('военное', $takethiscats)) $takethiscats[] = 'военное';
+				if (!in_array('военный', $takethiscats)) $takethiscats[] = 'военный';
+			}
+			if ($tags_genres == 'история' || $tags_genres == 'исторический') {
+				unset($takethiscats[$tags_key]);
+				if (!in_array('история', $takethiscats)) $takethiscats[] = 'история';
+				if (!in_array('исторический', $takethiscats)) $takethiscats[] = 'исторический';
+			}
+			if ($tags_genres == 'детский' || $tags_genres == 'детское') {
+				unset($takethiscats[$tags_key]);
+				if (!in_array('детский', $takethiscats)) $takethiscats[] = 'детский';
+				if (!in_array('детское', $takethiscats)) $takethiscats[] = 'детское';
+			}
+			if ($tags_genres == 'игра' || $tags_genres == 'игры') {
+				unset($takethiscats[$tags_key]);
+				if (!in_array('игра', $takethiscats)) $takethiscats[] = 'игра';
+				if (!in_array('игры', $takethiscats)) $takethiscats[] = 'игры';
+			}
+			if ($tags_genres == 'игра' || $tags_genres == 'игры') {
+				unset($takethiscats[$tags_key]);
+				if (!in_array('игра', $takethiscats)) $takethiscats[] = 'игра';
+				if (!in_array('игры', $takethiscats)) $takethiscats[] = 'игры';
+			}
+			if ($tags_genres == 'психологическое' || $tags_genres == 'психология') {
+				unset($takethiscats[$tags_key]);
+				if (!in_array('психологическое', $takethiscats)) $takethiscats[] = 'психологическое';
+				if (!in_array('психология', $takethiscats)) $takethiscats[] = 'психология';
+			}
+		}
+		return $takethiscats;
+	}
 }

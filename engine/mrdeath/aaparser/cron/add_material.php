@@ -98,12 +98,6 @@ $attempts = 0;
 while ($attempts < $max_attempts) {
 	try {
 		$attempts++;
-		
-		$test = $db->super_query("SELECT id, xfields FROM " . PREFIX . "_post WHERE " . $where_xf);
-		echo "<pre>";
-		print_r ($test);
-		echo "</pre>";
-		
 		$searching_post = $db->super_query("SELECT id, xfields FROM " . PREFIX . "_post WHERE " . $where_xf);
 		break;
 	} catch (Exception $e) {
@@ -330,7 +324,7 @@ if ( $xfields_data['shikimori_duration_length'] ) $tags_array[] = $xfields_data[
 elseif ( $xfields_data['kodik_duration_length'] ) $tags_array[] = $xfields_data['kodik_duration_length'];
 
 if ( $aaparser_config['categories'] AND $tags_array ) {
-	
+	$tags_array = CheckGenres($tags_array);
 	foreach ( $aaparser_config['categories'] as $key => $value ) {
 		$finded = true;
 		if ( strpos($value, ',') ) {

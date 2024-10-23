@@ -140,7 +140,7 @@
 	elseif ( $xfields_data['kodik_duration_length'] ) $tags_array[] = $xfields_data['kodik_duration_length'];
 	
 	            if ( $aaparser_config['categories'] AND $tags_array ) {
-		
+					$tags_array = CheckGenres($tags_array);
 		            foreach ( $aaparser_config['categories'] as $key => $value ) {
 		                $finded = true;
 		                if ( strpos($value, ',') ) {
