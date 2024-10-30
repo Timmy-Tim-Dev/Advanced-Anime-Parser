@@ -573,6 +573,11 @@ if (!function_exists('CheckGenres')) {
 				if (!in_array('психологическое', $takethiscats)) $takethiscats[] = 'психологическое';
 				if (!in_array('психология', $takethiscats)) $takethiscats[] = 'психология';
 			}
+			if ($tags_genres == 'еда' || $tags_genres == 'гурман') {
+				unset($takethiscats[$tags_key]);
+				if (!in_array('еда', $takethiscats)) $takethiscats[] = 'еда';
+				if (!in_array('гурман', $takethiscats)) $takethiscats[] = 'гурман';
+			}
 		}
 		return $takethiscats;
 	}

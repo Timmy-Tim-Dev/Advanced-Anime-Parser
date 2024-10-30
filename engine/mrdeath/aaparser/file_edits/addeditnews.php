@@ -280,7 +280,7 @@ span.material-info {
                         
                         HideLoading('');
                         parser_paste(data.result);
-
+						$('#parser_result').html('');
                     } else {
 
                         HideLoading('');
