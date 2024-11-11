@@ -12,7 +12,7 @@ if (!defined('DATALIFEENGINE') OR !defined('LOGGED_IN')) {
 	die('Hacking attempt!');
 }
 
-$actual_module_version = '4.3.1';
+$actual_module_version = '4.4.0';
 $action = isset($_GET['action']) ? $_GET['action'] : false;
 
 $php_version = intval(str_replace(array(".",","),"",substr(PHP_VERSION,0,3)));

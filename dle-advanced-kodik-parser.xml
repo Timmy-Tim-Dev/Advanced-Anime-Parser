@@ -3,7 +3,7 @@
 	<name>Advanced Kodik Parser</name>
 	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, парсинг анонсов аниме, обновление новостей при выходе новой серии или лучшего качества, тонкие настройки работы cron.</description>
 	<icon>uploads/advanced-anime-parser-icon.png</icon>
-	<version>4.3.1</version>
+	<version>4.4.0</version>
 	<dleversion>15.0</dleversion>
 	<versioncompare>greater</versioncompare>
 	<upgradeurl>https://storage.kodik.biz/files/advanced-anime-parser/last_version.json</upgradeurl>
@@ -157,7 +157,7 @@ if (!file_exists($filePath)) {
     $fp = fopen($filePath, "w+");
     if ($fp) {
         @chmod($filePath, 0777);
-        fwrite($fp, '4.3.1');
+        fwrite($fp, '4.4.0');
         fclose($fp);
     } else {
         echo "Ошибка: Пожалуйста загрузите модуль через менеджер файлов или FTP. Система установки плагинов не может сделать запись";

@@ -10,7 +10,7 @@
 
 
 $action = isset($_GET['action']) ? $_GET['action'] : '';
-$title = isset($_GET['title']) ? $_GET['title'] : '';
+$title = isset($_GET['title']) ? htmlspecialchars(addslashes($_GET['title'])) : '';
 $shiki_id = isset($_GET['shiki_id']) ? $_GET['shiki_id'] : 0;
 $mdl_id = isset($_GET['mdl_id']) ? $_GET['mdl_id'] : 0;
 $id_news = isset($_GET['id_news']) ? $_GET['id_news'] : 0;
