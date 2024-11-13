@@ -268,6 +268,7 @@ if ( $action == "update" ) {
 	$storage_engine = $row['Engine'];
 	
 	if( file_exists( ENGINE_DIR . "/mrdeath/aaparser/includes/upgrade/".$_GET['version'].".php" ) ) include ( ENGINE_DIR . "/mrdeath/aaparser/includes/upgrade/".$_GET['version'].".php" );
+	else  include ( ENGINE_DIR . "/mrdeath/aaparser/includes/upgrade/universal.php" );
 }
 
 ?>

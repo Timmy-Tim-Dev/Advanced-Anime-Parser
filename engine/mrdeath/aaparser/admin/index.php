@@ -343,8 +343,18 @@ echofooter();
 }
 elseif ( $action == 'dbupgrade' ) {
     
-        $versions = array();
+        $versions = [
+			'4.1.1',
+			'4.1.2',
+			'4.2.0',
+			'4.3.0',
+			'4.3.1',
+			'4.4.0'
+		];
 		$files = glob( ENGINE_DIR . "/mrdeath/aaparser/includes/upgrade/*");
+		$files = array_filter($files, function($file) {
+			return !preg_match('/universal\.php$/', $file);
+		});
 		
 		foreach ($files as $file) {
 			$version = basename( $file, ".php" );
@@ -358,9 +368,11 @@ elseif ( $action == 'dbupgrade' ) {
 		$total = count($versions);
 		
 		//$versions[] = $actual_module_version;
-		
-		sort($versions, SORT_NUMERIC);
-		
+		// sort($versions, SORT_NUMERIC);
+		usort($versions, 'version_compare');
+		// echo "<pre>";
+		// print_r($versions);
+		// echo "</pre>";
 		$versions = "['".implode("','", $versions)."']";
     
 echo <<<HTML
