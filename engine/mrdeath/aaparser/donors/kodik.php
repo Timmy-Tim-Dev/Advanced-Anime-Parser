@@ -311,7 +311,6 @@ if ($parse_action == 'search') {
 		$xfields_data['kadr_5'] = $kodik_data['screenshots'][4];
 	}
 	
-	
 	$checked_poster = 0;
 	if ($jikan_poster == 1) $checked_poster = 1;
 	if ($checked_poster == 0 && ($aaparser_config['settings']['working_mode'] == 0 || $aaparser_config['settings']['working_mode'] == 2) && isset($kodik_data['material_data']['anime_poster_url']) && $kodik_data['material_data']['anime_poster_url'] && $aaparser_config['grabbing']['poster_source'] == 1) {
@@ -336,6 +335,11 @@ if ($parse_action == 'search') {
 			$xfields_data['image'] = $kodik_data['material_data']['poster_url'];
 		}
 	}
+	
+	if (isset($xfields_data['image']) && $xfields_data['image'] && strpos($xfields_data['image'], "missing_original") == true) {
+		$xfields_data['image'] = rtrim($config['http_home_url'], '/') . $aaparser_config['main_fields']['poster_empty'];
+	}
+	
 	//Новые теги - длительность сериала и длительность серии
     if ( isset($kodik_data['material_data']['episodes_total']) && $kodik_data['material_data']['episodes_total'] && intval($kodik_data['material_data']['episodes_total']) > 1 ) {
         if ( intval($kodik_data['material_data']['episodes_total']) <= 13 ) $xfields_data['kodik_tv_length'] = 'короткие (до 13 эп.)';
@@ -587,6 +591,10 @@ if ($parse_action == 'search') {
 			if ( isset($kodik_data['material_data']['poster_url']) && $kodik_data['material_data']['poster_url']) {
 				$xfields_data['image'] = $kodik_data['material_data']['poster_url'];
 			}
+		}
+		
+		if (isset($xfields_data['image']) && $xfields_data['image'] && strpos($xfields_data['image'], "missing_original") == true) {
+			$xfields_data['image'] = rtrim($config['http_home_url'], '/') . $aaparser_config['main_fields']['poster_empty'];
 		}
 	}
 }

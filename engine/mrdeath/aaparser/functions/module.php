@@ -238,17 +238,26 @@ if (!function_exists('setPoster')) {
         if ( isset($image) && $image ) {
             $exif = exif_read_data($image);
 
-            $_FILES['qqfile'] = [
-                'type' => $exif['MimeType'],
-                'name' => $exif['FileName'],
-                'tmp_name' => $image,
-                'error' => 0,
-                'size' => $exif['FileSize']
-            ];
-            
+            if ($exif && isset($exif['MimeType'], $exif['FileName'], $exif['FileSize'])) {
+				$_FILES['qqfile'] = [
+					'type' => $exif['MimeType'],
+					'name' => $exif['FileName'],
+					'tmp_name' => $image,
+					'error' => 0,
+					'size' => $exif['FileSize']
+				];
+			} else {
+				$_FILES['qqfile'] = [
+					'type' => mime_content_type($image),
+					'name' => basename($image),
+					'tmp_name' => $image,
+					'error' => 0,
+					'size' => filesize($image)
+				];
+			}
             $uploader = new FileUploader($area, $news_id, $author, $t_size, $t_seite, $make_thumb, $make_watermark, $m_size, $m_seite, $make_medium, $hidpi);
             $result = json_decode($uploader->FileUpload(), true);
-
+			
             @unlink($image);
             return $result;
         }

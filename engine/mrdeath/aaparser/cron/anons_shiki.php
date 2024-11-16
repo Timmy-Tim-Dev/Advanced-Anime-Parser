@@ -321,6 +321,9 @@ if ( $shikimori ) {
 		}
 		
 		if ( isset($shikimori['image']['original']) && $shikimori['image']['original'] ) $xfields_data['image'] = $shikimori_image_domain.$shikimori['image']['original'];
+		if (isset($xfields_data['image']) && $xfields_data['image'] && strpos($xfields_data['image'], "missing_original") == true) {
+			$xfields_data['image'] = rtrim($config['http_home_url'], '/') . $aaparser_config['main_fields']['poster_empty'];
+		}
 		
 	  //Новые теги - длительность сериала и длительность серии
       if ( isset($shikimori['episodes']) && $shikimori['episodes'] && intval($shikimori['episodes']) > 1 ) {
@@ -368,19 +371,21 @@ if ( $shikimori ) {
 		
 		}
 } else die("Все материалы анонсов спарсились!");
-
+  
 //Парсинг с jikan
-      if ( $shiki_id ) {
-	    $jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
-	    if ( isset( $aaparser_config['settings']['parse_jikan'] ) && isset( $jikan_api['data']['images']['jpg']['large_image_url'] ) && $jikan_api['data']['images']['jpg']['large_image_url'] ) 
-	        $xfields_data['image'] = $jikan_api['data']['images']['jpg']['large_image_url'];
-	    if ( isset( $jikan_api['data']['trailer']['embed_url'] ) && $jikan_api['data']['trailer']['embed_url'] ) 
-	        $xfields_data['youtube_trailer'] = $jikan_api['data']['trailer']['embed_url'];
-	    if ( isset( $jikan_api['data']['score'] ) && $jikan_api['data']['score'] ) 
-	        $xfields_data['myanimelist_rating'] = $jikan_api['data']['score'];
-	    if ( isset( $jikan_api['data']['scored_by'] ) && $jikan_api['data']['scored_by'] ) 
-	        $xfields_data['myanimelist_votes'] = $jikan_api['data']['scored_by'];
-	  }
+$jikan_poster = 0;
+if ( $shiki_id && isset($aaparser_config['settings']['parse_jikan']) && $aaparser_config['settings']['parse_jikan'] == 1) {
+	$jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
+	if (isset( $jikan_api['data']['images']['jpg']['large_image_url'] ) && $jikan_api['data']['images']['jpg']['large_image_url'] ) 
+		$xfields_data['image'] = $jikan_api['data']['images']['jpg']['large_image_url'];
+		$jikan_poster = 1;
+	if ( isset( $jikan_api['data']['trailer']['embed_url'] ) && $jikan_api['data']['trailer']['embed_url'] ) 
+		$xfields_data['youtube_trailer'] = $jikan_api['data']['trailer']['embed_url'];
+	if ( isset( $jikan_api['data']['score'] ) && $jikan_api['data']['score'] ) 
+		$xfields_data['myanimelist_rating'] = $jikan_api['data']['score'];
+	if ( isset( $jikan_api['data']['scored_by'] ) && $jikan_api['data']['scored_by'] ) 
+		$xfields_data['myanimelist_votes'] = $jikan_api['data']['scored_by'];
+}
 
 //Работа с картинками
 
