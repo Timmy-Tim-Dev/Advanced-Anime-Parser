@@ -98,6 +98,150 @@
 #player_wrap.premact{width:100%}
 .show-flex-grid{display: flex;flex-wrap: wrap;padding: 5px;max-height: 155px;overflow-y: auto;}
 
+.prenext .simple-episodes-tabs-swilly {
+	margin: 5px!important;
+}
+
+.b-simple_episodes__list_swilly {
+    display: flex;
+    padding: unset;
+    list-style: unset;
+    margin: unset;
+    overflow-y: hidden;
+    overflow-x: auto;
+}
+
+.b-simple_episodes__list_swilly::-webkit-scrollbar, .prenext::-webkit-scrollbar {
+	width: 8px;
+    height: 8px;
+}
+
+.b-simple_episodes__list_swilly::-webkit-scrollbar-track, .prenext::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+
+.b-simple_episodes__list_swilly::-webkit-scrollbar-thumb, .prenext::-webkit-scrollbar-thumb {
+	background: #5d5d5d;
+}
+
+.b-simple_episodes__list_swilly::-webkit-scrollbar-thumb:hover, .prenext::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
+.b-simple_episode__item_swilly {
+    display: flex;
+    width: 150px;
+	min-width: 150px;
+    height: 100px;
+	min-height: 100px;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    margin-right: 5px;
+	margin-bottom: 5px;
+}
+
+.b-simple_episode__item_swilly.active {
+    cursor: default;
+}
+.b-simple_episode__item_swilly.active span {
+	background: #5d5d5d !important;
+}
+
+.b-simple_episode__item_swilly:last-child {
+	margin-right: unset;
+}
+
+.b-simple_episode__item_swilly img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.b-simple_episode__item_swilly span {
+    color: #fff;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #2d2d2d;
+    padding: 1px 5px;
+}
+
+.b-simple_episode__item_swilly:not(:has(img)) span {
+    height: 100%;
+    display: flex;
+	padding: unset;
+    align-items: center;
+    justify-content: center;
+}
+
+.ibox_bottom {
+    display: flex;
+    flex-direction: column;
+}
+
+.ibox_top {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.ibox_right {
+    display: flex;
+    flex-direction: row;
+}
+
+.ibox_left {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.ibox_right .b-simple_episode__item_swilly, .ibox_left .b-simple_episode__item_swilly {
+    margin-right: unset;
+}
+
+.ibox_right .prenext {
+	overflow-y: auto;
+    overflow-x: hidden;
+	flex: 0 0 auto;
+	height: 0;
+}
+
+.ibox_left .prenext {
+	overflow-y: auto;
+    overflow-x: hidden;
+	flex: 0 0 auto;
+	height: 0;
+	direction: rtl;
+}
+
+.ibox_right #player_kodik, .ibox_left #player_kodik {
+	flex: 1 1 auto;
+	width: unset!important;
+}
+
+.ibox_right .prenext .simple-episodes-tabs-swilly, .ibox_left .prenext .simple-episodes-tabs-swilly {
+    margin: 0 5px !important;
+}
+
+.ibox_right .b-simple_episodes__list_swilly, .ibox_left .b-simple_episodes__list_swilly {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-direction: column;
+}
+
+@media screen and (max-width: 768px) {
+	
+	.b-simple_episode__item_swilly {
+		width: 110px;
+		min-width: 110px;
+		height: 85px;
+		min-height: 85px;
+	}
+	
+}
 
 /* Room create button
 ----------------------------------------------- */

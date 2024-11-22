@@ -3,7 +3,7 @@
 	<name>Advanced Kodik Parser</name>
 	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, парсинг анонсов аниме, обновление новостей при выходе новой серии или лучшего качества, тонкие настройки работы cron.</description>
 	<icon>uploads/advanced-anime-parser-icon.png</icon>
-	<version>4.4.0</version>
+	<version>4.5.0</version>
 	<dleversion>15.0</dleversion>
 	<versioncompare>greater</versioncompare>
 	<upgradeurl>https://storage.kodik.biz/files/advanced-anime-parser/last_version.json</upgradeurl>
@@ -157,7 +157,7 @@ if (!file_exists($filePath)) {
     $fp = fopen($filePath, "w+");
     if ($fp) {
         @chmod($filePath, 0777);
-        fwrite($fp, '4.4.0');
+        fwrite($fp, '4.5.0');
         fclose($fp);
     } else {
         echo "Ошибка: Пожалуйста загрузите модуль через менеджер файлов или FTP. Система установки плагинов не может сделать запись";
@@ -521,6 +521,7 @@ else {
   	}
   	if ($_GET['module'] == "kodik_playlist_ajax") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist.php'));
   	if ($_GET['module'] == "kodik_playlist_ajax_new") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist_new.php'));
+  	if ($_GET['module'] == "kodik_playlist_ajax_screen") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist_screen.php'));
   	if ($_GET['module'] == "telegram_sender") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_cron.php'));
   	if ($_GET['module'] == "push_subscribe") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/push_subscribe.php'));
   	if ($_GET['module'] == "kodik_watched") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/save_watched.php'));

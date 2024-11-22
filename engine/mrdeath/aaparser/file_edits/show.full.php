@@ -63,6 +63,7 @@ if ( $aaparser_config['push_notifications']['enable'] && $is_logged ) {
 if ( isset($aaparser_config['player']['player_method']) && $aaparser_config['player']['player_method'] == 1 ) {
     $kodik_playlist_fullstory = 'yes';
     if ( $aaparser_config['player']['method'] == 1 ) include (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/ajax/playlist_new.php'));
+    elseif ( $aaparser_config['player']['method'] == 2 ) include (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/ajax/playlist_screen.php'));
     else include (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/ajax/playlist.php'));
 } else {
     if ( $aaparser_config['player']['preloader'] ) $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"><div class="loading-kodik"><div class="arc"></div><div class="arc"></div><div class="arc"></div></div></div>' );

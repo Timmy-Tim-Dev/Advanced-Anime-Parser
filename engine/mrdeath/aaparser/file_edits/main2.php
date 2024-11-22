@@ -25,6 +25,10 @@ if ( $dle_module == 'showfull' ) {
   	if ( $aaparser_config['player']['enable'] == 1 && (!isset($aaparser_config['player']['method']) || $aaparser_config['player']['method'] == 1) ) {
       	$js_array[] = "engine/mrdeath/aaparser/js/kodik_playlist_advanced.js";
     }
+  	if ( $aaparser_config['player']['enable'] == 1 && (!isset($aaparser_config['player']['method']) || $aaparser_config['player']['method'] == 2) ) {
+      	$js_array[] = "engine/mrdeath/aaparser/js/kodik_playlist_screen.js";
+		if ($config['image_lazy'] !== '0' && $aaparser_config['player']['player_method'] !== 1) $js_array[] = "engine/classes/js/lazyload.js";
+    }
 
   	if ( $aaparser_config['settings']['next_episode_date_new'] && $aaparser_config['settings']['timer_enable'] == 1 ) {
       	$js_array[] = "engine/mrdeath/aaparser/js/timer.js";
