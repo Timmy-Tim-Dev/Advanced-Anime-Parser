@@ -227,9 +227,33 @@ function updateKodikPlayer(xf)
 			<enabled>1</enabled>
 		</operation>
 		<operation action="after">
-			<searchcode><![CDATA[$id = $db->insert_id();]]></searchcode>
+			<searchcode><![CDATA[$xfieldsaction = "init";
+$xf_existing = array();
+include (DLEPlugins::Check(ENGINE_DIR . '/inc/xfields.php'));]]></searchcode>
 			<replacecode><![CDATA[$xf_temp_fields = xfieldsdataload($filecontents);
+$inserter_tag = $inserter_val = '';
 if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
+  if ( isset($xf_temp_fields[$aaparser_config['main_fields']['xf_shikimori_id']]) ) {
+    $shikimori_id = $xf_temp_fields[$aaparser_config['main_fields']['xf_shikimori_id']];
+    $inserter_tag = ", franchise_aap";
+    $inserter_val = ", '".$shikimori_id."'";
+  }
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="replace">
+			<searchcode><![CDATA[allow_br, symbol, tags, metatitle) values (]]></searchcode>
+			<replacecode><![CDATA[allow_br, symbol, tags, metatitle ".$inserter_tag.") values (]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="replace">
+			<searchcode><![CDATA['$allow_br', '$catalog_url', '{$_POST['tags']}', '{$metatags['title']}')" );]]></searchcode>
+			<replacecode><![CDATA['$allow_br', '$catalog_url', '{$_POST['tags']}', '{$metatags['title']}' ".$inserter_val.")" );]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="after">
+			<searchcode><![CDATA[$id = $db->insert_id();]]></searchcode>
+			<replacecode><![CDATA[if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
   	if ( isset($xf_temp_fields[$aaparser_config['main_fields']['xf_shikimori_id']]) ) {
       	require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/module.php'));
       	$shikimori_id = $xf_temp_fields[$aaparser_config['main_fields']['xf_shikimori_id']];
@@ -260,7 +284,7 @@ elseif ( isset($aaparser_config['main_fields']['xf_mdl_id']) ) {
       	else {
 
           	if ( isset($aaparser_config['settings']['kodik_api_key']) ) $kodik_apikey = $aaparser_config['settings']['kodik_api_key'];
-			else $kodik_apikey = '7dc2e47c2c45d4e97206ba7519939ec3';
+			else $kodik_apikey = '9a3a536a8be4b3d3f9f7bd28c1b74071';
 
 	        $kodik = request('https://kodikapi.com/search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_material_data=true');
 
@@ -479,6 +503,23 @@ if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparse
 			<searchcode><![CDATA[<div class="form-group">
 							  <label class="control-label col-sm-2">{$lang['edit_edate']}</label>]]></searchcode>
 			<replacecode><![CDATA[{$generate_button}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="after">
+			<searchcode><![CDATA[} else $thistime = date( "Y-m-d H:i:s", $added_time );]]></searchcode>
+			<replacecode><![CDATA[$xf_temp_fields = xfieldsdataload($filecontents);
+$inserter = '';
+if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
+  if ( isset($xf_temp_fields[$aaparser_config['main_fields']['xf_shikimori_id']]) ) {
+    $shikimori_id = $xf_temp_fields[$aaparser_config['main_fields']['xf_shikimori_id']];
+    $inserter = " franchise_aap='" . $shikimori_id ."', ";
+  }
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="replace">
+			<searchcode><![CDATA[allow_br='{$allow_br}', symbol='{$catalog_url}', tags='{$_POST['tags']}',]]></searchcode>
+			<replacecode><![CDATA[allow_br='{$allow_br}', " . $inserter . " symbol='{$catalog_url}', tags='{$_POST['tags']}',]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -724,17 +765,19 @@ else]]></replacecode>
 	</file>
 	<file name="engine/modules/functions.php">
 		<operation action="before">
-			<searchcode><![CDATA[if( preg_match( "#xfields=[\"](.+?)[\"]#i", $param_str, $match ) ) {]]></searchcode>
+			<searchcode><![CDATA[if ( $build_navigation ) {]]></searchcode>
 			<replacecode><![CDATA[if( preg_match( "#idshiki=['\"](.+?)['\"]#i", $param_str, $match ) ) {
-  		if ( !$aaparser_config ) require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
-		$match[1] = explode (',', $match[1]);
-		$temp_array = array();
-		foreach ($match[1] as $value) {
-			$value = $db->safesql(trim($value));
-			$temp_array[] = "p.franchise_aap = '{$value}'";
-		}
-		$where[] = "(".implode(' OR ', $temp_array).")";
-	}]]></replacecode>
+    if ( !$aaparser_config ) require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
+    $match[1] = explode (',', $match[1]);
+    $temp_array = array();
+    foreach ($match[1] as $value) {
+      $value = $db->safesql(trim($value));
+      $temp_array[] = "p.franchise_aap = '{$value}'";
+      $temp_sort_array[] = $value;
+    }
+    $where[] = "(".implode(' OR ', $temp_array).")";
+    $news_sort = "FIND_IN_SET(p.franchise_aap, '".implode(",", $temp_sort_array)."') ";
+}]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="replace">

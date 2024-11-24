@@ -28,7 +28,7 @@ ShowFaq('2', 'anime', 'Вывод франшиз и похожих аниме',
 
 ShowFaq('', 'anime', 'После обновления пропал порядок просмотров аниме (Франшизы)',
 'Запустите ссылку и ожидайте до появления сообщения.<br/>
-<a href="'. $config["http_home_url"] .'engine/ajax/controller.php?mod=anime_grabber&action=update_franchise&key={$cron_key}">'. $config["http_home_url"] .'engine/ajax/controller.php?mod=anime_grabber&action=update_franchise&key='. $cron_key .'</a><br/>
+<a href="'. $config["http_home_url"] .'engine/ajax/controller.php?mod=anime_grabber&action=update_franchise&key='.$cron_key.'" target="_blank">'. $config["http_home_url"] .'engine/ajax/controller.php?mod=anime_grabber&action=update_franchise&key='. $cron_key .'</a><br/>
 <i>Достаточно 1 раз запустить после обновления.</i>');
 
 ShowFaq('', '', 'В настройках категории нет возможности выбрать категория, так как они пустые',
