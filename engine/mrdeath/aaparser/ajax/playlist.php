@@ -51,6 +51,9 @@ $this_season = isset($_POST['this_season']) ? intval($_POST['this_season']) : 0;
 $this_episode = isset($_POST['this_episode']) ? intval($_POST['this_episode']) : 0;
 $this_translator = isset($_POST['this_translator']) ? intval($_POST['this_translator']) : 0;
 
+if(isset($aaparser_config['player']['sw_setting']) && $aaparser_config['player']['sw_setting']) $sw_player_cookie = "data-player_cookie='1'";
+else $sw_player_cookie = "data-player_cookie='0'";
+
 if ( isset($aaparser_config['settings']['kodik_api_domain']) ) $kodik_api_domain = $aaparser_config['settings']['kodik_api_domain'];
 else $kodik_api_domain = 'https://kodikapi.com/';
     
@@ -130,8 +133,8 @@ elseif ( isset($kodik_playlist_fullstory) && $kodik_playlist_fullstory == 'yes' 
     if ( $playlist !== false ) $playlist = json_decode($playlist, true);
     else {
         $playlist = [];
-        if ( $aaparser_config['player']['preloader'] ) $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"><div class="loading-kodik"><div class="arc"></div><div class="arc"></div><div class="arc"></div></div></div>' );
-        else $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"></div>' );
+        if ( $aaparser_config['player']['preloader'] ) $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no" '.$sw_player_cookie.'><div class="loading-kodik"><div class="arc"></div><div class="arc"></div><div class="arc"></div></div></div>' );
+        else $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no" '.$sw_player_cookie.'></div>' );
     }
     
 }
@@ -168,6 +171,7 @@ if ( $playlist[0]['geoblock'] && $aaparser_config['player']['geoblock_group'] ) 
 
 if ($playlist && $action == 'load_player') {
 	$translators = $seasons = '';
+	$hoverik_used = [];
     if (isset($aaparser_config['player']['auto_next']) && $aaparser_config['player']['auto_next'] == 1) $autonext = 'yes';
 	else $autonext = 'no';
     $ajax_player = '<div id="player" class="b-player" style="text-align: center;" data-autonext="'. $autonext .'">';
@@ -236,8 +240,27 @@ if ($playlist && $action == 'load_player') {
             
                 if ( isset($last_season) ) $season_num = $last_season;
                 else $season_num = $playlist[$num]['max_season'];
-            
+				
                 foreach ($playlist[$num]['episodes'][$season] as $episode_num => $episode_title) {
+					if(isset($aaparser_config['player']['sw_setting']) && $aaparser_config['player']['sw_setting']) {
+						$takedcookies = $_COOKIE["kodik_newsid_".$news_id."_episode_".$episode_num];
+						if ($takedcookies !== null) {
+							$sw_cookies = (json_decode($takedcookies, true));
+							$sw_time = isset($sw_cookies['time']) && $sw_cookies['time'] > 0 ? floor($sw_cookies['time'] / 60) : 0;
+							$sw_duration = isset($sw_cookies['duration']) && $sw_cookies['duration'] > 0 ? floor($sw_cookies['duration'] / 60) . "мин." : 0;
+							if (isset($sw_cookies['time']) && isset($sw_cookies['duration']) && $sw_cookies['time'] > 0 && $sw_cookies['duration'] > 0) {
+								$progress = round(($sw_cookies['time'] / (int)$sw_cookies['duration']) * 100);
+							} else $progress = 0;
+							// echo "<br>Episode->(".$episode_num."), Time->(".$sw_time."), Duration->(".$sw_duration."), Progress->(".$progress.")"; // Test echo
+						} else unset($sw_time, $sw_duration, $progress);
+						if ($progress != 0 && !in_array($episode_num, $hoverik_used)) {
+							$hoverik_used[] = $episode_num;
+							$hoverik .= "<div class='sw_hover' data-sw_episode='".$episode_num."'><p>Вы посмотрели</p><p>".$sw_time." из ".$sw_duration."</p><progress min='0' max='100' value='".$progress."'>%".$progress."</progress></div>";
+						} elseif (!in_array($episode_num, $hoverik_used)) {
+							$hoverik_used[] = $episode_num; 
+							$hoverik .= "<div class='sw_hover' hidden style='display:none' data-sw_episode='".$episode_num."'><p>Вы ещё не смотрели</p><progress min='0' max='100' value='0' hidden>%0</progress></div>";
+						}
+					}
                     if ( isset($last_episode) ) {
                         if ( $last_episode == $episode_num && $active_tr && $active_szn ) {
                             $active_epzd = " active";
@@ -256,8 +279,8 @@ if ($playlist && $action == 'load_player') {
                             $episode_numb = 'not_first';
                         } else $active_epzd = "";
                     }
-        
-                    $episodes .= '<li id="episode-'.$season.'-'.$episode_num.'-'.$playlist[$num]['translator_id'].'" onclick="kodik_episodes();" class="b-simple_episode__item' . $active_epzd . '" data-this_season="' . $season . '" data-this_episode="' . $episode_num . '" data-this_translator="' . $playlist[$num]['translator_id'] . '" data-this_link="'.$translation['translator_link'].'?season='.$season.'&episode='.$episode_num.'&only_translations='.$translation['translator_id'].'&hide_selectors=true'.$add_params.$geoblock.'">Серия ' . $episode_title . '</li>';
+					
+                    $episodes .= '<li id="episode-'.$season.'-'.$episode_num.'-'.$playlist[$num]['translator_id'].'" onclick="kodik_episodes();" class="b-simple_episode__item' . $active_epzd . '" data-this_season="' . $season . '" data-this_episode="' . $episode_num . '" data-this_translator="' . $playlist[$num]['translator_id'] . '" data-this_link="'.$translation['translator_link'].'?season='.$season.'&episode='.$episode_num.'&only_translations='.$translation['translator_id'].'&hide_selectors=true'.$add_params.$geoblock.'">Серия ' . $episode_title .'</li>';
                 }
                 $episodes .= '</ul>';
             
@@ -269,8 +292,7 @@ if ($playlist && $action == 'load_player') {
         $translators = '<div class="b-translators__block"><div class="b-translators__title">В переводе:</div><ul id="translators-list" class="b-translators__list">'.$translators.'</ul></div>';
         
     }
-    
-    $episodes .= '</div><div class="nextpl" onclick="nextpl();">&rsaquo;</div></div>';
+    $episodes .= '</div><div class="nextpl" onclick="nextpl();">&rsaquo;</div><div class="sw_hidden_for_player">'.$hoverik.'</div></div>';
     
     if (isset($last_season) && isset($last_translator) && isset($last_episode) && $show_seasons === true) {
         $lastepisodeout = '<div class="b-post__lastepisodeout"><h2><i class="'.$aaparser_config['player']['fa_icons'].' fa-eye" style="font-size: 20px !important;"></i>  ' . $serial_name . '<span id="les">. Вы остановились на ' . $last_season . ' сезоне ' . $last_episode . ' серии в озвучке «' . $last_translator . '»</span><i class="'.$aaparser_config['player']['fa_icons'].' fa-trash" onclick="del('.$news_id.');" id="lesc" title="Удалить отметку"></i></h2> </div>';
@@ -332,10 +354,10 @@ if ($playlist && $action == 'load_player') {
     }
 
     if ( isset($kodik_playlist_fullstory) && $kodik_playlist_fullstory == 'yes' ) {
-        $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="yes">'.$ajax_player.'</div>' );
+        $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="yes" '.$sw_player_cookie.'>'.$ajax_player.'</div>' );
     } else echo $ajax_player;
     
 } elseif ( isset($kodik_playlist_fullstory) && $kodik_playlist_fullstory == 'yes' ) {
-    if ( $aaparser_config['player']['preloader'] ) $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"><div class="loading-kodik"><div class="arc"></div><div class="arc"></div><div class="arc"></div></div></div>' );
-    else $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"></div>' );
+    if ( $aaparser_config['player']['preloader'] ) $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no" '.$sw_player_cookie.'><div class="loading-kodik"><div class="arc"></div><div class="arc"></div><div class="arc"></div></div></div>' );
+    else $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no" '.$sw_player_cookie.'></div>' );
 }

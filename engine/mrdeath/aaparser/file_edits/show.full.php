@@ -12,6 +12,9 @@ else $watched_series = [];
 $watched_episode = $watched_season = 0;
 $watched_translator = '';
 
+if(isset($aaparser_config['player']['sw_setting']) && $aaparser_config['player']['sw_setting']) $sw_player_cookie = "data-player_cookie='1'";
+else $sw_player_cookie = "data-player_cookie='0'";
+
 foreach ( $watched_series as $key => $value ) {
 	if ( $value['news_id'] == $row['id'] ) {
       	$watched_episode = $value['episode'];
@@ -66,8 +69,8 @@ if ( isset($aaparser_config['player']['player_method']) && $aaparser_config['pla
     elseif ( $aaparser_config['player']['method'] == 2 ) include (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/ajax/playlist_screen.php'));
     else include (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/ajax/playlist.php'));
 } else {
-    if ( $aaparser_config['player']['preloader'] ) $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"><div class="loading-kodik"><div class="arc"></div><div class="arc"></div><div class="arc"></div></div></div>' );
-    else $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no"></div>' );
+    if ( $aaparser_config['player']['preloader'] ) $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no" '.$sw_player_cookie.'><div class="loading-kodik"><div class="arc"></div><div class="arc"></div><div class="arc"></div></div></div>' );
+    else $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no" '.$sw_player_cookie.'></div>' );
 }
 
 if ( isset($aaparser_config['persons']['personas_on']) && $aaparser_config['persons']['personas_on'] == 1 && isset($aaparser_config['main_fields']['xf_shikimori_id']) && isset($xfieldsdata[$aaparser_config['main_fields']['xf_shikimori_id']]) && $xfieldsdata[$aaparser_config['main_fields']['xf_shikimori_id']] ) {

@@ -33,6 +33,17 @@ $(document).ready(function() {
             else scroll_to_active();
         }
     }
+	if ($("#kodik_player_ajax").attr("data-player_cookie") == '1') {
+		$(".b-simple_episode__item").hover(
+			function() {
+				$('.sw_hidden_for_player .sw_hover[data-sw_episode="'+ $(this).attr("data-this_episode") +'"]').addClass("hovernius");
+			},
+			function() {
+				$('.sw_hidden_for_player .sw_hover[data-sw_episode="'+ $(this).attr("data-this_episode") +'"]').removeClass("hovernius");
+			},
+
+		);
+	}
 });
 (function ($) {
     'use strict';
@@ -296,10 +307,13 @@ function voicerate_take (news_take) {
 if ($("#voicerate_mod").attr("data-news_id")) {
 	voicerate_take ($("#voicerate_mod").attr("data-news_id"));
 }
-
+var news_id = 0;
+var kodik_current_episode = 0;
+var kodik_current_episode_duration = 0;
 function kodikMessageListener(message) {
 	if ( message.data.key == 'kodik_player_current_episode' ) {
-		var news_id = $("#kodik_player_ajax").attr("data-news_id");
+		news_id = $("#kodik_player_ajax").attr("data-news_id");
+		kodik_current_episode = message.data.value.episode;
 		$.get(dle_root + "engine/ajax/controller.php?mod=anime_grabber&module=kodik_watched", { 'news_id': news_id, 'kodik_data': message.data.value }, function(data) {
 			if ( data.status ) {
 				if ($("#kodik_player_ajax #player").attr('data-autonext') == 'yes') {
@@ -314,6 +328,18 @@ function kodikMessageListener(message) {
 				voicerate_take (news_id);
 			}
 		}, "json");
+	}
+	if ($("#kodik_player_ajax").attr("data-player_cookie") == '1') {
+		if ( message.data.key == 'kodik_player_duration_update' ) {
+			kodik_current_episode_duration = message.data.value;
+		}
+		if ( message.data.key == 'kodik_player_time_update' ) {
+			const episodeData = {
+				time: message.data.value,
+				duration: kodik_current_episode_duration
+			};
+			jQuery.cookie("kodik_newsid_" + news_id + "_episode_" + kodik_current_episode, JSON.stringify(episodeData), { expires: 365 });
+		}
 	}
 }
 if (window.addEventListener) {
