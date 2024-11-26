@@ -16,6 +16,8 @@ $(document).ready(function() {
                     var this_translator = $(".b-translator__item.active").attr("data-this_translator");
                     var this_season = $(".b-simple_season__item.active").attr("data-this_season");
                     scroll_to_active();
+					setTimeout(initializeTranslatorsList, 100);
+					setTimeout(initializeScreensList, 100);
                 }
             });
         }
@@ -24,6 +26,8 @@ $(document).ready(function() {
                 $("#simple-episodes-list").scrollToSimple( $("#simple-episodes-list > .active") );
             }
             else scroll_to_active();
+			setTimeout(initializeTranslatorsList, 100);
+			setTimeout(initializeScreensList, 100);
         }
     }
 	$(".ibox_right .prenext, .ibox_left .prenext").css('height', $("#player_kodik").height());
@@ -33,19 +37,41 @@ $(document).ready(function() {
 	$("#simple-episodes-tabs ul, .prenext, #simple-episodes-tabs").on('scroll', function () {
 		$(window).lazyLoadXT();
 	});
-	if ($("#kodik_player_ajax").attr("data-player_cookie") == '1') {
-		$(".b-simple_episode__item").hover(
-			function() {
-				$('.sw_hidden_for_player .sw_hover[data-sw_episode="'+ $(this).attr("data-this_episode") +'"]').addClass("hovernius");
-			},
-			function() {
-				$('.sw_hidden_for_player .sw_hover[data-sw_episode="'+ $(this).attr("data-this_episode") +'"]').removeClass("hovernius");
-			},
-
-		);
-	}
 	
 });
+
+function initializeTranslatorsList() {
+    var $translatorsList = $('#translators-list')[0];
+
+    if ($translatorsList) {
+        $translatorsList.addEventListener('wheel', function(event) {
+            var delta = event.deltaY || event.detail || event.wheelDelta;
+            var direction = (delta > 0) ? 1 : -1;
+            $translatorsList.scrollLeft += direction * 100;
+            event.preventDefault();
+        }, { passive: false });
+    }
+	$('#translators-list').prepend($('#translators-list .active').detach());
+	$('#translators-list li').click(function() {
+		$('#translators-list').prepend($(this).detach());
+		$('#translators-list').scrollLeft(0);
+	});
+}
+
+function initializeScreensList() {
+    var $translatorsList = $('.b-simple_episodes__list_swilly');
+
+    if ($translatorsList.length > 0) {
+        $translatorsList.each(function() {
+            this.addEventListener('wheel', function(event) {
+                var delta = event.deltaY || event.detail || event.wheelDelta;
+                var direction = (delta > 0) ? 1 : -1;
+                this.scrollLeft += direction * 100;
+                event.preventDefault();
+            }, { passive: false });
+        });
+    }
+}
 (function ($) {
     'use strict';
 
@@ -346,7 +372,7 @@ function kodikMessageListener(message) {
 				time: message.data.value,
 				duration: kodik_current_episode_duration
 			};
-			jQuery.cookie("kodik_newsid_" + news_id + "_episode_" + kodik_current_episode, JSON.stringify(episodeData), { expires: 365 });
+			jQuery.cookie("kodik_newsid_" + news_id + "_episode_" + kodik_current_episode, JSON.stringify(episodeData), { expires: 365, path: "/" });
 		}
 	}
 }

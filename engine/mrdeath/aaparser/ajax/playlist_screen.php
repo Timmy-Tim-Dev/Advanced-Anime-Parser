@@ -263,11 +263,11 @@ if ($playlist && $action == 'load_player') {
 							// echo "<br>Episode->(".$episode_num."), Time->(".$sw_time."), Duration->(".$sw_duration."), Progress->(".$progress.")"; // Test echo
 						} else unset($sw_time, $sw_duration, $progress);
 						if ($progress != 0 && !in_array($episode_num, $hoverik_used)) {
-							$hoverik_used[] = $episode_num; 
+							// $hoverik_used[] = $episode_num;  // Пока нет необходимости
 							$progresik = "<progress min='0' max='100' value='".$progress."'>%".$progress."</progress>";
 							$hoverik = "<div class='sw_hover'><p>Вы посмотрели</p><p>".$sw_time." из ".$sw_duration."</p></div>";
 						} elseif (!in_array($episode_num, $hoverik_used)) {
-							$hoverik_used[] = $episode_num; 
+							// $hoverik_used[] = $episode_num; // Пока нет необходимости
 							$progresik = "<progress min='0' max='100' value='0' hidden>%0</progress>";
 							$hoverik = "<div class='sw_hover' hidden style='display:none'><p>Вы ещё не смотрели</p></div>";
 						}
@@ -305,7 +305,7 @@ if ($playlist && $action == 'load_player') {
             $seasons .= '</ul>';
             
         }
-        $translators = '<div class="b-translators__block"><div class="b-translators__title">В переводе:</div><ul id="translators-list" class="b-translators__list">'.$translators.'</ul></div>';
+        $translators = '<div class="b-translators__block" style="padding-left: 5px; padding-right: 5px;padding-bottom:0;"><div class="b-translators__title">В переводе:</div><ul id="translators-list" class="b-translators__list_swilly">'.$translators.'</ul></div>';
         
     }
     
@@ -338,7 +338,7 @@ if ($playlist && $action == 'load_player') {
             if ( $last_translator > 0 ) $this_translator = "&only_translations=".$last_translator;
             else $this_translator = "&only_translations=".$playlist[$translator_num]['translator_id'];
             
-            $iframe_url = $playlist[$translator_num]['translator_link'].'?translations=false'.$add_params.$geoblock;
+            $iframe_url = $playlist[$translator_num]['translator_link'].'?translations=false&hide_selectors=true'.$add_params.$geoblock;
         } else {
             
             if ( $last_season > 0 ) $this_season = "?season=".$last_season.$add_params.$geoblock;
@@ -353,7 +353,7 @@ if ($playlist && $action == 'load_player') {
     
         if ($aaparser_config['player']['hide_episodes'] != 1 && $playlist[$num]['episodes']) $ajax_player = $ajax_player . $seasons . $iframe . $episodes;
 		elseif ($aaparser_config['player']['hide_episodes'] != 1 && !$playlist[$num]['episodes'])  $ajax_player = $ajax_player . $seasons . $iframe;
-        else $ajax_player = $ajax_player . $iframe;
+        else $ajax_player = $ajax_player . $iframe . $episodes;
 
         $ajax_player .= '</div></div>';
     
