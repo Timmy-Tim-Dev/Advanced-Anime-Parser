@@ -18,6 +18,7 @@ $(document).ready(function() {
                     scroll_to_active();
 					setTimeout(initializeTranslatorsList, 100);
 					setTimeout(initializeScreensList, 100);
+					setTimeout(initializelazyLoad, 100);
                 }
             });
         }
@@ -28,17 +29,22 @@ $(document).ready(function() {
             else scroll_to_active();
 			setTimeout(initializeTranslatorsList, 100);
 			setTimeout(initializeScreensList, 100);
+			setTimeout(initializelazyLoad, 100);
         }
-    }
-	$(".ibox_right .prenext, .ibox_left .prenext").css('height', $("#player_kodik").height());
+	}
+	
+	
+});
+
+function initializelazyLoad() {
+    $(".ibox_right .prenext, .ibox_left .prenext").css('height', $("#player_kodik").height());
 	$(window).on('resize', function () {
 		$(".ibox_right .prenext, .ibox_left .prenext").css('height', $("#player_kodik").height());
 	});
 	$("#simple-episodes-tabs ul, .prenext, #simple-episodes-tabs").on('scroll', function () {
 		$(window).lazyLoadXT();
 	});
-	
-});
+}
 
 function initializeTranslatorsList() {
     var $translatorsList = $('#translators-list')[0];
@@ -162,7 +168,20 @@ function kodik_translates_alt() {
             $('.b-translator__item').removeClass('active');
             _self.addClass('active');
             
-            var this_link = _self.attr("data-this_link");
+            var this_translator = _self.attr("data-this_translator");
+			var active_episode = $(".b-simple_episode__item_swilly.active").attr("data-this_episode");
+			var this_season = $(".b-simple_episode__item_swilly.active").attr("data-this_season");
+			$(".b-simple_episode__item_swilly.active").removeClass("active");
+			$(".b-simple_episodes__list_swilly").hide();
+			$(".simple-episodes-tabs-swilly [id^='episodes-tab-" + this_translator + "']").show();
+			if ( $('#episode-'+this_season+'-'+active_episode+'-'+this_translator).length > 0 ) {
+                $('#episode-'+this_season+'-'+active_episode+'-'+this_translator).addClass('active');
+                var this_link = $('#episode-'+this_season+'-'+active_episode+'-'+this_translator).attr("data-this_link");
+            } else {
+                $('.episode-tab-'+this_translator+'-'+this_season+' > li:first').addClass('active');
+                var this_link = $('.episode-tab-'+this_translator+'-'+this_season+' > li:first').attr("data-this_link");
+            }
+
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
 
         }

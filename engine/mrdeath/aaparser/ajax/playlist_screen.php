@@ -213,7 +213,7 @@ if ($playlist && $action == 'load_player') {
                 if ( $num == 0 ) $active_tr = " active";
                 else $active_tr = "";
             }
-            if ( $aaparser_config['player']['hide_episodes'] == 1 || !$playlist[$num]['episodes']) $translators .= '<li onclick="kodik_translates_alt();" class="b-translator__item'.$active_tr.'" data-this_link="'.$translation['translator_link'].'?translations=false&only_translations='.$translation['translator_id'].$add_params.$geoblock.'">'.$translation['translator_name'].'</li>';
+            if ( $aaparser_config['player']['hide_episodes'] == 1 || !$playlist[$num]['episodes']) $translators .= '<li onclick="kodik_translates_alt();" class="b-translator__item'.$active_tr.'" data-this_translator="'.$translation['translator_id'].'" data-this_link="'.$translation['translator_link'].'?translations=false&hide_selectors=true&only_translations='.$translation['translator_id'].$add_params.$geoblock.'">'.$translation['translator_name'].'</li>';
             else $translators .= '<li onclick="kodik_translates();" class="b-translator__item'.$active_tr.'" data-this_translator="'.$translation['translator_id'].'">'.$translation['translator_name'].'</li>';
             
             //Кнопки сезонов
