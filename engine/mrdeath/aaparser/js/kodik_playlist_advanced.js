@@ -19,6 +19,7 @@ $(document).ready(function() {
                         $('.nextpl').remove();
                     }
                     else scroll_to_active();
+					setTimeout(initializeSwList, 100);
                 }
             });
         }
@@ -29,6 +30,7 @@ $(document).ready(function() {
                 $('.nextpl').remove();
             }
             else scroll_to_active();
+			setTimeout(initializeSwList, 100);
         }
     }
 	if ($("#kodik_player_ajax").attr("data-player_cookie") == '1') {
@@ -43,6 +45,20 @@ $(document).ready(function() {
 		);
 	}
 });
+
+function initializeSwList() {
+   if ($("#kodik_player_ajax").attr("data-player_cookie") == '1') {
+		$(".b-simple_episode__item").hover(
+			function() {
+				$('.sw_hidden_for_player .sw_hover[data-sw_episode="'+ $(this).attr("data-this_episode") +'"]').addClass("hovernius");
+			},
+			function() {
+				$('.sw_hidden_for_player .sw_hover[data-sw_episode="'+ $(this).attr("data-this_episode") +'"]').removeClass("hovernius");
+			},
+
+		);
+	}
+}
 (function ($) {
     'use strict';
 
@@ -316,7 +332,7 @@ function kodikMessageListener(message) {
 				time: message.data.value,
 				duration: kodik_current_episode_duration
 			};
-			jQuery.cookie("kodik_newsid_" + news_id + "_episode_" + kodik_current_episode, JSON.stringify(episodeData), { expires: 365 });
+			jQuery.cookie("kodik_newsid_" + news_id + "_episode_" + kodik_current_episode, JSON.stringify(episodeData), { expires: 365, path: "/" });
 		}
 	}
 }

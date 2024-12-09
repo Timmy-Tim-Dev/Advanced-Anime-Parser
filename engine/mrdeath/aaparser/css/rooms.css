@@ -164,6 +164,54 @@
     display: none;
 }
 
+.b-translators__list_swilly {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    overflow-y: hidden;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    width: 100%;
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+	list-style: none;
+	padding-left: unset;
+    margin: unset;
+}
+
+.b-translators__list_swilly::-webkit-scrollbar {
+	width: 8px;
+    height: 8px;
+}
+
+.b-translators__list_swilly::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+
+.b-translators__list_swilly::-webkit-scrollbar-thumb {
+	background: #5d5d5d;
+}
+
+.b-translators__list_swilly::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
+.b-translators__list_swilly li {
+    width: fit-content;
+    padding: 2px 11px;
+    border-radius: 5px;
+    background: #f2f2f2;
+    color: #000;
+    transition: .3s all;
+    margin-right: 5px;
+    overflow: unset;
+}
+
+.b-translators__list_swilly li.active, .b-translators__list_swilly li:hover {
+    color: #fff;
+}
+
 .prenext .simple-episodes-tabs-swilly {
 	margin: 5px!important;
 }
