@@ -166,39 +166,55 @@ if ( $action == "update_news_get" ) {
 		}	
 	} else $db->query("UPDATE " . PREFIX . "_post SET xfields='{$new_xfields}' WHERE id='{$news_id}'");
 	
-	$db->query("DELETE FROM " . PREFIX . "_xfsearch WHERE news_id='{$news_id}'");
-	            
 	$newpostedxfields = xfieldsdataload($new_xfields);
+	$not_xfields = explode(',', $aaparser_config['update_news']['not_xfields']);
+	
     $xf_search_words = array();
-    
     foreach (xfieldsload() as $name => $value) {
-        if ( $value[6] AND !empty($newpostedxfields[$value[0]]) ) {
-			$temp_array = explode( ",", $newpostedxfields[$value[0]] );
+		if (!empty($newpostedxfields[$value[0]])) {
+			if (in_array($value[0], $not_xfields)) {
+				continue;
+			}
+
+			$temp_array = explode(",", $newpostedxfields[$value[0]]);
 			foreach ($temp_array as $value2) {
 				$value2 = trim($value2);
-				if($value2) {
-					if ( $aaparser_config['integration']['latin_xfields'] == 1 ) $xf_search_words[] = array( $db->safesql($value[0]), $db->safesql($value2), ($value[31]) ? $db->safesql(totranslit($value2, true, false)) : '' );
-					else $xf_search_words[] = array( $db->safesql($value[0]), $db->safesql($value2) );
+				if ($value2) {
+					if ($aaparser_config['integration']['latin_xfields'] == 1) {
+						$xf_search_words[] = array(
+							$db->safesql($value[0]),
+							$db->safesql($value2),
+							($value[31]) ? $db->safesql(totranslit($value2, true, false)) : ''
+						);
+					} else {
+						$xf_search_words[] = array(
+							$db->safesql($value[0]),
+							$db->safesql($value2)
+						);
+					}
 				}
 			}
 		}
-    }
-	if ( count($xf_search_words) AND $publish == 1 ) {
-		
+	}
+
+	//print_r ($xf_search_words);
+	if (count($xf_search_words)) {
+
 		$temp_array = array();
-		
-		foreach ( $xf_search_words as $value ) {
-			if ( $aaparser_config['integration']['latin_xfields'] == 1 ) $temp_array[] = "('" . $news_id . "', '" . $value[0] . "', '" . $value[1] . "', '" . $value[2] . "')";
+
+		foreach ($xf_search_words as $value) {
+			if ($aaparser_config['integration']['latin_xfields'] == 1) $temp_array[] = "('" . $news_id . "', '" . $value[0] . "', '" . $value[1] . "', '" . $value[2] . "')";
 			else $temp_array[] = "('" . $news_id . "', '" . $value[0] . "', '" . $value[1] . "')";
 		}
-		
-		$xf_search_words = implode( ", ", $temp_array );
-		if ( $aaparser_config['integration']['latin_xfields'] == 1 ) $db->query( "INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue, tagvalue_translit) VALUES " . $xf_search_words );
-		else $db->query( "INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue) VALUES " . $xf_search_words );
+
+		$xf_search_words = implode(", ", $temp_array);
+		$db->query("DELETE FROM " . PREFIX . "_xfsearch WHERE news_id='{$news_id}'");
+		if ($aaparser_config['integration']['latin_xfields'] == 1) $db->query("INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue, tagvalue_translit) VALUES " . $xf_search_words);
+		else $db->query("INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue) VALUES " . $xf_search_words);
 	}
-	
-	clear_cache( array('news_', 'full_'.$news_id) );
-	
+
+	clear_cache(array('news_', 'full_' . $news_id));
+
 	$result_work = array(
 		'news_id' => $news_id,
 		'status' => 'данные в доп. поля проставлены успешно.'

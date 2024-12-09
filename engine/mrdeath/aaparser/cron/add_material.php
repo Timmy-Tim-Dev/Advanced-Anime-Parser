@@ -463,6 +463,7 @@ if( is_array($tags_array) && count($tags_array) AND $publish == 1 ) {
 	
 	foreach ( $tags_array as $value ) {
 		if ( !$value ) continue;
+		$value = $db->safesql( $value );
 		if ( $aaparser_config['integration']['latin_tags'] == 1 ) $tags[] = "('" . $id . "', '" . trim( $value ) . "', '" . totranslit(trim($value), true, false) . "')";
 		else $tags[] = "('" . $id . "', '" . trim( $value ) . "')";
 	}
