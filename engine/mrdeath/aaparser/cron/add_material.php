@@ -440,7 +440,7 @@ $author = $db->safesql($author);
 
 if ( !$title || !$alt_name ) {
 	$db->query( "UPDATE " . PREFIX . "_anime_list SET error='{$stoped_time}' WHERE material_id='{$material['material_id']}'" );
-	die('Возникла ошибка');
+	die('Возникла ошибка, Отсутствует название тайтла, возможно необходимо проверить настройки.<br>Если вы используете парсинг дорам, то Вам необходимо использовать теги Kodik. Так как у дорам отсутсвуют данные с SHIKIMORI');
 }
 
 $shikimori_franshise = $shiki_id;

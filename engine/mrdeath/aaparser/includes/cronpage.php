@@ -65,7 +65,7 @@ echo <<<HTML
 					</tr>
 					<tr>
 						<td>
-						Записывать аниме в очередь на добавление:<br/>
+						Добавить материалы в очередь на парсинг:<br/>
 						<b>Желательно ставить на каждые пол часа или час.</b>
 						<p>Добавляет в очередь материалы для будущего парсинга, если материалов тут нет, то ничего не добавится на сайт при добавлении кроном раз в минуту.</p>
 						<textarea style="width:100%;height:50px;" disabled="">{$config['http_home_url']}engine/ajax/controller.php?mod=anime_grabber&action=grabbing&key={$cron_key}</textarea>
