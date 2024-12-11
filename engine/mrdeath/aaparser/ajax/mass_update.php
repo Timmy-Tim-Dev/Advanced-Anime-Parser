@@ -39,38 +39,39 @@ $user_group = get_vars('usergroup');
 
 if ( $action == "update_news_get" ) {
 		
-		if ( !$aaparser_config['main_fields']['xf_shikimori_id'] && !$aaparser_config['main_fields']['xf_mdl_id'] ) die(json_encode(array( 'status' => 'fail' )));
-	
-	    if ( $aaparser_config['main_fields']['xf_shikimori_id'] && $aaparser_config['main_fields']['xf_mdl_id'] ) $where = "xfields LIKE '%".$aaparser_config['main_fields']['xf_shikimori_id']."|%' OR xfields LIKE '%".$aaparser_config['main_fields']['xf_mdl_id']."|%'";
-	    elseif ( $aaparser_config['main_fields']['xf_shikimori_id'] ) $where = "xfields LIKE '%".$aaparser_config['main_fields']['xf_shikimori_id']."|%'";
-	    else $where = "xfields LIKE '%".$aaparser_config['main_fields']['xf_mdl_id']."|%'";
-	    $news = $db->query( "SELECT id, xfields FROM " . PREFIX . "_post WHERE ".$where );
-		
-		$news_count = $news->num_rows;
-		if($news_count == 0) return;
-		$result_connect = array();
-		$count = 0;
-		
-		while($temp_news = $db->get_row($news)) {
-			$id = intval($temp_news['id']);
-			$xfields = xfieldsdataload($temp_news['xfields']);
-			if ( $xfields[$aaparser_config['main_fields']['xf_shikimori_id']] ) $shikimori_id = $xfields[$aaparser_config['main_fields']['xf_shikimori_id']];
-			else $shikimori_id = 0;
-			if ( $xfields[$aaparser_config['main_fields']['xf_mdl_id']] ) $mdl_id = $xfields[$aaparser_config['main_fields']['xf_mdl_id']];
-			else $mdl_id = 0;
+	if ( !$aaparser_config['main_fields']['xf_shikimori_id'] && !$aaparser_config['main_fields']['xf_mdl_id'] ) die(json_encode(array( 'status' => 'fail' )));
+	$where_conditions = [];
+	if ($aaparser_config['main_fields']['xf_shikimori_id']) $where_conditions[] = "xfields REGEXP '(^|\\\\|)" . $aaparser_config['main_fields']['xf_shikimori_id'] . "(\\\\||$)'";
+	if ($aaparser_config['main_fields']['xf_mdl_id']) $where_conditions[] = "xfields REGEXP '(^|\\\\|)" . $aaparser_config['main_fields']['xf_mdl_id'] . "(\\\\||$)'";
 
-			if (!$shikimori_id && !$mdl_id) continue;			
-			
-			$result_connect[] = array(
-				'id' => $id,
-				'shikimori_id' => $shikimori_id,
-				'mdl_id' => $mdl_id,
-			);
-			
-			$count++;
-		}
-		if ($count > 0) echo json_encode($result_connect);
-		else die(json_encode(array( 'status' => 'fail' )));
+	$where = implode(' OR ', $where_conditions);
+	$news = $db->query("SELECT id, xfields FROM " . PREFIX . "_post WHERE " . $where);
+	
+	$news_count = $news->num_rows;
+	if($news_count == 0) return;
+	$result_connect = array();
+	$count = 0;
+	
+	while($temp_news = $db->get_row($news)) {
+		$id = intval($temp_news['id']);
+		$xfields = xfieldsdataload($temp_news['xfields']);
+		if ( $xfields[$aaparser_config['main_fields']['xf_shikimori_id']] ) $shikimori_id = $xfields[$aaparser_config['main_fields']['xf_shikimori_id']];
+		else $shikimori_id = 0;
+		if ( $xfields[$aaparser_config['main_fields']['xf_mdl_id']] ) $mdl_id = $xfields[$aaparser_config['main_fields']['xf_mdl_id']];
+		else $mdl_id = 0;
+
+		if (!$shikimori_id && !$mdl_id) continue;			
+		
+		$result_connect[] = array(
+			'id' => $id,
+			'shikimori_id' => $shikimori_id,
+			'mdl_id' => $mdl_id,
+		);
+		
+		$count++;
+	}
+	if ($count > 0) echo json_encode($result_connect);
+	else die(json_encode(array( 'status' => 'fail' )));
 } elseif ( $action == "update_news" ) {
 	
 	if ( !isset($aaparser_config['main_fields']['xf_shikimori_id']) && !isset($aaparser_config['main_fields']['xf_mdl_id']) ) die(json_encode(array( 'status' => 'fail' )));
@@ -166,8 +167,6 @@ if ( $action == "update_news_get" ) {
 		}	
 	} else $db->query("UPDATE " . PREFIX . "_post SET xfields='{$new_xfields}' WHERE id='{$news_id}'");
 	
-	
-	     
 	$newpostedxfields = xfieldsdataload($new_xfields);
 	$not_xfields = explode(',', $aaparser_config['update_news']['not_xfields']);
 	
@@ -186,7 +185,7 @@ if ( $action == "update_news_get" ) {
 						$xf_search_words[] = array(
 							$db->safesql($value[0]),
 							$db->safesql($value2),
-							$db->safesql(totranslit($value2, true, false))
+							($value[31]) ? $db->safesql(totranslit($value2, true, false)) : ''
 						);
 					} else {
 						$xf_search_words[] = array(
@@ -199,7 +198,9 @@ if ( $action == "update_news_get" ) {
 		}
 	}
 
+	//print_r ($xf_search_words);
 	if (count($xf_search_words)) {
+
 		$temp_array = array();
 
 		foreach ($xf_search_words as $value) {

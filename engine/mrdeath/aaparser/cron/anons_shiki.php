@@ -11,7 +11,11 @@
 if( ! defined( 'DATALIFEENGINE' ) ) {
 	die( "Hacking attempt!" );
 } 
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+	$time_anons_start = microtime(true);
+	$stage = $stage ?? 1;
+	echo "=================================<br/>Начинаем добавление анонсируемого материала, старт (".date("Y-m-d H:i:s").")<br/>";
+}
 $anons_on = $aaparser_config['settings_anons']['anons_on'];
 $anons_film_sort_by = $aaparser_config['settings_anons']['anons_film_sort_by'];
 $anons_cat_id = $aaparser_config['settings_anons']['cat_id'];
@@ -23,8 +27,18 @@ if ($aaparser_config['settings_anons']['anons_kind'] != "") {
 $order = $aaparser_config['settings_anons']['order'];
 $exclude_ids = array();
 $res_shiki = $db->query("SELECT * FROM ".PREFIX."_shikimori_posts ");
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+	$time_anons = microtime(true) - $time_anons_start;
+	echo "Этап ".$stage.": Получение данных с бд " . PREFIX . "_shikimori_posts, прошло (".round($time_anons,4)." секунд)<br/>";
+	$stage++;
+}
 while ( $shiki_row = $db->get_row ($res_shiki) ) {
 	$exclude_ids[] = $shiki_row['shiki_id'];
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+		$time_anons = microtime(true) - $time_anons_start;
+		echo "Этап ".$stage.": Получение каждой записи данных с бд " . PREFIX . "_shikimori_posts, прошло (".round($time_anons,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
 $exclude_ids = implode(",",$exclude_ids);
@@ -35,7 +49,11 @@ if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
     $shikimori_image_domain = 'https://'.clean_url($shikimori_api_domain);
 } else $shikimori_api_domain = $shikimori_image_domain = 'https://shikimori.me/';
 $shikimori = request($shikimori_api_domain.'api/animes?status=anons&rating=!rx&order='.$anons_film_sort_by . $kinder . $exclude_ids);
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+	$time_anons = microtime(true) - $time_anons_start;
+	echo "Этап ".$stage.": Получение данных с API, прошло (".round($time_anons,4)." секунд)<br/>";
+	$stage++;
+}
 if ( $shikimori ) {
 	foreach ( $shikimori as $result ) {
 		
@@ -54,9 +72,14 @@ if ( $shikimori ) {
 		
 		$shiki_link = isset($result['url']) ? $shikimori_image_domain.$result['url'] : '';
 		
-		$where = "xfields LIKE '%".$aaparser_config['main_fields']['xf_shikimori_id']."|".$id_shiki."||%'";
+		$where = "xfields REGEXP '(^|\\\\|)" . $aaparser_config['main_fields']['xf_shikimori_id'] ."\\\\|".$id_shiki. "(\\\\||$)'";
+		// $where = "xfields LIKE '%".$aaparser_config['main_fields']['xf_shikimori_id']."|".$id_shiki."||%'";
 		$proverka = $db->super_query( "SELECT id, xfields FROM " . PREFIX . "_post WHERE ".$where );
-		
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+			$time_anons = microtime(true) - $time_anons_start;
+			echo "Этап ".$stage.": Получение данных с бд " . PREFIX . "_post, прошло (".round($time_anons,4)." секунд)<br/>";
+			$stage++;
+		}
 		if (isset($proverka['id']) && $proverka['id']) {
 			$find_id = 'est';
 			$edit_link = $config['http_home_url'].'admin.php?mod=editnews&action=editnews&id='.$proverka['id'];
@@ -81,7 +104,11 @@ if ( $shikimori ) {
 		$xfields_data = [];
 		
 		$shikimori = request($shikimori_api_domain.'api/animes/'.$responseArray[0]['shiki_id']);
-		
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+			$time_anons = microtime(true) - $time_anons_start;
+			echo "Этап ".$stage.": Получение shikimori id (".$responseArray[0]['shiki_id'].") данных с API, прошло (".round($time_anons,4)." секунд)<br/>";
+			$stage++;
+		}
 		$xfields_data['shikimori_id'] = isset($responseArray[0]['shiki_id']) ? $responseArray[0]['shiki_id'] : '';
 		$xfields_data['shikimori_name'] = isset($shikimori['name']) ? $shikimori['name'] : '';
 		$xfields_data['shikimori_russian'] = isset($shikimori['russian']) ? $shikimori['russian'] : '';
@@ -176,10 +203,19 @@ if ( $shikimori ) {
 			$xfields_data['shikimori_videos'] = str_replace("http:", "", $xfields_data['shikimori_videos']);
 		}
 		$shiki_id = $xfields_data['shikimori_id'];
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+			$time_anons = microtime(true) - $time_anons_start;
+			echo "Этап ".$stage.": Разбор тегов, прошло (".round($time_anons,4)." секунд)<br/>";
+			$stage++;
+		}
 		//Ссылки на прочие ресурсы 
 		if ( isset($aaparser_config['settings']['other_sites']) && $aaparser_config['settings']['other_sites'] == 1 ) {
 			$shikimori_links = request($shikimori_api_domain.'api/animes/'.$shiki_id.'/external_links');
-		
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+				$time_anons = microtime(true) - $time_anons_start;
+				echo "Этап ".$stage.": Получение данных ссылки на прочие ресурсы с API, прошло (".round($time_anons,4)." секунд)<br/>";
+				$stage++;
+			}
 			$xfields_data['myanimelist_id'] = isset($shikimori['myanimelist_id']) ? $shikimori['myanimelist_id'] : '';
 			$source_kind = [];
 			foreach ( $shikimori_links as $source_link ) {
@@ -199,12 +235,21 @@ if ( $shikimori ) {
 			}
 			$xfields_data['kage_project'] = isset($source_kind['kage_project']) ? $source_kind['kage_project'] : '';
 			unset($shikimori_links, $source_kind);
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+				$time_anons = microtime(true) - $time_anons_start;
+				echo "Этап ".$stage.": Распределение тегов ссылок на прочие ресурсы, прошло (".round($time_anons,4)." секунд)<br/>";
+				$stage++;
+			}
 		}
 		
 		//Авторский состав
 		if ( isset($aaparser_config['settings']['parse_authors']) && $aaparser_config['settings']['parse_authors'] == 1 ) {
 			$shikimori_roles = request($shikimori_api_domain.'api/animes/'.$shiki_id.'/roles');
-	
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+				$time_anons = microtime(true) - $time_anons_start;
+				echo "Этап ".$stage.": Получение данных авторского состава с API, прошло (".round($time_anons,4)." секунд)<br/>";
+				$stage++;
+			}
 			$anime_authors = [];
 			foreach ( $shikimori_roles as $role ) {
 				if ( !$role['person'] ) continue;
@@ -240,11 +285,21 @@ if ( $shikimori ) {
 				$xfields_data['shikimori_composition'] = implode(', ', $anime_authors['composition']);
 			}
 			unset($shikimori_roles, $anime_authors);
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+				$time_anons = microtime(true) - $time_anons_start;
+				echo "Этап ".$stage.": Распределение тегов авторского состава, прошло (".round($time_anons,4)." секунд)<br/>";
+				$stage++;
+			}
 		}
 
 		//Франшизы
 		if ( isset($aaparser_config['settings']['parse_franshise']) && $aaparser_config['settings']['parse_franshise'] == 1 ) {
-			$shiki_api = request($shikimori_api_domain."api/animes/".$shikimori['id']."/franchise");
+			$shiki_api = request($shikimori_api_domain."api/animes/".$shiki_id."/franchise");
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+				$time_anons = microtime(true) - $time_anons_start;
+				echo "Этап ".$stage.": Получение данных франшизы с API, прошло (".round($time_anons,4)." секунд)<br/>";
+				$stage++;
+			}
 			$movies_id = [];
 		
 			if ( $shiki_api['nodes'] ) {
@@ -257,13 +312,22 @@ if ( $shikimori ) {
 		
 			$xfields_data['shikimori_franshise'] = $part_id;
 			unset($shiki_api, $movies_id, $part_id);
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+				$time_anons = microtime(true) - $time_anons_start;
+				echo "Этап ".$stage.": Распределение тегов франшизы, прошло (".round($time_anons,4)." секунд)<br/>";
+				$stage++;
+			}
 		}
 		
 		//Похожие аниме
 		if ( isset($aaparser_config['settings']['parse_similar']) && $aaparser_config['settings']['parse_similar'] == 1 ) {
-			$shiki_api = request($shikimori_api_domain."api/animes/".$shikimori['id']."/similar");
+			$shiki_api = request($shikimori_api_domain."api/animes/".$shiki_id."/similar");
 			$movies_id = [];
-		
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+				$time_anons = microtime(true) - $time_anons_start;
+				echo "Этап ".$stage.": Получение данных похожих аниме с API, прошло (".round($time_anons,4)." секунд)<br/>";
+				$stage++;
+			}
 			if ( $shiki_api['nodes'] ) {
 				// Сортировка массива в зависимости от значения $franchise_sort
 				if ($aaparser_config['settings']['franchise_sort'] == 'date_asd') {
@@ -301,13 +365,22 @@ if ( $shikimori ) {
 		
 			$xfields_data['shikimori_similar'] = $part_id;
 			unset($shiki_api, $movies_id, $part_id);
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+				$time_anons = microtime(true) - $time_anons_start;
+				echo "Этап ".$stage.": Распределение тегов похожих аниме, прошло (".round($time_anons,4)." секунд)<br/>";
+				$stage++;
+			}
 		}
 		
 		//Связанные аниме
 		if ( isset($aaparser_config['settings']['parse_related']) && $aaparser_config['settings']['parse_related'] == 1 ) {
-			$shiki_api = request($shikimori_api_domain."api/animes/".$shikimori['id']."/related");
+			$shiki_api = request($shikimori_api_domain."api/animes/".$shiki_id."/related");
 			$movies_id = [];
-		
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+				$time_anons = microtime(true) - $time_anons_start;
+				echo "Этап ".$stage.": Получение данных связанных аниме с API, прошло (".round($time_anons,4)." секунд)<br/>";
+				$stage++;
+			}
 			if ( $shiki_api ) {
 				foreach ( $shiki_api as $shiki_anime ) {
 					if ( isset( $shiki_anime['anime']['id'] ) && $shiki_anime['anime']['id'] ) $movies_id[] = $shiki_anime['anime']['id'];
@@ -318,6 +391,11 @@ if ( $shikimori ) {
 		
 			$xfields_data['shikimori_related'] = $part_id;
 			unset($shiki_api, $movies_id, $part_id);
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+				$time_anons = microtime(true) - $time_anons_start;
+				echo "Этап ".$stage.": Распределение тегов связанных аниме, прошло (".round($time_anons,4)." секунд)<br/>";
+				$stage++;
+			}
 		}
 		
 		if ( isset($shikimori['image']['original']) && $shikimori['image']['original'] ) $xfields_data['image'] = $shikimori_image_domain.$shikimori['image']['original'];
@@ -342,6 +420,11 @@ if ( $shikimori ) {
           $shikimori_link = $shikimori_api_domain.$shikimori['url'];
           $shikimori_link = str_replace(['.me//', '.one//'], ['.me/', '.one/'], $shikimori_link);
           $shikimori_page = file_get_contents($shikimori_link);
+		  if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+			$time_anons = microtime(true) - $time_anons_start;
+			echo "Этап ".$stage.": Парсинг жанров напрямую (file_get_contents) с сайта shikimori, прошло (".round($time_anons,4)." секунд)<br/>";
+			$stage++;
+		  }
           if ( strpos($shikimori_page, 'genre-ru') !== false ) {
               preg_match_all("|<span class='genre-ru'>(.*)<\/span>|U", $shikimori_page, $genresru, PREG_PATTERN_ORDER);
               if ( is_array($genresru) && isset($genresru[1]) ) {
@@ -367,15 +450,31 @@ if ( $shikimori ) {
                   }
               }
           }
+		  if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+			$time_anons = microtime(true) - $time_anons_start;
+			echo "Этап ".$stage.": Распределение жанров по тегам с сайта shikimori, прошло (".round($time_anons,4)." секунд)<br/>";
+			$stage++;
+		  }
       }
 		
 		}
-} else die("Все материалы анонсов спарсились!");
+} else {
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+		$time_anons = microtime(true) - $time_anons_start;
+		echo "Закончили добавление анонсируемого материала, конец (".date("Y-m-d H:i:s")."), разница (".round($time_anons,4)." секунд)<br/>=================================<br/>";
+	}
+	die("Все материалы анонсов спарсились!");
+}
   
 //Парсинг с jikan
 $jikan_poster = 0;
 if ( $shiki_id && isset($aaparser_config['settings']['parse_jikan']) && $aaparser_config['settings']['parse_jikan'] == 1) {
 	$jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+		$time_anons = microtime(true) - $time_anons_start;
+		echo "Этап ".$stage.": Парсинг с jikan.moe, прошло (".round($time_anons,4)." секунд)<br/>";
+		$stage++;
+	}
 	if (isset( $jikan_api['data']['images']['jpg']['large_image_url'] ) && $jikan_api['data']['images']['jpg']['large_image_url'] ) 
 		$xfields_data['image'] = $jikan_api['data']['images']['jpg']['large_image_url'];
 		$jikan_poster = 1;
@@ -385,6 +484,12 @@ if ( $shiki_id && isset($aaparser_config['settings']['parse_jikan']) && $aaparse
 		$xfields_data['myanimelist_rating'] = $jikan_api['data']['score'];
 	if ( isset( $jikan_api['data']['scored_by'] ) && $jikan_api['data']['scored_by'] ) 
 		$xfields_data['myanimelist_votes'] = $jikan_api['data']['scored_by'];
+	
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+		$time_anons = microtime(true) - $time_anons_start;
+		echo "Этап ".$stage.": Распределение тегов полученных с jikan.moe, прошло (".round($time_anons,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
 //Работа с картинками
@@ -393,7 +498,11 @@ $id_news = 0;
 
 $_REQUEST['module'] = 'aaparser';
 include_once(DLEPlugins::Check(ENGINE_DIR . '/classes/uploads/upload.class.php'));
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+	$time_anons = microtime(true) - $time_anons_start;
+	echo "Этап ".$stage.": Внедрение uploads.class.php, прошло (".round($time_anons,4)." секунд)<br/>";
+	$stage++;
+}
 if ( $mode != 'editnews' && $xfields_data['image'] && $aaparser_config['images']['poster'] == 1 ) $need_poster = true;
 elseif ( $mode == 'editnews' && $xfields_data['image'] && $aaparser_config['images']['poster_edit'] == 1 ) $need_poster = true;
 else $need_poster = false;
@@ -409,6 +518,11 @@ if ( $need_poster === true ) {
 		else $xfields_data['image'] = $poster['link'];
 		$xf_poster = $poster['xfvalue'];
 		$poster_code = $poster['returnbox'];
+	}
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+		$time_anons = microtime(true) - $time_anons_start;
+		echo "Этап ".$stage.": Загрузка постеров, прошло (".round($time_anons,4)." секунд)<br/>";
+		$stage++;
 	}
 }
 
@@ -476,6 +590,11 @@ if ( $need_screens === true ) {
 		}
 		
 	}
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+		$time_anons = microtime(true) - $time_anons_start;
+		echo "Этап ".$stage.": Загрузка скриншотов, прошло (".round($time_anons,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
 //Буквенный каталог
@@ -484,7 +603,11 @@ if ( $xfields_data['shikimori_russian'] ) $xfields_data['catalog_rus'] = $db->sa
 else $xfields_data['catalog_rus'] = $db->safesql( dle_substr( htmlspecialchars( strip_tags( stripslashes( $xfields_data['kodik_title'] ) ), ENT_QUOTES, $config['charset'] ), 0, 1, $config['charset'] ) );
 if ( $xfields_data['shikimori_name'] ) $xfields_data['catalog_eng'] = $db->safesql( dle_substr( htmlspecialchars( strip_tags( stripslashes( $xfields_data['shikimori_name'] ) ), ENT_QUOTES, $config['charset'] ), 0, 1, $config['charset'] ) );
 else $xfields_data['catalog_eng'] = $db->safesql( dle_substr( htmlspecialchars( strip_tags( stripslashes( $xfields_data['kodik_title_en'] ) ), ENT_QUOTES, $config['charset'] ), 0, 1, $config['charset'] ) );
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+	$time_anons = microtime(true) - $time_anons_start;
+	echo "Этап ".$stage.": Создание буквенного каталога, прошло (".round($time_anons,4)." секунд)<br/>";
+	$stage++;
+}
 //Обработка категорий
 
 $tags_array = array();
@@ -547,7 +670,11 @@ if ( $aaparser_config['categories'] AND $tags_array ) {
 }
 
 unset($tags_array);
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+	$time_anons = microtime(true) - $time_anons_start;
+	echo "Этап ".$stage.": Обработка категории, прошло (".round($time_anons,4)." секунд)<br/>";
+	$stage++;
+}
 //Обработка шаблонов доп полей
 
 $xfields_list = array();
@@ -713,7 +840,11 @@ $meta_keywords = check_if($aaparser_config['xfields']['meta_keywords'], $xfields
 $meta_keywords = preg_replace("#\{.*?\}|\[if.*?\].*?\[\/if.*?\]#uis", "", $meta_keywords);
 $catalog = check_if($aaparser_config['xfields']['catalog'], $xfields_data);
 $catalog = preg_replace("#\{.*?\}|\[if.*?\].*?\[\/if.*?\]#uis", "", $catalog);
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+	$time_anons = microtime(true) - $time_anons_start;
+	echo "Этап ".$stage.": Разбор тегов, прошло (".round($time_anons,4)." секунд)<br/>";
+	$stage++;
+}
 if ( $tags ) $tags_array = explode(',', $tags);
 
 $title = $db->safesql( $title );
@@ -782,18 +913,34 @@ if ( $aaparser_config['grabbing']['author_name'] && $aaparser_config['grabbing']
 	$author_id = 1;
 }
 $author = $db->safesql($author);
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+	$time_anons = microtime(true) - $time_anons_start;
+	echo "Этап ".$stage.": Обработка шаблонов, прошло (".round($time_anons,4)." секунд)<br/>";
+	$stage++;
+}
 $shikimori_franshise = $shiki_id;
 
 $db->query( "INSERT INTO " . PREFIX . "_post (date, autor, short_story, full_story, xfields, title, descr, keywords, category, alt_name, allow_comm, approve, allow_main, fixed, allow_br, symbol, tags, metatitle, franchise_aap) values ('$new_date', '{$author}', '$short_story', '$full_story', '$xfields_list', '$title', '$meta_descrs', '$meta_keywords', '$category_list', '$alt_name', '$allow_comments', '$publish', '$publish_main', '0', '$allow_br', '$catalog', '$tags', '$meta_titles', '$shikimori_franshise')" );
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+	$time_anons = microtime(true) - $time_anons_start;
+	echo "Этап ".$stage.": Добавление записи в " . PREFIX . "_post, прошло (".round($time_anons,4)." секунд)<br/>";
+	$stage++;
+}
 $id = $db->insert_id();
 	
 $db->query("INSERT INTO ".PREFIX."_shikimori_posts set post_id=$id, shiki_id=$shiki_id");	
-	
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+	$time_anons = microtime(true) - $time_anons_start;
+	echo "Этап ".$stage.": Добавление записи в " . PREFIX . "_shikimori_posts, прошло (".round($time_anons,4)." секунд)<br/>";
+	$stage++;
+}
 $db->query( "INSERT INTO " . PREFIX . "_post_extras (news_id, allow_rate, disable_index, user_id, disable_search, allow_rss, allow_rss_turbo, allow_rss_dzen) VALUES ('{$id}', '{$allow_rating}', '{$dissalow_index}', '{$author_id}', '{$dissalow_search}', '{$allow_rss}', '{$allow_turbo}', '{$allow_zen}')" );
-
-if( is_array($tags_array) && count($tags_array) AND $publish == 1 ) {
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+	$time_anons = microtime(true) - $time_anons_start;
+	echo "Этап ".$stage.": Добавление записи в " . PREFIX . "_post_extras, прошло (".round($time_anons,4)." секунд)<br/>";
+	$stage++;
+}
+if( is_array($tags_array) && count($tags_array) ) {
 	
 	$tags = array ();
 	
@@ -806,10 +953,14 @@ if( is_array($tags_array) && count($tags_array) AND $publish == 1 ) {
 	$tags = implode( ", ", $tags );
 	if ( $aaparser_config['integration']['latin_tags'] == 1 ) $db->query( "INSERT INTO " . PREFIX . "_tags (news_id, tag, tag_translit) VALUES " . $tags );
 	else $db->query( "INSERT INTO " . PREFIX . "_tags (news_id, tag) VALUES " . $tags );
-
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+		$time_anons = microtime(true) - $time_anons_start;
+		echo "Этап ".$stage.": Добавление записи в " . PREFIX . "_tags, прошло (".round($time_anons,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
-if( $category_list AND $publish == 1 ) {
+if( $category_list) {
 	$cat_ids = array ();
 	$cat_ids_arr = explode( ",", $category_list );
 	foreach ( $cat_ids_arr as $value ) {
@@ -818,6 +969,11 @@ if( $category_list AND $publish == 1 ) {
 	
 	$cat_ids = implode( ", ", $cat_ids );
 	$db->query( "INSERT INTO " . PREFIX . "_post_extras_cats (news_id, cat_id) VALUES " . $cat_ids );
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+		$time_anons = microtime(true) - $time_anons_start;
+		echo "Этап ".$stage.": Добавление записи в " . PREFIX . "_post_extras_cats, прошло (".round($time_anons,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
 $newpostedxfields = xfieldsdataload($xfields_list);
@@ -835,7 +991,7 @@ foreach (xfieldsload() as $name => $value) {
 		}
 	}
 }
-if ( count($xf_search_words) AND $publish == 1 ) {
+if ( count($xf_search_words) ) {
 	
 	$temp_array = array();
 	
@@ -848,6 +1004,11 @@ if ( count($xf_search_words) AND $publish == 1 ) {
 	$xf_search_words = implode( ", ", $temp_array );
 	if ( $aaparser_config['integration']['latin_xfields'] == 1 ) $db->query( "INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue, tagvalue_translit) VALUES " . $xf_search_words );
 	else $db->query( "INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue) VALUES " . $xf_search_words );
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+		$time_anons = microtime(true) - $time_anons_start;
+		echo "Этап ".$stage.": Добавление записи в " . PREFIX . "_xfsearch, прошло (".round($time_anons,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
 if ( $xfields_data['image'] OR $xfields_data['kadr_1'] ) {
@@ -870,6 +1031,11 @@ if ( $xfields_data['image'] OR $xfields_data['kadr_1'] ) {
 	$images = implode('|||', $images);
 
 	$db->query(" INSERT INTO " . PREFIX . "_images (images, news_id, author, date) VALUES ('{$images}', '{$id}', '{$author}', '".time()."') ");
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+		$time_anons = microtime(true) - $time_anons_start;
+		echo "Этап ".$stage.": Добавление записи в " . PREFIX . "_images, прошло (".round($time_anons,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
 if( $config['news_indexnow'] && $publish == 1 ) {
@@ -883,6 +1049,11 @@ if( $config['news_indexnow'] && $publish == 1 ) {
 				} else $full_link = $config['http_home_url'] . $row['id'] . "-" . $row['alt_name'] . ".html";
 			} else $full_link = $config['http_home_url'] . $row['id'] . "-" . $row['alt_name'] . ".html";
 		} else $full_link = $config['http_home_url'] . date( 'Y/m/d/', strtotime( $row['date'] ) ) . $row['alt_name'] . ".html";
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+			$time_anons = microtime(true) - $time_anons_start;
+			echo "Этап ".$stage.": Сео разбор, прошло (".round($time_anons,4)." секунд)<br/>";
+			$stage++;
+		}
 	} else $full_link = $config['http_home_url'] . "index.php?newsid=" . $row['id'];
 	
 	$result = DLESEO::IndexNow( $full_link );
@@ -905,7 +1076,16 @@ if ( $aaparser_config['integration']['google_indexing'] == 1 && file_exists(ENGI
 	
 	$indexing->setUrls($full_link);
 	$indexing->Index();
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+		$time_anons = microtime(true) - $time_anons_start;
+		echo "Этап ".$stage.": Инициализация Google Indexing, прошло (".round($time_anons,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
 clear_cache( array('news_', 'tagscloud_', 'archives_', 'calendar_', 'topnews_', 'rss', 'stats') );
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+	$time_anons = microtime(true) - $time_anons_start;
+	echo "Закончили добавление анонсируемого материала, конец (".date("Y-m-d H:i:s")."), разница (".round($time_anons,4)." секунд)<br/>=================================<br/>";
+}
 echo "Добавили: ".$title;

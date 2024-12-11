@@ -7,17 +7,31 @@
  This code is protected by copyright
 =====================================================
 */
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+	$time_update_start = microtime(true);
+	$stage = $stage ?? 1;
+	echo "=================================<br/>Начинаем обновление материала, старт (".date("Y-m-d H:i:s").")<br/>";
+}
     if ( $aaparser_config['integration']['ksep'] == 1 && file_exists(ENGINE_DIR.'/mrdeath/ksep/modules/aap.php') ) {
   	    $required_from = 'aap';
   	    require_once ENGINE_DIR.'/mrdeath/ksep/data/config.php';
   	    require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/ksep/functions/module.php'));
   	    $ksep_enabled = true;
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+			$time_update = microtime(true) - $time_update_start;
+			echo "Этап ".$stage.": Инициализация посерийного модуля, прошло (".round($time_update,4)." секунд)<br/>";
+			$stage++;
+		}
     }
     else $ksep_enabled = false;
 	
 	if (file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json') && $aaparser_config['updates_block']['enable_history'] == 1) {
   	    $updates_history = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/updates_history.json' ), true );
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+			$time_update = microtime(true) - $time_update_start;
+			echo "Этап ".$stage.": Получение данных блока обновления, прошло (".round($time_update,4)." секунд)<br/>";
+			$stage++;
+		}
     } else $updates_history = false;
 	
 	$today_day_name = date('Y-m-d', $_TIME);
@@ -25,6 +39,11 @@
     if ( isset($aaparser_config['integration']['telegram_posting']) && $aaparser_config['integration']['telegram_posting'] == 1 && file_exists(ENGINE_DIR . "/inc/maharder/telegram/helpers/sender.php") ) {
         include_once (DLEPlugins::Check(ENGINE_DIR . "/inc/maharder/telegram/helpers/sender.php"));
         $send_to_telegram = true;
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+			$time_update = microtime(true) - $time_update_start;
+			echo "Этап ".$stage.": Инициализация Telegram Sender, прошло (".round($time_update,4)." секунд)<br/>";
+			$stage++;
+		}
     } else $send_to_telegram = false;
     
     if ( isset($aaparser_config['integration']['social_posting']) && $aaparser_config['integration']['social_posting'] == 1 && file_exists(ENGINE_DIR.'/modules/socialposting/posting.php') ) {
@@ -35,6 +54,11 @@
         include_once (DLEPlugins::Check(ENGINE_DIR . '/xoopw/indexing/init.php'));
         $indexing = new \XOO\Indexing\Indexing($db);
         $send_to_google_indexing = true;
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+			$time_update = microtime(true) - $time_update_start;
+			echo "Этап ".$stage.": Инициализация Google Indexing, прошло (".round($time_update,4)." секунд)<br/>";
+			$stage++;
+		}
     } else $send_to_google_indexing = false;
 	
 	$kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : '9a3a536a8be4b3d3f9f7bd28c1b74071';
@@ -44,7 +68,11 @@
 	$max_news = isset($aaparser_config['updates']['max_check']) ? $aaparser_config['updates']['max_check'] : 50;
 	
 	$kodik_updates_api = request($kodik_api_domain."list?token=".$kodik_apikey."&has_field=mdl_id&with_episodes=true&with_material_data=true&limit=".$max_news);
-	
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+		$time_update = microtime(true) - $time_update_start;
+		echo "Этап ".$stage.": Получение списка новых материалов для проверки, прошло (".round($time_update,4)." секунд)<br/>";
+		$stage++;
+	}
 	$updated_news_list = [];
 	
 	$kodik_updates = array_reverse($kodik_updates_api['results']);
@@ -57,12 +85,25 @@
 		
 		$quality = $xf_shiki = '';
 		if ( !$anime_check['mdl_id'] ) continue;
-		$xf_shiki = "xfields LIKE '%".$aaparser_config['main_fields']['xf_mdl_id']."|".$anime_check['mdl_id']."||%'";
+		$xf_shiki = "xfields REGEXP '(^|\\\\|)" . $aaparser_config['main_fields']['xf_mdl_id'] ."\\\\|".$anime_check['mdl_id']. "(\\\\||$)'";
+		// $xf_shiki = "xfields LIKE '%".$aaparser_config['main_fields']['xf_mdl_id']."|".$anime_check['mdl_id']."||%'";
 		$checking_post = $db->super_query( "SELECT id, xfields, title, approve, category, date, alt_name FROM " . PREFIX . "_post WHERE ".$xf_shiki );
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+			$time_update = microtime(true) - $time_update_start;
+			$stage = 1;
+			echo "!=================================!<br/>Этап ".$stage.": Получение поста по id (".$anime_check['mdl_id'].") с бд " . PREFIX . "_post, прошло (".round($time_update,4)." секунд)<br/>";
+			$stage++;
+		}
 		if ( $checking_post['id'] > 0 ) $xfields_post = xfieldsdataload( $checking_post['xfields'] );
         else {
 			$xf_shiki = "xfields LIKE '%".$aaparser_config['main_fields']['xf_mdl_id']."|".$anime_check['mdl_id']."'";
 			$checking_post = $db->super_query( "SELECT id, xfields, title, approve, category, date, alt_name FROM " . PREFIX . "_post WHERE ".$xf_shiki );
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+			$time_update = microtime(true) - $time_update_start;
+				$stage = 1;
+				echo "!=================================!<br/>Этап ".$stage.": Получение поста по id (".$anime_check['mdl_id'].") с бд " . PREFIX . "_post, прошло (".round($time_update,4)." секунд)<br/>";
+				$stage++;
+			}
 			if ( $checking_post['id'] > 0 ) $xfields_post = xfieldsdataload( $checking_post['xfields'] );
 			else {
 				unset($checking_post, $xf_shiki);
@@ -73,7 +114,11 @@
 		if (in_array($checking_post['id'], $updated_news_list)) continue;
         //Очистка кастумного кеша кодик
         if ( isset($aaparser_config['player']['custom_cache']) && $aaparser_config['player']['custom_cache'] == 1 ) kodik_clear_cache('playlist_'.$checking_post['id'], 'player');
-		
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+			$time_update = microtime(true) - $time_update_start;
+			echo "Этап ".$stage.": Очистка кэша кодик playlist_".$checking_post['id'].", прошло (".round($time_update,4)." секунд)<br/>";
+			$stage++;
+		}
 		$title_en = $anime_check['title_orig'];
 		$title_ru = $anime_check['title'];
 		if ( $anime_check['last_season'] ) $last_season_k = $anime_check['last_season'];
@@ -102,9 +147,19 @@
 		} else $translation = '';
 		
 		$material_row =  $db->super_query( "SELECT * FROM " . PREFIX . "_anime_list WHERE mdl_id='{$anime_check['mdl_id']}'" );
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+			$time_update = microtime(true) - $time_update_start;
+			echo "Этап ".$stage.": Получение записи с бд " . PREFIX . "_anime_list, прошло (".round($time_update,4)." секунд)<br/>";
+			$stage++;
+		}
 		if ( $material_row['material_id'] && $material_row['news_id'] > 0 && $aaparser_config['update_news']['cat_check'] == 1 && $material_row['tv_status'] != $serial_status_k ) {
 		    $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$serial_status_k}', cat_check=1 WHERE material_id='{$material_row['material_id']}'");
 		    $material_row['cat_check'] = 1;
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+				$time_update = microtime(true) - $time_update_start;
+				echo "Этап ".$stage.": Обновление бд " . PREFIX . "_anime_list, прошло (".round($time_update,4)." секунд)<br/>";
+				$stage++;
+			}
 		}
 		
 		$need_update = $need_update_date = $send_push = 0;
@@ -134,6 +189,11 @@
 				$add_updates_history['season'] = $last_season_k;
 				$was_updated_history = true;
 				$need_update_history = false;
+			}
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+				$time_update = microtime(true) - $time_update_start;
+				echo "Этап ".$stage.": Проверка на выход новой озвучки в последней доступной серии, прошло (".round($time_update,4)." секунд)<br/>";
+				$stage++;
 			}
         }
         
@@ -196,6 +256,11 @@
                     $need_update_history = false;
                 }
             }
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+				$time_update = microtime(true) - $time_update_start;
+				echo "Этап ".$stage.": Проверка на выход нового сезона или новой серии сериала, прошло (".round($time_update,4)." секунд)<br/>";
+				$stage++;
+			}
         }
         
         //Проверка на выход нового сезона отдельно в озвучке или в субтитрах
@@ -217,6 +282,11 @@
                     $need_update = 1;
                 }
             }
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+				$time_update = microtime(true) - $time_update_start;
+				echo "Этап ".$stage.": Проверка на выход нового сезона отдельно в озвучке или в субтитра, прошло (".round($time_update,4)." секунд)<br/>";
+				$stage++;
+			}
         }
         
         //Проверка на выход новой серии отдельно в озвучке или в субтитрах
@@ -238,6 +308,11 @@
                     $need_update = 1;
                 }
             }
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+				$time_update = microtime(true) - $time_update_start;
+				echo "Этап ".$stage.": Проверка на выход новой серии отдельно в озвучке или в субтитрах, прошло (".round($time_update,4)." секунд)<br/>";
+				$stage++;
+			}
         }
 		
 		//Проверка на изменение рейтинга и голосов
@@ -272,7 +347,11 @@
                 $xfields_post[$aaparser_config['updates']['xf_golos_imdb']] = $imdb_gol;
 			}
         }
-		
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+			$time_update = microtime(true) - $time_update_start;
+			echo "Этап ".$stage.": Проверка на изменение рейтинга и голосов, прошло (".round($time_update,4)." секунд)<br/>";
+			$stage++;
+		}
 		//Проверка на изменение статуса сериала для субтитров и автосубтитров
 		$status_type = array( 'anons' => 'Анонс', 'ongoing' => 'Онгоинг', 'released' => 'Завершён' );
 		
@@ -326,7 +405,11 @@
 				$xfields_post[$aaparser_config['updates']['xf_status_ru_voice']] = $status;	
 			}						
 		}	
-		
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+			$time_update = microtime(true) - $time_update_start;
+			echo "Этап ".$stage.": Проверка на изменение статуса сериала для субтитров и автосубтитров, прошло (".round($time_update,4)." секунд)<br/>";
+			$stage++;
+		}
         //Проверка на изменение статуса сериала
         
         if ( ($serial_status_k || $serial_status_ru_k) && $material_row['cat_check'] != 1 ) {
@@ -346,6 +429,11 @@
                 if ( $aaparser_config['updates']['new_status'] == 1 ) $need_update_date = 1;
                 $reason_updation .= '. Изменился статус дорамы на '.$serial_status_ru_k;
             }
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+				$time_update = microtime(true) - $time_update_start;
+				echo "Этап ".$stage.": Проверка на изменение статуса сериала, прошло (".round($time_update,4)." секунд)<br/>";
+				$stage++;
+			}
         }
 		
 		//Проверка на изменение качества фильма
@@ -360,6 +448,11 @@
 				if ( $aaparser_config['push_notifications']['updatetg_new_quality'] == 1) $sendtotelegram = 1;
 				else $sendtotelegram = 0;
             }
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+				$time_update = microtime(true) - $time_update_start;
+				echo "Этап ".$stage.": Проверка на изменение качества фильма, прошло (".round($time_update,4)." секунд)<br/>";
+				$stage++;
+			}
         }
         
         //Проверка на появление новой озвучки
@@ -372,6 +465,11 @@
 				if ( $aaparser_config['push_notifications']['updatetg_new_voice'] == 1) $sendtotelegram = 1;
 				else $sendtotelegram = 0;
             }
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+				$time_update = microtime(true) - $time_update_start;
+				echo "Этап ".$stage.": Проверка на появление новой озвучки, прошло (".round($time_update,4)." секунд)<br/>";
+				$stage++;
+			}
         }
 		
 		$update_fields['title'] = $title_en;
@@ -412,7 +510,11 @@
 		else $update_fields['translation_type'] = '';
 		if ( $translation_type_ru ) $update_fields['translation_type_ru'] = $translation_type_ru;
 		else $update_fields['translation_type_ru'] = '';
-        
+        if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+			$time_update = microtime(true) - $time_update_start;
+			echo "Этап ".$stage.": Генерация тегов, прошло (".round($time_update,4)." секунд)<br/>";
+			$stage++;
+		}
         if ( $need_update == 1 ) {
             if ( $aaparser_config['main_fields']['xf_player'] && $iframe_link ) $xfields_post[$aaparser_config['main_fields']['xf_player']] = $iframe_link;
 			if ( $aaparser_config['updates']['change_title'] == 1 && $aaparser_config['updates']['title'] ) {
@@ -439,7 +541,11 @@
 				$and_metakeywords = $db->safesql( check_if($aaparser_config['updates']['metakeywords'], $update_fields) );
 				$set_metakeywords = ", keywords='".$and_metakeywords."'";
 			} else $set_metakeywords = '';
-			
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+				$time_update = microtime(true) - $time_update_start;
+				echo "Этап ".$stage.": Распределение метатегов, прошло (".round($time_update,4)." секунд)<br/>";
+				$stage++;
+			}
 			$new_time = time();
             $new_date = date( "Y-m-d H:i:s", $new_time );
 	        $xfields_post = xfieldsdatasaved($xfields_post);
@@ -463,7 +569,11 @@
 						if ( $need_update_date == 1 ) $db->query( "UPDATE " . PREFIX . "_post SET `xfields` = CONCAT(`xfields`, '{$part}'), date='{$new_date}' {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
 						else $db->query( "UPDATE " . PREFIX . "_post SET `xfields` = CONCAT(`xfields`, '{$part}') {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
 					}
-				 
+					if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+						$time_update = microtime(true) - $time_update_start;
+						echo "Этап ".$stage.": Отправка данных в бд " . PREFIX . "_post по частям, прошло (".round($time_update,4)." секунд)<br/>";
+						$stage++;
+					}
 					if ($db->error) {
 						echo "Ошибка при отправке запроса: " . $db->error ."<br/>Попробуйте выключить слабый режим MYSQL или разбитие уменьшить";
 						break;
@@ -472,9 +582,19 @@
 			} else {			
 				if ( $need_update_date == 1 ) $db->query( "UPDATE " . PREFIX . "_post SET xfields='{$xfields_post}', date='{$new_date}' {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
 				else $db->query( "UPDATE " . PREFIX . "_post SET xfields='{$xfields_post}' {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
-	        }
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+					$time_update = microtime(true) - $time_update_start;
+					echo "Этап ".$stage.": Отправка данных в бд " . PREFIX . "_post, прошло (".round($time_update,4)." секунд)<br/>";
+					$stage++;
+				}
+			}
 	        
 			$db->query( "UPDATE " . PREFIX . "_post_extras SET editdate='{$new_time}' WHERE news_id='{$news_id}'" );
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+				$time_update = microtime(true) - $time_update_start;
+				echo "Этап ".$stage.": Обновление данных в бд " . PREFIX . "_post_extras, прошло (".round($time_update,4)." секунд)<br/>";
+				$stage++;
+			}
 			if ( $need_update_date == 1 ) echo 'Обновилась дорама '.$checking_post['title'].$reason_updation.'. Новость была апнута<br>';
 			else echo 'Обновилась дорама '.$checking_post['title'].$reason_updation.'<br>';
 			
@@ -486,7 +606,12 @@
 					    else $full_link = $config['http_home_url'] . $checking_post['id'] . "-" . $checking_post['alt_name'] . ".html";
 				    } else $full_link = $config['http_home_url'] . $checking_post['id'] . "-" . $checking_post['alt_name'] . ".html";
 			    } else $full_link = $config['http_home_url'] . date( 'Y/m/d/', strtotime( $checking_post['date'] ) ) . $checking_post['alt_name'] . ".html";
-		    } else $full_link = $config['http_home_url'] . "index.php?newsid=" . $checking_post['id'];
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+					$time_update = microtime(true) - $time_update_start;
+					echo "Этап ".$stage.": Сео разбор, прошло (".round($time_update,4)." секунд)<br/>";
+					$stage++;
+				}
+			} else $full_link = $config['http_home_url'] . "index.php?newsid=" . $checking_post['id'];
 			
 			$xfields_data = xfieldsdataload($xfields_post);
   		    if ( $aaparser_config['main_fields']['xf_poster'] && $xfields_data[$aaparser_config['main_fields']['xf_poster']] ) {
@@ -494,7 +619,12 @@
        		    else $image = $xfields_data[$aaparser_config['main_fields']['xf_poster']];
        		    $temp_image = explode('|', $image);
        		    $image = $temp_image[0];
-    	    } elseif ( $aaparser_config['main_fields']['poster_empty'] ) $image = $aaparser_config['main_fields']['poster_empty'];
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+					$time_update = microtime(true) - $time_update_start;
+					echo "Этап ".$stage.": Взаимодействие с постером, прошло (".round($time_update,4)." секунд)<br/>";
+					$stage++;
+				}
+			} elseif ( $aaparser_config['main_fields']['poster_empty'] ) $image = $aaparser_config['main_fields']['poster_empty'];
     	    else $image = '';
 			
 			if ( $checking_post['approve'] == 1 && $was_updated_history === true && isset($add_updates_history) && is_array($add_updates_history) ) {
@@ -509,15 +639,30 @@
     	        if ( isset($aaparser_config['updates_block']['count_history']) && $aaparser_config['updates_block']['count_history'] && count($updates_history[$today_day_name]) > $aaparser_config['updates_block']['count_history'] ) $updates_history[$today_day_name] = array_slice($updates_history[$today_day_name], 0, $aaparser_config['updates_block']['count_history']);
     	        file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/updates_history.json', json_encode( $updates_history , JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     	        unset($add_updates_history);
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+					$time_update = microtime(true) - $time_update_start;
+					echo "Этап ".$stage.": Изменение данных блока обновления, прошло (".round($time_update,4)." секунд)<br/>";
+					$stage++;
+				}
     	    }
 			
 			if ( $aaparser_config['push_notifications']['enable'] && $checking_post['approve'] == 1 && $send_push == 1 ) {
 			    $res = $db->query( "SELECT user_id, push_subscribe FROM " . PREFIX . "_users WHERE push_subscribe LIKE '%\"".$news_id."\"%'" );
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+					$time_update = microtime(true) - $time_update_start;
+					echo "Этап ".$stage.": Получение записи в бд ".PREFIX."_users, прошло (".round($time_update,4)." секунд)<br/>";
+					$stage++;
+				}
 	            $users_list = [];
 	            while ( $user_list = $db->get_row($res) ) {
 					// 11.02.24
 					if ( $user_list['user_id'] ) $users_list[] = $user_list['user_id'];
 					$db->query("INSERT INTO ".PREFIX."_subscribe_info set user_id='{$user_list['user_id']}', post_id='$news_id'");
+					if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+						$time_update = microtime(true) - $time_update_start;
+						echo "Этап ".$stage.": Добавление записи в бд ".PREFIX."_subscribe_info, прошло (".round($time_update,4)." секунд)<br/>";
+						$stage++;
+					}
 	            }
   	            if ( $users_list ) {
   		            if ( $aaparser_config['push_notifications']['tv_title'] && $aaparser_config['push_notifications']['tv_text'] && $xfields_data[$aaparser_config['main_fields']['xf_series']] ) {
@@ -527,16 +672,33 @@
       		            $notification = str_replace( ['{quality}', '{title}'], [$xfields_data[$aaparser_config['main_fields']['xf_quality']], $checking_post['title']], $aaparser_config['push_notifications']['movie_text'] );
       		            DLE_Send_Push( $aaparser_config['push_notifications']['movie_title'], $notification, $full_link, $image, $users_list );
     	            }
+					if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+						$time_update = microtime(true) - $time_update_start;
+						echo "Этап ".$stage.": Отправка push уведомления, прошло (".round($time_update,4)." секунд)<br/>";
+						$stage++;
+					}
                 }
 			}
 			
-			if ( $send_to_telegram === true && $checking_post['approve'] == 1 ) sendTelegram($news_id, "editnews");
+			if ( $send_to_telegram === true && $checking_post['approve'] == 1 ) {
+				sendTelegram($news_id, "editnews");
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+					$time_update = microtime(true) - $time_update_start;
+					echo "Этап ".$stage.": Отправка SendTelegram, прошло (".round($time_update,4)." секунд)<br/>";
+					$stage++;
+				}
+			}
 			
 			if ( $send_to_social_posting === true && $checking_post['approve'] == 1 ) {
 			    $approve = 1;
 			    $id = $news_id;
                 $category_list = $checking_post['category'];
                 include ENGINE_DIR.'/modules/socialposting/posting.php';
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+					$time_update = microtime(true) - $time_update_start;
+					echo "Этап ".$stage.": Отправка Social Posting, прошло (".round($time_update,4)." секунд)<br/>";
+					$stage++;
+				}
 			}
 			
 			if( $config['news_indexnow'] && $checking_post['approve'] == 1 ) $result = DLESEO::IndexNow( $full_link );
@@ -546,6 +708,11 @@
 	            $indexing_type = 'URL_UPDATED';
 	            $indexing_url = $full_link;
 	            include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/indexing.php'));
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+					$time_update = microtime(true) - $time_update_start;
+					echo "Этап ".$stage.": Отправка Google Indexing, прошло (".round($time_update,4)." секунд)<br/>";
+					$stage++;
+				}
 			}
 			
 			if ( $send_to_google_indexing === true && $checking_post['approve'] == 1 ) {
@@ -555,6 +722,11 @@
 			
 			if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparser_config['push_notifications']['tg_cron_modupdate'] == 1 && $checking_post['approve'] == 1 ) {
 	            telegram_sender($news_id, 'editnews_cron');
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+					$time_update = microtime(true) - $time_update_start;
+					echo "Этап ".$stage.": Отправка Telegram Sender, прошло (".round($time_update,4)." секунд)<br/>";
+					$stage++;
+				}
             }
 			
         }
@@ -564,9 +736,23 @@
   	        $mdlid = $anime_check['mdl_id'];
   	        $rowid = $checking_post['id'];
 	        require (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/ksep/modules/aap.php'));
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+				$time_update = microtime(true) - $time_update_start;
+				echo "Этап ".$stage.": Взаимодействие с посерийным модулем, прошло (".round($time_update,4)." секунд)<br/>";
+				$stage++;
+			}
         }
         
 		unset($xfields_post, $title_en, $title_ru, $news_id, $update_fields, $checking_post, $last_season_k, $last_episode_k, $serial_status_k, $serial_status_ru_k, $quality, $translation, $translation_type, $translation_type_ru, $playlist, $translators_list, $translators_types, $need_update, $material_row);
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+			$time_update = microtime(true) - $time_update_start;
+			echo "Этап ".$stage.": Окончание работы по посту id (".$anime_check['mdl_id'].") с бд " . PREFIX . "_post, прошло (".round($time_update,4)." секунд)<br/>!=================================!<br/>";
+			$stage++;
+		}
+	}
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+		$time_update = microtime(true) - $time_update_start;
+		echo "Закончили обновление материала, конец (".date("Y-m-d H:i:s")."), разница (".round($time_update,4)." секунд)<br/>=================================<br/>";
 	}
 	clear_cache( array('news_', 'full_', 'kodik_playlist_') );
     die('Проверка обновлений дорам завершена');

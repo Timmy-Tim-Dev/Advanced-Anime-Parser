@@ -59,6 +59,7 @@ echo <<<HTML
     ShowOrHideUpdblock();
     ShowOrHideRooms();
     ShowOrHideTg();
+	ShowOrHideDebugger();
 	
 HTML;
 if ($php_version >= 74 && file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php')) echo "ShowOrHideGindexing();";

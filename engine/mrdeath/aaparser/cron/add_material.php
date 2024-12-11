@@ -7,9 +7,13 @@
  This code is protected by copyright
 =====================================================
 */
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+	$time_add_start = microtime(true);
+	$stage = $stage ?? 1;
+	echo "=================================<br/>Начинаем добавление материала, старт (".date("Y-m-d H:i:s").")<br/>";
+}
 $where = array();
-
+$where_xf = [];
 if ( $kind == 'anime' ) {
 	$text_info = 'аниме';
 	$text_info_2 = 'аниме';
@@ -32,15 +36,19 @@ if ( $kind == 'anime' ) {
 	else $db->query( "UPDATE " . PREFIX . "_anime_list SET started=1 WHERE material_id='{$material['material_id']}'" );
 
 	$shiki_id = $material['shikimori_id'];
-	$where_xf = "xfields LIKE '%".$aaparser_config['main_fields']['xf_shikimori_id']."|".$shiki_id."||%'";
+	$where_xf[] = "xfields REGEXP '(^|\\\\|)" . $aaparser_config['main_fields']['xf_shikimori_id'] ."\\\\|".$shiki_id. "(\\\\||$)'";
 
 	$parse_action = 'parse';
 	$parse_type = 'grabbing';
 	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/shikimori.php'));
 	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/kodik.php'));
 	if ( $aaparser_config['settings']['parse_wa'] == 1 ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/world_art.php'));
-}
-else {
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+		$time_add = microtime(true) - $time_add_start;
+		echo "Этап ".$stage.": Инициализация доноров, прошло (".round($time_add,4)." секунд)<br/>";
+		$stage++;
+	}
+} else {
 	
 	$text_info = 'дорама';
 	$text_info_2 = 'дораму';
@@ -56,15 +64,19 @@ else {
 	else $db->query( "UPDATE " . PREFIX . "_anime_list SET started=1 WHERE material_id='{$material['material_id']}'" );
 
 	$mdl_id = $material['mdl_id'];
-	$where_xf = "xfields LIKE '%".$aaparser_config['main_fields']['xf_mdl_id']."|".$mdl_id."||%'";
+	$where_xf[] = "xfields REGEXP '(^|\\\\|)" . $aaparser_config['main_fields']['xf_mdl_id'] . "\\\\|" . $mdl_id . "(\\\\||$)'";
 
+	
 	$parse_action = 'parse';
 	$parse_type = 'grabbing';
 	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/kodik.php'));
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+		$time_add = microtime(true) - $time_add_start;
+		echo "Этап ".$stage.": Инициализация доноров, прошло (".round($time_add,4)." секунд)<br/>";
+		$stage++;
+	}
 }
-    
-    
-	
+$where_xf = implode(' OR ', $where_xf);
 foreach ( $data_list as $tag_list ) {
 	if ( !$xfields_data[$tag_list] ) $xfields_data[$tag_list] = '';
 }
@@ -91,21 +103,8 @@ if ( isset( $aaparser_config['blacklist_shikimori'] ) && $xfields_data['shikimor
 if ( isset( $aaparser_config['blacklist_mdl'] ) && $xfields_data['mydramalist_id'] ) {
 	if ( in_array( $xfields_data['mydramalist_id'], $aaparser_config['blacklist_mdl'] ) ) die($text_info_2.' '.$kodik_title.' входит в чёрный список дорам. Пропущено');
 }
-    
-$max_attempts = 3; // Количество попыток
-$attempts = 0;
 
-while ($attempts < $max_attempts) {
-	try {
-		$attempts++;
-		$searching_post = $db->super_query("SELECT id, xfields FROM " . PREFIX . "_post WHERE " . $where_xf);
-		break;
-	} catch (Exception $e) {
-		error_log("Попытка $attempts не удалась: " . $e->getMessage());
-		if ($attempts >= $max_attempts) throw $e;
-		sleep(1);
-	}
-}
+$searching_post = $db->super_query("SELECT id, xfields FROM " . PREFIX . "_post WHERE " . $where_xf);
 
 if ( $searching_post['id'] > 0 ) {
 	$news_id = $searching_post['id'];
@@ -181,14 +180,22 @@ if ( $aaparser_config['grabbing']['if_lgbt'] != 1 && $is_lgbt === true ) {
 	$db->query( "UPDATE " . PREFIX . "_anime_list SET skipped=1, error='{$stoped_time}' WHERE material_id='{$material['material_id']}'" );
 	die('В релизе есть lgbt сцены. Пропущено '.$text_info_2.' '.$kodik_title);
 }
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+	$time_add = microtime(true) - $time_add_start;
+	echo "Этап ".$stage.": Проверка условии списков и поиск по бд, прошло (".round($time_add,4)." секунд)<br/>";
+	$stage++;
+}
 //Работа с картинками
 
 $id_news = 0;
 
 $_REQUEST['module'] = 'aaparser';
 include_once(DLEPlugins::Check(ENGINE_DIR . '/classes/uploads/upload.class.php'));
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+	$time_add = microtime(true) - $time_add_start;
+	echo "Этап ".$stage.": Внедрение uploads.class.php, прошло (".round($time_add,4)." секунд)<br/>";
+	$stage++;
+}
 if ( $mode != 'editnews' && $xfields_data['image'] && $aaparser_config['images']['poster'] == 1 ) $need_poster = true;
 elseif ( $mode == 'editnews' && $xfields_data['image'] && $aaparser_config['images']['poster_edit'] == 1 ) $need_poster = true;
 else $need_poster = false;
@@ -204,6 +211,11 @@ if ( $need_poster === true ) {
 		else $xfields_data['image'] = $poster['link'];
 		$xf_poster = $poster['xfvalue'];
 		$poster_code = $poster['returnbox'];
+	}
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+		$time_add = microtime(true) - $time_add_start;
+		echo "Этап ".$stage.": Загрузка постеров, прошло (".round($time_add,4)." секунд)<br/>";
+		$stage++;
 	}
 }
 
@@ -271,6 +283,11 @@ if ( $need_screens === true ) {
 		}
 		
 	}
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+		$time_add = microtime(true) - $time_add_start;
+		echo "Этап ".$stage.": Загрузка скриншотов, прошло (".round($time_add,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
 //Буквенный каталог
@@ -279,7 +296,11 @@ if ( $xfields_data['shikimori_russian'] ) $xfields_data['catalog_rus'] = $db->sa
 else $xfields_data['catalog_rus'] = $db->safesql( dle_substr( htmlspecialchars( strip_tags( stripslashes( $xfields_data['kodik_title'] ) ), ENT_QUOTES, $config['charset'] ), 0, 1, $config['charset'] ) );
 if ( $xfields_data['shikimori_name'] ) $xfields_data['catalog_eng'] = $db->safesql( dle_substr( htmlspecialchars( strip_tags( stripslashes( $xfields_data['shikimori_name'] ) ), ENT_QUOTES, $config['charset'] ), 0, 1, $config['charset'] ) );
 else $xfields_data['catalog_eng'] = $db->safesql( dle_substr( htmlspecialchars( strip_tags( stripslashes( $xfields_data['kodik_title_en'] ) ), ENT_QUOTES, $config['charset'] ), 0, 1, $config['charset'] ) );
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+	$time_add = microtime(true) - $time_add_start;
+	echo "Этап ".$stage.": Создание буквенного каталога, прошло (".round($time_add,4)." секунд)<br/>";
+	$stage++;
+}
 //Обработка категорий
 
 $tags_array = array();
@@ -342,7 +363,11 @@ if ( $aaparser_config['categories'] AND $tags_array ) {
 }
 
 unset($tags_array);
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+	$time_add = microtime(true) - $time_add_start;
+	echo "Этап ".$stage.": Обработка категории, прошло (".round($time_add,4)." секунд)<br/>";
+	$stage++;
+}
 //Обработка шаблонов доп полей
 
 $xfields_list = array();
@@ -437,7 +462,11 @@ else {
 	$author_id = 1;
 }
 $author = $db->safesql($author);
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+	$time_add = microtime(true) - $time_add_start;
+	echo "Этап ".$stage.": Обработка шаблонов, прошло (".round($time_add,4)." секунд)<br/>";
+	$stage++;
+}
 if ( !$title || !$alt_name ) {
 	$db->query( "UPDATE " . PREFIX . "_anime_list SET error='{$stoped_time}' WHERE material_id='{$material['material_id']}'" );
 	die('Возникла ошибка, Отсутствует название тайтла, возможно необходимо проверить настройки.<br>Если вы используете парсинг дорам, то Вам необходимо использовать теги Kodik. Так как у дорам отсутсвуют данные с SHIKIMORI');
@@ -445,19 +474,37 @@ if ( !$title || !$alt_name ) {
 
 $shikimori_franshise = $shiki_id;
 $db->query( "INSERT INTO " . PREFIX . "_post (date, autor, short_story, full_story, xfields, title, descr, keywords, category, alt_name, allow_comm, approve, allow_main, fixed, allow_br, symbol, tags, metatitle, franchise_aap) values ('$new_date', '{$author}', '$short_story', '$full_story', '$xfields_list', '$title', '$meta_descrs', '$meta_keywords', '$category_list', '$alt_name', '$allow_comments', '$publish', '$publish_main', '0', '$allow_br', '$catalog', '$tags', '$meta_titles', '$shikimori_franshise')" );
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+	$time_add = microtime(true) - $time_add_start;
+	echo "Этап ".$stage.": Добавление записи в бд " . PREFIX . "_post, прошло (".round($time_add,4)." секунд)<br/>";
+	$stage++;
+}
 $id = $db->insert_id();
 
 if ( $id > 0 ) {
 	$news_id = $id;
 	$db->query( "UPDATE " . PREFIX . "_anime_list SET news_id='{$news_id}' WHERE material_id='{$material['material_id']}'" );
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+		$time_add = microtime(true) - $time_add_start;
+		echo "Этап ".$stage.": Обновление записи в бд " . PREFIX . "_post, прошло (".round($time_add,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 else {
 	$db->query( "UPDATE " . PREFIX . "_anime_list SET error='{$stoped_time}', news_id='0' WHERE material_id='{$material['material_id']}'" );
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+		$time_add = microtime(true) - $time_add_start;
+		echo "Этап ".$stage.": Обновление записи в бд " . PREFIX . "_anime_list, прошло (".round($time_add,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
 $db->query( "INSERT INTO " . PREFIX . "_post_extras (news_id, allow_rate, disable_index, user_id, disable_search, allow_rss, allow_rss_turbo, allow_rss_dzen) VALUES ('{$id}', '{$allow_rating}', '{$dissalow_index}', '{$author_id}', '{$dissalow_search}', '{$allow_rss}', '{$allow_turbo}', '{$allow_zen}')" );
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+	$time_add = microtime(true) - $time_add_start;
+	echo "Этап ".$stage.": Добавление записи в бд, прошло (".round($time_add,4)." секунд)<br/>";
+	$stage++;
+}
 if( is_array($tags_array) && count($tags_array) AND $publish == 1 ) {
 	$tags = array ();
 	
@@ -471,6 +518,11 @@ if( is_array($tags_array) && count($tags_array) AND $publish == 1 ) {
 	$tags = implode( ", ", $tags );
 	if ( $aaparser_config['integration']['latin_tags'] == 1 ) $db->query( "INSERT INTO " . PREFIX . "_tags (news_id, tag, tag_translit) VALUES " . $tags );
 	else $db->query( "INSERT INTO " . PREFIX . "_tags (news_id, tag) VALUES " . $tags );
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+		$time_add = microtime(true) - $time_add_start;
+		echo "Этап ".$stage.": Добавление в бд (".PREFIX."_tags, прошло (".round($time_add,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
 if( $category_list AND $publish == 1 ) {
@@ -482,6 +534,11 @@ if( $category_list AND $publish == 1 ) {
 	
 	$cat_ids = implode( ", ", $cat_ids );
 	$db->query( "INSERT INTO " . PREFIX . "_post_extras_cats (news_id, cat_id) VALUES " . $cat_ids );
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+		$time_add = microtime(true) - $time_add_start;
+		echo "Этап ".$stage.": Добавление в бд (".PREFIX."_post_extras_cats_, прошло (".round($time_add,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
 $newpostedxfields = xfieldsdataload($xfields_list);
@@ -512,6 +569,11 @@ if ( count($xf_search_words) AND $publish == 1 ) {
 	$xf_search_words = implode( ", ", $temp_array );
 	if ( $aaparser_config['integration']['latin_xfields'] == 1 ) $db->query( "INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue, tagvalue_translit) VALUES " . $xf_search_words );
 	else $db->query( "INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue) VALUES " . $xf_search_words );
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+		$time_add = microtime(true) - $time_add_start;
+		echo "Этап ".$stage.": Добавление в бд (".PREFIX."_xfsearch, прошло (".round($time_add,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
 if ( $xfields_data['image'] OR $xfields_data['kadr_1'] ) {
@@ -534,6 +596,11 @@ if ( $xfields_data['image'] OR $xfields_data['kadr_1'] ) {
 	$images = implode('|||', $images);
 
 	$db->query(" INSERT INTO " . PREFIX . "_images (images, news_id, author, date) VALUES ('{$images}', '{$id}', '{$author}', '".time()."') ");
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+		$time_add = microtime(true) - $time_add_start;
+		echo "Этап ".$stage.": Добавление в бд (".PREFIX."_images, прошло (".round($time_add,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
 $row = $db->super_query( "SELECT id, date, category, alt_name FROM " . PREFIX . "_post WHERE id='{$id}' LIMIT 1" );
@@ -548,16 +615,30 @@ if( $config['allow_alt_url'] ) {
 } else $full_link = $config['http_home_url'] . "index.php?newsid=" . $row['id'];
 
 if( $config['news_indexnow'] && $publish == 1 ) $result = DLESEO::IndexNow( $full_link );
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+	$time_add = microtime(true) - $time_add_start;
+	echo "Этап ".$stage.": Сео разбор, прошло (".round($time_add,4)." секунд)<br/>";
+	$stage++;
+}
 if ( $aaparser_config['push_notifications']['google_indexing'] == 1 && $publish == 1 ) {
 	$indexing_action = 'send';
 	$indexing_type = 'URL_UPDATED';
 	$indexing_url = $full_link;
 	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/indexing.php'));
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+		$time_add = microtime(true) - $time_add_start;
+		echo "Этап ".$stage.": Отправка Google Indexing, прошло (".round($time_add,4)." секунд)<br/>";
+		$stage++;
+	}
 }
 
 if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparser_config['push_notifications']['tg_cron_modadd'] == 1 && $publish == 1 ) {
 	telegram_sender($id, 'addnews_cron');
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+		$time_add = microtime(true) - $time_add_start;
+		echo "Этап ".$stage.": Отправка Telegram Posting, прошло (".round($time_add,4)." секунд)<br/>";
+		$stage++;
+	}
 }
     
 if ( $aaparser_config['integration']['ksep'] == 1 && file_exists(ENGINE_DIR.'/mrdeath/ksep/modules/aap.php') ) {
@@ -570,7 +651,15 @@ if ( $aaparser_config['integration']['ksep'] == 1 && file_exists(ENGINE_DIR.'/mr
     require_once ENGINE_DIR.'/mrdeath/ksep/data/config.php';
     require_once ENGINE_DIR.'/mrdeath/ksep/functions/module.php';
     require_once ENGINE_DIR.'/mrdeath/ksep/modules/aap.php';
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+		$time_add = microtime(true) - $time_add_start;
+		echo "Этап ".$stage.": Инициализация посерийного модуля, прошло (".round($time_add,4)." секунд)<br/>";
+		$stage++;
+	}
 }
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
+	$time_add = microtime(true) - $time_add_start;
+	echo "Закончили добавление материала, конец (".date("Y-m-d H:i:s")."), разница (".round($time_add,4)." секунд)<br/>=================================<br/>";
+}
 clear_cache( array('news_', 'tagscloud_', 'archives_', 'calendar_', 'topnews_', 'rss', 'stats') );
 echo "Добавили ".$text_info_2." ".$kodik_title;

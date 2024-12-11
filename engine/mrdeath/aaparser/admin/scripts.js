@@ -21,7 +21,7 @@ function ChangeOptionModules(obj, selectedOption) {
     $(obj).parent().addClass('active');
     const sections = [
         'player', 'calendar', 'updates_block', 'push', 'rooms',
-        'gindexing', 'tgposting', 'personajes'
+        'gindexing', 'tgposting', 'personajes', 'debugger'
     ];
     sections.forEach(section => hideElement(section));
     const selectedElement = document.getElementById(selectedOption);
@@ -495,6 +495,12 @@ function ShowOrHideGindexing() {
     ];
     var action = document.getElementById("google_indexing").checked ? 'show' : 'hide';
     elements.forEach(id => {$("#" + id)[action]();});
+}
+
+function ShowOrHideDebugger() {
+    var checkbox = document.getElementById("debugger_on_off");
+	if( checkbox.checked === true ) $("#show-hide-debugger").show();
+	else $("#show-hide-debugger").hide();
 }
 
 function saveAcc(acc) {

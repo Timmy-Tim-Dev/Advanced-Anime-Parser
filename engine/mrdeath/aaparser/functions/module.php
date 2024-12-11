@@ -9,36 +9,42 @@
 */
 
 if (!function_exists('request')) {
-    function request($url, $max_attempts = 3, $initial_delay = 2){
-		$attempt = 0;
-		while ($attempt < $max_attempts) {
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60 );
-			curl_setopt($ch, CURLOPT_TIMEOUT, 60 );
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-			
-			$headers = [
-				'Content-Type: application/json'
-			];
-
-			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-			$kp_api = curl_exec ($ch);
-			$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-			if ($http_code == 200) {
-				// Успешный ответ
-				curl_close($ch);
-				return json_decode($kp_api, true);
-			} elseif ($http_code == 429) {
-				// Превышен лимит запросов
-				$attempt++;
-				sleep($initial_delay);
-			}
-			curl_close ($ch);
+    function request($url){
+		global $aaparser_config;
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) { 
+			$time_ch_start = microtime(true);
+			echo "=================================<br/>Делаем запрос: (".$url.")<br/>";
 		}
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60 );
+		curl_setopt($ch, CURLOPT_TIMEOUT, 60 );
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		
+		$headers = [
+			'Content-Type: application/json'
+		];
+
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		$kp_api = curl_exec ($ch);
+		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) $time_ch = microtime(true) - $time_ch_start;
+		if ($http_code == 200) {
+			// Успешный ответ
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) echo "Успешный запрос за (".round($time_ch, 4)." секунд): (".$url.")<br/>=================================<br/>";
+			curl_close($ch);
+			return json_decode($kp_api, true);
+		} else {
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) echo "Неуспешный запрос за (".round($time_ch, 4)." секунд), Ответ (".$kp_api."), Код (".$http_code."): (".$url.")<br/>=================================<br/>";
+			curl_close ($ch);
+			return json_decode($kp_api, true);
+		}
+		
+		curl_close ($ch);
+			
   		return json_decode($kp_api, true);
     }
 }
@@ -175,7 +181,10 @@ if (!function_exists('setPoster')) {
     function setPoster($poster_url, $poster_title, $image_kind, $poster_name = false, $news_id = 0) {
 	
 	    global $config, $aaparser_config, $kp_config, $db, $member_id, $user_group;
-	
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) { 
+			$time_ch_start = microtime(true);
+			echo "=================================<br/>Обработка картинки: (".$poster_url.")<br/>";
+		}
 	    $area = 'xfieldsimage';
 	
 	    if ( $poster_name ) {
@@ -255,13 +264,22 @@ if (!function_exists('setPoster')) {
 					'size' => filesize($image)
 				];
 			}
+			
             $uploader = new FileUploader($area, $news_id, $author, $t_size, $t_seite, $make_thumb, $make_watermark, $m_size, $m_seite, $make_medium, $hidpi);
             $result = json_decode($uploader->FileUpload(), true);
 			
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) {
+				$time_ch = microtime(true) - $time_ch_start;
+				echo "Обработали картинку за (".round($time_ch, 4)." секунд): (".$result['link'].")<br/>=================================<br/>";
+			}
             @unlink($image);
             return $result;
         }
         else {
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) {
+				$time_ch = microtime(true) - $time_ch_start;
+				echo "Не смогли Обработать картинку за (".round($time_ch, 4)." секунд): (".$image.")<br/>=================================<br/>";
+			}
             @unlink($image);
             return '';
         }
@@ -270,6 +288,11 @@ if (!function_exists('setPoster')) {
 
 if (!function_exists('downloadImage')) {
     function downloadImage($imageUrl, $newFileName) {
+		global $aaparser_config;
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) { 
+			$time_ch_start = microtime(true);
+			echo "Загрузка: (".$imageUrl.")<br/>";
+		}
         // Устанавливаем директорию для загрузки
         $uploadDir = ROOT_DIR . '/uploads/files/';
 
@@ -329,6 +352,10 @@ if (!function_exists('downloadImage')) {
         // Сохраняем изображение в директорию
         file_put_contents($newFilePath, $imageData);
         chmod($newFilePath, 0777);
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) {
+			$time_ch = microtime(true) - $time_ch_start;
+			echo "Загрузили картинку за (".round($time_ch, 4)." секунд): (".$imageUrl.")<br/>";
+		}
 
         // Возвращаем путь к новому файлу
         return $newFilePath;

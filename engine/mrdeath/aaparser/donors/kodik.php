@@ -11,7 +11,11 @@
 if( ! defined( 'DATALIFEENGINE' ) ) {
 	die( "Hacking attempt!" );
 }
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+	$time_donor_start = microtime(true);
+	$stage = $stage ?? 1;
+	echo "=================================<br/>Начинаем инициализацию донора kodik.php<br/>";
+}
 $kodik_cat_type = [
     'foreign-movie'=>'Дорама фильм',
     'anime'=>'Аниме фильм',
@@ -28,7 +32,6 @@ $status_type = [
 $kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : '9a3a536a8be4b3d3f9f7bd28c1b74071';
 
 if ($parse_action == 'search') {
-    
 	if ( $search_name ) {
 	    if ( isset( $aaparser_config['settings']['working_mode'] ) && $aaparser_config['settings']['working_mode'] == 1 ) $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&title='.$search_name.'&types=foreign-movie,foreign-serial&with_material_data=true&limit=50');
 	    else $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&title='.$search_name.'&with_material_data=true&limit=50');
@@ -38,7 +41,11 @@ if ($parse_action == 'search') {
         elseif ( isset( $aaparser_config['settings']['working_mode'] ) && $aaparser_config['settings']['working_mode'] == 2 ) $kodik = request($kodik_api_domain.'list?token='.$kodik_apikey.'&types=foreign-movie,foreign-serial,anime,anime-serial&with_material_data=true&sort=created_at&limit=100');
 	    else $kodik = request($kodik_api_domain.'list?token='.$kodik_apikey.'&types=anime,anime-serial&with_material_data=true&sort=created_at&limit=100');
     }
-	
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+		$time_donor = microtime(true) - $time_donor_start;
+		echo "Этап ".$stage.": Поиск list по API, прошло (".round($time_donor,4)." секунд)<br/>";
+		$stage++;
+	}
 	if ( $kodik['results'] ) {
 		foreach ( $kodik['results'] as $result ) {
 		    
@@ -95,14 +102,22 @@ if ($parse_action == 'search') {
 				'edit_link' => $edit_link
 			);
         }
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+			$time_donor = microtime(true) - $time_donor_start;
+			echo "Этап ".$stage.": Разобрали полученный запрос, прошло (".round($time_donor,4)." секунд)<br/>";
+			$stage++;
+		}
 	}
 } elseif ($parse_action == 'parse') {
-    
     if ( !isset($xfields_data) && !$xfields_data ) $xfields_data = [];
     
 	if ( $shiki_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&shikimori_id='.$shiki_id.'&with_episodes=true&with_material_data=true');
     elseif ( $mdl_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_episodes=true&with_material_data=true');
-	
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+		$time_donor = microtime(true) - $time_donor_start;
+		echo "Этап ".$stage.": Поиск search по API, прошло (".round($time_donor,4)." секунд)<br/>";
+		$stage++;
+	}
 	if ( isset( $kodik['results'] ) && $kodik['results'] && isset( $kodik['results'][0]['seasons'] ) && $kodik['results'][0]['seasons'] ) {
 	    
         $playlist = $playlist_alt = $translators_list = $translators_types = [];
@@ -143,7 +158,11 @@ if ($parse_action == 'search') {
 		$translators_list = array_unique($translators_list);
         unset($translators);
 	}
-	
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+		$time_donor = microtime(true) - $time_donor_start;
+		echo "Этап ".$stage.": Разобрали полученный запрос, прошло (".round($time_donor,4)." секунд)<br/>";
+		$stage++;
+	}
 	$kodik_data = array_shift($kodik['results']);
 	
 	$its_camrip = $kodik_data['camrip'] ? true : false;
@@ -351,7 +370,11 @@ if ($parse_action == 'search') {
         elseif ( intval($kodik_data['material_data']['duration']) > 10 && intval($kodik_data['material_data']['duration']) <= 30 ) $xfields_data['kodik_duration_length'] = 'от 11 до 30 мин.';
         elseif ( intval($kodik_data['material_data']['duration']) > 30 ) $xfields_data['kodik_duration_length'] = 'свыше 30 мин.';
     }
-  
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+		$time_donor = microtime(true) - $time_donor_start;
+		echo "Этап ".$stage.": Распределение по тегам, прошло (".round($time_donor,4)." секунд)<br/>";
+		$stage++;
+	}
 } elseif ( $parse_action == 'grab' && $kind == 'anime' ) {
     
     $anime_kind_add = $camrip_add = $lgbt_add = $years_add = $genres_add = $translators_add = '';
@@ -394,9 +417,13 @@ if ($parse_action == 'search') {
 	$kodik_log = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log' ), true );
 	if ( $kodik_log[$kind] ) $grab_url = $kodik_log[$kind];
 	else $grab_url = $kodik_api_domain.'list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100&types=anime,anime-serial'.$anime_kind_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add;
-
+	
     $grab = request($grab_url.$film_sort_by);
-    
+    if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+		$time_donor = microtime(true) - $time_donor_start;
+		echo "Этап ".$stage.": Грабинг list по API, прошло (".round($time_donor,4)." секунд)<br/>";
+		$stage++;
+	}
     if ( !$grab['results'] ) {
 		unset($kodik_log[$kind]);
 		file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log', json_encode( $kodik_log ));
@@ -453,9 +480,14 @@ if ($parse_action == 'search') {
 		file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log', json_encode( $kodik_log ));
 		if($grab_info_new != '') echo 'Добавлено:<br>' . $grab_info_new . '<br>';
 		if($grab_info_old != '') echo 'Пропущено:<br>' . $grab_info_old;
-		
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+		$time_donor = microtime(true) - $time_donor_start;
+			echo "Этап ".$stage.": Добавление материалов в бд " . PREFIX . "_anime_list, прошло (".round($time_donor,4)." секунд)<br/>";
+			$stage++;
+		}
         exit("<br>База аниме успешно обновлена!");
     }
+	
 } elseif ( $parse_action == 'grab' && $kind == 'dorama' ) {
     
     $kind_add = $country_add = $camrip_add = $lgbt_add = $years_add = $genres_add = $translators_add = '';
@@ -508,7 +540,11 @@ if ($parse_action == 'search') {
 	else $grab_url = $kodik_api_domain.'list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100'.$kind_add.$country_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add;
     
     $grab = request($grab_url);
-    
+    if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+		$time_donor = microtime(true) - $time_donor_start;
+		echo "Этап ".$stage.": Грабинг list по API, прошло (".round($time_donor,4)." секунд)<br/>";
+		$stage++;
+	}
     if ( !$grab['results'] ) {
 		unset($kodik_log[$kind]);
 		file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log', json_encode( $kodik_log ));
@@ -556,7 +592,11 @@ if ($parse_action == 'search') {
 		if ( $grab['next_page'] ) $kodik_log[$kind] = $grab['next_page'];
 		else unset($kodik_log[$kind]);
 		file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log', json_encode( $kodik_log ));
-		
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+			$time_donor = microtime(true) - $time_donor_start;
+			echo "Этап ".$stage.": Добавление материалов в бд " . PREFIX . "_anime_list, прошло (".round($time_donor,4)." секунд)<br/>";
+			$stage++;
+		}
         exit("База дорам успешно обновлена!");
     }
 } elseif ( $parse_action == 'takeimage' ) {
@@ -597,4 +637,8 @@ if ($parse_action == 'search') {
 			$xfields_data['image'] = rtrim($config['http_home_url'], '/') . $aaparser_config['main_fields']['poster_empty'];
 		}
 	}
+}
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+	$time_donor = microtime(true) - $time_donor_start;
+	echo "Закончили инициализацию донора kodik.php<br/>=================================<br/>";
 }

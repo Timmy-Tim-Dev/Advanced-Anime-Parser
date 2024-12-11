@@ -67,6 +67,7 @@ function makeCheckBox($name, $selected, $function_name = false) {
 		elseif ( $function_name == "ShowOrHideTg" ) return "<input class=\"switch\" type=\"checkbox\" name=\"{$name}\" id=\"tg_on_off\" value=\"1\" onchange=\"$function_name();\" {$selected}>";
 		elseif ( $function_name == "ShowOrHideCalendar" ) return "<input class=\"switch\" type=\"checkbox\" name=\"{$name}\" id=\"calendar_on_off\" value=\"1\" onchange=\"$function_name();\" {$selected}>";
 		elseif ( $function_name == "ShowOrHideUpdblock" ) return "<input class=\"switch\" type=\"checkbox\" name=\"{$name}\" id=\"updblock_on_off\" value=\"1\" onchange=\"$function_name();\" {$selected}>";
+		elseif ( $function_name == "ShowOrHideDebugger" ) return "<input class=\"switch\" type=\"checkbox\" name=\"{$name}\" id=\"debugger_on_off\" value=\"1\" onchange=\"$function_name();\" {$selected}>";
 		else return "<input class=\"switch\" type=\"checkbox\" name=\"{$name}\" value=\"1\" {$selected}>";
 }
 

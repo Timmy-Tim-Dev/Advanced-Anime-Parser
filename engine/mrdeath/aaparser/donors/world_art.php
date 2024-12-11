@@ -11,7 +11,11 @@
 if( ! defined( 'DATALIFEENGINE' ) ) {
 	die( "Hacking attempt!" );
 }
-
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+	$time_donor_start = microtime(true);
+	$stage = $stage ?? 1;
+	echo "=================================<br/>Начинаем инициализацию донора world_art.php<br/>";
+}
 	if ( (isset($xfields_data['world_art']) && $xfields_data['world_art']) || (isset($xfields_data['kodik_worldart_link']) && $xfields_data['kodik_worldart_link']) ) {
 	    
 	    $headers = [
@@ -27,14 +31,22 @@ if( ! defined( 'DATALIFEENGINE' ) ) {
         if ( isset($xfields_data['world_art']) && $xfields_data['world_art'] ) $wa_page = LoadPage($xfields_data['world_art'], "GET", $headers);
         else $wa_page = LoadPage($xfields_data['kodik_worldart_link'], "GET", $headers);
         $wa_page = iconv('windows-1251', 'utf-8', $wa_page);
-	    
+	    if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+			$time_donor = microtime(true) - $time_donor_start;
+			echo "Этап ".$stage.": Парсинг с world-art, прошло (".round($time_donor,4)." секунд)<br/>";
+			$stage++;
+		}
         if ( strpos($wa_page, '<b>Производство</b>') !== false ) {
             preg_match_all("|<table><tr><td align=left width=145 class='review' Valign=top><b>Производство<\/b><\/td><td width=15><\/td><td class='review' Valign=top>(.*)<\/td><\/tr><\/table>|U", $wa_page, $prod);
             if ( $prod[1][0] ) $xfields_data['worldart_country'] = $prod[1][0];
             else $xfields_data['worldart_country'] = '';
         }
         else $xfields_data['worldart_country'] = '';
-
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+			$time_donor = microtime(true) - $time_donor_start;
+			echo "Этап ".$stage.": Распределение тега страны, прошло (".round($time_donor,4)." секунд)<br/>";
+			$stage++;
+		}
         if ( strpos($wa_page, 'newtag') !== false ) {
             $mas1 = explode("<td><div class='newtag'>", $wa_page);
             $mas2 = explode("</div></td>", $mas1[1]);
@@ -48,26 +60,46 @@ if( ! defined( 'DATALIFEENGINE' ) ) {
             else $xfields_data['worldart_tags'] = '';
         }
         else $xfields_data['worldart_tags'] = '';
-
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+			$time_donor = microtime(true) - $time_donor_start;
+			echo "Этап ".$stage.": Распределение самих тегов, прошло (".round($time_donor,4)." секунд)<br/>";
+			$stage++;
+		}
         if ( strpos($wa_page, 'Краткое содержание') !== false AND strpos($wa_page, 'http://www.world-art.ru/animation/animation_update_synopsis.php') === false ) {
             preg_match_all("|Краткое содержание<\/font><\/b><\/td><\/tr><\/table><table width=100% cellspacing=0 cellpadding=0 border=0><tr><td width=100% height=1 bgcolor=#eaeaea><\/td><\/tr><\/table><table width=100% cellspacing=0 cellpadding=2 border=0><tr><td><p align=justify class='review'>(.*)</p>|U", $wa_page, $opis);
             if ( $opis[1][0] ) $xfields_data['worldart_plot'] = strip_tags($opis[1][0]);
             else $xfields_data['worldart_plot'] = '';
         }
         else $xfields_data['worldart_plot'] = '';
-
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+			$time_donor = microtime(true) - $time_donor_start;
+			echo "Этап ".$stage.": Распределение тега краткое содержание, прошло (".round($time_donor,4)." секунд)<br/>";
+			$stage++;
+		}
         if ( strpos($wa_page, '<b>Средний балл</b>') !== false ) {
             preg_match_all("|<table><tr><td align=left width=145 class='review'><b>Средний балл</b></td><td width=15></td><td class='review'>(.*)&nbsp;из 10</td></tr></table>|U", $wa_page, $rate);
             if ( $rate[1][0] ) $xfields_data['worldart_rating'] = $rate[1][0];
             else $xfields_data['worldart_rating'] = '';
         }
         else $xfields_data['worldart_rating'] = '';
-
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+			$time_donor = microtime(true) - $time_donor_start;
+			echo "Этап ".$stage.": Распределение тега рейтинга, прошло (".round($time_donor,4)." секунд)<br/>";
+			$stage++;
+		}
         if ( strpos($wa_page, '<b>Проголосовало</b>') !== false ) {
             preg_match_all("|<table><tr><td align=left width=145 class='review'><b>Проголосовало</b></td><td width=15></td><td class='review'>(.*) чел.</td><td><a href = \"(.*)\"><img src='../img/chart.jpg' width=20'></a></td></tr></table>|U", $wa_page, $vote);
             if ( $vote[1][0] ) $xfields_data['worldart_votes'] = $vote[1][0];
             else $xfields_data['worldart_votes'] = '';
         }
         else $xfields_data['worldart_votes'] = '';
-	    
+	    if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+			$time_donor = microtime(true) - $time_donor_start;
+			echo "Этап ".$stage.": Распределение тега голосов, прошло (".round($time_donor,4)." секунд)<br/>";
+			$stage++;
+		}
 	} else $xfields_data['worldart_country'] = $xfields_data['worldart_tags'] = $xfields_data['worldart_plot'] = $xfields_data['worldart_rating'] = $xfields_data['worldart_votes'] = '';
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+	$time_donor = microtime(true) - $time_donor_start;
+	echo "Закончили инициализацию донора world_art.php<br/>=================================<br/>";
+}

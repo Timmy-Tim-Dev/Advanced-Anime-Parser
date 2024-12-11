@@ -12,6 +12,7 @@ echo <<<HTML
 			    <li><a onclick="ChangeOptionModules(this, 'gindexing');" class="tip" title="Настройка Google Indexing Api"><i class="fa fa-google"></i> Google Indexing</a></li>
 			    <li><a onclick="ChangeOptionModules(this, 'tgposting');" class="tip" title="Настройка постинга в телеграм"><i class="fa fa-telegram"></i> Постинг в Telegram</a></li>
 			    <li><a onclick="ChangeOptionModules(this, 'personajes');" class="tip" title="Настройка парсинга актёров и персонажей"><i class="fa fa-users"></i> Актёры и персонажи</a></li>
+			    <li><a onclick="ChangeOptionModules(this, 'debugger');" class="tip" title="Дебагинг модуля"><i class="fa fa-stethoscope"></i> Дебагинг</a></li>
 		    </ul>
 	    </div>
     </div>
@@ -24,6 +25,7 @@ include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/roomspage
 include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/gindexpage.php')); //Google indexing
 include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/tgpostingpage.php')); //Постинг в Telegram
 include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/personajespage.php')); //Актёры и персонажи
+include_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/includes/debugerpage.php')); //Дебагинг
 echo <<<HTML
 </div>
 HTML;
