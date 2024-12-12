@@ -7,34 +7,27 @@
  This code is protected by copyright
 =====================================================
 */
+
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-	$time_update_start = microtime(true);
-	$stage = $stage ?? 1;
-	echo "=================================<br/>Начинаем обновление расписания и совместного просмотра, старт (".date("Y-m-d H:i:s").")<br/>";
+	$debugger_table_row .= tableRowCreate("(other_actions.php) Начинаем обновление расписания и совместного  просмотра", round(microtime(true) - $time_update_start,4));
 }
     if ( isset($aaparser_config['calendar_settings']['enable_schedule']) && $aaparser_config['calendar_settings']['enable_schedule'] && $aaparser_config['main_fields']['xf_shikimori_id'] ) {
         $no_poster = '/templates/'.$config['theme'].'/dleimages/no_image.jpg';
         $sql = "SELECT * FROM " . PREFIX . "_raspisanie_ongoingov";
-		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Получение данных с бд " . PREFIX . "_raspisanie_ongoingov, прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) {
+			$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных с бд " . PREFIX . "_raspisanie_ongoingov", round(microtime(true) - $time_update_start,4));
 		}
         $db->query( $sql );
   	    $raspisanie_ongoingov = [];
         while ( $row = $db->get_row() ) {
       	    $raspisanie_ongoingov[] = $row;
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Получение данных каждой записи с бд " . PREFIX . "_raspisanie_ongoingov, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных каждой записи с бд " . PREFIX . "_raspisanie_ongoingov", round(microtime(true) - $time_update_start,4));
 			}
         }
   	    $shikimori_api = request($shikimori_api_domain.'api/calendar');
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Получение данных с SHIKIMORI API CALENDAR, прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных с SHIKIMORI API CALENDAR", round(microtime(true) - $time_update_start,4));
 		}
   	    $today_id = [strtolower(date("l", $_TIME)) => date("Y-m-d", $_TIME)];
   	    for ($i = 1; $i < 7; $i++) {
@@ -73,9 +66,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
               	    unset($news_row, $full_link, $temp_xfields);
               	    $temp_num++;
 					if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-						$time_update = microtime(true) - $time_update_start;
-						echo "Этап ".$stage.": Формирование данных для записи, прошло (".round($time_update,4)." секунд)<br/>";
-						$stage++;
+						$debugger_table_row .= tableRowCreate("(other_actions.php) Формирование данных для записи", round(microtime(true) - $time_update_start,4));
 					}
                 }
             }
@@ -87,10 +78,8 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
           	    $rlist = json_encode($rdata, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
           	    $rlist = $db->safesql($rlist);
           	    $db->query( "UPDATE " . PREFIX . "_raspisanie_ongoingov SET date='{$rdate}', anime_list='{$rlist}' WHERE day_name='{$rname}'" );
-				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Обнолвение данных дня (".$rname.") в бд " . PREFIX . "_raspisanie_ongoingov, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) {
+					$debugger_table_row .= tableRowCreate("(other_actions.php) Обнолвение данных дня (".$rname.") в бд " . PREFIX . "_raspisanie_ongoingov", round(microtime(true) - $time_update_start,4));
 				}
             }
         }
@@ -99,18 +88,14 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
     }
     if ( isset($aaparser_config['settings']['rooms_enable']) && $aaparser_config['settings']['rooms_enable'] ) {
         $rooms = $db->query( "SELECT url, leader FROM " . PREFIX . "_rooms_list" );
-		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Получение данных с бд " . PREFIX . "_rooms_list, прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) {
+			$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных с бд " . PREFIX . "_rooms_list", round(microtime(true) - $time_update_start,4));
 		}
         $rooms_list = [];
         while($temp_rooms = $db->get_row($rooms)) {
             $rooms_list[$temp_rooms['url']] = $temp_rooms['leader'];
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Получение данных каждой записи с бд " . PREFIX . "_rooms_list, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных с бд " . PREFIX . "_rooms_list", round(microtime(true) - $time_update_start,4));
 			}
         }
 
@@ -118,22 +103,16 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
             $check_room = $db->super_query( "SELECT time, room_url, login FROM " . PREFIX . "_rooms_visitors WHERE room_url='{$room_url}' AND login='{$room_leader}'" );
             if ( !$check_room['time'] || $check_room['time'] < ($_TIME-10800) ) {
                 $db->query("DELETE FROM " . PREFIX . "_rooms_list WHERE url='{$room_url}'");
-				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Удаление данных (".$room_url.") записи с бд " . PREFIX . "_rooms_list, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) {
+					$debugger_table_row .= tableRowCreate("(other_actions.php) Удаление данных (".$room_url.") записи с бд " . PREFIX . "_rooms_list", round(microtime(true) - $time_update_start,4));
 				}
                 $db->query("DELETE FROM " . PREFIX . "_rooms_visitors WHERE room_url='{$room_url}'");
 				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Удаление данных (".$room_url.") записи с бд " . PREFIX . "_rooms_visitors, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(other_actions.php) Удаление данных (".$room_url.") записи с бд " . PREFIX . "_rooms_visitors", round(microtime(true) - $time_update_start,4));
 				}
                 $db->query("DELETE FROM " . PREFIX . "_rooms_chat WHERE room_url='{$room_url}'");
 				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Удаление данных (".$room_url.") записи с бд " . PREFIX . "_rooms_chat, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(other_actions.php) Удаление данных (".$room_url.") записи с бд " . PREFIX . "_rooms_chat", round(microtime(true) - $time_update_start,4));
 				}
             }
             unset($check_room);
@@ -141,8 +120,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
         echo "Не активные комнаты были удалены.<br>";
     }
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-		$time_update = microtime(true) - $time_update_start;
-		echo "Закончили обновление расписания и совместного просмотра, конец (".date("Y-m-d H:i:s")."), разница (".round($time_update,4)." секунд)<br/>=================================<br/>";
+		$debugger_table_row .= tableRowCreate("(other_actions.php) Закончили обновление расписания и совместного просмотра", round(microtime(true) - $time_update_start,4));
 	}
     echo "Крон завершил свою работу<br>";
 	

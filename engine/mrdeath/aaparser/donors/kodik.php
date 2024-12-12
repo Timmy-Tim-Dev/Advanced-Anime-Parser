@@ -11,11 +11,10 @@
 if( ! defined( 'DATALIFEENGINE' ) ) {
 	die( "Hacking attempt!" );
 }
-if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-	$time_donor_start = microtime(true);
-	$stage = $stage ?? 1;
-	echo "=================================<br/>Начинаем инициализацию донора kodik.php<br/>";
+if ($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1) { 
+	$debugger_table_row .= tableRowCreate("(kodik.php) Начинаем инициализацию донора kodik.php", round(microtime(true) - $time_update_start, 4));
 }
+
 $kodik_cat_type = [
     'foreign-movie'=>'Дорама фильм',
     'anime'=>'Аниме фильм',
@@ -42,9 +41,7 @@ if ($parse_action == 'search') {
 	    else $kodik = request($kodik_api_domain.'list?token='.$kodik_apikey.'&types=anime,anime-serial&with_material_data=true&sort=created_at&limit=100');
     }
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-		$time_donor = microtime(true) - $time_donor_start;
-		echo "Этап ".$stage.": Поиск list по API, прошло (".round($time_donor,4)." секунд)<br/>";
-		$stage++;
+		$debugger_table_row .= tableRowCreate("(kodik.php) Поиск list по API", round(microtime(true) - $time_update_start,4));
 	}
 	if ( $kodik['results'] ) {
 		foreach ( $kodik['results'] as $result ) {
@@ -103,9 +100,7 @@ if ($parse_action == 'search') {
 			);
         }
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-			$time_donor = microtime(true) - $time_donor_start;
-			echo "Этап ".$stage.": Разобрали полученный запрос, прошло (".round($time_donor,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(kodik.php) Разобрали полученный запрос", round(microtime(true) - $time_update_start,4));
 		}
 	}
 } elseif ($parse_action == 'parse') {
@@ -114,9 +109,7 @@ if ($parse_action == 'search') {
 	if ( $shiki_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&shikimori_id='.$shiki_id.'&with_episodes=true&with_material_data=true');
     elseif ( $mdl_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_episodes=true&with_material_data=true');
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-		$time_donor = microtime(true) - $time_donor_start;
-		echo "Этап ".$stage.": Поиск search по API, прошло (".round($time_donor,4)." секунд)<br/>";
-		$stage++;
+		$debugger_table_row .= tableRowCreate("(kodik.php) Поиск search по API", round(microtime(true) - $time_update_start,4));
 	}
 	if ( isset( $kodik['results'] ) && $kodik['results'] && isset( $kodik['results'][0]['seasons'] ) && $kodik['results'][0]['seasons'] ) {
 	    
@@ -159,9 +152,7 @@ if ($parse_action == 'search') {
         unset($translators);
 	}
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-		$time_donor = microtime(true) - $time_donor_start;
-		echo "Этап ".$stage.": Разобрали полученный запрос, прошло (".round($time_donor,4)." секунд)<br/>";
-		$stage++;
+		$debugger_table_row .= tableRowCreate("(kodik.php) Разобрали полученный запрос", round(microtime(true) - $time_update_start,4));
 	}
 	$kodik_data = array_shift($kodik['results']);
 	
@@ -371,9 +362,7 @@ if ($parse_action == 'search') {
         elseif ( intval($kodik_data['material_data']['duration']) > 30 ) $xfields_data['kodik_duration_length'] = 'свыше 30 мин.';
     }
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-		$time_donor = microtime(true) - $time_donor_start;
-		echo "Этап ".$stage.": Распределение по тегам, прошло (".round($time_donor,4)." секунд)<br/>";
-		$stage++;
+		$debugger_table_row .= tableRowCreate("(kodik.php) Распределение по тегам", round(microtime(true) - $time_update_start,4));
 	}
 } elseif ( $parse_action == 'grab' && $kind == 'anime' ) {
     
@@ -420,9 +409,7 @@ if ($parse_action == 'search') {
 	
     $grab = request($grab_url.$film_sort_by);
     if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-		$time_donor = microtime(true) - $time_donor_start;
-		echo "Этап ".$stage.": Грабинг list по API, прошло (".round($time_donor,4)." секунд)<br/>";
-		$stage++;
+		$debugger_table_row .= tableRowCreate("(kodik.php) Грабинг list по API", round(microtime(true) - $time_update_start,4));
 	}
     if ( !$grab['results'] ) {
 		unset($kodik_log[$kind]);
@@ -481,9 +468,7 @@ if ($parse_action == 'search') {
 		if($grab_info_new != '') echo 'Добавлено:<br>' . $grab_info_new . '<br>';
 		if($grab_info_old != '') echo 'Пропущено:<br>' . $grab_info_old;
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-		$time_donor = microtime(true) - $time_donor_start;
-			echo "Этап ".$stage.": Добавление материалов в бд " . PREFIX . "_anime_list, прошло (".round($time_donor,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(kodik.php) Добавление материалов в бд " . PREFIX . "_anime_list", round(microtime(true) - $time_update_start,4));
 		}
         exit("<br>База аниме успешно обновлена!");
     }
@@ -541,15 +526,15 @@ if ($parse_action == 'search') {
     
     $grab = request($grab_url);
     if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-		$time_donor = microtime(true) - $time_donor_start;
-		echo "Этап ".$stage.": Грабинг list по API, прошло (".round($time_donor,4)." секунд)<br/>";
-		$stage++;
+		$debugger_table_row .= tableRowCreate("(kodik.php) Грабинг list по API", round(microtime(true) - $time_update_start,4));
 	}
     if ( !$grab['results'] ) {
 		unset($kodik_log[$kind]);
 		file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log', json_encode( $kodik_log ));
         die('Балансер Kodik временно недоступен');
     } else {
+		$grab_info_old = $grab_info_new = '';
+        $grab_num_old = $grab_num_new = 1;
         foreach ($grab['results'] as $result) {
 			
 			if ( !$result['shikimori_id'] && !$result['mdl_id'] ) continue;
@@ -580,22 +565,29 @@ if ($parse_action == 'search') {
             elseif ( $result['material_data']['all_status'] ) $serial_status = $result['material_data']['all_status'];
             
             if ( $where ) {
-                $cheking = $db->super_query( "SELECT * FROM " . PREFIX . "_anime_list WHERE ".$where );
-                if ( $cheking['material_id'] > 0 ) {
-                    if ( $cheking["tv_status"] != $serial_status )
-                        if ( $cheking['news_id'] > 0 && $aaparser_config['update_news']['cat_check'] == 1 ) $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$serial_status}', cat_check=1 WHERE material_id='{$cheking['material_id']}'");
-                        elseif ( $cheking['news_id'] == 0 ) $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$serial_status}' WHERE material_id='{$cheking['material_id']}'");
-                } else $db->query("INSERT INTO " . PREFIX . "_anime_list (shikimori_id, mdl_id, year, type, tv_status) VALUES( '{$shikimori_id}', '{$mdl_id}', '{$year}', '{$types}', '{$serial_status}' ) " );
-            } else continue;
+				$cheking = $db->super_query( "SELECT * FROM " . PREFIX . "_anime_list WHERE ".$where );
+				if ( $cheking['material_id'] > 0 ) {
+					if ( $cheking["tv_status"] != $serial_status ) {
+						if ( $cheking['news_id'] > 0 && $aaparser_config['update_news']['cat_check'] == 1 ) $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$serial_status}', cat_check=1 WHERE material_id='{$cheking['material_id']}'");
+						elseif ( $cheking['news_id'] == 0 ) $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$serial_status}' WHERE material_id='{$cheking['material_id']}'");
+					}
+					$grab_info_old .= $grab_num_old.'. Дорама '.$result['title'].' есть в базе модуля. Пропущено<br>';
+					$grab_num_old++;
+				} else {
+					$db->query("INSERT INTO " . PREFIX . "_anime_list (shikimori_id, mdl_id, year, type, tv_status) VALUES( '{$shikimori_id}', '{$mdl_id}', '{$year}', '{$types}', '{$serial_status}' ) " );
+					$grab_info_new .= $grab_num_new.'. Дорама '.$result['title'].' добавлено в базу модуля<br>';
+					$grab_num_new++;
+				}
+			} else continue;
         }
 		
 		if ( $grab['next_page'] ) $kodik_log[$kind] = $grab['next_page'];
 		else unset($kodik_log[$kind]);
 		file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log', json_encode( $kodik_log ));
+		if($grab_info_new != '') echo 'Добавлено:<br>' . $grab_info_new . '<br>';
+		if($grab_info_old != '') echo 'Пропущено:<br>' . $grab_info_old;
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-			$time_donor = microtime(true) - $time_donor_start;
-			echo "Этап ".$stage.": Добавление материалов в бд " . PREFIX . "_anime_list, прошло (".round($time_donor,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(kodik.php) Добавление материалов в бд " . PREFIX . "_anime_list", round(microtime(true) - $time_update_start,4));
 		}
         exit("База дорам успешно обновлена!");
     }
@@ -639,6 +631,5 @@ if ($parse_action == 'search') {
 	}
 }
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-	$time_donor = microtime(true) - $time_donor_start;
-	echo "Закончили инициализацию донора kodik.php<br/>=================================<br/>";
+	$debugger_table_row .= tableRowCreate("(kodik.php) Закончили инициализацию донора kodik.php", round(microtime(true) - $time_update_start,4));
 }

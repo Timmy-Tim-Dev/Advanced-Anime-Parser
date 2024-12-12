@@ -19,6 +19,15 @@ require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/public
 require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_functions.php'));
 require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/kodik_cache.php'));
 
+if ($aaparser_config['debugger']['enable'] == 1) {
+	global $time_update_start, $debugger_table_row;
+	$time_update_start = microtime(true);
+	$debugger_table_row .= tableRowCreate("(grabber.php) Запуск модуля", round(microtime(true) - $time_update_start, 4));
+	$debugger_table_start = "<table><thead><tr><th>№</th><th>Действие</th><th>Прошло</th><th>Заняло</th><th>Память</th></tr></thead><tbody>";
+    $debugger_table_end = "</tbody></table>";
+    $debugger_table_style = "<style>table {width:100%;text-align:center;border-collapse:collapse;}th,td{border:1px solid #000}tr td:nth-child(2) {text-align:left}</style>";
+}
+
 if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log')) {
   	$fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log', "w+");
 	@chmod(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log', 0777);
@@ -114,3 +123,8 @@ elseif ( $action == 'anons_shiki' ) include_once (DLEPlugins::Check(ENGINE_DIR .
 elseif ( $action == 'anons_clean' ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/anons_clean.php'));
 elseif ( $action == 'update_franchise' ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/update_franchise.php'));
 else echo "Были переданы неверные параметры!";
+
+if($aaparser_config['debugger']['enable'] == 1) { 
+	$debugger_table_row .= tableRowCreate("(grabber.php) Конец работы модуля", round(microtime(true) - $time_update_start,4));
+	echo $debugger_table_start.$debugger_table_row.$debugger_table_end.$debugger_table_style;
+}

@@ -12,9 +12,7 @@ if( ! defined( 'DATALIFEENGINE' ) ) {
 	die( "Hacking attempt!" );
 }
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-	$time_donor_start = microtime(true);
-	$stage = $stage ?? 1;
-	echo "=================================<br/>Начинаем инициализацию донора shikimori.php<br/>";
+	$debugger_table_row .= tableRowCreate("(shikimori.php) Начинаем инициализацию донора shikimori.php", round(microtime(true) - $time_update_start, 4));
 }
 $cat_type = [
     'tv' => 'ТВ-сериал',
@@ -45,9 +43,7 @@ if ( $parse_action == 'search' ) {
     
     $shikimori = request($shikimori_api_domain.'api/animes?limit=50&search='.$search_name);
     if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-		$time_donor = microtime(true) - $time_donor_start;
-		echo "Этап ".$stage.": Поиск списка материалов по API, прошло (".round($time_donor,4)." секунд)<br/>";
-		$stage++;
+		$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск списка материалов по API", round(microtime(true) - $time_update_start, 4));
 	}
     if ( $shikimori && $search_name ) {
 		
@@ -68,9 +64,12 @@ if ( $parse_action == 'search' ) {
             
             $shiki_link = isset($result['url']) ? $shikimori_image_domain.$result['url'] : '';
 			
-			$where = "xfields LIKE '%".$aaparser_config['main_fields']['xf_shikimori_id']."|".$id_shiki."||%'";
+			$where = "xfields REGEXP '(^|\\\\|)" . $aaparser_config['main_fields']['xf_shikimori_id'] ."\\\\|".$id_shiki. "(\\\\||$)'";
+			// $where = "xfields LIKE '%".$aaparser_config['main_fields']['xf_shikimori_id']."|".$id_shiki."||%'";
             $proverka = $db->super_query( "SELECT id, xfields FROM " . PREFIX . "_post WHERE ".$where );
-			
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск записи в бд " . PREFIX . "_post", round(microtime(true) - $time_update_start, 4));
+			}
 	    	if (isset($proverka['id']) && $proverka['id']) {
 	    	    $find_id = 'est';
 	    	    $edit_link = $config['http_home_url'].$config['admin_path'].'?mod=editnews&action=editnews&id='.$proverka['id'];
@@ -81,9 +80,7 @@ if ( $parse_action == 'search' ) {
 	    	
 	    	$kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&shikimori_id='.$id_shiki);
 	    	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Сделали поиск по базам kodik API, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Сделали поиск по базам kodik API", round(microtime(true) - $time_update_start, 4));
 			}
 	    	$kodik_exists = isset($kodik['results'][0]['id']) ? $kodik['results'][0]['id'] : '';
 	    	$last_episode = isset($kodik['results'][0]['last_episode']) ? $kodik['results'][0]['last_episode'] : '';
@@ -109,18 +106,14 @@ if ( $parse_action == 'search' ) {
         }
     }
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-		$time_donor = microtime(true) - $time_donor_start;
-		echo "Этап ".$stage.": Разобрали полученный запрос, прошло (".round($time_donor,4)." секунд)<br/>";
-		$stage++;
+		$debugger_table_row .= tableRowCreate("(shikimori.php) Разобрали полученный запрос", round(microtime(true) - $time_update_start, 4));
 	}
     
 } elseif ($parse_action == 'parse') {
     $xfields_data = [];
     $shikimori = request($shikimori_api_domain.'api/animes/'.$shiki_id);
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-		$time_donor = microtime(true) - $time_donor_start;
-		echo "Этап ".$stage.": Поиск id материала по API, прошло (".round($time_donor,4)." секунд)<br/>";
-		$stage++;
+		$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск id материала по API", round(microtime(true) - $time_update_start, 4));
 	}
     if ($shikimori['code'] != "404") {
 		$xfields_data['shikimori_id'] = isset($shiki_id) ? $shiki_id : '';
@@ -215,17 +208,13 @@ if ( $parse_action == 'search' ) {
 			$xfields_data['shikimori_videos'] = implode(', ', $videos);
 		}
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-			$time_donor = microtime(true) - $time_donor_start;
-			echo "Этап ".$stage.": Распределение по тегам, прошло (".round($time_donor,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение по тегам", round(microtime(true) - $time_update_start, 4));
 		}
 		//Ссылки на прочие ресурсы
 		if ( isset($aaparser_config['settings']['other_sites']) && $aaparser_config['settings']['other_sites'] == 1 ) {
 			$shikimori_links = request($shikimori_api_domain.'api/animes/'.$shiki_id.'/external_links');
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Поиск ссылок прочих ресурсов по API, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск ссылок прочих ресурсов по API", round(microtime(true) - $time_update_start, 4));
 			}
 			$xfields_data['myanimelist_id'] = isset($shikimori['myanimelist_id']) ? $shikimori['myanimelist_id'] : '';
 			$source_kind = [];
@@ -242,9 +231,7 @@ if ( $parse_action == 'search' ) {
 			$xfields_data['kage_project'] = isset($source_kind['kage_project']) ? $source_kind['kage_project'] : '';
 			unset($shikimori_links, $source_kind);
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Распределение тегов для ссылок прочих ресурсов, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение тегов для ссылок прочих ресурсов", round(microtime(true) - $time_update_start, 4));
 			}
 		}
 
@@ -252,9 +239,7 @@ if ( $parse_action == 'search' ) {
 		if ( isset($aaparser_config['settings']['parse_authors']) && $aaparser_config['settings']['parse_authors'] == 1 ) {
 			$shikimori_roles = request($shikimori_api_domain.'api/animes/'.$shiki_id.'/roles');
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Поиск авторского состава по API, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск авторского состава по API", round(microtime(true) - $time_update_start, 4));
 			}
 			$anime_authors = [];
 			foreach ( $shikimori_roles as $role ) {
@@ -292,9 +277,7 @@ if ( $parse_action == 'search' ) {
 			}
 			unset($shikimori_roles, $anime_authors);
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Распределение тегов для авторского состава, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение тегов для авторского состава", round(microtime(true) - $time_update_start, 4));
 			}
 		}
 		
@@ -302,9 +285,7 @@ if ( $parse_action == 'search' ) {
 		if ( isset($aaparser_config['settings']['parse_franshise']) && $aaparser_config['settings']['parse_franshise'] == 1 ) {
 			$shiki_api = request($shikimori_api_domain."api/animes/".$shiki_id."/franchise");
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Поиск франшизы по API, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск франшизы по API", round(microtime(true) - $time_update_start, 4));
 			}
 			$movies_id = [];
 
@@ -347,9 +328,7 @@ if ( $parse_action == 'search' ) {
 			$xfields_data['shikimori_franshise'] = $part_id;
 			unset($shiki_api, $movies_id, $part_id);
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Распределение тегов для франшизы, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение тегов для франшизы", round(microtime(true) - $time_update_start, 4));
 			}
 		}
 		
@@ -357,9 +336,7 @@ if ( $parse_action == 'search' ) {
 		if ( isset($aaparser_config['settings']['parse_similar']) && $aaparser_config['settings']['parse_similar'] == 1 ) {
 			$shiki_api = request($shikimori_api_domain."api/animes/".$shikimori['id']."/similar");
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Поиск похожих аниме по API, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск похожих аниме по API", round(microtime(true) - $time_update_start, 4));
 			}
 			$movies_id = [];
 
@@ -375,9 +352,7 @@ if ( $parse_action == 'search' ) {
 			$xfields_data['shikimori_similar'] = $part_id;
 			unset($shiki_api, $movies_id, $part_id);
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Распределение тегов для похожих аниме, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение тегов для похожих аниме", round(microtime(true) - $time_update_start, 4));
 			}
 		}
 		
@@ -385,9 +360,7 @@ if ( $parse_action == 'search' ) {
 		if ( isset($aaparser_config['settings']['parse_related']) && $aaparser_config['settings']['parse_related'] == 1 ) {
 			$shiki_api = request($shikimori_api_domain."api/animes/".$shikimori['id']."/related");
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Поиск связанных аниме по API, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск связанных аниме по API", round(microtime(true) - $time_update_start, 4));
 			}
 			$movies_id = [];
 
@@ -403,9 +376,7 @@ if ( $parse_action == 'search' ) {
 			$xfields_data['shikimori_related'] = $part_id;
 			unset($shiki_api, $movies_id, $part_id);
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Распределение тегов для связанных аниме, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение тегов для связанных аниме", round(microtime(true) - $time_update_start, 4));
 			}
 		}
 		
@@ -436,9 +407,7 @@ if ( $parse_action == 'search' ) {
 			elseif ( intval($shikimori['duration']) > 30 ) $xfields_data['shikimori_duration_length'] = 'свыше 30 мин.';
 		}
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-			$time_donor = microtime(true) - $time_donor_start;
-			echo "Этап ".$stage.": Распределение тегов времени, прошло (".round($time_donor,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение тегов времени", round(microtime(true) - $time_update_start, 4));
 		}
 		//Парсинг жанров напрямую со страницы аниме
 		if ( $aaparser_config['settings']['parse_shikimori_genres'] == 1 && isset($shikimori['url']) ) {
@@ -446,9 +415,7 @@ if ( $parse_action == 'search' ) {
 			$shikimori_link = str_replace(['.me//', '.one//'], ['.me/', '.one/'], $shikimori_link);
 			$shikimori_page = file_get_contents($shikimori_link);
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Парсинг жанров напрямую (file_get_contents) с сайта shikimori, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Парсинг жанров напрямую (file_get_contents) с сайта shikimori", round(microtime(true) - $time_update_start, 4));
 			}
 			if ( strpos($shikimori_page, 'genre-ru') !== false ) {
 				preg_match_all("|<span class='genre-ru'>(.*)<\/span>|U", $shikimori_page, $genresru, PREG_PATTERN_ORDER);
@@ -476,9 +443,7 @@ if ( $parse_action == 'search' ) {
 				}
 			}
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Распределение жанров по тегам с сайта shikimori, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение жанров по тегам с сайта shikimori", round(microtime(true) - $time_update_start, 4));
 			}
 		}
 		
@@ -486,10 +451,8 @@ if ( $parse_action == 'search' ) {
 		$jikan_poster = 0;
 		if ( $shiki_id && isset($aaparser_config['settings']['parse_jikan']) && $aaparser_config['settings']['parse_jikan'] == 1) {
 			$jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
-			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Парсинг с jikan.moe, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) {
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Парсинг с jikan.moe", round(microtime(true) - $time_update_start, 4));
 			}
 			if (isset( $jikan_api['data']['images']['jpg']['large_image_url'] ) && $jikan_api['data']['images']['jpg']['large_image_url'] ) 
 				$xfields_data['image'] = $jikan_api['data']['images']['jpg']['large_image_url'];
@@ -502,9 +465,7 @@ if ( $parse_action == 'search' ) {
 				$xfields_data['myanimelist_votes'] = $jikan_api['data']['scored_by'];
 			
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$time_donor = microtime(true) - $time_donor_start;
-				echo "Этап ".$stage.": Распределение тегов полученных с jikan.moe, прошло (".round($time_donor,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение тегов полученных с jikan.moe", round(microtime(true) - $time_update_start, 4));
 			}
 		}
       
@@ -535,6 +496,5 @@ if ( $parse_action == 'search' ) {
 	}
 }
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-	$time_donor = microtime(true) - $time_donor_start;
-	echo "Закончили инициализацию донора shikimori.php<br/>=================================<br/>";
+	$debugger_table_row .= tableRowCreate("(shikimori.php) Закончили инициализацию донора shikimori.php", round(microtime(true) - $time_update_start, 4));
 }

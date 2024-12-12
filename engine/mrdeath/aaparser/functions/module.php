@@ -10,10 +10,9 @@
 
 if (!function_exists('request')) {
     function request($url){
-		global $aaparser_config;
-		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) { 
-			$time_ch_start = microtime(true);
-			echo "=================================<br/>Делаем запрос: (".$url.")<br/>";
+		global $aaparser_config, $debugger_table_row, $time_update_start;
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) {
+			$debugger_table_row .= tableRowCreate("(module.php) Делаем запрос: (".$url.")", round(microtime(true) - $time_update_start, 4));
 		}
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -34,11 +33,11 @@ if (!function_exists('request')) {
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) $time_ch = microtime(true) - $time_ch_start;
 		if ($http_code == 200) {
 			// Успешный ответ
-			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) echo "Успешный запрос за (".round($time_ch, 4)." секунд): (".$url.")<br/>=================================<br/>";
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Успешный запрос: (".$url.")", round(microtime(true) - $time_update_start, 4));
 			curl_close($ch);
 			return json_decode($kp_api, true);
 		} else {
-			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) echo "Неуспешный запрос за (".round($time_ch, 4)." секунд), Ответ (".$kp_api."), Код (".$http_code."): (".$url.")<br/>=================================<br/>";
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Неуспешный запрос, Ответ (".$kp_api."), Код (".$http_code."): (".$url.")", round(microtime(true) - $time_update_start, 4));
 			curl_close ($ch);
 			return json_decode($kp_api, true);
 		}
@@ -180,10 +179,9 @@ if (!function_exists('xfparamload')) {
 if (!function_exists('setPoster')) {
     function setPoster($poster_url, $poster_title, $image_kind, $poster_name = false, $news_id = 0) {
 	
-	    global $config, $aaparser_config, $kp_config, $db, $member_id, $user_group;
+	    global $config, $aaparser_config, $debugger_table_row, $time_update_start, $kp_config, $db, $member_id, $user_group;
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) { 
-			$time_ch_start = microtime(true);
-			echo "=================================<br/>Обработка картинки: (".$poster_url.")<br/>";
+			$debugger_table_row .= tableRowCreate("(module.php) Обработка картинки: (".$poster_url.")", round(microtime(true) - $time_update_start, 4));
 		}
 	    $area = 'xfieldsimage';
 	
@@ -269,16 +267,14 @@ if (!function_exists('setPoster')) {
             $result = json_decode($uploader->FileUpload(), true);
 			
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) {
-				$time_ch = microtime(true) - $time_ch_start;
-				echo "Обработали картинку за (".round($time_ch, 4)." секунд): (".$result['link'].")<br/>=================================<br/>";
+				$debugger_table_row .= tableRowCreate("(module.php) Обработали картинку: (".$result['link'].")", round(microtime(true) - $time_update_start, 4));
 			}
             @unlink($image);
             return $result;
         }
         else {
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) {
-				$time_ch = microtime(true) - $time_ch_start;
-				echo "Не смогли Обработать картинку за (".round($time_ch, 4)." секунд): (".$image.")<br/>=================================<br/>";
+				$debugger_table_row .= tableRowCreate("(module.php) Не смогли Обработать картинку: (".$image.")", round(microtime(true) - $time_update_start, 4));
 			}
             @unlink($image);
             return '';
@@ -288,10 +284,9 @@ if (!function_exists('setPoster')) {
 
 if (!function_exists('downloadImage')) {
     function downloadImage($imageUrl, $newFileName) {
-		global $aaparser_config;
+		global $aaparser_config, $debugger_table_row, $time_update_start;
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) { 
-			$time_ch_start = microtime(true);
-			echo "Загрузка: (".$imageUrl.")<br/>";
+			$debugger_table_row .= tableRowCreate("(module.php) Загрузка: (".$imageUrl.")", round(microtime(true) - $time_update_start, 4));
 		}
         // Устанавливаем директорию для загрузки
         $uploadDir = ROOT_DIR . '/uploads/files/';
@@ -353,8 +348,7 @@ if (!function_exists('downloadImage')) {
         file_put_contents($newFilePath, $imageData);
         chmod($newFilePath, 0777);
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) {
-			$time_ch = microtime(true) - $time_ch_start;
-			echo "Загрузили картинку за (".round($time_ch, 4)." секунд): (".$imageUrl.")<br/>";
+			$debugger_table_row .= tableRowCreate("(module.php) Загрузили картинку: (".$imageUrl.")", round(microtime(true) - $time_update_start, 4));
 		}
 
         // Возвращаем путь к новому файлу
@@ -616,5 +610,27 @@ if (!function_exists('CheckGenres')) {
 			}
 		}
 		return $takethiscats;
+	}
+}
+if (!function_exists('getMemoryUsage')) {
+	function getMemoryUsage(bool $peak = false): float {
+		$memory = 0;
+		if ($peak) function_exists('memory_get_peak_usage') && $memory = round(memory_get_peak_usage() / (1024**2), 2);
+		else function_exists('memory_get_usage') && $memory = round(memory_get_usage() / (1024**2), 2);
+		return $memory;
+	}
+}
+
+if (!function_exists('tableRowCreate')) {
+	function tableRowCreate($text, $timer, $mem = false) {
+		global $old_timer, $stage;
+		$stage = $stage ?? 0;
+		$mem = $mem === false ? getMemoryUsage() : getMemoryUsage(true);
+		$difference = round($timer - $old_timer,4) . " сек";
+		// if ($difference > 0.25) $difference = "<font style='color:red;'>".$difference."</font>";
+		$old_timer = $timer;
+		$stage++;
+		if ($difference > 0.25) return "<tr style='color:red;'><td>".$stage."</td><td>".$text."</td><td>".$timer." сек</td><td>".$difference."</td><td>".$mem." Mb</td></tr>";
+		else return "<tr><td>".$stage."</td><td>".$text."</td><td>".$timer." сек</td><td>".$difference."</td><td>".$mem." Mb</td></tr>";
 	}
 }

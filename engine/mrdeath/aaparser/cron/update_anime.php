@@ -8,9 +8,7 @@
 =====================================================
 */
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-	$time_update_start = microtime(true);
-	$stage = $stage ?? 1;
-	echo "=================================<br/>Начинаем обновление материала, старт (".date("Y-m-d H:i:s").")<br/>";
+	$debugger_table_row .= tableRowCreate("(update_anime.php) Начинаем обновление материала", round(microtime(true) - $time_update_start,4));
 }
     if ( $aaparser_config['integration']['ksep'] == 1 && file_exists(ENGINE_DIR.'/mrdeath/ksep/modules/aap.php') ) {
   	    $required_from = 'aap';
@@ -18,9 +16,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
   	    require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/ksep/functions/module.php'));
   	    $ksep_enabled = true;
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Инициализация посерийного модуля, прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(update_anime.php) Инициализация посерийного модуля", round(microtime(true) - $time_update_start,4));
 		}
     }
     else $ksep_enabled = false;
@@ -28,9 +24,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
     if (file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json') && $aaparser_config['updates_block']['enable_history'] == 1) {
   	    $updates_history = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/updates_history.json' ), true );
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Получение данных блока обновления, прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(update_anime.php) Получение данных блока обновления", round(microtime(true) - $time_update_start,4));
 		}
     } else $updates_history = false;
     
@@ -40,9 +34,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
         include_once (DLEPlugins::Check(ENGINE_DIR . "/inc/maharder/telegram/helpers/sender.php"));
         $send_to_telegram = true;
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Инициализация Telegram Sender, прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(update_anime.php) Инициализация Telegram Posting", round(microtime(true) - $time_update_start,4));
 		}
     } else $send_to_telegram = false;
     
@@ -55,9 +47,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
         $indexing = new \XOO\Indexing\Indexing($db);
         $send_to_google_indexing = true;
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Инициализация Google Indexing, прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(update_anime.php) Инициализация Google Indexing", round(microtime(true) - $time_update_start,4));
 		}
     } else $send_to_google_indexing = false;
 	
@@ -69,9 +59,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 	
 	$kodik_updates_api = request($kodik_api_domain."list?token=".$kodik_apikey."&has_field=shikimori_id&with_episodes=true&with_material_data=true&limit=".$max_news);
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-		$time_update = microtime(true) - $time_update_start;
-		echo "Этап ".$stage.": Получение списка новых материалов для проверки, прошло (".round($time_update,4)." секунд)<br/>";
-		$stage++;
+		$debugger_table_row .= tableRowCreate("(update_anime.php) Получение списка новых материалов для проверки", round(microtime(true) - $time_update_start,4));
 	}
 	$updated_news_list = [];
     
@@ -88,21 +76,15 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 		$xf_shiki = "xfields REGEXP '(^|\\\\|)" . $aaparser_config['main_fields']['xf_shikimori_id'] ."\\\\|".$anime_check['shikimori_id']. "(\\\\||$)'";
 		// $xf_shiki = "xfields LIKE '%".$aaparser_config['main_fields']['xf_shikimori_id']."|".$anime_check['shikimori_id']."||%'";
 		$checking_post = $db->super_query( "SELECT id, xfields, title, approve, category, date, alt_name, short_story, full_story FROM " . PREFIX . "_post WHERE ".$xf_shiki );
-		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			$stage = 1;
-			echo "!=================================!<br/>Этап ".$stage.": Получение поста по id (".$anime_check['shikimori_id'].") с бд " . PREFIX . "_post, прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) {
+			$debugger_table_row .= tableRowCreate("(update_anime.php) Получение поста по id (".$anime_check['shikimori_id'].") с бд " . PREFIX . "_post", round(microtime(true) - $time_update_start,4));
 		}
 		if ( $checking_post['id'] > 0 ) $xfields_post = xfieldsdataload( $checking_post['xfields'] );
         else {
 			$xf_shiki = "xfields LIKE '%".$aaparser_config['main_fields']['xf_shikimori_id']."|".$anime_check['shikimori_id']."'";
 			$checking_post = $db->super_query( "SELECT id, xfields, title, approve, category, date, alt_name, short_story, full_story FROM " . PREFIX . "_post WHERE ".$xf_shiki );
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				$stage = 1;
-				echo "!=================================!<br/>Этап ".$stage.": Получение поста по id (".$anime_check['shikimori_id'].") с бд " . PREFIX . "_post, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Повторное получение поста по id (".$anime_check['shikimori_id'].") с бд " . PREFIX . "_post", round(microtime(true) - $time_update_start,4));
 			}
 			if ( $checking_post['id'] > 0 ) $xfields_post = xfieldsdataload( $checking_post['xfields'] );
 			else {
@@ -115,9 +97,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
         //Очистка кастумного кеша кодик
         if ( isset($aaparser_config['player']['custom_cache']) && $aaparser_config['player']['custom_cache'] == 1 ) kodik_clear_cache('playlist_'.$checking_post['id'], 'player');
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Очистка кэша кодик playlist_".$checking_post['id'].", прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(update_anime.php) Очистка кэша кодик playlist_".$checking_post['id'], round(microtime(true) - $time_update_start,4));
 		}
 		$title_en = $anime_check['title_orig'];
 		$title_ru = $anime_check['title'];
@@ -150,17 +130,13 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 		
 		$material_row =  $db->super_query( "SELECT * FROM " . PREFIX . "_anime_list WHERE shikimori_id={$anime_check['shikimori_id']}" );
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Получение записи с бд " . PREFIX . "_anime_list, прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(update_anime.php) Получение записи с бд " . PREFIX . "_anime_list", round(microtime(true) - $time_update_start,4));
 		}
 		if ( $material_row['material_id'] && $material_row['news_id'] > 0 && $aaparser_config['update_news']['cat_check'] == 1 && $material_row['tv_status'] != $serial_status_k ) {
 		    $db->query("UPDATE " . PREFIX . "_anime_list SET tv_status='{$serial_status_k}', cat_check=1 WHERE material_id='{$material_row['material_id']}'");
 		    $material_row['cat_check'] = 1;
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Обновление записи в бд " . PREFIX . "_anime_list, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Обновление записи в бд " . PREFIX . "_anime_list", round(microtime(true) - $time_update_start,4));
 			}
 		}
 		
@@ -194,9 +170,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
                 
 		    }
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Проверка на выход новой озвучки в последней доступной серии, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Проверка на выход новой озвучки в последней доступной серии", round(microtime(true) - $time_update_start,4));
 			}
         }
         
@@ -261,9 +235,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
                 }
             }
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Проверка на выход нового сезона или новой серии сериала, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Проверка на выход нового сезона или новой серии сериала", round(microtime(true) - $time_update_start,4));
 			}
         }
         
@@ -287,9 +259,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
                 }
             }
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Проверка на выход нового сезона отдельно в озвучке или в субтитра, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Проверка на выход нового сезона отдельно в озвучке или в субтитра", round(microtime(true) - $time_update_start,4));
 			}
         }
         
@@ -313,9 +283,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
                 }
             }
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Проверка на выход новой серии отдельно в озвучке или в субтитрах, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Проверка на выход новой серии отдельно в озвучке или в субтитрах", round(microtime(true) - $time_update_start,4));
 			}
         }
 		
@@ -352,9 +320,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 			}
         }
         if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Проверка на изменение рейтинга и голосов, прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(update_anime.php) Проверка на изменение рейтинга и голосов", round(microtime(true) - $time_update_start,4));
 		}
         //Проверка на изменение статуса сериала для субтитров и автосубтитров
 		$status_type = array( 'anons' => 'Анонс', 'ongoing' => 'Онгоинг', 'released' => 'Завершён' );
@@ -410,9 +376,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 			}						
 		}	
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Проверка на изменение статуса сериала для субтитров и автосубтитров, прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(update_anime.php) Проверка на изменение статуса сериала для субтитров и автосубтитров", round(microtime(true) - $time_update_start,4));
 		}
         //Проверка на изменение статуса сериала
         
@@ -434,9 +398,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
                 $reason_updation .= '. Изменился статус аниме на '.$serial_status_ru_k;
             }
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Проверка на изменение статуса сериала, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Проверка на изменение статуса сериала", round(microtime(true) - $time_update_start,4));
 			}
         }
 		
@@ -453,9 +415,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 				else $sendtotelegram = 0;
             }
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Проверка на изменение качества фильма, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Проверка на изменение качества фильма", round(microtime(true) - $time_update_start,4));
 			}
         }
         
@@ -470,9 +430,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 				else $sendtotelegram = 0;
             }
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Проверка на появление новой озвучки, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Проверка на появление новой озвучки", round(microtime(true) - $time_update_start,4));
 			}
         }
 		
@@ -516,9 +474,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
         
 		$descript = "";
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Генерация тегов, прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(update_anime.php) Генерация тегов", round(microtime(true) - $time_update_start,4));
 		}
 		// Проверка анонс
 		
@@ -526,18 +482,20 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 			$shiki_id = $anime_check['shikimori_id'];
 	        $parse_action = 'parse';
 			$parse_type = 'grabbing';
-			
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Инициализация доноров начата", round(microtime(true) - $time_update_start,4));
+			}
 	        include  (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/shikimori.php'));
 			include  (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/kodik.php'));
-		
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Инициализация доноров завершена", round(microtime(true) - $time_update_start,4));
+			}
 			$descript =  $db->safesql( check_if( $aaparser_config['settings_anons']['descript'], $xfields_data) );
 			$new_descript = $anime_check['material_data']['description'];
 			if (trim(strip_tags($checking_post['short_story'])) == trim(strip_tags( $descript )) || $checking_post['short_story'] == "") $db->query("UPDATE ".PREFIX."_post set short_story='$new_descript' WHERE id=".$checking_post['id']);
 			if (trim(strip_tags($checking_post['full_story'])) == trim(strip_tags( $descript )) || $checking_post['full_story'] == "") $db->query("UPDATE ".PREFIX."_post set full_story='$new_descript' WHERE id=".$checking_post['id']);
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Проверка на новое описание для анонса, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Проверка на новое описание для анонса", round(microtime(true) - $time_update_start,4));
 			}
 		}
 				
@@ -548,9 +506,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
             if ( isset($aaparser_config['settings']['next_episode_date_new']) ) {
                 $shikimori_temp = request($shikimori_api_domain.'api/animes/'.$anime_check['shikimori_id']);
 				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Получение данных для даты следующей серии, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(update_anime.php) Получение данных для даты следующей серии с API", round(microtime(true) - $time_update_start,4));
 				}
                 if ( $shikimori_temp['next_episode_at'] ) {
                     $next_episode_at = strtotime($shikimori_temp['next_episode_at']);
@@ -586,9 +542,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 				$set_metakeywords = ", keywords='".$and_metakeywords."'";
 			} else $set_metakeywords = '';
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Распределение метатегов, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Распределение метатегов", round(microtime(true) - $time_update_start,4));
 			}
 			$new_time = time();
             $new_date = date( "Y-m-d H:i:s", $new_time );
@@ -614,9 +568,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 						else $db->query( "UPDATE " . PREFIX . "_post SET `xfields` = CONCAT(`xfields`, '{$part}') {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
 					}
 					if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-						$time_update = microtime(true) - $time_update_start;
-						echo "Этап ".$stage.": Отправка данных в бд " . PREFIX . "_post по частям, прошло (".round($time_update,4)." секунд)<br/>";
-						$stage++;
+						$debugger_table_row .= tableRowCreate("(update_anime.php) Отправка данных в бд " . PREFIX . "_post по частям", round(microtime(true) - $time_update_start,4));
 					}
 					if ($db->error) {
 						echo "Ошибка при отправке запроса: " . $db->error ."<br/>Попробуйте выключить слабый режим MYSQL или разбитие уменьшить";
@@ -627,18 +579,14 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 			} else {			
 				if ( $need_update_date == 1 ) $db->query( "UPDATE " . PREFIX . "_post SET xfields='{$xfields_post}', date='{$new_date}' {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
 				else $db->query( "UPDATE " . PREFIX . "_post SET xfields='{$xfields_post}' {$set_title}{$set_cpu}{$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
-				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Отправка данных в бд " . PREFIX . "_post, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) {
+					$debugger_table_row .= tableRowCreate("(update_anime.php) Отправка данных в бд " . PREFIX . "_post", round(microtime(true) - $time_update_start,4));
 				}
 			}	
 			
 			$db->query( "UPDATE " . PREFIX . "_post_extras SET editdate='{$new_time}' WHERE news_id='{$news_id}'" );
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Обновление данных в бд " . PREFIX . "_post_extras, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Обновление данных в бд " . PREFIX . "_post_extras", round(microtime(true) - $time_update_start,4));
 			}
 			if ( $need_update_date == 1 ) echo 'Обновилось аниме '.$checking_post['title'].$reason_updation.'. Новость была апнута<br>';
 			else echo 'Обновилось аниме '.$checking_post['title'].$reason_updation.'<br>';
@@ -652,10 +600,8 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 					    } else $full_link = $config['http_home_url'] . $checking_post['id'] . "-" . $checking_post['alt_name'] . ".html";
 				    } else $full_link = $config['http_home_url'] . $checking_post['id'] . "-" . $checking_post['alt_name'] . ".html";
 			    } else $full_link = $config['http_home_url'] . date( 'Y/m/d/', strtotime( $checking_post['date'] ) ) . $checking_post['alt_name'] . ".html";
-				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Сео разбор, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) {
+					$debugger_table_row .= tableRowCreate("(update_anime.php) Сео разбор", round(microtime(true) - $time_update_start,4));
 				}
 			} else $full_link = $config['http_home_url'] . "index.php?newsid=" . $checking_post['id'];
 		    
@@ -666,9 +612,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
        		    $temp_image = explode('|', $image);
        		    $image = $temp_image[0];
 				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Взаимодействие с постером, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(update_anime.php) Взаимодействие с картинками", round(microtime(true) - $time_update_start,4));
 				}
 			} elseif ( $aaparser_config['main_fields']['poster_empty'] ) $image = $aaparser_config['main_fields']['poster_empty'];
     	    else $image = '';
@@ -686,18 +630,14 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
     	        file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/updates_history.json', json_encode( $updates_history , JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     	        unset($add_updates_history);
 				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Изменение данных блока обновления, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(update_anime.php) Изменение данных блока обновления", round(microtime(true) - $time_update_start,4));
 				}
 			}
 			
 			if ( $aaparser_config['push_notifications']['enable'] && $checking_post['approve'] == 1 && $send_push == 1 ) {
 			    $res = $db->query( "SELECT user_id, push_subscribe FROM " . PREFIX . "_users WHERE push_subscribe LIKE '%\"".$news_id."\"%'" );
 				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Получение записи в бд ".PREFIX."_users, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(update_anime.php) Получение записи в бд ".PREFIX."_users", round(microtime(true) - $time_update_start,4));
 				}
 	            $users_list = [];
 	            while ( $user_list = $db->get_row($res) ) {
@@ -705,9 +645,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 					if ( $user_list['user_id'] ) $users_list[] = $user_list['user_id'];
 					$db->query("INSERT INTO ".PREFIX."_subscribe_info set user_id='{$user_list['user_id']}', post_id='$news_id'");
 					if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-						$time_update = microtime(true) - $time_update_start;
-						echo "Этап ".$stage.": Добавление записи в бд ".PREFIX."_subscribe_info, прошло (".round($time_update,4)." секунд)<br/>";
-						$stage++;
+						$debugger_table_row .= tableRowCreate("(update_anime.php) Добавление записи в бд ".PREFIX."_subscribe_info", round(microtime(true) - $time_update_start,4));
 					}
 	            }
   	            if ( $users_list ) {
@@ -719,9 +657,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
       		            DLE_Send_Push( $aaparser_config['push_notifications']['movie_title'], $notification, $full_link, $image, $users_list );
     	            }
 					if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-						$time_update = microtime(true) - $time_update_start;
-						echo "Этап ".$stage.": Отправка push уведомления, прошло (".round($time_update,4)." секунд)<br/>";
-						$stage++;
+						$debugger_table_row .= tableRowCreate("(update_anime.php) Отправка push уведомления", round(microtime(true) - $time_update_start,4));
 					}
                 }
 			}
@@ -729,9 +665,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 			if ( $send_to_telegram === true && $checking_post['approve'] == 1 ) {
 				sendTelegram($news_id, "editnews");
 				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Отправка SendTelegram, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(update_anime.php) Отправка SendTelegram", round(microtime(true) - $time_update_start,4));
 				}
 			}
 			
@@ -741,9 +675,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
                 $category_list = $checking_post['category'];
                 include ENGINE_DIR.'/modules/socialposting/posting.php';
 				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Отправка Social Posting, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(update_anime.php) Отправка Social Posting", round(microtime(true) - $time_update_start,4));
 				}
 			}
 			
@@ -755,9 +687,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 	            $indexing_url = $full_link;
 	            include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/indexing.php'));
 				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Отправка Google Indexing, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(update_anime.php) Отправка Google Indexing", round(microtime(true) - $time_update_start,4));
 				}
 			}
 			
@@ -770,9 +700,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
                 if ($sendtotelegram == 1) {
 					telegram_sender($news_id, 'editnews_cron');
 					if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-						$time_update = microtime(true) - $time_update_start;
-						echo "Этап ".$stage.": Отправка Telegram Sender, прошло (".round($time_update,4)." секунд)<br/>";
-						$stage++;
+						$debugger_table_row .= tableRowCreate("(update_anime.php) Отправка Telegram Sender", round(microtime(true) - $time_update_start,4));
 					}
 				}
             }
@@ -785,22 +713,19 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
   	        $rowid = $checking_post['id'];
 	        require (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/ksep/modules/aap.php'));
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Взаимодействие с посерийным модулем, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(update_anime.php) Взаимодействие с посерийным модулем", round(microtime(true) - $time_update_start,4));
 			}
         }
         
 		unset($xfields_post, $title_en, $title_ru, $news_id, $update_fields, $checking_post, $last_season_k, $last_episode_k, $serial_status_k, $serial_status_ru_k, $quality, $translation, $translation_type, $translation_type_ru, $playlist, $translators_list, $translators_types, $need_update, $material_row);
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Окончание работы по посту id (".$anime_check['mdl_id'].") с бд " . PREFIX . "_post, прошло (".round($time_update,4)." секунд)<br/>!=================================!<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(update_anime.php) Окончание работы по посту id (".$anime_check['mdl_id'].") с бд " . PREFIX . "_post", round(microtime(true) - $time_update_start,4));
 		}
 	}
-	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-		$time_update = microtime(true) - $time_update_start;
-		echo "Закончили обновление материала, конец (".date("Y-m-d H:i:s")."), разница (".round($time_update,4)." секунд)<br/>=================================<br/>";
-	}
+	
 	clear_cache( array('news_', 'full_', 'kodik_playlist_') );
+	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
+		$debugger_table_row .= tableRowCreate("(update_anime.php) Закончили обновление материала", round(microtime(true) - $time_update_start,4));
+		echo $debugger_table_start.$debugger_table_row.$debugger_table_end.$debugger_table_style;
+	}
     die('Проверка обновлений аниме завершена');

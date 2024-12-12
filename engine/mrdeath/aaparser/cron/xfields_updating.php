@@ -8,24 +8,18 @@
 =====================================================
 */
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-	$time_update_start = microtime(true);
-	$stage = $stage ?? 1;
-	echo "=================================<br/>Начинаем обновление доп. полей материала, старт (".date("Y-m-d H:i:s").")<br/>";
+	$debugger_table_row .= tableRowCreate("(xfields_updating.php) Начинаем обновление доп. полей материала", round(microtime(true) - $time_update_start, 4));
 }
     if ( !$aaparser_config['update_news']['xf_check'] ) die('Обновление доп. полей отключено в настройках');
     elseif ( $aaparser_config['update_news']['xf_check'] == 1 ) {
         $will_check = $db->super_query( "SELECT * FROM " . PREFIX . "_anime_list WHERE news_id>0 AND news_update=1 LIMIT 1" );
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Получение данных с бд " . PREFIX . "_anime_list, прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(xfields_updating.php) Получение данных с бд " . PREFIX . "_anime_list", round(microtime(true) - $time_update_start, 4));
 		}
         if ( $will_check ) {
             $news_row = $db->super_query( "SELECT id, xfields, title FROM " . PREFIX . "_post WHERE id='{$will_check['news_id']}'" );
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Получение данных news_id (".$will_check['news_id'].") с бд " . PREFIX . "_post, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(xfields_updating.php) Получение данных news_id (".$will_check['news_id'].") с бд " . PREFIX . "_post", round(microtime(true) - $time_update_start, 4));
 			}
             if ( $news_row['id'] == $will_check['news_id'] ) {
                 
@@ -35,6 +29,9 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
                 else $mdl_id = '';
                 
                 $parse_action = 'parse';
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
+					$debugger_table_row .= tableRowCreate("(xfields_updating.php) Инициализация доноров начата", round(microtime(true) - $time_update_start, 4));
+				}
                 if ( $aaparser_config['settings']['working_mode'] == 1 ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/kodik.php'));
 	            else {
                     if ( $shiki_id ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/shikimori.php'));
@@ -42,9 +39,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 	                if ( $aaparser_config['settings']['parse_wa'] == 1 && $shiki_id ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/world_art.php'));
 	            }
 	            if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Инициализация доноров, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(xfields_updating.php) Инициализация доноров завершена", round(microtime(true) - $time_update_start, 4));
 				}
 	            $black_list_xfields = ['image', 'kadr_1', 'kadr_2', 'kadr_3', 'kadr_4', 'kadr_5'];
 	
@@ -77,9 +72,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
                     if ( mb_strpos( $check_xf_dated, '{' ) !== false ) unset($old_xfields[$check_xf_named]);
                 }
                 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Разбор тегов, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(xfields_updating.php) Разбор тегов", round(microtime(true) - $time_update_start, 4));
 				}
                 $new_xfields = xfieldsdatasaved($old_xfields);
 	            $new_xfields = $db->safesql( $new_xfields );
@@ -97,10 +90,8 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 					foreach ($xfields_parts as $index => $part) {
 						if ($index == 0) $db->query("UPDATE " . PREFIX . "_post SET `xfields` = '{$part}' WHERE id = '{$news_row['id']}'");
 						else $db->query("UPDATE " . PREFIX . "_post SET `xfields` = CONCAT(`xfields`, '{$part}') WHERE id = '{$news_row['id']}'");
-						if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-							$time_update = microtime(true) - $time_update_start;
-							echo "Этап ".$stage.": Обновление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_post по частям, прошло (".round($time_update,4)." секунд)<br/>";
-							$stage++;
+						if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) {
+							$debugger_table_row .= tableRowCreate("(xfields_updating.php) Обновление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_post по частям", round(microtime(true) - $time_update_start, 4));
 						}
 						if ($db->error) {
 							echo "Ошибка при отправке запроса: " . $db->error ."<br/>Попробуйте выключить слабый режим MYSQL или разбитие уменьшить";
@@ -110,17 +101,13 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 				} else {
 					$db->query("UPDATE " . PREFIX . "_post SET xfields='{$new_xfields}' WHERE id='{$news_row['id']}'");
 					if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-						$time_update = microtime(true) - $time_update_start;
-						echo "Этап ".$stage.": Обновление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_post, прошло (".round($time_update,4)." секунд)<br/>";
-						$stage++;
+						$debugger_table_row .= tableRowCreate("(xfields_updating.php) Обновление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_post", round(microtime(true) - $time_update_start, 4));
 					}
 				}
 				
 	            $db->query("DELETE FROM " . PREFIX . "_xfsearch WHERE news_id='{$news_row['id']}'");
 	            if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Удаление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_xfsearch, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(xfields_updating.php) Удаление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_xfsearch", round(microtime(true) - $time_update_start, 4));
 				}
 	            $newpostedxfields = xfieldsdataload($new_xfields);
                 $xf_search_words = array();
@@ -151,9 +138,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 		            if ( $aaparser_config['integration']['latin_xfields'] == 1 ) $db->query( "INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue, tagvalue_translit) VALUES " . $xf_search_words );
 						else $db->query( "INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue) VALUES " . $xf_search_words );
 						if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-							$time_update = microtime(true) - $time_update_start;
-							echo "Этап ".$stage.": Добавление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_xfsearch, прошло (".round($time_update,4)." секунд)<br/>";
-							$stage++;
+							$debugger_table_row .= tableRowCreate("(xfields_updating.php) Добавление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_xfsearch", round(microtime(true) - $time_update_start, 4));
 						}
 	            }
 	            
@@ -163,30 +148,26 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
             $db->query("UPDATE " . PREFIX . "_anime_list SET news_update=0 WHERE material_id='{$will_check['material_id']}'");
             clear_cache( array('news_', 'full_') );
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Закончили обновление доп. полей материала, конец (".date("Y-m-d H:i:s")."), разница (".round($time_update,4)." секунд)<br/>=================================<br/>";
+				$debugger_table_row .= tableRowCreate("(xfields_updating.php) Закончили обновление доп. полей материала", round(microtime(true) - $time_update_start, 4));
+				echo $debugger_table_start.$debugger_table_row.$debugger_table_end.$debugger_table_style;
 			}
             die('Проверка на обновление доп полей завершена');
         } else {
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Закончили обновление доп. полей материала, конец (".date("Y-m-d H:i:s")."), разница (".round($time_update,4)." секунд)<br/>=================================<br/>";
+				$debugger_table_row .= tableRowCreate("(xfields_updating.php) Закончили обновление доп. полей материала", round(microtime(true) - $time_update_start, 4));
+				echo $debugger_table_start.$debugger_table_row.$debugger_table_end.$debugger_table_style;
 			}
 			die('В очереди на обновление данных в доп полях нет новостей');
 		}
     } elseif ( $aaparser_config['update_news']['xf_check'] == 2 ) {
         $will_check = $db->super_query( "SELECT * FROM " . PREFIX . "_anime_list WHERE news_id>0 AND news_update=1 LIMIT 1" );
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-			$time_update = microtime(true) - $time_update_start;
-			echo "Этап ".$stage.": Получение данных с бд " . PREFIX . "_anime_list, прошло (".round($time_update,4)." секунд)<br/>";
-			$stage++;
+			$debugger_table_row .= tableRowCreate("(xfields_updating.php) Получение данных с бд " . PREFIX . "_anime_list", round(microtime(true) - $time_update_start, 4));
 		}
         if ( $will_check ) {
             $news_row = $db->super_query( "SELECT id, xfields, title FROM " . PREFIX . "_post WHERE id='{$will_check['news_id']}'" );
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Этап ".$stage.": Получение данных news_id (".$will_check['news_id'].") с бд " . PREFIX . "_post, прошло (".round($time_update,4)." секунд)<br/>";
-				$stage++;
+				$debugger_table_row .= tableRowCreate("(xfields_updating.php) Получение данных news_id (".$will_check['news_id'].") с бд " . PREFIX . "_post", round(microtime(true) - $time_update_start, 4));
 			}
             if ( $news_row['id'] == $will_check['news_id'] ) {
                 
@@ -196,6 +177,9 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
                 else $mdl_id = '';
                 
                 $parse_action = 'parse';
+				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
+					$debugger_table_row .= tableRowCreate("(xfields_updating.php) Инициализация доноров начата", round(microtime(true) - $time_update_start, 4));
+				}
                 if ( $aaparser_config['settings']['working_mode'] == 1 ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/kodik.php'));
 	            else {
                     if ( $shiki_id ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/shikimori.php'));
@@ -203,9 +187,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 	                if ( $aaparser_config['settings']['parse_wa'] == 1 && $shiki_id ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/world_art.php'));
 	            }
 	            if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Инициализация доноров, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(xfields_updating.php) Инициализация доноров завершена", round(microtime(true) - $time_update_start, 4));
 				}
 	            $black_list_xfields_arr = ['image', 'kadr_1', 'kadr_2', 'kadr_3', 'kadr_4', 'kadr_5'];
 	
@@ -241,9 +223,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
                     if ( $xfields_list[$check_xf_name] && !in_array($check_xf_name, $black_list_xfields) ) $old_xfields[$check_xf_name] = $xfields_list[$check_xf_name];
                 }
                 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Разбор тегов, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(xfields_updating.php) Разбор тегов", round(microtime(true) - $time_update_start, 4));
 				}
                 $new_xfields = xfieldsdatasaved($old_xfields);
 	            $new_xfields = $db->safesql( $new_xfields );
@@ -262,9 +242,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 						if ($index == 0) $db->query("UPDATE " . PREFIX . "_post SET `xfields` = '{$part}' WHERE id = '{$news_row['id']}'");
 						else $db->query("UPDATE " . PREFIX . "_post SET `xfields` = CONCAT(`xfields`, '{$part}') WHERE id = '{$news_row['id']}'");
 						if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-							$time_update = microtime(true) - $time_update_start;
-							echo "Этап ".$stage.": Обновление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_post по частям, прошло (".round($time_update,4)." секунд)<br/>";
-							$stage++;
+							$debugger_table_row .= tableRowCreate("(xfields_updating.php) Обновление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_post по частям", round(microtime(true) - $time_update_start, 4));
 						}
 						if ($db->error) {
 							echo "Ошибка при отправке запроса: " . $db->error ."<br/>Попробуйте выключить слабый режим MYSQL или разбитие уменьшить";
@@ -274,17 +252,13 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 				} else {
 					$db->query("UPDATE " . PREFIX . "_post SET xfields='{$new_xfields}' WHERE id='{$news_row['id']}'");
 					if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-						$time_update = microtime(true) - $time_update_start;
-						echo "Этап ".$stage.": Обновление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_post, прошло (".round($time_update,4)." секунд)<br/>";
-						$stage++;
+						$debugger_table_row .= tableRowCreate("(xfields_updating.php) Обновление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_post", round(microtime(true) - $time_update_start, 4));
 					}
 				}
 				
 	            $db->query("DELETE FROM " . PREFIX . "_xfsearch WHERE news_id='{$news_row['id']}'");
 	            if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-					$time_update = microtime(true) - $time_update_start;
-					echo "Этап ".$stage.": Удаление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_xfsearch, прошло (".round($time_update,4)." секунд)<br/>";
-					$stage++;
+					$debugger_table_row .= tableRowCreate("(xfields_updating.php) Удаление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_xfsearch", round(microtime(true) - $time_update_start, 4));
 				}
 	            $newpostedxfields = xfieldsdataload($new_xfields);
                 $xf_search_words = array();
@@ -314,9 +288,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 		            if ( $aaparser_config['integration']['latin_xfields'] == 1 ) $db->query( "INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue, tagvalue_translit) VALUES " . $xf_search_words );
 		            else $db->query( "INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue) VALUES " . $xf_search_words );
 					if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-						$time_update = microtime(true) - $time_update_start;
-						echo "Этап ".$stage.": Добавление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_xfsearch, прошло (".round($time_update,4)." секунд)<br/>";
-						$stage++;
+						$debugger_table_row .= tableRowCreate("(xfields_updating.php) Добавление данных news_id (".$news_row['id'].") в бд " . PREFIX . "_xfsearch", round(microtime(true) - $time_update_start, 4));
 					}
 	            }
 	            
@@ -326,14 +298,14 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
             $db->query("UPDATE " . PREFIX . "_anime_list SET news_update=0 WHERE material_id='{$will_check['material_id']}'");
             clear_cache( array('news_', 'full_') );
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Закончили обновление доп. полей материала, конец (".date("Y-m-d H:i:s")."), разница (".round($time_update,4)." секунд)<br/>=================================<br/>";
+				$debugger_table_row .= tableRowCreate("(xfields_updating.php) Закончили обновление доп. полей материала", round(microtime(true) - $time_update_start, 4));
+				echo $debugger_table_start.$debugger_table_row.$debugger_table_end.$debugger_table_style;
 			}
             die('Проверка на обновление доп полей завершена');
         } else {
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['xfield_material'] == 1 ) { 
-				$time_update = microtime(true) - $time_update_start;
-				echo "Закончили обновление доп. полей материала, конец (".date("Y-m-d H:i:s")."), разница (".round($time_update,4)." секунд)<br/>=================================<br/>";
+				$debugger_table_row .= tableRowCreate("(xfields_updating.php) Закончили обновление доп. полей материала", round(microtime(true) - $time_update_start, 4));
+				echo $debugger_table_start.$debugger_table_row.$debugger_table_end.$debugger_table_style;
 			}
 			die('В очереди на обновление данных в доп полях нет новостей');
 		}
