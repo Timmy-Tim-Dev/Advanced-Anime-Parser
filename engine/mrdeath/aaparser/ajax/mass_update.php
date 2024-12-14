@@ -185,7 +185,7 @@ if ( $action == "update_news_get" ) {
 						$xf_search_words[] = array(
 							$db->safesql($value[0]),
 							$db->safesql($value2),
-							($value[31]) ? $db->safesql(totranslit($value2, true, false)) : ''
+							$db->safesql(totranslit($value2, true, false))
 						);
 					} else {
 						$xf_search_words[] = array(

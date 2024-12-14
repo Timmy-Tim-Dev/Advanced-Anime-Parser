@@ -11,9 +11,8 @@
 if (!function_exists('request')) {
     function request($url){
 		global $aaparser_config, $debugger_table_row, $time_update_start;
-		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) {
-			$debugger_table_row .= tableRowCreate("(module.php) Делаем запрос: (".$url.")", round(microtime(true) - $time_update_start, 4));
-		}
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Делаем запрос: (".$url.")", round(microtime(true) - $time_update_start, 4));
+
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -50,6 +49,8 @@ if (!function_exists('request')) {
 
 if (!function_exists('LoadPage')) {
 	function LoadPage($url, $method, $headers) {
+		global $aaparser_config, $debugger_table_row, $time_update_start;
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Начало запрос: (".$url.")", round(microtime(true) - $time_update_start, 4));
 
 		$options = array();
 		$options['http'] = array(
@@ -58,7 +59,8 @@ if (!function_exists('LoadPage')) {
 		);
 		$context = stream_context_create($options);
         $page = file_get_contents($url,false,$context);
-	
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Конец запроса: (".$url.")", round(microtime(true) - $time_update_start, 4));
+
 		return $page;
 	}
 }
@@ -180,9 +182,7 @@ if (!function_exists('setPoster')) {
     function setPoster($poster_url, $poster_title, $image_kind, $poster_name = false, $news_id = 0) {
 	
 	    global $config, $aaparser_config, $debugger_table_row, $time_update_start, $kp_config, $db, $member_id, $user_group;
-		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) { 
-			$debugger_table_row .= tableRowCreate("(module.php) Обработка картинки: (".$poster_url.")", round(microtime(true) - $time_update_start, 4));
-		}
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Обработка картинки: (".$poster_url.")", round(microtime(true) - $time_update_start, 4));
 	    $area = 'xfieldsimage';
 	
 	    if ( $poster_name ) {
@@ -266,16 +266,13 @@ if (!function_exists('setPoster')) {
             $uploader = new FileUploader($area, $news_id, $author, $t_size, $t_seite, $make_thumb, $make_watermark, $m_size, $m_seite, $make_medium, $hidpi);
             $result = json_decode($uploader->FileUpload(), true);
 			
-			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) {
-				$debugger_table_row .= tableRowCreate("(module.php) Обработали картинку: (".$result['link'].")", round(microtime(true) - $time_update_start, 4));
-			}
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Обработали картинку: (".$result['link'].")", round(microtime(true) - $time_update_start, 4));
             @unlink($image);
             return $result;
         }
         else {
-			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) {
-				$debugger_table_row .= tableRowCreate("(module.php) Не смогли Обработать картинку: (".$image.")", round(microtime(true) - $time_update_start, 4));
-			}
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Не смогли Обработать картинку: (".$image.")", round(microtime(true) - $time_update_start, 4));
+
             @unlink($image);
             return '';
         }
@@ -285,9 +282,8 @@ if (!function_exists('setPoster')) {
 if (!function_exists('downloadImage')) {
     function downloadImage($imageUrl, $newFileName) {
 		global $aaparser_config, $debugger_table_row, $time_update_start;
-		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) { 
-			$debugger_table_row .= tableRowCreate("(module.php) Загрузка: (".$imageUrl.")", round(microtime(true) - $time_update_start, 4));
-		}
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Загрузка: (".$imageUrl.")", round(microtime(true) - $time_update_start, 4));
+
         // Устанавливаем директорию для загрузки
         $uploadDir = ROOT_DIR . '/uploads/files/';
 
@@ -347,9 +343,7 @@ if (!function_exists('downloadImage')) {
         // Сохраняем изображение в директорию
         file_put_contents($newFilePath, $imageData);
         chmod($newFilePath, 0777);
-		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) {
-			$debugger_table_row .= tableRowCreate("(module.php) Загрузили картинку: (".$imageUrl.")", round(microtime(true) - $time_update_start, 4));
-		}
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['images'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Загрузили картинку: (".$imageUrl.")", round(microtime(true) - $time_update_start, 4));
 
         // Возвращаем путь к новому файлу
         return $newFilePath;

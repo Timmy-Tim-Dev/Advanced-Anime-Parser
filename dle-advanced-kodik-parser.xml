@@ -602,6 +602,16 @@ else {
 			<dleversion>15.3</dleversion>
 			<versioncompare>greater</versioncompare>
 		</operation>
+		<operation action="replace">
+			<searchcode><![CDATA[if( $this->area != "template" AND $this->area != "adminupload" AND $this->area != "comments") {]]></searchcode>
+			<replacecode><![CDATA[if( $this->area != "template" AND $this->area != "adminupload" AND $this->area != "comments" AND $_REQUEST['mod'] != 'anime_grabber') {]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="replace">
+			<searchcode><![CDATA[if ($user_group[$member_id['user_group']]['allow_admin'])]]></searchcode>
+			<replacecode><![CDATA[if ($user_group[$member_id['user_group']]['allow_admin'] && $_REQUEST['mod'] != 'anime_grabber')]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
 	</file>
 	<file name="engine/modules/main.php">
 		<operation action="before">
