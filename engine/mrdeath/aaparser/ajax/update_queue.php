@@ -124,15 +124,12 @@ if ( $action == "update" ) {
 	)));
 } elseif ( $action == "connect_base_get" ) {
 		
-		if ( !$aaparser_config['main_fields']['xf_shikimori_id'] && !$aaparser_config['main_fields']['xf_mdl_id'] ) {
-	        die(json_encode(array(
-		        'status' => 'fail'
-	        )));
-	    }
+		if ( !$aaparser_config['main_fields']['xf_shikimori_id'] && !$aaparser_config['main_fields']['xf_mdl_id'] ) die(json_encode(array( 'status' => 'fail' )));
 	
-	    if ( $aaparser_config['main_fields']['xf_shikimori_id'] && $aaparser_config['main_fields']['xf_mdl_id'] ) $where = "xfields LIKE '%|".$aaparser_config['main_fields']['xf_shikimori_id']."|%' OR xfields LIKE '%|".$aaparser_config['main_fields']['xf_mdl_id']."|%'";
-	    elseif ( $aaparser_config['main_fields']['xf_shikimori_id'] ) $where = "xfields LIKE '%|".$aaparser_config['main_fields']['xf_shikimori_id']."|%'";
-	    else $where = "xfields LIKE '%|".$aaparser_config['main_fields']['xf_mdl_id']."|%'";
+	    $where_conditions = [];
+		if ($aaparser_config['main_fields']['xf_shikimori_id']) $where_conditions[] = "xfields REGEXP '(^|\\\\|)" . $aaparser_config['main_fields']['xf_shikimori_id'] . "(\\\\||$)'";
+		if ($aaparser_config['main_fields']['xf_mdl_id']) $where_conditions[] = "xfields REGEXP '(^|\\\\|)" . $aaparser_config['main_fields']['xf_mdl_id'] . "(\\\\||$)'";
+		$where = implode(' OR ', $where_conditions);
 	    $news = $db->query( "SELECT id, xfields FROM " . PREFIX . "_post WHERE ".$where );
 		
 		$news_count = $news->num_rows;
