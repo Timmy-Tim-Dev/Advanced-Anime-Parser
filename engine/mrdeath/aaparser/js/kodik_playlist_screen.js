@@ -142,14 +142,17 @@ function kodik_translates() {
             var active_episode = $(".b-simple_episode__item_swilly.active").attr("data-this_episode");
             
             $('.b-simple_episode__item_swilly').removeClass('active');
-            
-            if ( $('#episode-'+this_season+'-'+active_episode+'-'+this_translator).length > 0 ) {
-                $('#episode-'+this_season+'-'+active_episode+'-'+this_translator).addClass('active');
-                var this_link = $('#episode-'+this_season+'-'+active_episode+'-'+this_translator).attr("data-this_link");
-            } else {
-                $('.episode-tab-'+this_translator+'-'+this_season+' > li:first').addClass('active');
-                var this_link = $('.episode-tab-'+this_translator+'-'+this_season+' > li:first').attr("data-this_link");
-            }
+            if (active_episode) {
+				if ( $('#episode-'+this_season+'-'+active_episode+'-'+this_translator).length > 0 ) {
+					$('#episode-'+this_season+'-'+active_episode+'-'+this_translator).addClass('active');
+					var this_link = $('#episode-'+this_season+'-'+active_episode+'-'+this_translator).attr("data-this_link");
+				} else {
+					$('.episode-tab-'+this_translator+'-'+this_season+' > li:first').addClass('active');
+					var this_link = $('.episode-tab-'+this_translator+'-'+this_season+' > li:first').attr("data-this_link");
+				}
+			} else {
+				var this_link = _self.attr("data-this_link");
+			}
             
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
             
@@ -174,13 +177,17 @@ function kodik_translates_alt() {
 			$(".b-simple_episode__item_swilly.active").removeClass("active");
 			$(".b-simple_episodes__list_swilly").hide();
 			$(".simple-episodes-tabs-swilly [id^='episodes-tab-" + this_translator + "']").show();
-			if ( $('#episode-'+this_season+'-'+active_episode+'-'+this_translator).length > 0 ) {
-                $('#episode-'+this_season+'-'+active_episode+'-'+this_translator).addClass('active');
-                var this_link = $('#episode-'+this_season+'-'+active_episode+'-'+this_translator).attr("data-this_link");
-            } else {
-                $('.episode-tab-'+this_translator+'-'+this_season+' > li:first').addClass('active');
-                var this_link = $('.episode-tab-'+this_translator+'-'+this_season+' > li:first').attr("data-this_link");
-            }
+			if (active_episode) {
+				if ( $('#episode-'+this_season+'-'+active_episode+'-'+this_translator).length > 0 ) {
+					$('#episode-'+this_season+'-'+active_episode+'-'+this_translator).addClass('active');
+					var this_link = $('#episode-'+this_season+'-'+active_episode+'-'+this_translator).attr("data-this_link");
+				} else {
+					$('.episode-tab-'+this_translator+'-'+this_season+' > li:first').addClass('active');
+					var this_link = $('.episode-tab-'+this_translator+'-'+this_season+' > li:first').attr("data-this_link");
+				}
+			} else {
+				var this_link = _self.attr("data-this_link");
+			}
 
             $('#player_kodik').html('<iframe src="'+this_link+'" width="724" height="460" frameborder="0" allowfullscreen=""></iframe>');
 
