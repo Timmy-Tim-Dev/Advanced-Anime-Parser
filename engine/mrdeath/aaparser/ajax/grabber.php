@@ -22,10 +22,23 @@ require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/kodik_
 if ($aaparser_config['debugger']['enable'] == 1) {
 	global $time_update_start, $debugger_table_row;
 	$time_update_start = microtime(true);
+	ob_start();
+
 	$debugger_table_row .= tableRowCreate("(grabber.php) Запуск модуля", round(microtime(true) - $time_update_start, 4));
 	$debugger_table_start = "<table><thead><tr><th>№</th><th>Действие</th><th>Прошло</th><th>Заняло</th><th>Память</th></tr></thead><tbody>";
     $debugger_table_end = "</tbody></table>";
     $debugger_table_style = "<style>table {width:100%;text-align:center;border-collapse:collapse;}th,td{border:1px solid #000}tr td:nth-child(2) {text-align:left}</style>";
+
+	register_shutdown_function(function() use($debugger_table_start, $debugger_table_row, $debugger_table_end, $debugger_table_style) {	
+		global $debugger_table_row;
+		$error = error_get_last();
+		if ($error && $error['type'] === E_ERROR) {
+			ob_clean();
+			echo $debugger_table_start.$debugger_table_row.$debugger_table_end.$debugger_table_style;
+			echo "<br><br>Фатальная ошибка: {$error['message']}<br>";
+		}
+		ob_end_flush();
+	});
 }
 
 if (!file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/cron.log')) {
@@ -127,4 +140,5 @@ else echo "Были переданы неверные параметры!";
 if($aaparser_config['debugger']['enable'] == 1) { 
 	$debugger_table_row .= tableRowCreate("(grabber.php) Конец работы модуля", round(microtime(true) - $time_update_start,4));
 	echo $debugger_table_start.$debugger_table_row.$debugger_table_end.$debugger_table_style;
+	ob_end_flush();
 }
