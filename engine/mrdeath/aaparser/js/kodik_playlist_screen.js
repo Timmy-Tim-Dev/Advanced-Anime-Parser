@@ -31,7 +31,7 @@ $(document).ready(function() {
 			setTimeout(initializeScreensList, 100);
 			setTimeout(initializelazyLoad, 100);
         }
-	}
+    }
 	
 	
 });
@@ -65,7 +65,7 @@ function initializeTranslatorsList() {
 }
 
 function initializeScreensList() {
-    var $translatorsList = $('.b-simple_episodes__list_swilly');
+    var $translatorsList = $('.ibox_top .b-simple_episodes__list_swilly, .ibox_bottom .b-simple_episodes__list_swilly');
 
     if ($translatorsList.length > 0) {
         $translatorsList.each(function() {
