@@ -54,6 +54,7 @@ if ( $action == "update_news_get" ) {
 	
 	while($temp_news = $db->get_row($news)) {
 		$id = intval($temp_news['id']);
+		if (strpos( $temp_news['xfields'], '|||') !== false) $temp_news['xfields'] = preg_replace('/\|\|\|/', '|undefined||', $temp_news['xfields']);	
 		$xfields = xfieldsdataload($temp_news['xfields']);
 		if ( $xfields[$aaparser_config['main_fields']['xf_shikimori_id']] ) $shikimori_id = $xfields[$aaparser_config['main_fields']['xf_shikimori_id']];
 		else $shikimori_id = 0;
@@ -90,7 +91,7 @@ if ( $action == "update_news_get" ) {
 	
 	$news_row = $db->super_query( "SELECT id, xfields, title FROM " . PREFIX . "_post WHERE id='{$news_id}'" );
 	if ( !$news_row['xfields'] ) return;
-	
+	if (strpos( $news_row['xfields'], '|||') !== false) $news_row['xfields'] = preg_replace('/\|\|\|/', '|undefined||', $news_row['xfields']);	
 	$parse_action = 'parse';
     if ( $aaparser_config['settings']['working_mode'] == 1 ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/kodik.php'));
 	else {
@@ -131,7 +132,7 @@ if ( $action == "update_news_get" ) {
 	if ( isset($next_episode_date) && $next_episode_date ) $xfields_list[$aaparser_config['settings']['next_episode_date_new']] = $next_episode_date;
                 
     $old_xfields = xfieldsdataload($news_row['xfields']);
-                
+
     foreach ( $xfields_list as $check_xf_name => $check_xf_data ) {
         if ( isset($aaparser_config['updates']['xf_translation_last_names']) && $check_xf_name == $aaparser_config['updates']['xf_translation_last_names'] ) continue;
         if ( $xfields_list[$check_xf_name] ) $old_xfields[$check_xf_name] = $xfields_list[$check_xf_name];

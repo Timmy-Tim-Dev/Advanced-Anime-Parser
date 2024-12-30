@@ -289,6 +289,7 @@ if ( $need_poster === true ) {
 		else $xfields_data['image'] = $poster['link'];
 		$xf_poster = $poster['xfvalue'];
 		$poster_code = $poster['returnbox'];
+		$poster_link = $poster['link'];
 	}
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
 		$debugger_table_row .= tableRowCreate("(add_material.php) Загрузка постеров", round(microtime(true) - $time_update_start,4));
@@ -465,6 +466,7 @@ foreach ( $delete_xf as $check_value ) {
 if ( $aaparser_config['main_fields']['xf_shikimori_id'] && $xfields_data['shikimori_id'] ) $xfields_list[$aaparser_config['main_fields']['xf_shikimori_id']] = $xfields_data['shikimori_id'];
 if ( $aaparser_config['main_fields']['xf_mdl_id'] && $xfields_data['mydramalist_id'] ) $xfields_list[$aaparser_config['main_fields']['xf_mdl_id']] = $xfields_data['mydramalist_id'];
 if ( $aaparser_config['images']['xf_poster'] && $xfields_data['image']) $xfields_list[$aaparser_config['images']['xf_poster']] = $xfields_data['image'];
+if ( $aaparser_config['images']['xf_poster_text'] && $xfields_data['image']) $xfields_list[$aaparser_config['images']['xf_poster_text']] = $poster_link;
 if ( $aaparser_config['images']['xf_screens'] && $xfields_data['kadr_1']) $xfields_list[$aaparser_config['images']['xf_screens']] = $xf_screen_1.$xf_screen_2.$xf_screen_3.$xf_screen_4.$xf_screen_5;
 if ( $aaparser_config['fields']['xf_camrip'] && $is_camrip === true ) $xfields_list[$aaparser_config['fields']['xf_camrip']] = 1;
 if ( $aaparser_config['fields']['xf_lgbt'] && $is_lgbt === true ) $xfields_list[$aaparser_config['fields']['xf_lgbt']] = 1;
