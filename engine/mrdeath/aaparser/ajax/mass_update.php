@@ -54,7 +54,7 @@ if ( $action == "update_news_get" ) {
 	
 	while($temp_news = $db->get_row($news)) {
 		$id = intval($temp_news['id']);
-		if (strpos( $temp_news['xfields'], '|||') !== false) $temp_news['xfields'] = preg_replace('/\|\|\|/', '|undefined||', $temp_news['xfields']);	
+		if (strpos( $temp_news['xfields'], '|||') !== false) continue;	
 		$xfields = xfieldsdataload($temp_news['xfields']);
 		if ( $xfields[$aaparser_config['main_fields']['xf_shikimori_id']] ) $shikimori_id = $xfields[$aaparser_config['main_fields']['xf_shikimori_id']];
 		else $shikimori_id = 0;
@@ -169,7 +169,8 @@ if ( $action == "update_news_get" ) {
 	} else $db->query("UPDATE " . PREFIX . "_post SET xfields='{$new_xfields}' WHERE id='{$news_id}'");
 	
 	$newpostedxfields = xfieldsdataload($new_xfields);
-	$not_xfields = explode(',', $aaparser_config['update_news']['not_xfields']);
+	if (!empty($aaparser_config['update_news']['not_xfields'])) $not_xfields = explode(',', $aaparser_config['update_news']['not_xfields']);
+	else $not_xfields = [];
 	
     $xf_search_words = array();
     foreach (xfieldsload() as $name => $value) {
@@ -399,6 +400,18 @@ if ( $action == "update_news_get" ) {
 				@unlink(ROOT_DIR . '/uploads/posts/'.$monthpart[0].'/thumbs/'. $monthpart[1]);
 			}
 		}
+	}
+	
+	if($xf_poster === null) { 
+		$result_work = array(
+			'news_id' => $news_id,
+			'status' => 'Ошибка новости.',
+			'shiki_id' => $shiki_id,
+			'mdl_id' => $mdl_id
+		);
+		$result = json_encode($result_work);
+		echo $result;
+		return;
 	}
 	
 	if (isset($aaparser_config['images']['xf_poster_text'])) {
