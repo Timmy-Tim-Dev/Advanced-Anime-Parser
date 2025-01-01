@@ -209,8 +209,19 @@ function DoNewsUpdateImages(data) {
 				response: 'text',
 			})
 		}).then(function(result){
+			if (result.includes('Empty reply from server')) {
+				// console.log('Пропуск: Empty reply from server');
+				current++;
+				current_upd++;
+				current_percent = Math.ceil((current / all_news) * 100, 1);			
+				$('#updated-current-img').html(current_percent + '%');
+				$('#updated-bar-img').css('width', current_percent + '%');
+				document.getElementById('result-msg-update-img').innerHTML += '<br/>'+'NewsID: ' + temp['id'] + ' Пропуск Empty reply from server';
+				return;
+			}
 			if (result != 'error') {
 				result_list = JSON.parse(result);
+				// console.log(result);
 				current_upd++;
 				$('#current-updated-news-img').html(current_upd);
 				document.getElementById('result-msg-update-img').innerHTML += '<br/>'+'NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];				
