@@ -152,6 +152,7 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config['push
                 if ( strpos( $xfieldsdata[$aaparser_config['main_fields']['xf_poster']], "/uploads/posts/" ) === false ) {
                     $image = $config["http_home_url"] . "uploads/posts/" . $xfieldsdata[$aaparser_config['main_fields']['xf_poster']];
                 } else $image = $xfieldsdata[$aaparser_config['main_fields']['xf_poster']];
+				if (strpos($image, "https://") !== false) $image = substr($image, strrpos($image, "https://"));
                 $temp_image = explode("|", $image);
                 $posters[1] = $temp_image[0];
             } elseif ($aaparser_config['push_notifications']['tg_source_poster'] == "short_story") {
