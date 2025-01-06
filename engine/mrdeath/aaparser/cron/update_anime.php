@@ -719,7 +719,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
         
 		unset($xfields_post, $title_en, $title_ru, $news_id, $update_fields, $checking_post, $last_season_k, $last_episode_k, $serial_status_k, $serial_status_ru_k, $quality, $translation, $translation_type, $translation_type_ru, $playlist, $translators_list, $translators_types, $need_update, $material_row);
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
-			$debugger_table_row .= tableRowCreate("(update_anime.php) Окончание работы по посту id (".$anime_check['mdl_id'].") с бд " . PREFIX . "_post", round(microtime(true) - $time_update_start,4));
+			$debugger_table_row .= tableRowCreate("(update_anime.php) Окончание работы по посту id (".$anime_check['shikimori_id'].") с бд " . PREFIX . "_post", round(microtime(true) - $time_update_start,4));
 		}
 	}
 	
