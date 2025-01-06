@@ -14,15 +14,9 @@ if( ! defined( 'DATALIFEENGINE' ) ) {
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
 	$debugger_table_row .= tableRowCreate("(anons_shiki.php) Начинаем добавление анонсируемого материала", round(microtime(true) - $time_update_start,4));
 }
-$anons_on = $aaparser_config['settings_anons']['anons_on'];
-$anons_film_sort_by = $aaparser_config['settings_anons']['anons_film_sort_by'];
-$anons_cat_id = $aaparser_config['settings_anons']['cat_id'];
+if ($aaparser_config['settings_anons']['anons_on'] == "") die("Модуль отключен в настройках");
+if ($aaparser_config['settings_anons']['anons_kind'] != "") $kinder = "&kind=" . $aaparser_config['settings_anons']['anons_kind'];
 
-if ($anons_on == "") die("Модуль отключен в настройках");
-if ($aaparser_config['settings_anons']['anons_kind'] != "") {
-	$kinder = "&kind=" . $aaparser_config['settings_anons']['anons_kind'];
-}
-$order = $aaparser_config['settings_anons']['order'];
 $exclude_ids = array();
 $res_shiki = $db->query("SELECT * FROM ".PREFIX."_shikimori_posts ");
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
@@ -42,12 +36,12 @@ if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
     $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
     $shikimori_image_domain = 'https://'.clean_url($shikimori_api_domain);
 } else $shikimori_api_domain = $shikimori_image_domain = 'https://shikimori.me/';
-$shikimori = request($shikimori_api_domain.'api/animes?status=anons&rating=!rx&order='.$anons_film_sort_by . $kinder . $exclude_ids);
+$shikimori_anons = request($shikimori_api_domain.'api/animes?status=anons&rating=!rx&order='.$aaparser_config['settings_anons']['anons_film_sort_by'] . $kinder . $exclude_ids);
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
 	$debugger_table_row .= tableRowCreate("(anons_shiki.php) Получение данных с API", round(microtime(true) - $time_update_start,4));
 }
-if ( $shikimori ) {
-	foreach ( $shikimori as $result ) {
+if ( $shikimori_anons ) {
+	foreach ( $shikimori_anons as $result ) {
 		
 		if ( isset($result['id']) && $result['id'] ) $id_shiki = $result['id'];
 		else continue;
@@ -70,34 +64,20 @@ if ( $shikimori ) {
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
 			$debugger_table_row .= tableRowCreate("(anons_shiki.php) Получение данных с бд " . PREFIX . "_post", round(microtime(true) - $time_update_start,4));
 		}
-		if (isset($proverka['id']) && $proverka['id']) {
-			$find_id = 'est';
-			$edit_link = $config['http_home_url'].'admin.php?mod=editnews&action=editnews&id='.$proverka['id'];
-		} else {
-			$find_id = 'net';
-			$edit_link = '';
-		}
-		
-		$responseArray[] = array(
-			'kind' => $kind,
-			'status' => $status,
-			'title' => $rutitle,
-			'orig_title' => $entitle,
-			'year' => $year,
-			'shiki_id' => $id_shiki,
-			'shiki_link' => $shiki_link,
-			'find_id' => $find_id,
-			'edit_link' => $edit_link
-		);
-		
-    
 		$xfields_data = [];
 		
-		$shikimori = request($shikimori_api_domain.'api/animes/'.$responseArray[0]['shiki_id']);
-		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
-			$debugger_table_row .= tableRowCreate("(anons_shiki.php) Получение shikimori id (".$responseArray[0]['shiki_id'].") данных с API", round(microtime(true) - $time_update_start,4));
+		$shikimori = request($shikimori_api_domain.'api/animes/'.$id_shiki);
+		if (!$shikimori) {
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+				$debugger_table_row .= tableRowCreate("(anons_shiki.php) API не вернул ответ", round(microtime(true) - $time_update_start,4));
+				echo $debugger_table_start.$debugger_table_row.$debugger_table_end.$debugger_table_style;
+			}
+			die("Проблемы при обращений к API!");
 		}
-		$xfields_data['shikimori_id'] = isset($responseArray[0]['shiki_id']) ? $responseArray[0]['shiki_id'] : '';
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+			$debugger_table_row .= tableRowCreate("(anons_shiki.php) Получение shikimori id (".$id_shiki.") данных с API", round(microtime(true) - $time_update_start,4));
+		}
+		$xfields_data['shikimori_id'] = isset($id_shiki) ? $id_shiki : '';
 		$xfields_data['shikimori_name'] = isset($shikimori['name']) ? $shikimori['name'] : '';
 		$xfields_data['shikimori_russian'] = isset($shikimori['russian']) ? $shikimori['russian'] : '';
 		$xfields_data['shikimori_english'] = (isset($shikimori['english']) && $shikimori['english']) ? implode(', ', $shikimori['english']) : '';
@@ -811,7 +791,7 @@ $full_story = $db->safesql( $full_story );
 $alt_name = totranslit_it( $alt_name, true, false );
 $alt_name = $db->safesql( $alt_name );
 
-if ($anons_cat_id !="")$parse_cat_list[] = $anons_cat_id;
+if ($aaparser_config['settings_anons']['cat_id'] !="")$parse_cat_list[] = $aaparser_config['settings_anons']['cat_id'];
 
 if ( isset($parse_cat_list) && $parse_cat_list ) $category_list = $db->safesql( implode( ',', $parse_cat_list ) );
 else $category_list = '';
@@ -885,6 +865,10 @@ $id = $db->insert_id();
 $db->query("INSERT INTO ".PREFIX."_shikimori_posts set post_id=$id, shiki_id=$shiki_id");	
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
 	$debugger_table_row .= tableRowCreate("(anons_shiki.php) Добавление записи в " . PREFIX . "_shikimori_posts", round(microtime(true) - $time_update_start,4));
+}
+$db->query("INSERT INTO " . PREFIX . "_anime_list (shikimori_id, year, news_id,type, tv_status) VALUES( '{$shiki_id}', '{$year}', '{$id}', '".$shikimori['kind']."', 'anons' ) " );
+if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+	$debugger_table_row .= tableRowCreate("(anons_shiki.php) Добавление записи в " . PREFIX . "_anime_list", round(microtime(true) - $time_update_start,4));
 }
 $db->query( "INSERT INTO " . PREFIX . "_post_extras (news_id, allow_rate, disable_index, user_id, disable_search, allow_rss, allow_rss_turbo, allow_rss_dzen) VALUES ('{$id}', '{$allow_rating}', '{$dissalow_index}', '{$author_id}', '{$dissalow_search}', '{$allow_rss}', '{$allow_turbo}', '{$allow_zen}')" );
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
