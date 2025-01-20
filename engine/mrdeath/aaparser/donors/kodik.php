@@ -124,7 +124,7 @@ if ($parse_action == 'search') {
 					elseif ($translators['translation']['id'] != '1858' && $translators['translation']['type'] == 'subtitles') $playlist_alt['subtitles'][$season]['episodes'][$ep_num] = $ep_num;
 					elseif ($translators['translation']['type'] == 'voice') $playlist_alt['voice'][$season]['episodes'][$ep_num] = $ep_num;
 					
-					$translators_list[] = trim($translators['translation']['title']);
+					$translators_list[] = str_replace('"', "'", trim($translators['translation']['title']));
 					$translators_types[] = trim($translators['translation']['type']);
 					if ( $season > $last_season ) $last_season = $season;
 					if ($translators['translation']['type'] == 'voice' && $season > $last_tanslated_season) $last_tanslated_season = $season;
@@ -144,7 +144,7 @@ if ($parse_action == 'search') {
 		$translators_list = $translators_types = [];
 		
         foreach ($kodik['results'] as $num => $translators) {
-            $translators_list[] = trim($translators['translation']['title']);
+            $translators_list[] = str_replace('"', "'", trim($translators['translation']['title']));
 			$translators_types[] = trim($translators['translation']['type']);
         }
 		$translators_types = array_unique($translators_types);
@@ -198,7 +198,7 @@ if ($parse_action == 'search') {
 	$xfields_data['kodik_imdb_id'] = isset($kodik_data['imdb_id']) ? $kodik_data['imdb_id'] : '';
 	$xfields_data['mydramalist_id'] = isset($kodik_data['mdl_id']) ? $kodik_data['mdl_id'] : '';
 	$xfields_data['kodik_translation'] = isset($translators_list) ? implode(', ', $translators_list) : '';
-	$xfields_data['kodik_translation_last'] = isset($kodik_data['translation']['title']) ? trim($kodik_data['translation']['title']) : '';
+	$xfields_data['kodik_translation_last'] = isset($kodik_data['translation']['title']) ? str_replace('"', "'", trim($kodik_data['translation']['title'])) : '';
 	$xfields_data['kodik_translation_types'] = isset($translators_types) ? implode(', ', $translators_types) : '';
 	$xfields_data['kodik_translation_types_ru'] = isset($translators_types) ? str_replace( array('voice', 'subtitles'), array('Озвучка', 'Субтитры'), $xfields_data['kodik_translation_types'] ) : '';
 	$xfields_data['kodik_tagline'] = isset($kodik_data['material_data']['tagline']) ? $kodik_data['material_data']['tagline'] : '';
