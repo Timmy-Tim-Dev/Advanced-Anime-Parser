@@ -441,12 +441,14 @@ echo <<<HTML
 			<i>Правила для <b>apache</b></i>
 			<textarea style="width:100%;height:50px;" disabled>
 RewriteRule ^characters/([^/]*)(/?)+$ index.php?do=characters&type=characters&id=$1 [L]
-RewriteRule ^people/([^/]*)(/?)+$ index.php?do=characters&type=people&id=$1 [L]</textarea>
+RewriteRule ^people/([^/]*)(/?)+$ index.php?do=characters&type=people&id=$1 [L]
+RewriteRule ^characters(\d*?).xml$ uploads/characters$1.xml [L]</textarea>
 			<hr/>
 			<i>Правила для <b>NGINX</b></i>
 			<textarea style="width:100%;height:50px;" disabled>
 rewrite ^/characters/([^/]*)(/?)+$ /index.php?do=characters&type=characters&id=$1 last;
-rewrite ^/people/([^/]*)(/?)+$ /index.php?do=characters&type=people&id=$1 last;</textarea>
+rewrite ^/people/([^/]*)(/?)+$ /index.php?do=characters&type=people&id=$1 last;
+rewrite ^/characters(\d*?).xml$ /uploads/characters$1.xml last;</textarea>
 		</div>
 	</div>
 </div>

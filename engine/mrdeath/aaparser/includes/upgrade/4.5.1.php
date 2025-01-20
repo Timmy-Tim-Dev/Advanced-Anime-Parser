@@ -15,7 +15,7 @@ while ( $shiki_row = $db->get_row ($res_shiki) ) {
 		continue;
 	} else $db->query("DELETE FROM ".PREFIX."_shikimori_posts WHERE id=".$shiki_row['id']);
 }
-$db->query("UPDATE " . PREFIX . "_anime_list SET cat_check=1 WHERE news_id>0");
+$db->query("UPDATE " . PREFIX . "_anime_list SET cat_check=1 WHERE news_id>0"); 
 
 // Файл лога версий
 $filename = ENGINE_DIR.'/mrdeath/aaparser/data/version.php';
