@@ -321,10 +321,16 @@ elseif ($aaparser_config['persons']['personas_on_dorama'] == 1 && isset($_POST['
 	if ( $mdl_request === false ) {
 	    
 	    //Парсим актёров
+	    if (isset($aaparser_config['persons']['personas_other_dorama_api']) && $aaparser_config['persons']['personas_other_dorama_api'] == 1) {		
+			$mdl_url = "https://api.allorigins.win/get?url=https://mydramalist.com/".$mdl_id;
+			$mdl_request = mdl_request($mdl_url);
+			$mdl_request = json_decode($mdl_request, true);
+			$mdl_request = $mdl_request['contents'];
+		} else {
+			$mdl_url = "https://mydramalist.com/".$mdl_id;
+			$mdl_request = mdl_request($mdl_url);
+		}
 	    
-	    $mdl_url = "https://mydramalist.com/".$mdl_id;
-		$mdl_request = mdl_request($mdl_url);
-		
 		$actors = [];
 
         $arr1 = explode('<ul class="list no-border p-b credits">', $mdl_request);
