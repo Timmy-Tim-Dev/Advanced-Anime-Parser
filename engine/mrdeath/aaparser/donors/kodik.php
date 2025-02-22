@@ -395,7 +395,21 @@ if ($parse_action == 'search') {
     if ( !$aaparser_config['grabbing']['if_lgbt'] ) $lgbt_add = '&lgbt=false';
     if ( $aaparser_config['grabbing']['years'] ) $years_add = '&year='.$aaparser_config['grabbing']['years'];
     if ( $aaparser_config['grabbing']['genres'] ) $genres_add = '&all_genres='.$aaparser_config['grabbing']['genres'];
-    if ( $aaparser_config['grabbing']['translators'] ) $translators_add = '&translation_id='.$aaparser_config['grabbing']['translators'];
+    if (!empty($aaparser_config['grabbing']['translators'])) {
+		$file_path = ENGINE_DIR . '/mrdeath/aaparser/data/translators.json';
+		if (!file_exists($file_path)) die('У Вас не загружены озвучки');
+		$translators = json_decode(file_get_contents($file_path), true);
+		if (!is_array($translators)) die('Ошибка декодирования JSON');
+		$values_to_find = array_map('trim', explode(',', $aaparser_config['grabbing']['translators']));
+		$keys = [];
+		foreach ($values_to_find as $value) {
+			$key = array_search($value, $translators);
+			if ($key !== false) $keys[] = $key;
+		}
+		if (empty($keys)) die('Значения не найдены в JSON');
+		$translators_add = '&translation_id=' . implode(',', $keys);
+	}
+
     
     if ( !$anime_kind_add ) die('Вы не выбрали ни одного типа аниме - сериал, фильм, ova, ona, спэшл или amv');
 
@@ -411,6 +425,7 @@ if ($parse_action == 'search') {
     if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 		$debugger_table_row .= tableRowCreate("(kodik.php) Грабинг list по API", round(microtime(true) - $time_update_start,4));
 	}
+	
     if ( !$grab['results'] ) {
 		unset($kodik_log[$kind]);
 		file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log', json_encode( $kodik_log ));
@@ -518,7 +533,20 @@ if ($parse_action == 'search') {
     if ( !$aaparser_config['grabbing_doram']['if_lgbt'] ) $lgbt_add = '&lgbt=false';
     if ( $aaparser_config['grabbing_doram']['years'] ) $years_add = '&year='.$aaparser_config['grabbing_doram']['years'];
     if ( $aaparser_config['grabbing_doram']['genres'] ) $genres_add = '&all_genres='.$aaparser_config['grabbing_doram']['genres'];
-    if ( $aaparser_config['grabbing_doram']['translators'] ) $translators_add = '&translation_id='.$aaparser_config['grabbing_doram']['translators'];
+	if (!empty($aaparser_config['grabbing_doram']['translators'])) {
+		$file_path = ENGINE_DIR . '/mrdeath/aaparser/data/translators_dorama.json';
+		if (!file_exists($file_path)) die('У Вас не загружены озвучки');
+		$translators = json_decode(file_get_contents($file_path), true);
+		if (!is_array($translators)) die('Ошибка декодирования JSON');
+		$values_to_find = array_map('trim', explode(',', $aaparser_config['grabbing_doram']['translators']));
+		$keys = [];
+		foreach ($values_to_find as $value) {
+			$key = array_search($value, $translators);
+			if ($key !== false) $keys[] = $key;
+		}
+		if (empty($keys)) die('Значения не найдены в JSON');
+		$translators_add = '&translation_id=' . implode(',', $keys);
+	}
     
 	$kodik_log = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log' ), true );
 	if ( $kodik_log[$kind] ) $grab_url = $kodik_log[$kind];
