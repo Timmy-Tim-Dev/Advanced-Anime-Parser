@@ -546,7 +546,7 @@ function change_tags_img($type, $needVal, $nameTag, $defaultImage = '') {
     
     if ($needVal) {
         $type->set("[" . $nameTag . "]", "");
-        $type->set("[/$" . $nameTag . "]", "");
+        $type->set("[/" . $nameTag . "]", "");
         $fullUrl = 'https://' . $shikimori_url_domain . $needVal;
         $type->set("{" . $nameTag . "}", $fullUrl);
         $type->set_block("'\\[not_" . $nameTag . "\\](.*?)\\[/not_" . $nameTag . "\\]'si", "");
