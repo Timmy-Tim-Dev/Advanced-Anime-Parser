@@ -504,12 +504,29 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
         if ( $need_update == 1 ) {
             
             if ( isset($aaparser_config['settings']['next_episode_date_new']) ) {
-                $shikimori_temp = request($shikimori_api_domain.'api/animes/'.$anime_check['shikimori_id']);
+				$shikimori_temp = [
+					'query' => '{
+						animes(ids: "'.$anime_check['shikimori_id'].'", limit: 50) {
+							id
+							malId
+							name
+							russian
+							kind
+							status
+							airedOn { year month day date }
+							url
+							nextEpisodeAt
+						}
+					}'
+				];
+				$shikimori_temp = request('https://shikimori.one/api/graphql', 1, $postfields);
+				$shikimori_temp = $shikimori['data']['animes'];
+				
 				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
 					$debugger_table_row .= tableRowCreate("(update_anime.php) Получение данных для даты следующей серии с API", round(microtime(true) - $time_update_start,4));
 				}
-                if ( $shikimori_temp['next_episode_at'] ) {
-                    $next_episode_at = strtotime($shikimori_temp['next_episode_at']);
+                if ( $shikimori_temp['nextEpisodeAt'] ) {
+                    $next_episode_at = strtotime($shikimori_temp['nextEpisodeAt']);
                     $xfields_post[$aaparser_config['settings']['next_episode_date_new']] = date("d.m.Y H:i:s", $next_episode_at);
                 }
                 else $xfields_post[$aaparser_config['settings']['next_episode_date_new']] = '';

@@ -192,9 +192,24 @@ if ( $action == "update" ) {
 		    $result = json_encode($result_work);
 		    echo $result;
 	    } else {
-	        $shikimori = request($shikimori_api_domain.'api/animes/'.$shikimori_id);
-	        if ( $shikimori['aired_on'] ) {
-		        $aired = explode('-', $shikimori['aired_on']);
+			$postfields = [
+				'query' => '{
+					animes(search: "'.$search_name.'", limit: 50) {
+						id
+						malId
+						name
+						russian
+						kind
+						status
+						airedOn { year month day date }
+						url
+					}
+				}'
+			];
+			$shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
+			$shikimori = $shikimori['data']['animes'];
+	        if ( $shikimori['airedOn']['date'] ) {
+		        $aired = explode('-', $shikimori['airedOn']['date']);
 		        $year = $aired[0];
 	        }
 	        else $year = 0;

@@ -41,36 +41,68 @@ if ($aaparser_config['persons']['personas_on'] == 1 && isset($_POST['sh_id']) &&
 	    $shiki_cache = [];
 		
 	    //Парсим данные
-		$shiki_request = request($shikimori_api_domain. 'api/animes/'.$shiki_id.'/roles');
-		
-		if ( !$shiki_request['message'] || !$shiki_request['code'] ) {
-		    
+		$postfields = [
+			'query' => '{
+				animes(ids: "'.$shiki_id.'", limit: 1) {
+					id
+					characterRoles {
+					  id
+					  rolesRu
+					  rolesEn
+					  character { id name russian url poster { id originalUrl previewUrl miniUrl mainUrl } }
+					  
+					}
+					personRoles {
+					  id
+					  rolesRu
+					  rolesEn
+					  person { id name russian url poster { id originalUrl previewUrl miniUrl mainUrl } }
+					}
+				}
+			}'
+		];
+		$shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
+		$shiki_request = $shikimori['data']['animes']['0'];
+			
+		if ( !$shikimori['message'] || !$shikimori['code'] || !$shikimori['error']) {
 		    $main_characters = $sub_characters = $persons = [];
 		    $mc = $sc = $pr = 0;
-		    
-			foreach ( $shiki_request as $data ) {
-			    
-			    if ( in_array("Main", $data['roles']) && $data['character'] ) {
-			        $main_characters[$mc]['role'] = implode(', ', $data['roles']);
-			        $main_characters[$mc]['role_rus'] = implode(', ', $data['roles_russian']);
+			foreach ( $shiki_request['characterRoles'] as $data ) {
+			    if (isset($data['character']['url'])) $data['character']['url'] = str_replace(['https://shikimori.one', 'https://shikimori.me'], '', $data['character']['url']);
+			    if (isset($data['character']['poster']['originalUrl'])) $data['character']['poster']['originalUrl'] = str_replace(['https://shikimori.one', 'https://shikimori.me'], '', $data['character']['poster']['originalUrl']);
+			    if (isset($data['character']['poster']['previewUrl'])) $data['character']['poster']['previewUrl'] = str_replace(['https://shikimori.one', 'https://shikimori.me'], '', $data['character']['poster']['previewUrl']);
+			    if (isset($data['character']['poster']['miniUrl'])) $data['character']['poster']['miniUrl'] = str_replace(['https://shikimori.one', 'https://shikimori.me'], '', $data['character']['poster']['miniUrl']);
+			    if (isset($data['character']['poster']['mainUrl'])) $data['character']['poster']['mainUrl'] = str_replace(['https://shikimori.one', 'https://shikimori.me'], '', $data['character']['poster']['mainUrl']);
+			    if ( in_array("Main", $data['rolesEn']) && $data['character'] ) {
+			        $main_characters[$mc]['role'] = implode(', ', $data['rolesEn']);
+			        $main_characters[$mc]['role_rus'] = implode(', ', $data['rolesRu']);
 			        $main_characters[$mc]['data'] = $data['character'];
 			        $mc++;
 			    }
-			    elseif ( in_array("Supporting", $data['roles']) && $data['character'] ) {
-			        $sub_characters[$sc]['role'] = implode(', ', $data['roles']);
-			        $sub_characters[$sc]['role_rus'] = implode(', ', $data['roles_russian']);
+			    elseif ( in_array("Supporting", $data['rolesEn']) && $data['character'] ) {
+			        $sub_characters[$sc]['role'] = implode(', ', $data['rolesEn']);
+			        $sub_characters[$sc]['role_rus'] = implode(', ', $data['rolesRu']);
 			        $sub_characters[$sc]['data'] = $data['character'];
 			        $sc++;
 			    }
-			    elseif ( $data['person'] ) {
-			        $persons[$pr]['role'] = implode(', ', $data['roles']);
-			        $persons[$pr]['role_rus'] = implode(', ', $data['roles_russian']);
+			    
+			}
+			
+			foreach ( $shiki_request['personRoles'] as $data ) {
+			    if (isset($data['person']['url'])) $data['person']['url'] = str_replace(['https://shikimori.one', 'https://shikimori.me'], '', $data['person']['url']);
+			    if (isset($data['person']['poster']['originalUrl'])) $data['person']['poster']['originalUrl'] = str_replace(['https://shikimori.one', 'https://shikimori.me'], '', $data['person']['poster']['originalUrl']);
+			    if (isset($data['person']['poster']['previewUrl'])) $data['person']['poster']['previewUrl'] = str_replace(['https://shikimori.one', 'https://shikimori.me'], '', $data['person']['poster']['previewUrl']);
+			    if (isset($data['person']['poster']['miniUrl'])) $data['person']['poster']['miniUrl'] = str_replace(['https://shikimori.one', 'https://shikimori.me'], '', $data['person']['poster']['miniUrl']);
+			    if (isset($data['person']['poster']['mainUrl'])) $data['person']['poster']['mainUrl'] = str_replace(['https://shikimori.one', 'https://shikimori.me'], '', $data['person']['poster']['mainUrl']);
+			    
+			    if ( $data['person'] ) {
+			        $persons[$pr]['role'] = implode(', ', $data['rolesEn']);
+			        $persons[$pr]['role_rus'] = implode(', ', $data['rolesRu']);
 			        $persons[$pr]['data'] = $data['person'];
 			        $pr++;
 			    }
 			    
 			}
-			
 			if ( !defined('TEMPLATE_DIR') ) define ( 'TEMPLATE_DIR', ROOT_DIR . '/templates/' . totranslit($config['skin'], false, false) );
 			
 			//Если включёны главные персонажи
@@ -102,10 +134,10 @@ if ($aaparser_config['persons']['personas_on'] == 1 && isset($_POST['sh_id']) &&
 						change_tags($tplmcharactersone, $main_character['data']['url'], 'characters_url', $protocol. '://' . $shikimori_url_domain);
 						change_tags($tplmcharactersone, $main_character['data']['url'], 'site_characters_url', $protocol. '://' . $site_url_domain);
 						
-						change_tags_img($tplmcharactersone, $main_character['data']['image']['original'], 'characters_image_orig', $aaparser_config['persons']['default_image']);
-						change_tags_img($tplmcharactersone, $main_character['data']['image']['preview'], 'characters_image_prev', $aaparser_config['persons']['default_image']);
-						change_tags_img($tplmcharactersone, $main_character['data']['image']['x96'], 'characters_image_x96', $aaparser_config['persons']['default_image']);
-						change_tags_img($tplmcharactersone, $main_character['data']['image']['x48'], 'characters_image_x48', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplmcharactersone, $main_character['data']['poster']['originalUrl'], 'characters_image_orig', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplmcharactersone, $main_character['data']['poster']['previewUrl'], 'characters_image_prev', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplmcharactersone, $main_character['data']['poster']['mainUrl'], 'characters_image_x96', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplmcharactersone, $main_character['data']['poster']['miniUrl'], 'characters_image_x48', $aaparser_config['persons']['default_image']);
 						
 	                    $tplmcharactersone->set( '[characters_role_eng]', "" );
 				        $tplmcharactersone->set( '[/characters_role_eng]', "" );
@@ -166,10 +198,10 @@ if ($aaparser_config['persons']['personas_on'] == 1 && isset($_POST['sh_id']) &&
 						change_tags($tplscharactersone, $sub_character['data']['url'], 'characters_url', $protocol. '://' . $shikimori_url_domain);
 						change_tags($tplscharactersone, $sub_character['data']['url'], 'site_characters_url', $protocol. '://' . $site_url_domain);
 						
-						change_tags_img($tplscharactersone, $sub_character['data']['image']['original'], 'characters_image_orig', $aaparser_config['persons']['default_image']);
-						change_tags_img($tplscharactersone, $sub_character['data']['image']['preview'], 'characters_image_prev', $aaparser_config['persons']['default_image']);
-						change_tags_img($tplscharactersone, $sub_character['data']['image']['x96'], 'characters_image_x96', $aaparser_config['persons']['default_image']);
-						change_tags_img($tplscharactersone, $sub_character['data']['image']['x48'], 'characters_image_x48', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplscharactersone, $sub_character['data']['poster']['originalUrl'], 'characters_image_orig', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplscharactersone, $sub_character['data']['poster']['previewUrl'], 'characters_image_prev', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplscharactersone, $sub_character['data']['poster']['mainUrl'], 'characters_image_x96', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplscharactersone, $sub_character['data']['poster']['miniUrl'], 'characters_image_x48', $aaparser_config['persons']['default_image']);
 							
 	                    $tplscharactersone->set( '[characters_role_eng]', "" );
 				        $tplscharactersone->set( '[/characters_role_eng]', "" );
@@ -229,10 +261,10 @@ if ($aaparser_config['persons']['personas_on'] == 1 && isset($_POST['sh_id']) &&
 						change_tags($tplpersonsone, $person['data']['url'], 'persons_url', $protocol. '://' . $shikimori_url_domain);
 						change_tags($tplpersonsone, $person['data']['url'], 'site_persons_url', $protocol. '://' . $site_url_domain);
 						
-						change_tags_img($tplpersonsone, $person['data']['image']['original'], 'persons_image_orig', $aaparser_config['persons']['default_image']);
-						change_tags_img($tplpersonsone, $person['data']['image']['preview'], 'persons_image_prev', $aaparser_config['persons']['default_image']);
-						change_tags_img($tplpersonsone, $person['data']['image']['x96'], 'persons_image_x96', $aaparser_config['persons']['default_image']);
-						change_tags_img($tplpersonsone, $person['data']['image']['x48'], 'persons_image_x48', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplpersonsone, $person['data']['poster']['originalUrl'], 'persons_image_orig', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplpersonsone, $person['data']['poster']['previewUrl'], 'persons_image_prev', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplpersonsone, $person['data']['poster']['mainUrl'], 'persons_image_x96', $aaparser_config['persons']['default_image']);
+						change_tags_img($tplpersonsone, $person['data']['poster']['miniUrl'], 'persons_image_x48', $aaparser_config['persons']['default_image']);
 							
 	                    change_tags($tplpersonsone, $person['role'], 'persons_role_eng');
 	                    change_tags($tplpersonsone, $person['role_rus'], 'persons_role_rus');
@@ -330,7 +362,6 @@ elseif ($aaparser_config['persons']['personas_on_dorama'] == 1 && isset($_POST['
 			$mdl_url = "https://mydramalist.com/".$mdl_id;
 			$mdl_request = mdl_request($mdl_url);
 		}
-	    
 		$actors = [];
 
         $arr1 = explode('<ul class="list no-border p-b credits">', $mdl_request);

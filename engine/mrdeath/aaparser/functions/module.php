@@ -9,7 +9,7 @@
 */
 
 if (!function_exists('request')) {
-    function request($url){
+    function request($url, $type = 0, $postfields = []){
 		global $aaparser_config, $debugger_table_row, $time_update_start;
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Делаем запрос: (".$url.")", round(microtime(true) - $time_update_start, 4));
 
@@ -21,7 +21,11 @@ if (!function_exists('request')) {
 		curl_setopt($ch, CURLOPT_TIMEOUT, 60 );
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-		
+		if ($type === 1) {
+			$jsonData = json_encode($postfields, JSON_UNESCAPED_SLASHES);
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST' );
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+		} 
 		$headers = [
 			'Content-Type: application/json'
 		];

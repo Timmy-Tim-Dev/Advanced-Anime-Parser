@@ -40,8 +40,23 @@ if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
 } else $shikimori_api_domain = $shikimori_image_domain = 'https://shikimori.me/';
 
 if ( $parse_action == 'search' ) {
+    $postfields = [
+		'query' => '{
+			animes(search: "'.$search_name.'", limit: 50) {
+				id
+				malId
+				name
+				russian
+				kind
+				status
+				airedOn { year month day date }
+				url
+			}
+		}'
+	];
+    $shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
+	$shikimori = $shikimori['data']['animes'];
     
-    $shikimori = request($shikimori_api_domain.'api/animes?limit=50&search='.$search_name);
     if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 		$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск списка материалов по API", round(microtime(true) - $time_update_start, 4));
 	}
@@ -57,12 +72,12 @@ if ( $parse_action == 'search' ) {
 	    	$entitle = isset($result['name']) ? $result['name'] : '';
 	    	$status = isset($result['status']) ? $status_type[$result['status']] : '';
 	    	
-			if ( isset($result['aired_on']) && $result['aired_on'] ) {
-				$date_arr = explode('-', $result['aired_on']);
+			if ( isset($result['airedOn']['date']) && $result['airedOn']['date'] ) {
+				$date_arr = explode('-', $result['airedOn']['date']);
 				$year = $date_arr[0];
 			} else $year = '';
             
-            $shiki_link = isset($result['url']) ? $shikimori_image_domain.$result['url'] : '';
+            $shiki_link = isset($result['url']) ? $result['url'] : '';
 			
 			$where = "xfields REGEXP '(^|\\\\|)" . $aaparser_config['main_fields']['xf_shikimori_id'] ."\\\\|".$id_shiki. "(\\\\||$)'";
 			// $where = "xfields LIKE '%".$aaparser_config['main_fields']['xf_shikimori_id']."|".$id_shiki."||%'";
@@ -108,10 +123,77 @@ if ( $parse_action == 'search' ) {
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 		$debugger_table_row .= tableRowCreate("(shikimori.php) Разобрали полученный запрос", round(microtime(true) - $time_update_start, 4));
 	}
-    
+   
 } elseif ($parse_action == 'parse') {
     $xfields_data = [];
-    $shikimori = request($shikimori_api_domain.'api/animes/'.$shiki_id);
+	$postfields = [
+		'query' => '{
+			animes(ids: "'.$shiki_id.'", limit: 50) {
+				id
+				malId
+				name
+				russian
+				licenseNameRu
+				english
+				japanese
+				synonyms
+				kind
+				rating
+				score
+				status
+				episodes
+				episodesAired
+				duration
+				airedOn { year month day date }
+				releasedOn { year month day date }
+				url
+				season
+
+				poster { id originalUrl }
+
+				licensors
+				nextEpisodeAt,
+
+				genres { id name russian kind }
+				studios { id name imageUrl }
+
+				externalLinks {
+				  id
+				  kind
+				  url
+				  createdAt
+				  updatedAt
+				}
+
+				personRoles {
+				  id
+				  rolesRu
+				  rolesEn
+				  person { id name poster { id } }
+				}
+
+				related {
+				  id
+				  anime {
+					id
+					name
+				  }
+				  relationKind
+				  relationText
+				}
+
+				videos { id url name kind playerUrl imageUrl }
+				
+				scoresStats { score count }
+				
+				description
+				descriptionHtml
+			}
+		}'
+	];
+    $shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
+	$shikimori = $shikimori['data']['animes']['0'];
+	
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 		$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск id материала по API", round(microtime(true) - $time_update_start, 4));
 	}
@@ -119,18 +201,18 @@ if ( $parse_action == 'search' ) {
 		$xfields_data['shikimori_id'] = isset($shiki_id) ? $shiki_id : '';
 		$xfields_data['shikimori_name'] = isset($shikimori['name']) ? $shikimori['name'] : '';
 		$xfields_data['shikimori_russian'] = isset($shikimori['russian']) ? $shikimori['russian'] : '';
-		$xfields_data['shikimori_english'] = (isset($shikimori['english']) && $shikimori['english']) ? implode(', ', $shikimori['english']) : '';
-		$xfields_data['shikimori_japanese'] = (isset($shikimori['japanese']) && $shikimori['japanese']) ? implode(', ', $shikimori['japanese']) : '';
+		$xfields_data['shikimori_english'] = isset($shikimori['english']) ? $shikimori['english'] : '';
+		$xfields_data['shikimori_japanese'] = isset($shikimori['japanese']) ? $shikimori['japanese'] : '';
 		$xfields_data['shikimori_synonyms'] = (isset($shikimori['synonyms']) && $shikimori['synonyms']) ? implode(', ', $shikimori['synonyms']) : '';
-		$xfields_data['shikimori_license_name_ru'] = isset($shikimori['license_name_ru']) ? $shikimori['license_name_ru'] : '';
+		$xfields_data['shikimori_license_name_ru'] = isset($shikimori['licenseNameRu']) ? $shikimori['licenseNameRu'] : '';
 		if ( isset($shikimori['licensors']) && $shikimori['licensors'] ) $xfields_data['shikimori_licensors'] = implode(', ', $shikimori['licensors']);
 		$xfields_data['shikimori_kind'] = isset($shikimori['kind']) ? $shikimori['kind'] : '';
 		$xfields_data['shikimori_kind_ru'] = isset($shikimori['kind']) ? $cat_type[$shikimori['kind']] : '';
 		$xfields_data['shikimori_score'] = (isset($shikimori['score']) && $shikimori['score'] != '0.0') ? $shikimori['score'] : '';
 		$shikimori_votes = 0;
-		if ( isset($shikimori['rates_scores_stats']) && $shikimori['rates_scores_stats'] ) {
-			foreach ( $shikimori['rates_scores_stats'] as $rates_scores_stats ) {
-			$shikimori_votes = $shikimori_votes+$rates_scores_stats['value'];
+		if ( isset($shikimori['scoresStats']) && $shikimori['scoresStats'] ) {
+			foreach ( $shikimori['scoresStats'] as $rates_scores_stats ) {
+				$shikimori_votes = $shikimori_votes+$rates_scores_stats['count'];
 			}
 		}
 		if ( $shikimori_votes > 0 ) $xfields_data['shikimori_votes'] = $shikimori_votes;
@@ -139,24 +221,24 @@ if ( $parse_action == 'search' ) {
 		$xfields_data['shikimori_status_ru'] = isset($shikimori['status']) ? $status_type[$shikimori['status']] : '';
 		$xfields_data['shikimori_episodes'] = isset($shikimori['episodes']) ? $shikimori['episodes'] : '';
 
-		if ( isset($shikimori['episodes_aired']) && $shikimori['episodes_aired'] ) {
-			$xfields_data['shikimori_episodes_aired'] = $shikimori['episodes_aired'];
-			$xfields_data['shikimori_episodes_aired_1'] = generate_numbers($shikimori['episodes_aired'], 1);
-			$xfields_data['shikimori_episodes_aired_2'] = generate_numbers($shikimori['episodes_aired'], 2);
-			$xfields_data['shikimori_episodes_aired_3'] = generate_numbers($shikimori['episodes_aired'], 3);
-			$xfields_data['shikimori_episodes_aired_4'] = generate_numbers($shikimori['episodes_aired'], 4);
-			$xfields_data['shikimori_episodes_aired_5'] = generate_numbers($shikimori['episodes_aired'], 5);
-			$xfields_data['shikimori_episodes_aired_6'] = generate_numbers($shikimori['episodes_aired'], 6);
-			$xfields_data['shikimori_episodes_aired_7'] = generate_numbers($shikimori['episodes_aired'], 7);
-			$xfields_data['shikimori_episodes_aired_8'] = generate_numbers($shikimori['episodes_aired'], 8);
+		if ( isset($shikimori['episodesAired']) && $shikimori['episodesAired'] ) {
+			$xfields_data['shikimori_episodes_aired'] = $shikimori['episodesAired'];
+			$xfields_data['shikimori_episodes_aired_1'] = generate_numbers($shikimori['episodesAired'], 1);
+			$xfields_data['shikimori_episodes_aired_2'] = generate_numbers($shikimori['episodesAired'], 2);
+			$xfields_data['shikimori_episodes_aired_3'] = generate_numbers($shikimori['episodesAired'], 3);
+			$xfields_data['shikimori_episodes_aired_4'] = generate_numbers($shikimori['episodesAired'], 4);
+			$xfields_data['shikimori_episodes_aired_5'] = generate_numbers($shikimori['episodesAired'], 5);
+			$xfields_data['shikimori_episodes_aired_6'] = generate_numbers($shikimori['episodesAired'], 6);
+			$xfields_data['shikimori_episodes_aired_7'] = generate_numbers($shikimori['episodesAired'], 7);
+			$xfields_data['shikimori_episodes_aired_8'] = generate_numbers($shikimori['episodesAired'], 8);
 		}
 
-		if ( isset($shikimori['aired_on']) && $shikimori['aired_on'] ) {
-			$aired = explode('-', $shikimori['aired_on']);
-			$xfields_data['shikimori_aired_on'] = $shikimori['aired_on'];
-			$xfields_data['shikimori_aired_on_2'] = convert_date($shikimori['aired_on'], 1);
-			$xfields_data['shikimori_aired_on_3'] = convert_date($shikimori['aired_on'], 2);
-			$xfields_data['shikimori_aired_on_4'] = convert_date($shikimori['aired_on'], 3);
+		if ( isset($shikimori['airedOn']['date']) && $shikimori['airedOn']['date'] ) {
+			$aired = explode('-', $shikimori['airedOn']['date']);
+			$xfields_data['shikimori_aired_on'] = $shikimori['airedOn']['date'];
+			$xfields_data['shikimori_aired_on_2'] = convert_date($shikimori['airedOn']['date'], 1);
+			$xfields_data['shikimori_aired_on_3'] = convert_date($shikimori['airedOn']['date'], 2);
+			$xfields_data['shikimori_aired_on_4'] = convert_date($shikimori['airedOn']['date'], 3);
 			$xfields_data['shikimori_year'] = $aired[0];
 			if ( $aired[1] == '12' || $aired[1] == '01' || $aired[1] == '02' ) $xfields_data['shikimori_season'] = 'Зима '.$aired[0];
 			elseif ( $aired[1] == '03' || $aired[1] == '04' || $aired[1] == '05' ) $xfields_data['shikimori_season'] = 'Весна '.$aired[0];
@@ -164,11 +246,11 @@ if ( $parse_action == 'search' ) {
 			else $xfields_data['shikimori_season'] = 'Осень '.$aired[0];
 		}
 
-		if ( isset($shikimori['released_on']) && $shikimori['released_on'] ) {
-			$xfields_data['shikimori_released_on'] = $shikimori['released_on'];
-			$xfields_data['shikimori_released_on_2'] = convert_date($shikimori['released_on'], 1);
-			$xfields_data['shikimori_released_on_3'] = convert_date($shikimori['released_on'], 2);
-			$xfields_data['shikimori_released_on_4'] = convert_date($shikimori['released_on'], 3);
+		if ( isset($shikimori['releasedOn']['date']) && $shikimori['releasedOn']['date'] ) {
+			$xfields_data['shikimori_released_on'] = $shikimori['releasedOn']['date'];
+			$xfields_data['shikimori_released_on_2'] = convert_date($shikimori['releasedOn']['date'], 1);
+			$xfields_data['shikimori_released_on_3'] = convert_date($shikimori['releasedOn']['date'], 2);
+			$xfields_data['shikimori_released_on_4'] = convert_date($shikimori['releasedOn']['date'], 3);
 		}
 
 		$xfields_data['shikimori_rating'] = (isset($shikimori['rating']) && $shikimori['rating'] != 'none') ? $shikimori['rating'] : '';
@@ -182,7 +264,7 @@ if ( $parse_action == 'search' ) {
 			elseif ( $shikimori['kind'] == 'movie' && $shikimori['duration'] >= 30 ) $movie_kind = 'Полнометражный фильм';
 		} else $movie_kind = '';
 
-		$xfields_data['shikimori_plot'] = isset($shikimori['description_html']) ? trim(strip_tags($shikimori['description_html'])) : '';
+		$xfields_data['shikimori_plot'] = isset($shikimori['descriptionHtml']) ? trim(strip_tags($shikimori['descriptionHtml'])) : '';
 
 		if ( isset($shikimori['genres']) && $shikimori['genres'] ) {
 			$genres = [];
@@ -211,74 +293,69 @@ if ( $parse_action == 'search' ) {
 			$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение по тегам", round(microtime(true) - $time_update_start, 4));
 		}
 		//Ссылки на прочие ресурсы
-		if ( isset($aaparser_config['settings']['other_sites']) && $aaparser_config['settings']['other_sites'] == 1 ) {
-			$shikimori_links = request($shikimori_api_domain.'api/animes/'.$shiki_id.'/external_links');
-			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск ссылок прочих ресурсов по API", round(microtime(true) - $time_update_start, 4));
-			}
-			$xfields_data['myanimelist_id'] = isset($shikimori['myanimelist_id']) ? $shikimori['myanimelist_id'] : '';
-			$source_kind = [];
-			foreach ( $shikimori_links as $source_link ) {
-				$source_kind[$source_link['kind']] = $source_link['url'];
-			}
-
-			$xfields_data['official_site'] = isset($source_kind['official_site']) ? $source_kind['official_site'] : '';
-			$xfields_data['wikipedia'] = isset($source_kind['wikipedia']) ? $source_kind['wikipedia'] : '';
-			$xfields_data['anime_news_network'] = isset($source_kind['anime_news_network']) ? $source_kind['anime_news_network'] : '';
-			$xfields_data['anime_db'] = isset($source_kind['anime_db']) ? $source_kind['anime_db'] : '';
-			$xfields_data['world_art'] = isset($source_kind['world_art']) ? $source_kind['world_art'] : '';
-			$xfields_data['kinopoisk'] = isset($source_kind['kinopoisk']) ? $source_kind['kinopoisk'] : '';
-			$xfields_data['kage_project'] = isset($source_kind['kage_project']) ? $source_kind['kage_project'] : '';
-			unset($shikimori_links, $source_kind);
-			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение тегов для ссылок прочих ресурсов", round(microtime(true) - $time_update_start, 4));
-			}
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+			$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск ссылок прочих ресурсов по API", round(microtime(true) - $time_update_start, 4));
 		}
+		
+		$source_kind = [];
+		foreach ( $shikimori['externalLinks'] as $source_link ) {
+			$source_kind[$source_link['kind']] = $source_link['url'];
+		}
+		$xfields_data['myanimelist_id'] = isset($source_kind['myanimelist']) ? $source_kind['myanimelist'] : '';
+		$xfields_data['official_site'] = isset($source_kind['official_site']) ? $source_kind['official_site'] : '';
+		$xfields_data['wikipedia'] = isset($source_kind['wikipedia']) ? $source_kind['wikipedia'] : '';
+		$xfields_data['anime_news_network'] = isset($source_kind['anime_news_network']) ? $source_kind['anime_news_network'] : '';
+		$xfields_data['anime_db'] = isset($source_kind['anime_db']) ? $source_kind['anime_db'] : '';
+		$xfields_data['world_art'] = isset($source_kind['world_art']) ? $source_kind['world_art'] : '';
+		$xfields_data['kinopoisk'] = isset($source_kind['kinopoisk']) ? $source_kind['kinopoisk'] : '';
+		$xfields_data['kage_project'] = isset($source_kind['kage_project']) ? $source_kind['kage_project'] : '';
+		unset($source_kind);
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+			$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение тегов для ссылок прочих ресурсов", round(microtime(true) - $time_update_start, 4));
+		}
+		
 
 		//Авторский состав
-		if ( isset($aaparser_config['settings']['parse_authors']) && $aaparser_config['settings']['parse_authors'] == 1 ) {
-			$shikimori_roles = request($shikimori_api_domain.'api/animes/'.$shiki_id.'/roles');
-			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск авторского состава по API", round(microtime(true) - $time_update_start, 4));
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+			$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск авторского состава по API", round(microtime(true) - $time_update_start, 4));
+		}
+		$anime_authors = [];
+		foreach ( $shikimori['personRoles'] as $role ) {
+			if ( !$role['person'] ) continue;
+			if ( in_array("Композитор гл. муз. темы", $role['rolesRu']) ) {
+				if ( $role['person']['russian'] ) $anime_authors['composition'][] = $role['person']['russian'];
+				else $anime_authors['composition'][] = $role['person']['name'];
+			} elseif ( in_array("Сценарий", $role['rolesRu']) ) {
+				if ( $role['person']['russian'] ) $anime_authors['script'][] = $role['person']['russian'];
+				else $anime_authors['script'][] = $role['person']['name'];
+			} elseif ( in_array("Продюсер", $role['rolesRu']) ) {
+				if ( $role['person']['russian'] ) $anime_authors['producer'][] = $role['person']['russian'];
+				else $anime_authors['producer'][] = $role['person']['name'];
+			} elseif ( in_array("Режиссёр", $role['rolesRu']) ) {
+				if ( $role['person']['russian'] ) $anime_authors['director'][] = $role['person']['russian'];
+				else $anime_authors['director'][] = $role['person']['name'];
 			}
-			$anime_authors = [];
-			foreach ( $shikimori_roles as $role ) {
-				if ( !$role['person'] ) continue;
-				if ( in_array("Композитор гл. муз. темы", $role['roles_russian']) ) {
-					if ( $role['person']['russian'] ) $anime_authors['composition'][] = $role['person']['russian'];
-					else $anime_authors['composition'][] = $role['person']['name'];
-				} elseif ( in_array("Сценарий", $role['roles_russian']) ) {
-					if ( $role['person']['russian'] ) $anime_authors['script'][] = $role['person']['russian'];
-					else $anime_authors['script'][] = $role['person']['name'];
-				} elseif ( in_array("Продюсер", $role['roles_russian']) ) {
-					if ( $role['person']['russian'] ) $anime_authors['producer'][] = $role['person']['russian'];
-					else $anime_authors['producer'][] = $role['person']['name'];
-				} elseif ( in_array("Режиссёр", $role['roles_russian']) ) {
-					if ( $role['person']['russian'] ) $anime_authors['director'][] = $role['person']['russian'];
-					else $anime_authors['director'][] = $role['person']['name'];
-				}
-			}
-			
-			if ( isset( $anime_authors['director'] ) && $anime_authors['director'] ) {
-				if ( isset($aaparser_config['settings']['max_directors']) && $aaparser_config['settings']['max_directors'] > 0 ) $anime_authors['director'] = array_slice($anime_authors['director'], 0, $aaparser_config['settings']['max_directors']);
-				$xfields_data['shikimori_director'] = implode(', ', $anime_authors['director']);
-			}
-			if ( isset( $anime_authors['producer'] ) && $anime_authors['producer'] ) {
-				if ( isset($aaparser_config['settings']['max_producers']) && $aaparser_config['settings']['max_producers'] > 0 ) $anime_authors['producer'] = array_slice($anime_authors['producer'], 0, $aaparser_config['settings']['max_producers']);
-				$xfields_data['shikimori_producer'] = implode(', ', $anime_authors['producer']);
-			}
-			if ( isset( $anime_authors['script'] ) && $anime_authors['script'] ) {
-				if ( isset($aaparser_config['settings']['max_writers']) && $aaparser_config['settings']['max_writers'] > 0 && count($anime_authors['script'])>$aaparser_config['settings']['max_writers'] ) $anime_authors['script'] = array_slice($anime_authors['script'], 0, $aaparser_config['settings']['max_writers']);
-				$xfields_data['shikimori_script'] = implode(', ', $anime_authors['script']);
-			}
-			if ( isset( $anime_authors['composition'] ) && $anime_authors['composition'] ) {
-				if ( isset($aaparser_config['settings']['max_composers']) && $aaparser_config['settings']['max_composers'] > 0 && count($anime_authors['composition'])>$aaparser_config['settings']['max_composers'] ) $anime_authors['composition'] = array_slice($anime_authors['composition'], 0, $aaparser_config['settings']['max_composers']);
-				$xfields_data['shikimori_composition'] = implode(', ', $anime_authors['composition']);
-			}
-			unset($shikimori_roles, $anime_authors);
-			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение тегов для авторского состава", round(microtime(true) - $time_update_start, 4));
-			}
+		}
+		
+		if ( isset( $anime_authors['director'] ) && $anime_authors['director'] ) {
+			if ( isset($aaparser_config['settings']['max_directors']) && $aaparser_config['settings']['max_directors'] > 0 ) $anime_authors['director'] = array_slice($anime_authors['director'], 0, $aaparser_config['settings']['max_directors']);
+			$xfields_data['shikimori_director'] = implode(', ', $anime_authors['director']);
+		}
+		if ( isset( $anime_authors['producer'] ) && $anime_authors['producer'] ) {
+			if ( isset($aaparser_config['settings']['max_producers']) && $aaparser_config['settings']['max_producers'] > 0 ) $anime_authors['producer'] = array_slice($anime_authors['producer'], 0, $aaparser_config['settings']['max_producers']);
+			$xfields_data['shikimori_producer'] = implode(', ', $anime_authors['producer']);
+		}
+		if ( isset( $anime_authors['script'] ) && $anime_authors['script'] ) {
+			if ( isset($aaparser_config['settings']['max_writers']) && $aaparser_config['settings']['max_writers'] > 0 && count($anime_authors['script'])>$aaparser_config['settings']['max_writers'] ) $anime_authors['script'] = array_slice($anime_authors['script'], 0, $aaparser_config['settings']['max_writers']);
+			$xfields_data['shikimori_script'] = implode(', ', $anime_authors['script']);
+		}
+		if ( isset( $anime_authors['composition'] ) && $anime_authors['composition'] ) {
+			if ( isset($aaparser_config['settings']['max_composers']) && $aaparser_config['settings']['max_composers'] > 0 && count($anime_authors['composition'])>$aaparser_config['settings']['max_composers'] ) $anime_authors['composition'] = array_slice($anime_authors['composition'], 0, $aaparser_config['settings']['max_composers']);
+			$xfields_data['shikimori_composition'] = implode(', ', $anime_authors['composition']);
+		}
+		unset($shikimori_roles, $anime_authors);
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+			$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение тегов для авторского состава", round(microtime(true) - $time_update_start, 4));
 		}
 		
 		//Франшизы
@@ -357,37 +434,34 @@ if ( $parse_action == 'search' ) {
 		}
 		
 		//Связанные аниме
-		if ( isset($aaparser_config['settings']['parse_related']) && $aaparser_config['settings']['parse_related'] == 1 ) {
-			$shiki_api = request($shikimori_api_domain."api/animes/".$shikimori['id']."/related");
-			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск связанных аниме по API", round(microtime(true) - $time_update_start, 4));
-			}
-			$movies_id = [];
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+			$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск связанных аниме по API", round(microtime(true) - $time_update_start, 4));
+		}
+		$movies_id = [];
 
-			if ( $shiki_api ) {
-				foreach ( $shiki_api as $shiki_anime ) {
-					if ( isset( $shiki_anime['anime']['id'] ) && $shiki_anime['anime']['id'] ) $movies_id[] = $shiki_anime['anime']['id'];
-				}
-				if ( $movies_id ) $part_id = implode(',', $movies_id);
-				else $part_id = '';
+		if ( $shikimori['related'] ) {
+			foreach ( $shikimori['related'] as $shiki_anime ) {
+				if ( isset( $shiki_anime['anime']['id'] ) && $shiki_anime['anime']['id'] ) $movies_id[] = $shiki_anime['anime']['id'];
 			}
+			if ( $movies_id ) $part_id = implode(',', $movies_id);
 			else $part_id = '';
+		}
+		else $part_id = '';
 
-			$xfields_data['shikimori_related'] = $part_id;
-			unset($shiki_api, $movies_id, $part_id);
-			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
-				$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение тегов для связанных аниме", round(microtime(true) - $time_update_start, 4));
-			}
+		$xfields_data['shikimori_related'] = $part_id;
+		unset($movies_id, $part_id);
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+			$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение тегов для связанных аниме", round(microtime(true) - $time_update_start, 4));
 		}
 		
-		if ( isset($shikimori['image']['original']) && $shikimori['image']['original'] && strpos($shikimori['image']['original'], "missing_original") !== false) $xfields_data['image'] = $shikimori_image_domain.$shikimori['image']['original'];
+		if ( isset($shikimori['poster']['originalUrl']) && $shikimori['poster']['originalUrl'] && strpos($shikimori['poster']['originalUrl'], "missing_original") !== false) $xfields_data['image'] = $shikimori['poster']['originalUrl'];
 		else unset($xfields_data['image']);
 
 		$next_episode_date = '';
 
 		if ( isset($aaparser_config['settings']['next_episode_date_new']) ) {
-			if ( $shikimori['next_episode_at'] ) {
-				$next_episode_at = strtotime($shikimori['next_episode_at']);
+			if ( $shikimori['nextEpisodeAt'] ) {
+				$next_episode_at = strtotime($shikimori['nextEpisodeAt']);
 				$xfields_data[$aaparser_config['settings']['next_episode_date_new']] = date("d.m.Y H:i:s", $next_episode_at);
 				$next_episode_date = date("d.m.Y H:i:s", $next_episode_at);
 			}
@@ -473,14 +547,24 @@ if ( $parse_action == 'search' ) {
 	
 } elseif ( $parse_action == 'takeimage' ) {
 	$xfields_data = [];
-    
-    $shikimori = request($shikimori_api_domain.'api/animes/'.$shiki_id);
-    if ($shikimori['code'] != "404") {
-		if ( isset($shikimori['image']['original']) && $shikimori['image']['original'] && strpos($shikimori['image']['original'], "missing_original") !== false) $xfields_data['image'] = $shikimori_image_domain.$shikimori['image']['original'];
-		else unset($xfields_data['image']);
-		$xfields_data['shikimori_name'] = isset($shikimori['name']) ? $shikimori['name'] : '';
-		$xfields_data['shikimori_russian'] = isset($shikimori['russian']) ? $shikimori['russian'] : '';
-	}
+    $postfields = [
+		'query' => '{
+			animes(search: "'.$search_name.'", limit: 50) {
+				id
+				malId
+				name
+				russian
+				poster { id originalUrl }
+			}
+		}'
+	];
+	$shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
+	$shikimori = $shikimori['data']['animes']['0'];
+	if ( isset($shikimori['poster']['originalUrl']) && $shikimori['poster']['originalUrl'] && strpos($shikimori['poster']['originalUrl'], "missing_original") !== false) $xfields_data['image'] = $shikimori['poster']['originalUrl'];
+	else unset($xfields_data['image']);
+	$xfields_data['shikimori_name'] = isset($shikimori['name']) ? $shikimori['name'] : '';
+	$xfields_data['shikimori_russian'] = isset($shikimori['russian']) ? $shikimori['russian'] : '';
+	
 	$jikan_poster = 0;
 	if ( $shiki_id && isset($aaparser_config['settings']['parse_jikan']) && $aaparser_config['settings']['parse_jikan'] == 1) {
 		$jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
