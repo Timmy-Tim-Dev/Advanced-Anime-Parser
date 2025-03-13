@@ -250,6 +250,8 @@ if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
 			<searchcode><![CDATA['$allow_br', '$catalog_url', '{$_POST['tags']}', '{$metatags['title']}')" );]]></searchcode>
 			<replacecode><![CDATA['$allow_br', '$catalog_url', '{$_POST['tags']}', '{$metatags['title']}' ".$inserter_val.")" );]]></replacecode>
 			<enabled>1</enabled>
+			<dleversion>17.3</dleversion>
+			<versioncompare>less</versioncompare>
 		</operation>
 		<operation action="after">
 			<searchcode><![CDATA[$id = $db->insert_id();]]></searchcode>
@@ -338,6 +340,13 @@ if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparse
 	require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_init.php'));
 }]]></replacecode>
 			<enabled>1</enabled>
+		</operation>
+		<operation action="replace">
+			<searchcode><![CDATA['0', '$catalog_url', '{$_POST['tags']}', '{$metatags['title']}')" );]]></searchcode>
+			<replacecode><![CDATA['0', '$catalog_url', '{$_POST['tags']}', '{$metatags['title']}' ".$inserter_val.")" );]]></replacecode>
+			<enabled>1</enabled>
+			<dleversion>18.0</dleversion>
+			<versioncompare>greater</versioncompare>
 		</operation>
 	</file>
 	<file name="engine/inc/editnews.php">
@@ -521,6 +530,15 @@ if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
 			<searchcode><![CDATA[allow_br='{$allow_br}', symbol='{$catalog_url}', tags='{$_POST['tags']}',]]></searchcode>
 			<replacecode><![CDATA[allow_br='{$allow_br}', " . $inserter . " symbol='{$catalog_url}', tags='{$_POST['tags']}',]]></replacecode>
 			<enabled>1</enabled>
+			<dleversion>17.3</dleversion>
+			<versioncompare>less</versioncompare>
+		</operation>
+		<operation action="replace">
+			<searchcode><![CDATA[allow_br='0', symbol='{$catalog_url}', tags='{$_POST['tags']}',]]></searchcode>
+			<replacecode><![CDATA[allow_br='0', " . $inserter . " symbol='{$catalog_url}', tags='{$_POST['tags']}',]]></replacecode>
+			<enabled>1</enabled>
+			<dleversion>18.0</dleversion>
+			<versioncompare>greater</versioncompare>
 		</operation>
 	</file>
 	<file name="engine/inc/aap.php">
