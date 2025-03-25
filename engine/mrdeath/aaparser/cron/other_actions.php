@@ -7,7 +7,7 @@
  This code is protected by copyright
 =====================================================
 */
-
+$kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : '9a3a536a8be4b3d3f9f7bd28c1b74071';
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
 	$debugger_table_row .= tableRowCreate("(other_actions.php) Начинаем обновление расписания и совместного  просмотра", round(microtime(true) - $time_update_start,4));
 }
@@ -25,9 +25,9 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 				$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных каждой записи с бд " . PREFIX . "_raspisanie_ongoingov", round(microtime(true) - $time_update_start,4));
 			}
         }
-  	    $shikimori_api = request($shikimori_api_domain.'api/calendar');
+  	    $kodik_api = request('https://dumps.kodik.biz/calendar.json?token='.$kodik_apikey);
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-			$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных с SHIKIMORI API CALENDAR", round(microtime(true) - $time_update_start,4));
+			$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных с KODIK API CALENDAR", round(microtime(true) - $time_update_start,4));
 		}
   	    $today_id = [strtolower(date("l", $_TIME)) => date("Y-m-d", $_TIME)];
   	    for ($i = 1; $i < 7; $i++) {
@@ -37,7 +37,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
   	    $spisok_raspisaniy = [];
   	    foreach ( $today_id as $today_name => $today_date ) {
       	    $temp_num = 0;
-  		    foreach ( $shikimori_api as $api_anime ) {
+  		    foreach ( $kodik_api as $api_anime ) {
           	    if ( strpos($api_anime['next_episode_at'], $today_date) !== false ) {
               	    $news_row = $db->super_query( "SELECT id, alt_name, date, title, category, xfields FROM " . PREFIX . "_post WHERE xfields LIKE '%{$aaparser_config['main_fields']['xf_shikimori_id']}|{$api_anime['anime']['id']}||%' AND approve=1" );
               	    if ( !$news_row['id'] ) {
