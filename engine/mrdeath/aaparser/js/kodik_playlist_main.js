@@ -316,10 +316,12 @@ if ($("#voicerate_mod").attr("data-news_id")) {
 var news_id = 0;
 var kodik_current_episode = 0;
 var kodik_current_episode_duration = 0;
+var kodik_current_episode_voice = '';
 function kodikMessageListener(message) {
 	if ( message.data.key == 'kodik_player_current_episode' ) {
 		news_id = $("#kodik_player_ajax").attr("data-news_id");
 		kodik_current_episode = message.data.value.episode;
+		kodik_current_episode_voice = message.data.value.translation.title;
 		$.get(dle_root + "engine/ajax/controller.php?mod=anime_grabber&module=kodik_watched", { 'news_id': news_id, 'kodik_data': message.data.value }, function(data) {
 			if ( data.status ) {
 				if ($("#kodik_player_ajax #player").attr('data-autonext') == 'yes') {
@@ -342,7 +344,8 @@ function kodikMessageListener(message) {
 		if ( message.data.key == 'kodik_player_time_update' ) {
 			const episodeData = {
 				time: message.data.value,
-				duration: kodik_current_episode_duration
+				duration: kodik_current_episode_duration,
+				voice: kodik_current_episode_voice
 			};
 			jQuery.cookie("kodik_newsid_" + news_id + "_episode_" + kodik_current_episode, JSON.stringify(episodeData), { expires: 365, path: "/" });
 		}
