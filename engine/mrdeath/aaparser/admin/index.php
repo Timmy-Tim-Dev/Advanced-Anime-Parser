@@ -30,7 +30,7 @@ $text = <<<HTML
 	'first_time' => 1,
     'kodik_api_key' => '',
     'kodik_api_domain' => 'https://kodikapi.com/',
-    'shikimori_api_domain' => 'https://shikimori.me/',
+    'shikimori_api_domain' => 'https://shikimori.one/',
     'parse_authors' => 1,
     'parse_franshise' => 1,
     'parse_similar' => 1,
@@ -351,7 +351,7 @@ elseif ( $action == 'dbupgrade' ) {
 			'4.3.1',
 			'4.4.0',
 			'4.5.0',
-			'4.5.2',
+			'4.5.2'
 		];
 		
 		$versions = array_filter($versions, function ($verik) use ($log_module_version) {
