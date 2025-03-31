@@ -307,7 +307,9 @@ if ($aaparser_config['persons']['personas_on'] == 1 && isset($_POST['sh_id']) &&
 				
 }
 elseif ($aaparser_config['persons']['personas_on_dorama'] == 1 && isset($_POST['mdl_id']) && $_POST['mdl_id']) {
-    
+    $site_url_domain = clean_url($config['http_home_url']);
+	$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https" : "http";
+	
     if (!function_exists('mdl_request')) {
         function mdl_request($url) {
         
@@ -377,9 +379,11 @@ elseif ($aaparser_config['persons']['personas_on_dorama'] == 1 && isset($_POST['
             $tmp7 = explode('<b itempropx="name">', $tmp4[0]);
             $tmp8 = explode('</b>', $tmp7[1]);
             $name = $tmp8[0];
+			if (preg_match('/\/people\/([\d\w-]+)/', $tmp4[0], $matches)) $urlik = $matches[1];
             $actors_list[] = [
                 'name_eng' => $name,
-                'image_orig' => $photo
+                'image_orig' => $photo,
+				'url' => $urlik
             ];
         }
         
@@ -432,8 +436,10 @@ elseif ($aaparser_config['persons']['personas_on_dorama'] == 1 && isset($_POST['
 		            $tplactors->set_block( "'\\[personas_image_orig\\](.*?)\\[/personas_image_orig\\]'si", "" );
 		            $tplactors->set( '{personas_image_orig}', '' );
 		        }
+				$tplactors->set( '{site_persons_url}', $protocol . "://" . $site_url_domain . "/persons/" . $data['url'] );
 		        $tplactors->compile( 'actors_info' );
 		    }
+			
 		    $tplpersons->set( '{persons-list}', $tplactors->result['actors_info'] );
 		    unset($tplactors);
 		    $tplpersons->compile( 'persons_info' );

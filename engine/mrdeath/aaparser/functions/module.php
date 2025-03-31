@@ -545,13 +545,14 @@ function change_tags ($type, $needVal, $nameTag, $urlPrefix = '') {
     }
 }
 
-function change_tags_img($type, $needVal, $nameTag, $defaultImage = '') {
+function change_tags_img($type, $needVal, $nameTag, $defaultImage = '', $dorama = false) {
     global $shikimori_url_domain, $aaparser_config;
     
     if ($needVal) {
         $type->set("[" . $nameTag . "]", "");
         $type->set("[/" . $nameTag . "]", "");
-        $fullUrl = 'https://' . $shikimori_url_domain . $needVal;
+		if ($dorama) $fullUrl = $needVal;
+		else $fullUrl = 'https://' . $shikimori_url_domain . $needVal;
         $type->set("{" . $nameTag . "}", $fullUrl);
         $type->set_block("'\\[not_" . $nameTag . "\\](.*?)\\[/not_" . $nameTag . "\\]'si", "");
     } elseif ($defaultImage) {

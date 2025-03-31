@@ -1,6 +1,7 @@
 <?php
 
 $personajes_cache_size = convert_bytes(dir_size(ENGINE_DIR."/mrdeath/aaparser/cache/personas_characters/"));
+$personajes_dorama_cache_size = convert_bytes(dir_size(ENGINE_DIR."/mrdeath/aaparser/cache/dorama_persons_page/"));
 $personajes_page_cache_size = convert_bytes(dir_size(ENGINE_DIR."/mrdeath/aaparser/cache/personas_characters_page/"));
 
 echo <<<HTML
@@ -23,7 +24,25 @@ $avaiable_tags_chars = '
 <br/><b>{description}</b> - Выводит описание персонажа <i style="color:red;">Работает только у персонажей</i>
 <br/><b>{description_no_spoiler}</b> - Выводит описание персонажа без спойлера <i style="color:red;">Работает только у персонажей</i>
 <br/><b>{spoiler}</b> - Выводит спойлер описание персонажа <i style="color:red;">Работает только у персонажей</i>
-<br/>Для каждого тега доступны конструкции [if_x]...[/if_x], а так же [ifnot_x]...[/ifnot_x], где x - тег.
+<br/>Для каждого тега доступны конструкции [x]...[/x], а так же [not_x]...[/not_x], где x - тег.
+';
+
+$avaiable_dorama_tags_chars = '
+<br/><b>{id}</b> - Выводит MyDramaList ID актёра/актрисы.
+<br/><b>{name}</b> - Выводит полное имя актёра/актрисы
+<br/><b>{first_name}</b> - Выводит имя актёра/актрисы
+<br/><b>{family_name}</b> - Выводит фамилию актёра/актрисы
+<br/><b>{native_name}</b> - Выводит оригинальное имя актёра/актрисы
+<br/><b>{other_name}</b> - Выводит другие имена актёра/актрисы
+<br/><b>{nation}</b> - Выводит национальность актёра/актрисы
+<br/><b>{gender}</b> - Выводит пол актёра/актрисы
+<br/><b>{age}</b> - Выводит возраст актёра/актрисы
+<br/><b>{birth_on}</b> - Выводит дату рождения актёра/актрисы
+<br/><b>{url}</b> - Выводит ссылку актёра/актрисы
+<br/><b>{description}</b> - Выводит описание актёра/актрисы
+<br/><b>{image}</b> - Выводит изображение актёра/актрисы
+<br/>Для каждого тега доступны конструкции [x]...[/x], а также [not_x]...[/not_x], где x - тег.
+
 ';
 
 showRow('Включить вывод персонажей и авторов?', 'Включив, модуль будет выводить состав персонажей, главные герои, второстепенные герои, авторы аниме и другие участники аниме', makeCheckBox('persons[personas_on]', $aaparser_config['persons']['personas_on']));
@@ -458,9 +477,16 @@ rewrite ^/characters(\d*?).xml$ /uploads/characters$1.xml last;</textarea>
 HTML;
 showRow('Включить вывод актёров дорам?', 'Включив, модуль будет выводить блок с шестью актёрами в главной роли дорамы', makeCheckBox('persons[personas_on_dorama]', $aaparser_config['persons']['personas_on_dorama']));
 showRow('Кэшировать данные блока с актёрами?', 'Включив, модуль будет кэшировать полученные данные, заметно ускоряет обработку страницы<br/><b>Настоятельно рекомендуем использовать кэширование, значительно ускоряет</b>', makeCheckBox('persons[personas_cache_dorama]', $aaparser_config['persons']['personas_cache_dorama']));
-showRow('Использовать сторонний сервис для данных?', 'Включив, модуль будет получать данные не напрямую а через API "https://api.allorigins.win/", рекомендуется пользоваться тем у кого не работает стандартный запрос по тем или иным причинам.', makeCheckBox('persons[personas_other_dorama_api]', $aaparser_config['persons']['personas_other_dorama_api']));
 showRow('Общий вес файлов кеша актёров - <span id="actors-cache-size">'.$personajes_cache_size.'</span>', 'При изменении какой либо опции из данного раздела обязательно очистите кеш', '<button onclick="clear_actors_cache(); return false;" class="btn bg-danger btn-raised legitRipple"><i class="fa fa-trash position-left"></i>Очистить кеш</button>');
+showRow('Включить обработку страниц актёрами?:', 'Включить вывод обработки страниц актёров взятых из MyDramaList', makeCheckBox('persons[persons_dorama_page]', $aaparser_config['persons']['persons_dorama_page']));
+showRow('Кэшировать данные страницы с актёрами?', 'Включив, модуль будет кэшировать полученные данные, заметно ускоряет обработку страницы<br/><b>Настоятельно рекомендуем использовать кэширование, значительно ускоряет</b>', makeCheckBox('persons[persons_dorama_page_cache]', $aaparser_config['persons']['persons_dorama_page_cache']));
+showRow('Общий вес файлов кеша страницы актёрами - <span id="actors-cache-size">'.$personajes_dorama_cache_size.'</span>', 'При изменении какой либо опции из данного раздела обязательно очистите кеш', '<button onclick="clear_actors_cache(); return false;" class="btn bg-danger btn-raised legitRipple"><i class="fa fa-trash position-left"></i>Очистить кеш</button>');
 showRow('Постер при отсутствий изображения', 'Укажите путь до картинки заглушки для отсутствующих постеров. <br/><b>Для корректной работы, укажите прямую ссылку до картинки</b><br/>Пример: <i>/templates/Default/dleimages/no_image.jpg</i>', showInput(['persons[default_image_dorama]', 'text', $aaparser_config['persons']['default_image_dorama']]));
+showRow('Метатег "title" для страницы актёров', 'Если оставите пустым, то будет выведен стандартный от DLE. <br/>Список доступных тегов: '. $avaiable_dorama_tags_chars, showInput(['persons[metatitle_dorama]', 'text', $aaparser_config['persons']['metatitle_dorama']]));
+showRow('Метатег "description" для страницы актёров', 'Если оставите пустым, то будет выведен стандартный от DLE. <br/>Список доступных тегов: '. $avaiable_dorama_tags_chars, showInput(['persons[metadescr_dorama]', 'text', $aaparser_config['persons']['metadescr_dorama']]));
+showRow('Метатег "keywords" для страницы актёров', 'Если оставите пустым, то будет выведен стандартный от DLE. <br/>Список доступных тегов: '. $avaiable_dorama_tags_chars, showInput(['persons[metakeyw_dorama]', 'text', $aaparser_config['persons']['metakeyw_dorama']]));
+showRow('Включить страницы актёров в карту сайта?', 'Если включено, то страницы персонажей и авторов будут выводиться в карту сайта и будут доступны по адресу <a href="'.$config["http_home_url"].'persons.xml" target="_blank">persons.xml</a><br/><b>Важно!</b> При отключении, созданные страницы с карты сайта не пропадут, если необходимо удалить их тоже, то необходимо удалить файл <i>persons.dat</i> в папке <i>data</i> и создать новую <i>карту сайта</i>', makeCheckBox('persons[persons_dorama_sitemap]', $aaparser_config['persons']['persons_dorama_sitemap']));
+
 echo <<<HTML
 		</table>
 <div class="rcol-2col dorama-settings" style="margin-top:0;float:unset;">
@@ -488,7 +514,8 @@ echo <<<HTML
         2. Создаем файл в Вашем шаблоне под названием <b>persons_info.tpl</b><br/>
 		    <br/>Теги которые работают в этом шаблоне:
 		    <hr/>
-		    <b>[personas_image_orig]</b>Выводит содержимое если есть фото актёра<b>[/personas_image_orig]</b>
+			<br/><b>{site_persons_url}</b> - Выводит ссылку на страницу актёра
+		    <br/><b>[personas_image_orig]</b>Выводит содержимое если есть фото актёра<b>[/personas_image_orig]</b>
 		    <br/><b>{personas_image_orig}</b> - Выводит ссылку на фото актёра
 		    <br/><b>[personas_name_eng]</b>Выводит содержимое если доступно имя актёра на английском<b>[/personas_name_eng]</b>
 		    <br/><b>{personas_name_eng}</b> - Выводит имя актёра на английском
@@ -502,9 +529,11 @@ echo <<<HTML
       <div class="cvitempad">
          <div class="cvsubitem cvchar">
             <div class="cvcover">
-               <img src="{personas_image_orig}" width="45" height="70" alt="{personas_name_eng}" title="{personas_name_eng}">
+				<a href="{site_persons_url}">
+					<img src="{personas_image_orig}" width="45" height="70" alt="{personas_name_eng}" title="{personas_name_eng}">
+				</a>
             </div>
-            <div class="cvcontent"> <span class="charname">{personas_name_eng}</span> <span class="charrole">Актёр</span></div>
+            <div class="cvcontent"> <a href="{site_persons_url}"><span class="charname">{personas_name_eng}</span></a> <span class="charrole">Актёр</span></div>
          </div>
       </div>
    </div></textarea>
@@ -512,6 +541,95 @@ echo <<<HTML
 		</div>
 </div></div>
 	</div>
+	<br/>
+<div class="rcol-2col anime-settings" style="margin-top:0;float:unset;">
+	<div class="rcol-2col-header">
+		<span>Вывод страницы актёров дорам</span>
+		<div class="show-hide">Show</div>
+	</div>
+		<div class="rcol-2col-body" style="display: none;">
+		<div class="alert alert-info alert-styled-left alert-arrow-left alert-component anime-settings">
+			1. Для того чтобы работали страница актёров, необходимо включить ползунок выше.
+			<br/>2. Для того чтобы попасть на страницу актёров используйте теги <b>{site_persons_url}</b>
+			<br/>3. Создайте файл по пути <b>/templates/Ваш шаблон/characters/persons.tpl</b>
+			<br/>4. Для всех тегов есть обратный вывод,  пример: <b>[not_name]</b>Тут будет текст при отсутствий данных тега {name}<b>[/not_name]</b>
+			<hr/>
+			Теги которые работают в файле шаблона <b>persons.tpl</b>:
+			<br/><b>{id}</b> - выводит MyDramaList ID актёра/актрисы.
+			<br/><b>[name]</b>Выводит содержимое, если есть имя актёра/актрисы на Английском<b>[/name]</b>
+			<br/><b>{name}</b>Выводит полное имя актёра/актрисы
+			<br/><b>[first_name]</b>Выводит содержимое, если есть имя актёра/актрисы<b>[/first_name]</b>
+			<br/><b>{first_name}</b>Выводит имя актёра/актрисы
+			<br/><b>[family_name]</b>Выводит содержимое, если есть фамилия актёра/актрисы<b>[/family_name]</b>
+			<br/><b>{family_name}</b>Выводит фамилию актёра/актрисы
+			<br/><b>[native_name]</b>Выводит содержимое, если есть родное имя актёра/актрисы<b>[/native_name]</b>
+			<br/><b>{native_name}</b>Выводит родное имя актёра/актрисы
+			<br/><b>[other_name]</b>Выводит содержимое, если есть другие имена актёра/актрисы<b>[/other_name]</b>
+			<br/><b>{other_name}</b>Выводит другие имена актёра/актрисы
+			<br/><b>[nation]</b>Выводит содержимое, если есть национальность актёра/актрисы<b>[/nation]</b>
+			<br/><b>{nation}</b>Выводит национальность актёра/актрисы
+			<br/><b>[gender]</b>Выводит содержимое, если есть пол актёра/актрисы<b>[/gender]</b>
+			<br/><b>{gender}</b>Выводит пол актёра/актрисы
+			<br/><b>[age]</b>Выводит содержимое, если есть возраст актёра/актрисы<b>[/age]</b>
+			<br/><b>{age}</b>Выводит возраст актёра/актрисы
+			<br/><b>[birth_on]</b>Выводит содержимое, если есть день рождения актёра/актрисы<b>[/birth_on]</b>
+			<br/><b>{birth_on}</b>Выводит день рождения актёра/актрисы
+			<br/><b>[url]</b>Выводит содержимое, если есть ссылка актёра/актрисы на Shikimori<b>[/url]</b>
+			<br/><b>{url}</b>Выводит ссылку актёра/актрисы на Shikimori
+			<br/><b>[description]</b>Выводит содержимое, если есть описание актёра/актрисы<b>[/description]</b>
+			<br/><b>{description}</b>Выводит описание актёра/актрисы
+			<br/><b>[image]</b>Выводит содержимое, если есть изображение актёра/актрисы<b>[/image]</b>
+			<br/><b>{image}</b>Выводит изображение актёра/актрисы
+
+			<hr/>
+			<i>Примерный файл для <b>persons.tpl</b></i>
+			<textarea style="width:100%;height:200px;" disabled>
+<div class="swblock">
+	<div class="swtop">
+		<div class="swcard">
+			<div class="swimg">
+				<img src="{image}" alt="{name}">
+			</div>
+			<div class="swcardinfo">
+				<div class="swcardhead">Карточка деятеля:</div>
+				[name]<div class="swcardrow">Полное имя: <span>{name}</span></div>[/name]
+				[first_name]<div class="swcardrow">Имя: <span>{first_name}</span></div>[/first_name]
+				[family_name]<div class="swcardrow">Фамилия: <span>{family_name}</span></div>[/family_name]
+				[native_name]<div class="swcardrow">Оригинальное имя: <span>{native_name}</span></div>[/native_name]
+				[other_name]<div class="swcardrow">Другие имена: <span>{other_name}</span></div>[/other_name]
+				[nation]<div class="swcardrow">Национальность: <span>{nation}</span></div>[/nation]
+				[gender]<div class="swcardrow">Пол: <span>{gender}</span></div>[/gender]
+				[age]<div class="swcardrow">Возраст: <span>{age}</span></div>[/age]
+				[birth_on]<div class="swcardrow">Дата рождения: <span>{birth_on}</span></div>[/birth_on]
+				[url]<div class="swcardrow">Ссылка на источник: <span><a href="{url}">{url}</a></span></div>[/url]
+			</div>
+			<div class="swabout">
+				<h2>Описание</h2>
+				[not_description]
+				<div class="swdescr">
+					У данного персонажа в данный момент нету описания
+				</div>
+				[/not_description]
+				[description]
+				<div class="swdescr">
+					{description}
+				</div>
+				[/description]
+			</div>
+		</div>
+	</div>
+</div></textarea>
+			<hr/>
+			<i>Правила для <b>apache</b></i>
+			<textarea style="width:100%;height:30px;" disabled>
+RewriteRule ^persons/([^/]*)(/?)+$ index.php?do=characters&type=persons&id=$1 [L]</textarea>
+			<hr/>
+			<i>Правила для <b>NGINX</b></i>
+			<textarea style="width:100%;height:30px;" disabled>
+rewrite ^/persons/([^/]*)(/?)+$ /index.php?do=characters&type=persons&id=$1 last;</textarea>
+		</div>
+	</div>
+</div>
 	<br/>
 	<div class="rcol-2col" style="margin-top:0;float:unset;">
 	<div class="rcol-2col-header">

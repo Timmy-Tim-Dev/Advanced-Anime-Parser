@@ -1312,13 +1312,33 @@ function generate_characters() {
 			if (trim($item['url']) != "")$map->loc($item['url'])->freq($this->changefreq)->lastMod($item['date'])->priority( $this->priority );
 		}			
 	});
+}	
+function generate_persons() {
+	$this->priority = $this->stat_priority;
+	$this->changefreq = $this->stat_changefreq;
+	
+	$data = file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/persons.dat");
+	$data = unserialize($data);	
+	if (!is_array($data)) return;
+
+	$this->sitemap->links('persons.xml', function($map) {
+		
+		$data = file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/persons.dat");
+		$data = unserialize($data);	
+		
+		foreach ($data as $item)
+		{
+			if (trim($item['url']) != "")$map->loc($item['url'])->freq($this->changefreq)->lastMod($item['date'])->priority( $this->priority );
+		}			
+	});
 }	]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[$this->generate_static();	]]></searchcode>
 			<replacecode><![CDATA[$this->generate_characters();
-$this->generate_people();]]></replacecode>
+$this->generate_people();
+$this->generate_persons();]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
