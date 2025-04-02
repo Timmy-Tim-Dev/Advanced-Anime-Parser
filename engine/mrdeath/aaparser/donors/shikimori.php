@@ -409,6 +409,44 @@ if ( $parse_action == 'search' ) {
 			}
 		}
 		
+		//Хронология
+		if ( isset($aaparser_config['settings']['parse_chronology']) && $aaparser_config['settings']['parse_chronology'] == 1 ) {
+			$postfields_chrono = [
+				'query' => '{
+					animes(ids: "'.$shiki_id.'", limit: 1) {
+						id
+						name
+						chronology { 
+							id
+							airedOn { date }
+						}
+					}
+				}'
+			];
+			$shiki_api = request('https://shikimori.one/api/graphql', 1, $postfields_chrono);
+			$shiki_api = $shiki_api['data']['animes']['0'];
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск хронологии по API", round(microtime(true) - $time_update_start, 4));
+			}
+			$movies_id = [];
+
+			if ( $shiki_api['chronology'] ) {
+				if ( isset($aaparser_config['settings']['chronology_sort']) && $aaparser_config['settings']['chronology_sort'] == 1) $shiki_api['chronology'] = array_reverse($shiki_api['chronology']);
+				foreach ( $shiki_api['chronology'] as $shiki_anime ) {
+					$movies_id[] = $shiki_anime['id'];
+				}
+				if ( $movies_id ) $part_id = implode(',', $movies_id);
+				else $part_id = '';
+			}
+			else $part_id = '';
+
+			$xfields_data['shikimori_chronology'] = $part_id;
+			unset($shiki_api, $movies_id, $part_id);
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
+				$debugger_table_row .= tableRowCreate("(shikimori.php) Распределение тегов для хронологии", round(microtime(true) - $time_update_start, 4));
+			}
+		}
+		
 		//Похожие аниме
 		if ( isset($aaparser_config['settings']['parse_similar']) && $aaparser_config['settings']['parse_similar'] == 1 ) {
 			$shiki_api = request($shikimori_api_domain."api/animes/".$shikimori['id']."/similar");
