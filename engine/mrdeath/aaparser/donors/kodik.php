@@ -393,8 +393,8 @@ if ($parse_action == 'search') {
     }
     if ( !$aaparser_config['grabbing']['if_camrip'] ) $camrip_add = '&camrip=false';
     if ( !$aaparser_config['grabbing']['if_lgbt'] ) $lgbt_add = '&lgbt=false';
-    if ( $aaparser_config['grabbing']['years'] ) $years_add = '&year='.$aaparser_config['grabbing']['years'];
-    if ( $aaparser_config['grabbing']['genres'] ) $genres_add = '&all_genres='.$aaparser_config['grabbing']['genres'];
+    if ( $aaparser_config['grabbing']['years'] ) $years_add = '&year='.rawurlencode($aaparser_config['grabbing']['years']);
+    if ( $aaparser_config['grabbing']['genres'] ) $genres_add = '&all_genres='.rawurlencode($aaparser_config['grabbing']['genres']);
     if (!empty($aaparser_config['grabbing']['translators'])) {
 		$file_path = ENGINE_DIR . '/mrdeath/aaparser/data/translators.json';
 		if (!file_exists($file_path)) die('У Вас не загружены озвучки');
@@ -429,6 +429,10 @@ if ($parse_action == 'search') {
     if ( !$grab['results'] ) {
 		unset($kodik_log[$kind]);
 		file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log', json_encode( $kodik_log ));
+		if ($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1) { 
+			$debugger_table_row .= tableRowCreate("(kodik.php) Нет результата kodik.php", round(microtime(true) - $time_update_start, 4));
+			echo $debugger_table_start.$debugger_table_row.$debugger_table_end.$debugger_table_style;
+		}
         die('Балансер Kodik временно недоступен');
     } else {
         $grab_info_old = $grab_info_new = '';
@@ -531,8 +535,8 @@ if ($parse_action == 'search') {
 
     if ( !$aaparser_config['grabbing_doram']['if_camrip'] ) $camrip_add = '&camrip=false';
     if ( !$aaparser_config['grabbing_doram']['if_lgbt'] ) $lgbt_add = '&lgbt=false';
-    if ( $aaparser_config['grabbing_doram']['years'] ) $years_add = '&year='.$aaparser_config['grabbing_doram']['years'];
-    if ( $aaparser_config['grabbing_doram']['genres'] ) $genres_add = '&all_genres='.$aaparser_config['grabbing_doram']['genres'];
+    if ( $aaparser_config['grabbing_doram']['years'] ) $years_add = '&year='.rawurlencode($aaparser_config['grabbing_doram']['years']);
+    if ( $aaparser_config['grabbing_doram']['genres'] ) $genres_add = '&all_genres='.rawurlencode($aaparser_config['grabbing_doram']['genres']);
 	if (!empty($aaparser_config['grabbing_doram']['translators'])) {
 		$file_path = ENGINE_DIR . '/mrdeath/aaparser/data/translators_dorama.json';
 		if (!file_exists($file_path)) die('У Вас не загружены озвучки');
@@ -559,6 +563,10 @@ if ($parse_action == 'search') {
     if ( !$grab['results'] ) {
 		unset($kodik_log[$kind]);
 		file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log', json_encode( $kodik_log ));
+		if ($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1) { 
+			$debugger_table_row .= tableRowCreate("(kodik.php) Нет результата kodik.php", round(microtime(true) - $time_update_start, 4));
+			echo $debugger_table_start.$debugger_table_row.$debugger_table_end.$debugger_table_style;
+		}
         die('Балансер Kodik временно недоступен');
     } else {
 		$grab_info_old = $grab_info_new = '';
