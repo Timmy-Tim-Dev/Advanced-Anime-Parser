@@ -639,17 +639,21 @@ $anons_kind = array(
 
 
 function dir_size($dir) {
-   $totalsize=0;
-   if ($dirstream = @opendir($dir)) {
-      while (false !== ($filename = readdir($dirstream))) {
-         if ($filename!="." && $filename!="..") {
-            if (is_file($dir."/".$filename)) $totalsize+=filesize($dir."/".$filename);
-            if (is_dir($dir."/".$filename)) $totalsize+=dir_size($dir."/".$filename);
-         }
-      }
-   }
-   closedir($dirstream);
-   return $totalsize;
+	if (!is_dir($dir)) {
+		@mkdir($dir, 0777 );
+		@chmod($dir, 0777 );
+	}
+	$totalsize=0;
+	if ($dirstream = @opendir($dir)) {
+	  while (false !== ($filename = readdir($dirstream))) {
+		 if ($filename!="." && $filename!="..") {
+			if (is_file($dir."/".$filename)) $totalsize+=filesize($dir."/".$filename);
+			if (is_dir($dir."/".$filename)) $totalsize+=dir_size($dir."/".$filename);
+		 }
+	  }
+	}
+	closedir($dirstream);
+	return $totalsize;
 }
 
 function convert_bytes($size) {
