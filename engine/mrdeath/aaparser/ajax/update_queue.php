@@ -122,6 +122,33 @@ if ( $action == "update" ) {
 	die(json_encode(array(
 		'status' => 'ok'
 	)));
+}  elseif ( $action == "update_countries" ) {
+    
+    if ( !$aaparser_config['settings']['kodik_api_key'] ) {
+        die(json_encode(array(
+		    'status' => 'error',
+		    'error' => 'API ключ пустой',
+		    'error_desc' => 'Вы не заполнили поле с api ключом от базы кодик'
+	    )));
+    }
+    
+    $kodik = request($kodik_api_domain."countries?token=".$aaparser_config['settings']['kodik_api_key']);
+    $countries_name = $countries = [];
+    foreach ( $kodik['results'] as $result ) {
+        $countries_name[] = $result['title'];
+    }
+    
+    if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/countries_name.json') ) {
+        file_put_contents(ENGINE_DIR.'/mrdeath/aaparser/data/countries_name.json', json_encode($countries_name, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
+    } else {
+        $fp = fopen(ENGINE_DIR.'/mrdeath/aaparser/data/countries_name.json', "w+");
+  	    fwrite($fp, json_encode($countries_name, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
+  	    fclose($fp);
+    }
+	
+	die(json_encode(array(
+		'status' => 'ok'
+	)));
 } elseif ( $action == "connect_base_get" ) {
 		
 		if ( !$aaparser_config['main_fields']['xf_shikimori_id'] && !$aaparser_config['main_fields']['xf_mdl_id'] ) die(json_encode(array( 'status' => 'fail' )));

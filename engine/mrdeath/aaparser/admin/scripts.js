@@ -337,6 +337,34 @@ function update_all_cats() {
 	});
 }
 
+function update_countries() {
+	ShowLoading('');
+	$.ajax({
+		url: "/engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear",
+		data:{action: "update_countries", user_hash: dle_login_hash},
+		dataType: "json",
+		cache: false,
+		success: function(data) {
+			if ( data.status == "ok" ) {
+                Growl.info({
+					title: 'Страны обновлены',
+					text: 'Список стран был обновлён. Перезагрузите страницу'
+				});
+				HideLoading('');
+				return false;
+			}
+			else {
+			    Growl.error({
+					title: data.error,
+					text: data.error_desc
+				});
+				HideLoading('');
+				return false;
+			}
+		}
+	});
+}
+
 function update_translations() {
 	ShowLoading('');
 	$.ajax({

@@ -72,6 +72,22 @@ showRow('Добавлять только в выбранных озвучках 
 showRow('Не добавлять выбранные года', 'Вы можете выбрать черный список годов выхода, в случае если выберете то не будут добавляться аниме этих годов', makeSelect( $year_array, "grabbing[not_years]", $aaparser_config['grabbing']['not_years'], 'Выберите год/года выхода', 0));
 showRow('Не добавлять выбранные жанры', 'Вы можете выбрать черный список жанров, в случае если выберете то не будут добавляться аниме только в одном из выбранных жанров', makeSelect( $genres_array, "grabbing[not_genres]", $aaparser_config['grabbing']['not_genres'], 'Выберите жанр или несколько жанров', 1));
 showRow('Не добавлять в выбранных озвучках *', 'Вы можете выбрать черный список озвучек, в случае если выберете то не будут добавляться аниме доступные только в одной из этих озвучкек. <b>*Условие будет пропущено, если данного аниме нет в базе Kodik!</b>', makeSelect( $translator_array, "grabbing[not_translators]", $aaparser_config['grabbing']['not_translators'], 'Выберите озвучку или несколько озвучек', 1));
+if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/countries_name.json') ) {
+echo <<<HTML
+    <tr>
+        <td class="col-xs-10 col-sm-6 col-md-7 "><button onclick="update_countries(); return false;" class="btn bg-slate-600 btn-raised legitRipple"><i class="fa fa-microphone position-left"></i>Обновить страны</button><span class="note large"></span></td>
+        <td class="col-xs-2 col-md-5 settingstd "></td>
+    </tr>
+HTML;
+} else {
+    echo <<<HTML
+    <tr>
+        <td class="col-xs-10 col-sm-6 col-md-7 "><button onclick="update_countries(); return false;" class="btn bg-slate-600 btn-raised legitRipple"><i class="fa fa-microphone position-left"></i>Получить страны</button><span class="note large"></span></td>
+        <td class="col-xs-2 col-md-5 settingstd "></td>
+    </tr>
+HTML;
+}
+showRow('Добавлять только в выбранных странах', 'Вы можете выбрать страны, в случае если выберете то будут добавляться аниме доступные в этих странах, иначе если оставить пустым то на ваш сайт будут добавляться аниме со всех странах. <b>*Условие будет пропущено, если данного аниме нет в базе Kodik!</b>', makeSelect( $countries_array, "grabbing[countries]", $aaparser_config['grabbing']['countries'], 'Выберите страну или несколько стран', 1));
 
 echo <<<HTML
 			</table>
@@ -82,13 +98,6 @@ echo <<<HTML
 HTML;
 showRow('Добавлять ТВ-сериалы?', 'Если включено то к вам на сайт будут добавляться ТВ-сериалы', makeCheckBox('grabbing_doram[tv]', $aaparser_config['grabbing_doram']['tv']));
 showRow('Добавлять фильмы?', 'Если включено то к вам на сайт будут добавляться фильмы', makeCheckBox('grabbing_doram[movie]', $aaparser_config['grabbing_doram']['movie']));
-
-showRow('Добавлять дорамы произведённые в Южной Корее?', 'Если включено то к вам на сайт будут добавляться дорамы, которые были сняты в Южной Корее', makeCheckBox('grabbing_doram[skorea]', $aaparser_config['grabbing_doram']['skorea']));
-showRow('Добавлять дорамы произведённые в Китае?', 'Если включено то к вам на сайт будут добавляться дорамы, которые были сняты в Китае', makeCheckBox('grabbing_doram[china]', $aaparser_config['grabbing_doram']['china']));
-showRow('Добавлять дорамы произведённые в Японии?', 'Если включено то к вам на сайт будут добавляться дорамы, которые были сняты в Японии', makeCheckBox('grabbing_doram[japanese]', $aaparser_config['grabbing_doram']['japanese']));
-showRow('Добавлять дорамы произведённые в Таиланде?', 'Если включено то к вам на сайт будут добавляться дорамы, которые были сняты в Таиланде', makeCheckBox('grabbing_doram[tailand]', $aaparser_config['grabbing_doram']['tailand']));
-showRow('Добавлять дорамы произведённые в Тайване?', 'Если включено то к вам на сайт будут добавляться дорамы, которые были сняты в Тайване', makeCheckBox('grabbing_doram[taivan]', $aaparser_config['grabbing_doram']['taivan']));
-showRow('Добавлять дорамы произведённые в Филиппинах?', 'Если включено то к вам на сайт будут добавляться дорамы, которые были сняты в Филиппинах', makeCheckBox('grabbing_doram[phillipines]', $aaparser_config['grabbing_doram']['phillipines']));
 
 showRow('Добавлять релизы в camrip?', 'Если выключено то на сайт не будут добавляться дорамы доступные только в качестве camrip', makeCheckBox('grabbing_doram[if_camrip]', $aaparser_config['grabbing_doram']['if_camrip']));
 showRow('Добавлять дорамы с LGBT сценами?', 'Если выключено то на сайт не будут добавляться дорамы с LGBT сценами', makeCheckBox('grabbing_doram[if_lgbt]', $aaparser_config['grabbing_doram']['if_lgbt']));
@@ -119,6 +128,22 @@ showRow('Добавлять только в выбранных озвучках 
 showRow('Не добавлять выбранные года', 'Вы можете выбрать черный список годов выхода, в случае если выберете то не будут добавляться дорамы этих годов', makeSelect( $year_array, "grabbing_doram[not_years]", $aaparser_config['grabbing_doram']['not_years'], 'Выберите год/года выхода', 0));
 showRow('Не добавлять выбранные жанры', 'Вы можете выбрать черный список жанров, в случае если выберете то не будут добавляться дорамы только в одном из выбранных жанров', makeSelect( $genres_array, "grabbing_doram[not_genres]", $aaparser_config['grabbing_doram']['not_genres'], 'Выберите жанр или несколько жанров', 1));
 showRow('Не добавлять в выбранных озвучках *', 'Вы можете выбрать черный список озвучек, в случае если выберете то не будут добавляться дорамы доступные только в одной из этих озвучкек', makeSelect( $translator_array_dorama, "grabbing_doram[not_translators]", $aaparser_config['grabbing_doram']['not_translators'], 'Выберите озвучку или несколько озвучек', 1));
+if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/countries_name.json') ) {
+echo <<<HTML
+    <tr>
+        <td class="col-xs-10 col-sm-6 col-md-7 "><button onclick="update_countries(); return false;" class="btn bg-slate-600 btn-raised legitRipple"><i class="fa fa-microphone position-left"></i>Обновить страны</button><span class="note large"></span></td>
+        <td class="col-xs-2 col-md-5 settingstd "></td>
+    </tr>
+HTML;
+} else {
+    echo <<<HTML
+    <tr>
+        <td class="col-xs-10 col-sm-6 col-md-7 "><button onclick="update_countries(); return false;" class="btn bg-slate-600 btn-raised legitRipple"><i class="fa fa-microphone position-left"></i>Получить страны</button><span class="note large"></span></td>
+        <td class="col-xs-2 col-md-5 settingstd "></td>
+    </tr>
+HTML;
+}
+showRow('Добавлять только в выбранных странах', 'Вы можете выбрать страны, в случае если выберете то будут добавляться дорамы доступные в этих странах, иначе если оставить пустым то на ваш сайт будут добавляться дорамы со всех странах. <b>*Условие будет пропущено, если данного дорамы нет в базе Kodik!</b>', makeSelect( $countries_array, "grabbing[countries_dorama]", $aaparser_config['grabbing']['countries_dorama'], 'Выберите страну или несколько стран', 1));
 
 echo <<<HTML
 			</table>

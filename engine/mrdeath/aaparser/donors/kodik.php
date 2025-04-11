@@ -366,7 +366,7 @@ if ($parse_action == 'search') {
 	}
 } elseif ( $parse_action == 'grab' && $kind == 'anime' ) {
     
-    $anime_kind_add = $camrip_add = $lgbt_add = $years_add = $genres_add = $translators_add = '';
+    $anime_kind_add = $camrip_add = $lgbt_add = $years_add = $genres_add = $translators_add = $countries_add = '';
     if ( $aaparser_config['grabbing']['tv'] ) {
         if ( $anime_kind_add ) $anime_kind_add .= ',tv';
         else $anime_kind_add = '&anime_kind=tv';
@@ -407,10 +407,25 @@ if ($parse_action == 'search') {
 			if ($key !== false) $keys[] = $key;
 		}
 		if (empty($keys)) die('Значения не найдены в JSON');
-		$translators_add = '&translation_id=' . implode(',', $keys);
+		$translators_add = '&translation_id=' . rawurlencode(implode(',', $keys));
+		unset($file_path,$keys,$values_to_find);
+	}
+	if (!empty($aaparser_config['grabbing']['countries'])) {
+		$file_path = ENGINE_DIR . '/mrdeath/aaparser/data/countries_name.json';
+		if (!file_exists($file_path)) die('У Вас не загружены озвучки');
+		$countries = json_decode(file_get_contents($file_path), true);
+		if (!is_array($countries)) die('Ошибка декодирования JSON');
+		$values_to_find = array_map('trim', explode(',', $aaparser_config['grabbing']['countries']));
+		$keys = [];
+		foreach ($values_to_find as $value) {
+			$key = array_search($value, $countries);
+			if ($key !== false) $keys[] = $value;
+		}
+		if (empty($keys)) die('Значения не найдены в JSON');
+		$countries_add = '&countries=' . rawurlencode(implode(',', $keys));
+		unset($file_path,$keys,$values_to_find);
 	}
 
-    
     if ( !$anime_kind_add ) die('Вы не выбрали ни одного типа аниме - сериал, фильм, ova, ona, спэшл или amv');
 
 	//sort
@@ -419,7 +434,7 @@ if ($parse_action == 'search') {
 	//
 	$kodik_log = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log' ), true );
 	if ( $kodik_log[$kind] ) $grab_url = $kodik_log[$kind];
-	else $grab_url = $kodik_api_domain.'list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100&types=anime,anime-serial'.$anime_kind_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add;
+	else $grab_url = $kodik_api_domain.'list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100&types=anime,anime-serial'.$anime_kind_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add.$countries_add;
 	
     $grab = request($grab_url.$film_sort_by);
     if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
@@ -488,13 +503,14 @@ if ($parse_action == 'search') {
 		if($grab_info_old != '') echo 'Пропущено:<br>' . $grab_info_old;
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 			$debugger_table_row .= tableRowCreate("(kodik.php) Добавление материалов в бд " . PREFIX . "_anime_list", round(microtime(true) - $time_update_start,4));
+			echo $debugger_table_start.$debugger_table_row.$debugger_table_end.$debugger_table_style;
 		}
         exit("<br>База аниме успешно обновлена!");
     }
 	
 } elseif ( $parse_action == 'grab' && $kind == 'dorama' ) {
     
-    $kind_add = $country_add = $camrip_add = $lgbt_add = $years_add = $genres_add = $translators_add = '';
+    $kind_add = $countries_add = $camrip_add = $lgbt_add = $years_add = $genres_add = $translators_add = '';
     if ( $aaparser_config['grabbing_doram']['tv'] ) {
         if ( $kind_add ) $kind_add .= ',foreign-serial';
         else $kind_add = '&types=foreign-serial';
@@ -506,33 +522,6 @@ if ($parse_action == 'search') {
     
     if ( !$kind_add ) die('Вы не выбрали в настройках модуля ни одного типа дорам - сериал или фильм');
     
-    if ( $aaparser_config['grabbing_doram']['skorea'] ) {
-        if ( $country_add ) $country_add .= ',Корея+Южная';
-        else $country_add = '&countries=Корея+Южная';
-    }
-    if ( $aaparser_config['grabbing_doram']['china'] ) {
-        if ( $country_add ) $country_add .= ',Китай';
-        else $country_add = '&countries=Китай';
-    }
-    if ( $aaparser_config['grabbing_doram']['japanese'] ) {
-        if ( $country_add ) $country_add .= ',Япония';
-        else $country_add = '&countries=Япония';
-    }
-    if ( $aaparser_config['grabbing_doram']['tailand'] ) {
-        if ( $country_add ) $country_add .= ',Таиланд';
-        else $country_add = '&countries=Таиланд';
-    }
-    if ( $aaparser_config['grabbing_doram']['taivan'] ) {
-        if ( $country_add ) $country_add .= ',Тайвань';
-        else $country_add = '&countries=Тайвань';
-    }
-    if ( $aaparser_config['grabbing_doram']['phillipines'] ) {
-        if ( $country_add ) $country_add .= ',Филиппины';
-        else $country_add = '&countries=Филиппины';
-    }
-    
-    if ( !$country_add ) die('Вы не выбрали в настройках модуля ни одной страны, выпускающей дорамы');
-
     if ( !$aaparser_config['grabbing_doram']['if_camrip'] ) $camrip_add = '&camrip=false';
     if ( !$aaparser_config['grabbing_doram']['if_lgbt'] ) $lgbt_add = '&lgbt=false';
     if ( $aaparser_config['grabbing_doram']['years'] ) $years_add = '&year='.rawurlencode($aaparser_config['grabbing_doram']['years']);
@@ -549,14 +538,33 @@ if ($parse_action == 'search') {
 			if ($key !== false) $keys[] = $key;
 		}
 		if (empty($keys)) die('Значения не найдены в JSON');
-		$translators_add = '&translation_id=' . implode(',', $keys);
+		$translators_add = '&translation_id=' . rawurlencode(implode(',', $keys));
 	}
-    
+	if (!empty($aaparser_config['grabbing']['countries_dorama'])) {
+		$file_path = ENGINE_DIR . '/mrdeath/aaparser/data/countries_name.json';
+		if (!file_exists($file_path)) die('У Вас не загружены озвучки');
+		$countries = json_decode(file_get_contents($file_path), true);
+		if (!is_array($countries)) die('Ошибка декодирования JSON');
+		$values_to_find = array_map('trim', explode(',', $aaparser_config['grabbing']['countries_dorama']));
+		$keys = [];
+		foreach ($values_to_find as $value) {
+			$key = array_search($value, $countries);
+			if ($key !== false) $keys[] = $value;
+		}
+		if (empty($keys)) die('Значения не найдены в JSON');
+		$countries_add = '&countries=' . rawurlencode(implode(',', $keys));
+		unset($file_path,$keys,$values_to_find);
+	} else $countries_add = '&countries='. rawurlencode('Корея+Южная,Китай,Япония,Таиланд,Тайвань,Филиппины');
+	
+    //sort
+	$film_sort_by = "";
+	if ($aaparser_config['settings']['film_sort_by']) $film_sort_by = '&sort='.$aaparser_config['settings']['film_sort_by'];
+	//
 	$kodik_log = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log' ), true );
 	if ( $kodik_log[$kind] ) $grab_url = $kodik_log[$kind];
-	else $grab_url = $kodik_api_domain.'list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100'.$kind_add.$country_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add;
+	else $grab_url = $kodik_api_domain.'list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100'.$kind_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add.$countries_add;
     
-    $grab = request($grab_url);
+    $grab = request($grab_url.$film_sort_by);
     if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 		$debugger_table_row .= tableRowCreate("(kodik.php) Грабинг list по API", round(microtime(true) - $time_update_start,4));
 	}
@@ -624,8 +632,9 @@ if ($parse_action == 'search') {
 		if($grab_info_old != '') echo 'Пропущено:<br>' . $grab_info_old;
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 			$debugger_table_row .= tableRowCreate("(kodik.php) Добавление материалов в бд " . PREFIX . "_anime_list", round(microtime(true) - $time_update_start,4));
+			echo $debugger_table_start.$debugger_table_row.$debugger_table_end.$debugger_table_style;
 		}
-        exit("База дорам успешно обновлена!");
+        exit("<br>База дорам успешно обновлена!");
     }
 } elseif ( $parse_action == 'takeimage' ) {
 	if ( !isset($xfields_data) && !$xfields_data ) $xfields_data = [];

@@ -310,6 +310,30 @@ if ($aaparser_config['settings']['working_mode'] == 1) {
 	}
 }
 
+if (!file_exists(ENGINE_DIR."/mrdeath/aaparser/data/countries_name.json") || filectime(ENGINE_DIR."/mrdeath/aaparser/data/countries_name.json") < $c_time) {
+	if ($aaparser_config['settings']['kodik_api_domain'] != '') {
+		$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."countries?token=".$aaparser_config['settings']['kodik_api_key']);
+	} else {
+		$cont = file_get_contents("https://kodikapi.com/countries?token=".$aaparser_config['settings']['kodik_api_key']);
+	}
+	$cont = json_decode($cont, true);
+	$countries_name = [];
+	if (isset($cont['results'])) {
+		foreach ($cont['results'] as $result) {
+			$countries_name[] = $result['title'];
+		}
+	}
+	file_put_contents(ENGINE_DIR.'/mrdeath/aaparser/data/countries_name.json', json_encode($countries_name, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ));
+	unset ($countries_name, $cont);
+} 
+
+if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/countries_name.json') ) {
+    $countries_array = file_get_contents(ENGINE_DIR.'/mrdeath/aaparser/data/countries_name.json');
+    $countries_array = json_decode($countries_array, true);
+	$countries_array = preg_replace('/"([^"]*?)"(?=[^"]*?"|$)/', '\"$1\"', $countries_array);
+}
+else $countries_array = [];
+
 if ( file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/translators_name.json') ) {
     $translator_array = file_get_contents(ENGINE_DIR.'/mrdeath/aaparser/data/translators_name.json');
     $translator_array = json_decode($translator_array, true);
@@ -639,7 +663,7 @@ $anons_kind = array(
 
 
 function dir_size($dir) {
-	if (!is_dir($dir)) {
+ 	if (!is_dir($dir)) {
 		@mkdir($dir, 0777 );
 		@chmod($dir, 0777 );
 	}

@@ -25,9 +25,9 @@ if ($aaparser_config['debugger']['enable'] == 1) {
 	ob_start();
 
 	$debugger_table_row .= tableRowCreate("(grabber.php) Запуск модуля", round(microtime(true) - $time_update_start, 4));
-	$debugger_table_start = "<table><thead><tr><th>№</th><th>Действие</th><th>Прошло</th><th>Заняло</th><th>Память</th></tr></thead><tbody>";
+	$debugger_table_start = "<table style='width:100%'><thead><tr><th>№</th><th>Действие</th><th>Прошло</th><th>Заняло</th><th>Память</th></tr></thead><tbody>";
     $debugger_table_end = "</tbody></table>";
-    $debugger_table_style = "<style>table {width:100%;text-align:center;border-collapse:collapse;}th,td{border:1px solid #000}tr td:nth-child(2) {text-align:left}</style>";
+    $debugger_table_style = "<style>table {width:100%;text-align:center;border-collapse:collapse;}th,td{border:1px solid #000}tr td:nth-child(2) {text-align:left;overflow-wrap: anywhere;}</style>";
 
 	register_shutdown_function(function() use($debugger_table_start, $debugger_table_row, $debugger_table_end, $debugger_table_style) {	
 		global $debugger_table_row;
