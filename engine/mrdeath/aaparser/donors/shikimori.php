@@ -126,78 +126,94 @@ if ( $parse_action == 'search' ) {
    
 } elseif ($parse_action == 'parse') {
     $xfields_data = [];
-	$postfields = [
-		'query' => '{
-			animes(ids: "'.$shiki_id.'", limit: 50) {
-				id
-				malId
-				name
-				russian
-				licenseNameRu
-				english
-				japanese
-				synonyms
-				kind
-				rating
-				score
-				status
-				episodes
-				episodesAired
-				duration
-				airedOn { year month day date }
-				releasedOn { year month day date }
-				url
-				season
-
-				poster { id originalUrl }
-
-				licensors
-				nextEpisodeAt,
-
-				genres { id name russian kind }
-				studios { id name imageUrl }
-
-				externalLinks {
-				  id
-				  kind
-				  url
-				  createdAt
-				  updatedAt
-				}
-
-				personRoles {
-				  id
-				  rolesRu
-				  rolesEn
-				  person { id name poster { id } }
-				}
-
-				related {
-				  id
-				  anime {
+	if (isset($aaparser_config['settings']['alternate_shikimori']) && $aaparser_config['settings']['alternate_shikimori'] == 1) {
+		$shikimori = request($shikimori_api_domain.'api/animes/'.$shiki_id);
+	} else {
+		$postfields = [
+			'query' => '{
+				animes(ids: "'.$shiki_id.'", limit: 50) {
 					id
+					malId
 					name
-				  }
-				  relationKind
-				  relationText
-				}
+					russian
+					licenseNameRu
+					english
+					japanese
+					synonyms
+					kind
+					rating
+					score
+					status
+					episodes
+					episodesAired
+					duration
+					airedOn { year month day date }
+					releasedOn { year month day date }
+					url
+					season
 
-				videos { id url name kind playerUrl imageUrl }
-				
-				scoresStats { score count }
-				
-				description
-				descriptionHtml
-			}
-		}'
-	];
-    $shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
-	$shikimori = $shikimori['data']['animes']['0'];
+					poster { id originalUrl }
+
+					licensors
+					nextEpisodeAt,
+
+					genres { id name russian kind }
+					studios { id name imageUrl }
+
+					externalLinks {
+					  id
+					  kind
+					  url
+					  createdAt
+					  updatedAt
+					}
+
+					personRoles {
+					  id
+					  rolesRu
+					  rolesEn
+					  person { id name poster { id } }
+					}
+
+					related {
+					  id
+					  anime {
+						id
+						name
+					  }
+					  relationKind
+					  relationText
+					}
+
+					videos { id url name kind playerUrl imageUrl }
+					
+					scoresStats { score count }
+					
+					description
+					descriptionHtml
+				}
+			}'
+		];
+		$shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
+		$shikimori = $shikimori['data']['animes']['0'];
+	}
 	
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 		$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск id материала по API", round(microtime(true) - $time_update_start, 4));
 	}
     if ($shikimori['code'] != "404") {
+		if (isset($aaparser_config['settings']['alternate_shikimori']) && $aaparser_config['settings']['alternate_shikimori'] == 1) {
+			$shikimori['licenseNameRu'] = isset($shikimori['license_name_ru']) ? $shikimori['license_name_ru'] : '';
+			$shikimori['scoresStats'] = isset($shikimori['rates_scores_stats']) ? $shikimori['rates_scores_stats'] : '';
+			$shikimori['episodesAired'] = isset($shikimori['episodes_aired']) ? $shikimori['episodes_aired'] : '';
+			$shikimori['airedOn']['date'] = isset($shikimori['aired_on']) ? $shikimori['aired_on'] : '';
+			$shikimori['releasedOn']['date'] = isset($shikimori['released_on']) ? $shikimori['released_on'] : '';
+			$shikimori['nextEpisodeAt'] = isset($shikimori['next_episode_at']) ? $shikimori['next_episode_at'] : '';
+			$shikimori['descriptionHtml'] = isset($shikimori['description_html']) ? trim(strip_tags($shikimori['description_html'])) : '';
+			$shikimori['english'] = (isset($shikimori['english']) && $shikimori['english']) ? implode(', ', $shikimori['english']) : '';
+			$shikimori['japanese'] = (isset($shikimori['japanese']) && $shikimori['japanese']) ? implode(', ', $shikimori['japanese']) : '';
+			if ( isset($shikimori['image']['original']) && $shikimori['image']['original'] && strpos($shikimori['image']['original'], "missing_original") !== false) $shikimori['poster']['originalUrl'] = $shikimori_image_domain.$shikimori['image']['original'];
+		}
 		$xfields_data['shikimori_id'] = isset($shiki_id) ? $shiki_id : '';
 		$xfields_data['shikimori_name'] = isset($shikimori['name']) ? $shikimori['name'] : '';
 		$xfields_data['shikimori_russian'] = isset($shikimori['russian']) ? $shikimori['russian'] : '';
