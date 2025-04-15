@@ -263,7 +263,7 @@ if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
       	if ( $base_check_db['shikimori_id'] == $shikimori_id && $base_check_db['news_id'] != $id )
           	$db->query("UPDATE " . PREFIX . "_anime_list SET news_id='{$id}', started=1 WHERE shikimori_id='{$shikimori_id}'");
       	else {
-	        $shikimori = request('https://shikimori.me/api/animes/'.$shikimori_id);
+	        $shikimori = request($aaparser_config['settings']['shikimori_api_domain'].'api/animes/'.$shikimori_id);
 	        if ( $shikimori['aired_on'] ) {
 		        $aired = explode('-', $shikimori['aired_on']);
 		        $year = $aired[0];
@@ -288,7 +288,7 @@ elseif ( isset($aaparser_config['main_fields']['xf_mdl_id']) ) {
           	if ( isset($aaparser_config['settings']['kodik_api_key']) ) $kodik_apikey = $aaparser_config['settings']['kodik_api_key'];
 			else $kodik_apikey = '9a3a536a8be4b3d3f9f7bd28c1b74071';
 
-	        $kodik = request('https://kodikapi.com/search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_material_data=true');
+	        $kodik = request($aaparser_config['settings']['kodik_api_domain'].'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_material_data=true');
 
 	        if ( $kodik['results'][0]['year'] ) $year = $kodik['results'][0]['year'];
 	        else $year = 0;
