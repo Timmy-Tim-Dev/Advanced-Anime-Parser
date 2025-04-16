@@ -26,8 +26,13 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 			}
         }
 		if ( $aaparser_config['settings']['working_mode'] !== 0 ) {
-			$mdl_url = "https://mydramalist.com/v1/episode_calendar";
-			$json = mdl_request($mdl_url);
+			if (isset($aaparser_config['persons']['personas_other_dorama_api']) && $aaparser_config['persons']['personas_other_dorama_api'] == 1) {		
+				$mdl_url = "https://api.allorigins.win/raw?url=https://mydramalist.com/v1/episode_calendar";
+				$json = mdl_request($mdl_url);
+			} else {
+				$mdl_url = "https://mydramalist.com/v1/episode_calendar";
+				$json = mdl_request($mdl_url);
+			}
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
 				$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных с MYDRAMALIST CALENDAR", round(microtime(true) - $time_update_start,4));
 				$debugger_table_row .= tableRowCreate("(other_actions.php) Начинаем обработку данных с MYDRAMALIST CALENDAR", round(microtime(true) - $time_update_start,4));

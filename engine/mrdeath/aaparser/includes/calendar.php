@@ -1,17 +1,17 @@
 <?php
 echo <<<HTML
 <div id="calendar" class="panel panel-flat" style='display:none'>
-    <div class="panel-body anime-settings" style="padding: 20px;font-size:20px; font-weight:bold;">Настройка расписания выхода серий аниме</div>
-		<div class="table-responsive anime-settings">
+    <div class="panel-body" style="padding: 20px;font-size:20px; font-weight:bold;">Настройка расписания выхода серий тайтлов</div>
+		<div class="table-responsive">
 			<table class="table table-striped">
 HTML;
-showRow('Включить функционал расписания выхода серий аниме?', 'Включив, модуль будет собирать данные про расписание выхода онгоингов аниме с Shikimori и выводить его на отдельной странице <a href="'. $config["http_home_url"] .'schedule/" target="_blank">'. $config["http_home_url"] .'schedule/</a>. Инструкция по настройке находится ниже', makeCheckBox('calendar_settings[enable_schedule]', $aaparser_config['calendar_settings']['enable_schedule'], 'ShowOrHideCalendar'));
+showRow('Включить функционал расписания выхода серий тайтлов?', 'Включив, модуль будет собирать данные про расписание выхода онгоинговых тайтлов и выводить его на отдельной странице <a href="'. $config["http_home_url"] .'schedule/" target="_blank">'. $config["http_home_url"] .'schedule/</a>. Инструкция по настройке находится ниже', makeCheckBox('calendar_settings[enable_schedule]', $aaparser_config['calendar_settings']['enable_schedule'], 'ShowOrHideCalendar'));
 echo <<<HTML
             </table>
             <div id="show-hide-calendar">
                 <div class="alert alert-info alert-styled-left alert-arrow-left alert-component">Инструкция по настройке расписания:<br>1. <b>Если ваш сервер работает на apache</b>, то добавляем следующее правило ниже строчки <b>RewriteEngine On</b><br><textarea style="width:100%;height:50px;" disabled>RewriteRule ^schedule(/?)+$ index.php?do=schedule [L]</textarea><br><b>Если ваш сервер работает на nginx</b>, то добавляем следующее правило<br><textarea style="width:100%;height:50px;" disabled>rewrite "^/schedule(/?)+$" /index.php?do=schedule break;</textarea><br>
                 2. Создайте в корне папки с шаблоном файл <b>schedule.tpl</b> с таким содержимым:<br><textarea style="width:100%;height:300px;" disabled><div>
-	<h1 class="main-title">Расписание выхода аниме</h1>
+	<h1 class="main-title">Расписание выхода тайтла</h1>
 	<div class="top-description">
    		Интересует когда выйдет новая серия любимого сериала? На этой страничке предоставлено расписание выхода всех сериалов на ближайшее время. Для использования календаря, просто кликнете по числу и найдите интересующий вас сериал.
 	</div>

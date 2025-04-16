@@ -5,7 +5,7 @@ echo <<<HTML
 	    <div class="navbar-collapse" id="option_menu_modules">
 		    <ul class="nav navbar-nav">
 			    <li class="active"><a onclick="ChangeOptionModules(this, 'player');" class="tip" title="Настройка вывода плеера"><i class="fa fa-play"></i> Вывод плеера</a></li>
-			    <li class="anime-settings"><a onclick="ChangeOptionModules(this, 'calendar');" class="tip" title="Настройка расписания выхода серий аниме"><i class="fa fa-calendar"></i> Расписание серий</a></li>
+			    <li><a onclick="ChangeOptionModules(this, 'calendar');" class="tip" title="Настройка расписания выхода серий тайтлов"><i class="fa fa-calendar"></i> Расписание серий</a></li>
 			    <li><a onclick="ChangeOptionModules(this, 'updates_block');" class="tip" title="Настройка блока обновления сериалов"><i class="fa fa-list-ul"></i> Блок обновления сериалов</a></li>
 			    <li><a onclick="ChangeOptionModules(this, 'push');" class="tip" title="Настройка Push уведомлений"><i class="fa fa-bell"></i> Push уведомления</a></li>
 			    <li><a onclick="ChangeOptionModules(this, 'rooms');" class="tip" title="Настройка функционала совместного просмотра"><i class="fa fa-eye"></i> Совместный просмотр</a></li>

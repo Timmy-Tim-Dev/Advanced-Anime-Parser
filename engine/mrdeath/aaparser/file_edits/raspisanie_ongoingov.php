@@ -11,7 +11,7 @@ $dle_module = 'schedule';
 $url_page = $config['http_home_url'] . "schedule";
 $user_query = "do=schedule";
 
-$metatags['title'] = 'Расписание выхода аниме';
+$metatags['title'] = 'Календарь выхода тайтлов';
 
 $page_description = $metatags_description = $metatags['title'];
 
