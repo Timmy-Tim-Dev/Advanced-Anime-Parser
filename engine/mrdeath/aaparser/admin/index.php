@@ -11,8 +11,8 @@
 if (!defined('DATALIFEENGINE') OR !defined('LOGGED_IN')) {
 	die('Hacking attempt!');
 }
-
-$actual_module_version = '4.5.2';
+$plugin_info = $db->super_query( "SELECT * FROM " . PREFIX . "_plugins WHERE name = 'Advanced Kodik Parser'" );
+$actual_module_version = $plugin_info['version'];
 $action = isset($_GET['action']) ? $_GET['action'] : false;
 
 $php_version = intval(str_replace(array(".",","),"",substr(PHP_VERSION,0,3)));
@@ -351,6 +351,7 @@ elseif ( $action == 'dbupgrade' ) {
 			'4.3.1',
 			'4.4.0',
 			'4.5.0',
+			'4.6.0'
 		];
 		
 		$versions = array_filter($versions, function ($verik) use ($log_module_version) {

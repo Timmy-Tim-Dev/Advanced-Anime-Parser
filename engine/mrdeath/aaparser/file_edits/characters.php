@@ -31,34 +31,6 @@ $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVE
 $current_url = $protocol . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 if ($type == "persons") {
 	// Начало
-	if (!function_exists('mdl_request')) {
-        function mdl_request($url) {
-        
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL,$url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60 );
-            curl_setopt($ch, CURLOPT_TIMEOUT, 60 );
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        
-            $headers = [
-    		    'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.2924.87 Safari/537.36',
-                'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Accept-Language: ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
-                'Connection: keep-alive',
-                'Cache-Control: max-age=0',
-                'Upgrade-Insecure-Requests: 1'
-		    ];
-
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-		    $mdl_page = curl_exec ($ch);
-		    curl_close ($ch);
-  
-  		    return $mdl_page;
-        }
-    }
 	
 	$dle_module = 'persons';
 	if ( isset($aaparser_config['persons']['persons_dorama_page_cache']) && $aaparser_config['persons']['persons_dorama_page_cache'] == 1 ) {

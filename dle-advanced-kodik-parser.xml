@@ -3,7 +3,7 @@
 	<name>Advanced Kodik Parser</name>
 	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, парсинг анонсов аниме, обновление новостей при выходе новой серии или лучшего качества, тонкие настройки работы cron.</description>
 	<icon>uploads/advanced-anime-parser-icon.png</icon>
-	<version>4.5.2</version>
+	<version>4.6.0</version>
 	<dleversion>15.0</dleversion>
 	<versioncompare>greater</versioncompare>
 	<upgradeurl>https://storage.kodik.biz/files/advanced-anime-parser/last_version.json</upgradeurl>
@@ -153,11 +153,12 @@ if (!file_exists($filePath)) {
    	if (!is_dir(ENGINE_DIR . '/mrdeath')) mkdir(ENGINE_DIR . '/mrdeath', 0777, true);
  	if (!is_dir(ENGINE_DIR . '/mrdeath/aaparser')) mkdir(ENGINE_DIR . '/mrdeath/aaparser', 0777, true);
 	if (!is_dir(ENGINE_DIR . '/mrdeath/aaparser/data')) mkdir(ENGINE_DIR . '/mrdeath/aaparser/data', 0777, true);
-  
+  	$plugin_info = $db->super_query( "SELECT * FROM " . PREFIX . "_plugins WHERE name = 'Advanced Kodik Parser'" );
+	$actual_module_version = $plugin_info['version'];
     $fp = fopen($filePath, "w+");
     if ($fp) {
         @chmod($filePath, 0777);
-        fwrite($fp, '4.5.2');
+        fwrite($fp, $actual_module_version);
         fclose($fp);
     } else {
         echo "Ошибка: Пожалуйста загрузите модуль через менеджер файлов или FTP. Система установки плагинов не может сделать запись";

@@ -633,3 +633,46 @@ if (!function_exists('tableRowCreate')) {
 		else return "<tr><td>".$stage."</td><td>".$text."</td><td>".$timer." сек</td><td>".$difference."</td><td>".$mem." Mb</td></tr>";
 	}
 }
+
+if (!function_exists('mdl_request')) {
+	function mdl_request($url) {
+		global $aaparser_config, $debugger_table_row, $time_update_start;
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Делаем запрос: (".$url.")", round(microtime(true) - $time_update_start, 4));
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL,$url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60 );
+		curl_setopt($ch, CURLOPT_TIMEOUT, 60 );
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+	
+		$headers = [
+			'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.2924.87 Safari/537.36',
+			'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+			'Accept-Language: ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
+			'Connection: keep-alive',
+			'Cache-Control: max-age=0',
+			'Upgrade-Insecure-Requests: 1'
+		];
+
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		$mdl_page = curl_exec ($ch);
+		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) $time_ch = microtime(true) - $time_ch_start;
+		if ($http_code == 200) {
+			// Успешный ответ
+		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Успешный запрос: (".$url.")", round(microtime(true) - $time_update_start, 4));
+			curl_close($ch);
+			return $mdl_page;
+		} else {
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Неуспешный запрос, Ответ (".$kp_api."), Код (".$http_code."): (".$url.")", round(microtime(true) - $time_update_start, 4));
+			curl_close ($ch);
+			return $mdl_page;
+		}
+		curl_close ($ch);
+
+		return $mdl_page;
+	}
+}
