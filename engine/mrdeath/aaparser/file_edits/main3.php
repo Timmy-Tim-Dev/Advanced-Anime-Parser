@@ -34,12 +34,14 @@ if ( $aaparser_config['calendar_settings']['enable_schedule'] && $aaparser_confi
 
 	$calendar_mas = [];
 	$anime_list_today = $anime_list_tomorrow = '';
-
+	$today_name = strtolower(date("l", $_TIME));
+	$tomorrow_name = strtolower(date("l", strtotime('+1 day', $_TIME)));
 	foreach ( $raspisanie_ongoingov as $rnum => $raspisanie ) {
-  		if ( $rnum > 1 ) continue;
+  		if (!in_array(strtolower($raspisanie['day_name']), [$today_name, $tomorrow_name])) continue;
   		$position = 1;
   		$anime_list_mas = json_decode($raspisanie['anime_list'], true);
   		foreach ( $anime_list_mas as $anime_item ) {
+			$anime_day_name = strtolower(date("l", strtotime($anime_item['next_date'])));
       		if ( $anime_item['image'] ) {
           		$temp_poster = explode('|', $anime_item['image']);
           		if ( strpos($temp_poster[0], '/uploads/posts/') == false ) $poster = '/uploads/posts/'.$temp_poster[0];
@@ -65,7 +67,7 @@ if ( $aaparser_config['calendar_settings']['enable_schedule'] && $aaparser_confi
          		</div>';
       		if ( ($position+1) > 6 ) $tdhid = ' style="display:none"';
         	else $tdhid = '';
-      		if ( $rnum == 0 ) $anime_list_today .= '<div class="calendar__item-anime watchlist_parent list_today"'.$tdhid.'>
+      		if ( $anime_day_name == $today_name ) $anime_list_today .= '<div class="calendar__item-anime watchlist_parent list_today"'.$tdhid.'>
          		<div class="calendar__item-number">'.$position.'.</div>
          		<a href="'.$anime_item['full_link'].'" class="calendar__item-img">
          		<img src="'.$poster.'" alt="Постер '.$anime_item['russian'].'">

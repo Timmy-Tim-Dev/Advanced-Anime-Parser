@@ -101,20 +101,21 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 			}
 		}
   	    $today_id = [strtolower(date("l", $_TIME)) => date("Y-m-d", $_TIME)];
+		
+		$days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+		
   	    for ($i = 1; $i < 7; $i++) {
       	    $plus_time = $_TIME+($i*86400);
     	    $today_id[strtolower(date('l', $plus_time))] = date('Y-m-d', $plus_time);
 	    }
-		
+		uksort($today_id, function($a, $b) use ($days) {
+			return array_search($a, $days) - array_search($b, $days);
+		});
 		$merged_data = array_merge(
 			is_array($kodik_api) ? $kodik_api : [],
 			is_array($final_mdl_data) ? $final_mdl_data : []
 		);
 		
-		// echo "<pre>";
-		// print_r($merged_data);
-		// echo "</pre>";
-		// die('stop');
   	    $spisok_raspisaniy = [];
   	    foreach ( $today_id as $today_name => $today_date ) {
       	    $temp_num = 0;
@@ -168,7 +169,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
             }
         }
   	    clear_cache(array("raspisanie_ongoingov"));
-	    echo "Расписание аниме было обновлено. Данные перезаписаны.<br>";
+	    echo "Расписание тайтлов было обновлено. Данные перезаписаны.<br>";
     }
     if ( isset($aaparser_config['settings']['rooms_enable']) && $aaparser_config['settings']['rooms_enable'] ) {
         $rooms = $db->query( "SELECT url, leader FROM " . PREFIX . "_rooms_list" );
