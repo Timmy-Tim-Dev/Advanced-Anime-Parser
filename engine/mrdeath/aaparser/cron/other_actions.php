@@ -26,20 +26,12 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 			}
         }
 		if ( $aaparser_config['settings']['working_mode'] !== 0 ) {
-			if (isset($aaparser_config['persons']['personas_other_dorama_api']) && $aaparser_config['persons']['personas_other_dorama_api'] == 1) {		
-				$mdl_url = "https://api.allorigins.win/raw?url=https://mydramalist.com/v1/episode_calendar";
-				$json = mdl_request($mdl_url);
-			} else {
-				$mdl_url = "https://mydramalist.com/v1/episode_calendar";
-				$json = mdl_request($mdl_url);
-			}
+			$json = request('https://dumps.kodik.biz/calendar-drama.json?token='.$kodik_apikey);
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-				$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных с MYDRAMALIST CALENDAR", round(microtime(true) - $time_update_start,4));
-				$debugger_table_row .= tableRowCreate("(other_actions.php) Начинаем обработку данных с MYDRAMALIST CALENDAR", round(microtime(true) - $time_update_start,4));
+				$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных с KODIK API CALENDAR MYDRAMALIST", round(microtime(true) - $time_update_start,4));
+				$debugger_table_row .= tableRowCreate("(other_actions.php) Начинаем обработку данных с KODIK API CALENDAR MYDRAMALIST", round(microtime(true) - $time_update_start,4));
 			}
-			$mdl_rasp = json_decode($json, true);
-			$mdl_data = $temp_grouped = [];
-			foreach ( $mdl_rasp['items'] as $mdl_key => $mdl_item ) {
+			foreach ( $json['items'] as $mdl_key => $mdl_item ) {
 				if ($mdl_item['episode_number'] == 0) continue;
 				$mdl_data[$mdl_key]['next_episode'] = $mdl_item['episode_number'];
 				$mdl_data[$mdl_key]['duration'] = $mdl_item['duration'];
@@ -91,13 +83,13 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 				$final_mdl_data[$group['original_keys'][0]] = $new_item;
 			}
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-				$debugger_table_row .= tableRowCreate("(other_actions.php) Закончили обработку данных с MYDRAMALIST CALENDAR", round(microtime(true) - $time_update_start,4));
+				$debugger_table_row .= tableRowCreate("(other_actions.php) Закончили обработку данных с KODIK API CALENDAR MYDRAMALIST", round(microtime(true) - $time_update_start,4));
 			}
 		} 
 		if ($aaparser_config['settings']['working_mode'] == 0 || $aaparser_config['settings']['working_mode'] == 2) {
 			$kodik_api = request('https://dumps.kodik.biz/calendar.json?token='.$kodik_apikey);
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-				$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных с KODIK API CALENDAR", round(microtime(true) - $time_update_start,4));
+				$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных с KODIK API CALENDAR SHIKIMORI", round(microtime(true) - $time_update_start,4));
 			}
 		}
   	    $today_id = [strtolower(date("l", $_TIME)) => date("Y-m-d", $_TIME)];
