@@ -913,6 +913,16 @@ function DLE_Send_Push ( $title, $notification, $url = false, $image = false, $u
 			<replacecode><![CDATA[p.id, p.autor, p.date, p.short_story, p.franchise_aap]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
+		<operation action="replace">
+			<searchcode><![CDATA[	foreach ( $xfieldsdata as $xfielddata ) {
+		list ( $xfielddataname, $xfielddatavalue ) = explode( "|", $xfielddata );
+]]></searchcode>
+			<replacecode><![CDATA[	foreach ( $xfieldsdata as $xfielddata ) {
+		list ( $xfielddataname, $xfielddatavalue ) = explode( "|", $xfielddata );
+		if ($xfielddataname == null || $xfielddatavalue == null) continue;
+]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
 	</file>
 	<file name="engine/engine.php">
 		<operation action="before">
