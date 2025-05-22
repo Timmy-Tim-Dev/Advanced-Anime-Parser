@@ -395,11 +395,16 @@ if ($parse_action == 'search') {
     if ( !$aaparser_config['grabbing']['if_lgbt'] ) $lgbt_add = '&lgbt=false';
     if ( $aaparser_config['grabbing']['years'] ) $years_add = '&year='.rawurlencode($aaparser_config['grabbing']['years']);
     if ( $aaparser_config['grabbing']['genres'] ) $genres_add = '&all_genres='.rawurlencode($aaparser_config['grabbing']['genres']);
-    if (!empty($aaparser_config['grabbing']['translators'])) {
+	
+	if (!empty($aaparser_config['grabbing']['translators']) || !empty($aaparser_config['grabbing']['not_translators'])) {
 		$file_path = ENGINE_DIR . '/mrdeath/aaparser/data/translators.json';
 		if (!file_exists($file_path)) die('У Вас не загружены озвучки');
 		$translators = json_decode(file_get_contents($file_path), true);
 		if (!is_array($translators)) die('Ошибка декодирования JSON');
+		unset($file_path);
+	}
+	
+    if (!empty($aaparser_config['grabbing']['translators'])) {
 		$values_to_find = array_map('trim', explode(',', $aaparser_config['grabbing']['translators']));
 		$keys = [];
 		foreach ($values_to_find as $value) {
@@ -408,8 +413,21 @@ if ($parse_action == 'search') {
 		}
 		if (empty($keys)) die('Значения не найдены в JSON');
 		$translators_add = '&translation_id=' . rawurlencode(implode(',', $keys));
-		unset($file_path,$keys,$values_to_find);
+		unset($keys,$values_to_find);
 	}
+	
+	if (!empty($aaparser_config['grabbing']['not_translators'])) {
+		$values_to_find = array_map('trim', explode(',', $aaparser_config['grabbing']['not_translators']));
+		$keys = [];
+		foreach ($values_to_find as $value) {
+			$key = array_search($value, $translators);
+			if ($key !== false) $keys[] = $key;
+		}
+		if (empty($keys)) die('Значения не найдены в JSON');
+		$translators_block = '&block_translations=' . rawurlencode(implode(',', $keys));
+		unset($keys,$values_to_find);
+	}
+	
 	if (!empty($aaparser_config['grabbing']['countries'])) {
 		$file_path = ENGINE_DIR . '/mrdeath/aaparser/data/countries_name.json';
 		if (!file_exists($file_path)) die('У Вас не загружены озвучки');
@@ -434,7 +452,7 @@ if ($parse_action == 'search') {
 	//
 	$kodik_log = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log' ), true );
 	if ( $kodik_log[$kind] ) $grab_url = $kodik_log[$kind];
-	else $grab_url = $kodik_api_domain.'list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100&types=anime,anime-serial'.$anime_kind_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add.$countries_add;
+	else $grab_url = $kodik_api_domain.'list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100&types=anime,anime-serial'.$anime_kind_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add.$translators_block.$countries_add;
 	
     $grab = request($grab_url.$film_sort_by);
     if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
@@ -526,11 +544,16 @@ if ($parse_action == 'search') {
     if ( !$aaparser_config['grabbing_doram']['if_lgbt'] ) $lgbt_add = '&lgbt=false';
     if ( $aaparser_config['grabbing_doram']['years'] ) $years_add = '&year='.rawurlencode($aaparser_config['grabbing_doram']['years']);
     if ( $aaparser_config['grabbing_doram']['genres'] ) $genres_add = '&all_genres='.rawurlencode($aaparser_config['grabbing_doram']['genres']);
-	if (!empty($aaparser_config['grabbing_doram']['translators'])) {
+	
+	
+	if (!empty($aaparser_config['grabbing_doram']['translators']) || !empty($aaparser_config['grabbing_doram']['not_translators'])) {
 		$file_path = ENGINE_DIR . '/mrdeath/aaparser/data/translators_dorama.json';
 		if (!file_exists($file_path)) die('У Вас не загружены озвучки');
 		$translators = json_decode(file_get_contents($file_path), true);
 		if (!is_array($translators)) die('Ошибка декодирования JSON');
+	}
+	
+    if (!empty($aaparser_config['grabbing_doram']['translators'])) {
 		$values_to_find = array_map('trim', explode(',', $aaparser_config['grabbing_doram']['translators']));
 		$keys = [];
 		foreach ($values_to_find as $value) {
@@ -539,7 +562,21 @@ if ($parse_action == 'search') {
 		}
 		if (empty($keys)) die('Значения не найдены в JSON');
 		$translators_add = '&translation_id=' . rawurlencode(implode(',', $keys));
+		unset($keys,$values_to_find);
 	}
+	
+	if (!empty($aaparser_config['grabbing_doram']['not_translators'])) {
+		$values_to_find = array_map('trim', explode(',', $aaparser_config['grabbing_doram']['not_translators']));
+		$keys = [];
+		foreach ($values_to_find as $value) {
+			$key = array_search($value, $translators);
+			if ($key !== false) $keys[] = $key;
+		}
+		if (empty($keys)) die('Значения не найдены в JSON');
+		$translators_block = '&block_translations=' . rawurlencode(implode(',', $keys));
+		unset($keys,$values_to_find);
+	}
+	
 	if (!empty($aaparser_config['grabbing']['countries_dorama'])) {
 		$file_path = ENGINE_DIR . '/mrdeath/aaparser/data/countries_name.json';
 		if (!file_exists($file_path)) die('У Вас не загружены озвучки');
@@ -562,7 +599,7 @@ if ($parse_action == 'search') {
 	//
 	$kodik_log = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/kodik.log' ), true );
 	if ( $kodik_log[$kind] ) $grab_url = $kodik_log[$kind];
-	else $grab_url = $kodik_api_domain.'list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100'.$kind_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add.$countries_add;
+	else $grab_url = $kodik_api_domain.'list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100'.$kind_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add.$translators_block.$countries_add;
     
     $grab = request($grab_url.$film_sort_by);
     if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
