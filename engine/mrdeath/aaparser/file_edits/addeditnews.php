@@ -18,7 +18,7 @@ elseif( isset($config['allow_admin_wysiwyg']) && $config['allow_admin_wysiwyg'] 
 	$short_st = "$('#short_story').froalaEditor('html.set', ";
 	$full_st = "$('#full_story').froalaEditor('html.set', ";
 }
-elseif( isset($config['allow_admin_wysiwyg']) && $config['allow_admin_wysiwyg'] == 2 || $config['version_id'] == '18.0' && !isset($config['allow_admin_wysiwyg'])) {
+elseif( isset($config['allow_admin_wysiwyg']) && $config['allow_admin_wysiwyg'] == 2 || ($config['version_id'] == '18.0' || $config['version_id'] == '18.1') && !isset($config['allow_admin_wysiwyg'])) {
 	$short_st = "tinymce.get('short_story').setContent(";
 	$full_st = "tinymce.get('full_story').setContent(";
 }

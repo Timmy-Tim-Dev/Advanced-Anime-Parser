@@ -347,6 +347,13 @@ if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparse
 			<replacecode><![CDATA['0', '$catalog_url', '{$_POST['tags']}', '{$metatags['title']}' ".$inserter_val.")" );]]></replacecode>
 			<enabled>1</enabled>
 			<dleversion>18.0</dleversion>
+			<versioncompare>==</versioncompare>
+		</operation>
+		<operation action="replace">
+			<searchcode><![CDATA['0', '{$catalog_url}', '{$_POST['tags']}', '{$metatags['title']}')" );]]></searchcode>
+			<replacecode><![CDATA['0', '{$catalog_url}', '{$_POST['tags']}', '{$metatags['title']}' ".$inserter_val.")" );]]></replacecode>
+			<enabled>1</enabled>
+			<dleversion>18.1</dleversion>
 			<versioncompare>greater</versioncompare>
 		</operation>
 	</file>
