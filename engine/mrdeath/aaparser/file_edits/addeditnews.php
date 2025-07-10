@@ -418,6 +418,7 @@ async function DoNewsGenerationEpisode(data) {
             try {
                 let result = await $.ajax({
                     url: '/engine/ajax/controller.php?mod=kodik_ajax_controller',
+					type: 'POST',
                     data: {'file': "mass_generation", 'newsid': eps_list['news_id'], 'sez_num': index, 'ep_num': index2, 'ep_data': episode, 'sez_count': eps_list['sez_count'], 'material_title': eps_list['material_title'], action: "update_news_episode", user_hash: dle_login_hash},
                     response: 'text'
                 });
