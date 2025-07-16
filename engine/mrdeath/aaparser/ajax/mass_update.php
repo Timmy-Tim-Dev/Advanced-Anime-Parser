@@ -23,8 +23,10 @@ if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
     $shikimori_image_domain = 'https://'.clean_url($shikimori_api_domain);
 } else $shikimori_api_domain = $shikimori_image_domain = 'https://shikimori.me/'; 
 
-$action = isset($_GET['action']) ? $_GET['action'] : null;
-
+function get_param($key) {
+    return $_POST[$key] ?? $_GET[$key] ?? null;
+}
+$action = get_param('action');
 $is_logged = false;
 
 @header('Content-type: text/html; charset=' . $config['charset']);
@@ -229,15 +231,17 @@ if ( $action == "update_news_get" ) {
 	
 	if ( !isset($aaparser_config['main_fields']['xf_shikimori_id']) && !isset($aaparser_config['main_fields']['xf_mdl_id']) ) die(json_encode(array( 'status' => 'fail' )));
 	    
-	$news_id = $_GET['newsid'];
+	$news_id = get_param('newsid');
     $news_id = is_numeric($news_id) ? intval($news_id) : false;
     
-    if(!$news_id) return;
+    if (!$news_id) exit(json_encode(['status' => 'fail', 'message' => 'Неверный ID новости']));
     
-	if ( $_GET['shikiid'] && $_GET['shikiid'] != 0 && $_GET['shikiid'] != '0' ) $shiki_id = "&shikimori_id=".$_GET['shikiid'];
-	else $shiki_id = 0;
-	if ( $_GET['mdlid'] && $_GET['mdlid'] != 0 && $_GET['mdlid'] != '0' ) $mdl_id = "&mdl_id=".$_GET['mdlid'];
-	else $mdl_id = 0;
+	$shikiid = get_param('shikiid');
+	$mdlid   = get_param('mdlid');
+
+	$shiki_id = (!empty($shikiid) && $shikiid != 0 && $shikiid !== '0') ? "&shikimori_id=" . $shikiid : 0;
+	$mdl_id   = (!empty($mdlid) && $mdlid != 0 && $mdlid !== '0') ? "&mdl_id=" . $mdlid : 0;
+	
 	$status_type = array( 'anons' => 'Анонс', 'ongoing' => 'Онгоинг', 'released' => 'Завершён' );
 	$translation_type = array( 'subtitles' => 'Субтитры', 'voice' => 'Озвучка' );
 	if( !$shiki_id && !$mdl_id ) return;
@@ -247,6 +251,13 @@ if ( $action == "update_news_get" ) {
 	$xfields_post = xfieldsdataload( $news_row['xfields'] );
 	if ($shiki_id && !$mdl_id) $kodik_updates_api = request($kodik_api_domain."search?token=". $kodik_apikey . $shiki_id ."&with_episodes=true&with_material_data=true");
 	if ($mdl_id && !$shiki_id) $kodik_updates_api = request($kodik_api_domain."search?token=". $kodik_apikey . $mdl_id ."&with_episodes=true&with_material_data=true");
+	if (!is_array($kodik_updates_api) || !isset($kodik_updates_api['results']) || !is_array($kodik_updates_api['results'])) {
+		exit(json_encode([
+			'news_id' => $news_id,
+			'status' => 'Ошибка при получении данных от Kodik API'
+		]));
+	}
+
 	$kodik_updates = array_reverse($kodik_updates_api['results']);
 	if (empty($kodik_updates)) {
 		$result_work = array(
