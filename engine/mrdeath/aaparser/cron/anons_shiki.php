@@ -517,7 +517,8 @@ $db->query("INSERT INTO " . PREFIX . "_anime_list (shikimori_id, year, news_id,t
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
 	$debugger_table_row .= tableRowCreate("(anons_shiki.php) Добавление записи в " . PREFIX . "_anime_list", round(microtime(true) - $time_update_start,4));
 }
-$db->query( "INSERT INTO " . PREFIX . "_post_extras (news_id, allow_rate, disable_index, user_id, disable_search, allow_rss, allow_rss_turbo, allow_rss_dzen) VALUES ('{$id}', '{$allow_rating}', '{$dissalow_index}', '{$author_id}', '{$dissalow_search}', '{$allow_rss}', '{$allow_turbo}', '{$allow_zen}')" );
+if ($config['version_id'] == '18.1') $db->query( "INSERT INTO " . PREFIX . "_post_extras (news_id, allow_rate, disable_index, user_id, disable_search, allow_rss, allow_rss_dzen) VALUES ('{$id}', '{$allow_rating}', '{$dissalow_index}', '{$author_id}', '{$dissalow_search}', '{$allow_rss}', '{$allow_zen}')" );
+else $db->query( "INSERT INTO " . PREFIX . "_post_extras (news_id, allow_rate, disable_index, user_id, disable_search, allow_rss, allow_rss_turbo, allow_rss_dzen) VALUES ('{$id}', '{$allow_rating}', '{$dissalow_index}', '{$author_id}', '{$dissalow_search}', '{$allow_rss}', '{$allow_turbo}', '{$allow_zen}')" );
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
 	$debugger_table_row .= tableRowCreate("(anons_shiki.php) Добавление записи в " . PREFIX . "_post_extras", round(microtime(true) - $time_update_start,4));
 }
