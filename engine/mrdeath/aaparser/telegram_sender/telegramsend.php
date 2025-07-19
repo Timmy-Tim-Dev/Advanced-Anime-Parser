@@ -146,6 +146,14 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config['push
         $row['full_story'] = sanitizeText(stripslashes($row['full_story']));
         if ( !isset($xfields) ) $xfields = xfieldsload();
         $xfieldsdata = xfieldsdataload($row["xfields"]);
+
+        if ( !empty($aaparser_config['push_notifications']['tg_only_ongoing']) && $aaparser_config['push_notifications']['tg_only_ongoing'] != '-' ) {
+            $ongoing_field = $aaparser_config['push_notifications']['tg_only_ongoing'];
+            $ongoing_value = isset($xfieldsdata[$ongoing_field]) ? trim($xfieldsdata[$ongoing_field]) : '';
+            if ( mb_strtolower($ongoing_value, 'UTF-8') != mb_strtolower('Онгоинг', 'UTF-8') ) {
+                return;
+            }
+        }
         if ($aaparser_config['push_notifications']['tg_enable_poster']) {
             if ($aaparser_config['push_notifications']['tg_source_poster'] == "xfields" && isset($aaparser_config['main_fields']['xf_poster']) && isset($xfieldsdata[$aaparser_config['main_fields']['xf_poster']])) {
                 $posters = [];
