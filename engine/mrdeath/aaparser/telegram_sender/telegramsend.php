@@ -146,6 +146,17 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config['push
         $row['full_story'] = sanitizeText(stripslashes($row['full_story']));
         if ( !isset($xfields) ) $xfields = xfieldsload();
         $xfieldsdata = xfieldsdataload($row["xfields"]);
+
+        if ( !empty($aaparser_config['push_notifications']['tg_only_ongoing']) && $aaparser_config['push_notifications']['tg_only_ongoing'] != '-' ) {
+            $ongoing_field = $aaparser_config['push_notifications']['tg_only_ongoing'];
+            $ongoing_value = isset($xfieldsdata[$ongoing_field]) ? trim($xfieldsdata[$ongoing_field]) : '';
+            $ongoing_value = mb_strtolower($ongoing_value, 'UTF-8');
+            if ( $ongoing_value !== mb_strtolower('Онгоинг', 'UTF-8') && $ongoing_value !== 'ongoing' ) {
+                $db->query( "DELETE FROM " . PREFIX . "_telegram_sender WHERE news_id='".$tlg_news_id."'" );
+                if ( isset($working_mode) && $working_mode == 'cron' ) echo 'News id: '.$tlg_news_id.' - пропуск по статусу';
+                return;
+            }
+        }
         if ($aaparser_config['push_notifications']['tg_enable_poster']) {
             if ($aaparser_config['push_notifications']['tg_source_poster'] == "xfields" && isset($aaparser_config['main_fields']['xf_poster']) && isset($xfieldsdata[$aaparser_config['main_fields']['xf_poster']])) {
                 $posters = [];
