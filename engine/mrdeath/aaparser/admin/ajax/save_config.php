@@ -31,7 +31,7 @@ if ($action == 'options') {
 			if ($value != '' && $value != '-') {
 				if (is_numeric($value)) $value = intval($value);
 				elseif (is_array($value)) $value = implode(',', $value);
-				else $value = strip_tags(stripslashes($value), '<li><br><p>');
+				else $value = strip_tags( stripslashes($value), '<li><br><p><a><b><strong><i><em><code><pre>' );
 				$new_array[$index][$key] = $value;
 			}
 		}
