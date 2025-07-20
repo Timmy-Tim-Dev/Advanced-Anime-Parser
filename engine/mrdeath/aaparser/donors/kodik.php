@@ -215,7 +215,8 @@ if ($parse_action == 'search') {
     if ( $kodik_data['type'] == 'anime' || $kodik_data['type'] == 'foreign-movie' ) $xfields_data['kodik_video_type'] = 'фильм';
     else $xfields_data['kodik_video_type'] = 'сериал';
 	$xfields_data['kodik_countries'] = isset($kodik_data['material_data']['countries']) ? implode(', ', $kodik_data['material_data']['countries']) : '';
-	if ( isset($kodik_data['material_data']['anime_genres']) ) $xfields_data['kodik_genres'] = implode(', ', RenameGenres($kodik_data['material_data']['anime_genres']));
+	if ( isset($kodik_data['material_data']['all_genres']) ) $xfields_data['kodik_genres'] = implode(', ', RenameGenres($kodik_data['material_data']['all_genres']));
+	elseif ( isset($kodik_data['material_data']['anime_genres']) ) $xfields_data['kodik_genres'] = implode(', ', RenameGenres($kodik_data['material_data']['anime_genres']));
 	elseif ( isset($kodik_data['material_data']['drama_genres']) ) $xfields_data['kodik_genres'] = implode(', ', RenameGenres($kodik_data['material_data']['drama_genres']));
 	else $xfields_data['kodik_genres'] = '';
 	
