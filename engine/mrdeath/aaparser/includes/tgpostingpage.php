@@ -24,6 +24,7 @@ showRow('Отправлять посты в телеграм при выходе
 showRow('Отправлять посты в телеграм при выходе новой озвучки?', '', makeCheckBox('push_notifications[updatetg_new_voice]', $aaparser_config['push_notifications']['updatetg_new_voice']));
 showRow('Отправлять посты в телеграм при изменений качества материала?', '', makeCheckBox('push_notifications[updatetg_new_quality]', $aaparser_config['push_notifications']['updatetg_new_quality']));
 showRow('Отправлять посты в телеграм при изменений статуса материала?', '', makeCheckBox('push_notifications[updatetg_new_status]', $aaparser_config['push_notifications']['updatetg_new_status']));
+showRow('Дополнительное поле со статусом дорамы', 'Если выбрать поле, посты будут отправляться только при значении "Онгоинг"', makeDropDown( $xfields_list, 'push_notifications[tg_only_ongoing]', $aaparser_config['push_notifications']['tg_only_ongoing']));
 
 showRow('Укажите время с которого и по которое посты не будут отправляться в telegram', 'Для того, чтобы посты в telegram не отправлялись в ночное время, вы можете указать время начиная с которого и заканчивая которым посты перестанут отправляться. <b>Для отключения оставьте оба поля пустыми или же укажите 00:00 в обоих полях</b>', '<input type="time" autocomplete="off" style="float: right;width:100px" value="'.$aaparser_config['push_notifications']['stop_send_from'].'" class="form-control" name="push_notifications[stop_send_from]"><input type="time" autocomplete="off" style="float: right;width:100px" value="'.$aaparser_config['push_notifications']['stop_send_to'].'" class="form-control" name="push_notifications[stop_send_to]">');
 showRow('Включить отправку постов в Telegram при ручном добавлении новостей через админку?', '', makeCheckBox('push_notifications[tg_addnews]', $aaparser_config['push_notifications']['tg_addnews']));
@@ -55,7 +56,7 @@ echo <<<HTML
 			    {short-story limit="x"} - Выводит только текст краткой новости без HTML форматирования, при этом сам текст публикации сокращается до указанного X количества символов</br>
 			    {full-story} - Полная версия</br>
 			    {full-story limit="x"} - Выводит только текст полной новости без HTML форматирования, при этом сам текст публикации сокращается до указанного X количества символов</br>
-			    {full_link} - Для вывода полного постоянного адреса новости</br>
+                            {full_link} - Для вывода полного постоянного адреса новости. Можно использовать внутри html-тега &lt;a&gt;, например &lt;a href="{full_link}"&gt;Смотреть&lt;/a&gt;</br>
 			    {category} - Список категорий, к которым относится статья</br>
 			    [xfvalue_x] - Значение дополнительного поля "x", где "x" название дополнительного поля</br>
 			    [xfgiven_x] [xfvalue_x] [/xfgiven_x] - Выводится дополнительное поле "x", если поле не пустое</br>
