@@ -74,27 +74,37 @@ elseif ( $news_id ) {
     $translations_priority_anime   = $aaparser_config['player']['translations_priority'] ? '&prioritize_translations='.$aaparser_config['player']['translations_priority'] : '';
     $translations_unpriority_anime = $aaparser_config['player']['translations_unpriority'] ? '&unprioritize_translations='.$aaparser_config['player']['translations_unpriority'] : '';
     $translations_hide_anime       = $aaparser_config['player']['translations_hide'] ? '&block_translations='.$aaparser_config['player']['translations_hide'] : '';
+    $translation_id_anime          = '';
+    if ( $aaparser_config['player']['translations_priority'] && strpos($aaparser_config['player']['translations_priority'], ',') === false ) {
+        $translation_id_anime = '&translation_id=' . $aaparser_config['player']['translations_priority'];
+        $translations_priority_anime = '';
+    }
 
     $translations_priority_dorama   = $aaparser_config['player']['translations_priority_dorama'] ? '&prioritize_translations='.$aaparser_config['player']['translations_priority_dorama'] : '';
     $translations_unpriority_dorama = $aaparser_config['player']['translations_unpriority_dorama'] ? '&unprioritize_translations='.$aaparser_config['player']['translations_unpriority_dorama'] : '';
     $translations_hide_dorama       = $aaparser_config['player']['translations_hide_dorama'] ? '&block_translations='.$aaparser_config['player']['translations_hide_dorama'] : '';
+    $translation_id_dorama          = '';
+    if ( $aaparser_config['player']['translations_priority_dorama'] && strpos($aaparser_config['player']['translations_priority_dorama'], ',') === false ) {
+        $translation_id_dorama = '&translation_id=' . $aaparser_config['player']['translations_priority_dorama'];
+        $translations_priority_dorama = '';
+    }
 
     if ( $aaparser_config['main_fields']['xf_shikimori_id'] && $post_fields[$aaparser_config['main_fields']['xf_shikimori_id']] ) {
-        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&shikimori_id='.$post_fields[$aaparser_config['main_fields']['xf_shikimori_id']].'&with_episodes_data=true'.$translations_priority_anime.$translations_unpriority_anime.$translations_hide_anime);
+        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&shikimori_id='.$post_fields[$aaparser_config['main_fields']['xf_shikimori_id']].'&with_episodes_data=true'.$translation_id_anime.$translations_priority_anime.$translations_unpriority_anime.$translations_hide_anime);
     } elseif ( $aaparser_config['main_fields']['xf_mdl_id'] && $post_fields[$aaparser_config['main_fields']['xf_mdl_id']] ) {
-        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&mdl_id='.$post_fields[$aaparser_config['main_fields']['xf_mdl_id']].'&with_episodes_data=true'.$translations_priority_dorama.$translations_unpriority_dorama.$translations_hide_dorama);
+        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&mdl_id='.$post_fields[$aaparser_config['main_fields']['xf_mdl_id']].'&with_episodes_data=true'.$translation_id_dorama.$translations_priority_dorama.$translations_unpriority_dorama.$translations_hide_dorama);
     } elseif ( $aaparser_config['player']['worldart_anime'] && $post_fields[$aaparser_config['player']['worldart_anime']] ) {
         if ( stripos($post_fields[$aaparser_config['player']['worldart_anime']], 'world-art.ru') !== false )
-            $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_link='.$post_fields[$aaparser_config['player']['worldart_anime']].'&with_episodes_data=true'.$translations_priority_anime.$translations_unpriority_anime.$translations_hide_anime);
-        else $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_animation_id='.$post_fields[$aaparser_config['player']['worldart_anime']].'&with_episodes_data=true'.$translations_priority_anime.$translations_unpriority_anime.$translations_hide_anime);
+            $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_link='.$post_fields[$aaparser_config['player']['worldart_anime']].'&with_episodes_data=true'.$translation_id_anime.$translations_priority_anime.$translations_unpriority_anime.$translations_hide_anime);
+        else $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_animation_id='.$post_fields[$aaparser_config['player']['worldart_anime']].'&with_episodes_data=true'.$translation_id_anime.$translations_priority_anime.$translations_unpriority_anime.$translations_hide_anime);
     } elseif ( $aaparser_config['player']['worldart_cinema'] && $post_fields[$aaparser_config['player']['worldart_cinema']] ) {
         if ( stripos($post_fields[$aaparser_config['player']['worldart_cinema']], 'world-art.ru') !== false )
-            $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_link='.$post_fields[$aaparser_config['player']['worldart_cinema']].'&with_episodes_data=true'.$translations_priority_dorama.$translations_unpriority_dorama.$translations_hide_dorama);
-        else $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_cinema_id='.$post_fields[$aaparser_config['player']['worldart_cinema']].'&with_episodes_data=true'.$translations_priority_dorama.$translations_unpriority_dorama.$translations_hide_dorama);
+            $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_link='.$post_fields[$aaparser_config['player']['worldart_cinema']].'&with_episodes_data=true'.$translation_id_dorama.$translations_priority_dorama.$translations_unpriority_dorama.$translations_hide_dorama);
+        else $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&worldart_cinema_id='.$post_fields[$aaparser_config['player']['worldart_cinema']].'&with_episodes_data=true'.$translation_id_dorama.$translations_priority_dorama.$translations_unpriority_dorama.$translations_hide_dorama);
     } elseif ( $aaparser_config['player']['kinopoisk_id'] && $post_fields[$aaparser_config['player']['kinopoisk_id']] )
-        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&kinopoisk_id='.$post_fields[$aaparser_config['player']['kinopoisk_id']].'&with_episodes_data=true'.$translations_priority_anime.$translations_unpriority_anime.$translations_hide_anime);
+        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&kinopoisk_id='.$post_fields[$aaparser_config['player']['kinopoisk_id']].'&with_episodes_data=true'.$translation_id_anime.$translations_priority_anime.$translations_unpriority_anime.$translations_hide_anime);
     elseif ( $aaparser_config['player']['imdb_id'] && $post_fields[$aaparser_config['player']['imdb_id']] )
-        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&imdb_id='.$post_fields[$aaparser_config['player']['imdb_id']].'&with_episodes_data=true'.$translations_priority_anime.$translations_unpriority_anime.$translations_hide_anime);
+        $kodik = kodik_api( $kodik_api_domain.'search?token='.$api_token.'&imdb_id='.$post_fields[$aaparser_config['player']['imdb_id']].'&with_episodes_data=true'.$translation_id_anime.$translations_priority_anime.$translations_unpriority_anime.$translations_hide_anime);
         
     if ( $kodik['results'] ) {
         $playlist = array();
