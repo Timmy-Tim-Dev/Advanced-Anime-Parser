@@ -712,6 +712,23 @@ if ($parse_action == 'search') {
 			$xfields_data['image'] = rtrim($config['http_home_url'], '/') . $aaparser_config['main_fields']['poster_empty'];
 		}
 	}
+} elseif ( $parse_action == 'takescreens' ) {
+	if ( !isset($xfields_data) && !$xfields_data ) $xfields_data = [];
+    
+	if ( $shiki_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&shikimori_id='.$shiki_id.'&with_episodes=true&with_material_data=true');
+    elseif ( $mdl_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_episodes=true&with_material_data=true');
+	if ( isset( $kodik['results'] ) && $kodik['results']) {
+		$kodik_data = array_shift($kodik['results']);
+		$xfields_data['kodik_title'] = isset($kodik_data['title']) ? $kodik_data['title'] : '';
+		$xfields_data['kodik_title_orig'] = isset($kodik_data['title_orig']) ? $kodik_data['title_orig'] : '';
+		if ( isset($kodik_data['screenshots']) ) {
+			$xfields_data['kadr_1'] = $kodik_data['screenshots'][0];
+			$xfields_data['kadr_2'] = $kodik_data['screenshots'][1];
+			$xfields_data['kadr_3'] = $kodik_data['screenshots'][2];
+			$xfields_data['kadr_4'] = $kodik_data['screenshots'][3];
+			$xfields_data['kadr_5'] = $kodik_data['screenshots'][4];
+		}
+	}
 }
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 	$debugger_table_row .= tableRowCreate("(kodik.php) Закончили инициализацию донора kodik.php", round(microtime(true) - $time_update_start,4));

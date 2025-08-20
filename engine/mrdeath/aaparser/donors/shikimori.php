@@ -632,6 +632,31 @@ if ( $parse_action == 'search' ) {
 		if ( isset( $jikan_api['data']['scored_by'] ) && $jikan_api['data']['scored_by'] ) 
 			$xfields_data['myanimelist_votes'] = $jikan_api['data']['scored_by'];
 	}
+} elseif ( $parse_action == 'takescreens' ) {
+	$xfields_data = [];
+    $postfields = [
+		'query' => '{
+			animes(ids: "'.$shiki_id.'", limit: 50) {
+				id
+				malId
+				name
+				russian
+				screenshots { id originalUrl }
+			}
+		}'
+	];
+	$shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
+	$shikimori = $shikimori['data']['animes']['0'];
+	if ( isset($shikimori['screenshots']) ) {
+		$xfields_data['kadr_1'] = $shikimori['screenshots'][0]['originalUrl'];
+		$xfields_data['kadr_2'] = $shikimori['screenshots'][1]['originalUrl'];
+		$xfields_data['kadr_3'] = $shikimori['screenshots'][2]['originalUrl'];
+		$xfields_data['kadr_4'] = $shikimori['screenshots'][3]['originalUrl'];
+		$xfields_data['kadr_5'] = $shikimori['screenshots'][4]['originalUrl'];
+	}
+	$xfields_data['shikimori_name'] = isset($shikimori['name']) ? $shikimori['name'] : '';
+	$xfields_data['shikimori_russian'] = isset($shikimori['russian']) ? $shikimori['russian'] : '';
+	
 }
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 	$debugger_table_row .= tableRowCreate("(shikimori.php) Закончили инициализацию донора shikimori.php", round(microtime(true) - $time_update_start, 4));
