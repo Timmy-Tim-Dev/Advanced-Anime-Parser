@@ -146,6 +146,18 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config['push
         $row['full_story'] = sanitizeText(stripslashes($row['full_story']));
         if ( !isset($xfields) ) $xfields = xfieldsload();
         $xfieldsdata = xfieldsdataload($row["xfields"]);
+
+        if (!empty($aaparser_config['push_notifications']['tg_only_ongoing']) && $aaparser_config['push_notifications']['tg_only_ongoing'] != '-') {
+            $ongoing_field = $aaparser_config['push_notifications']['tg_only_ongoing'];
+            $ongoing_value = isset($xfieldsdata[$ongoing_field]) ? trim($xfieldsdata[$ongoing_field]) : '';
+            $ongoing_value = mb_strtolower($ongoing_value, 'UTF-8');
+            if (strpos($ongoing_value, mb_strtolower('Онгоинг', 'UTF-8')) === false && strpos($ongoing_value, 'ongoing') === false) {
+                $db->query("DELETE FROM " . PREFIX . "_telegram_sender WHERE news_id='" . $tlg_news_id . "'");
+                if (isset($working_mode) && $working_mode == 'cron') echo 'News id: ' . $tlg_news_id . ' - пропуск по статусу';
+                return;
+            }
+        }
+
         if ($aaparser_config['push_notifications']['tg_enable_poster']) {
             if ($aaparser_config['push_notifications']['tg_source_poster'] == "xfields" && isset($aaparser_config['main_fields']['xf_poster']) && isset($xfieldsdata[$aaparser_config['main_fields']['xf_poster']])) {
                 $posters = [];
@@ -230,8 +242,10 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config['push
         if ( preg_match( "#\\{full-story limit=['\"](.+?)['\"]\\}#i", $aaparser_config['push_notifications'][$tlg_template], $matches ) ) {
             $aaparser_config['push_notifications'][$tlg_template] = str_replace( $matches[0], limitTextLength($row['full_story'], $matches[1]), $aaparser_config['push_notifications'][$tlg_template] );
         }
+        $full_link_placeholder = false;
         if (stripos($aaparser_config['push_notifications'][$tlg_template], "{full_link}") !== false) {
-            $aaparser_config['push_notifications'][$tlg_template] = str_replace( "{full_link}", $full_link, $aaparser_config['push_notifications'][$tlg_template] );
+            $full_link_placeholder = uniqid('FLINK');
+            $aaparser_config['push_notifications'][$tlg_template] = str_replace( "{full_link}", $full_link_placeholder, $aaparser_config['push_notifications'][$tlg_template] );
         }
         if (stripos($aaparser_config['push_notifications'][$tlg_template], "{main_category_link}") !== false) {
             if ( isset($main_category_link) ) $aaparser_config['push_notifications'][$tlg_template] = str_replace( "{main_category_link}", $main_category_link, $aaparser_config['push_notifications'][$tlg_template] );
@@ -266,6 +280,13 @@ if ( isset($tlg_news_id) && isset($tlg_template) && isset($aaparser_config['push
         $aaparser_config['push_notifications'][$tlg_template] = str_replace("[|x]", "\\x", $aaparser_config['push_notifications'][$tlg_template]);
 
         $aaparser_config['push_notifications'][$tlg_template] = sanitizeText($aaparser_config['push_notifications'][$tlg_template]);
+        if ($full_link_placeholder) {
+            $aaparser_config['push_notifications'][$tlg_template] = str_replace(
+                $full_link_placeholder,
+                htmlspecialchars($full_link, ENT_QUOTES, 'UTF-8'),
+                $aaparser_config['push_notifications'][$tlg_template]
+            );
+        }
 
         if ( preg_match( "@\\\\x([0-9a-fA-F]{2})@x", $aaparser_config['push_notifications'][$tlg_template], $matches ) ) {
             $aaparser_config['push_notifications'][$tlg_template] = preg_replace_callback( "@\\\\x([0-9a-fA-F]{2})@x", function ($r) { return chr(hexdec($r[1])); }, $aaparser_config['push_notifications'][$tlg_template] );
