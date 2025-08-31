@@ -55,12 +55,19 @@ if ( $shikimori_anons ) {
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
 			$debugger_table_row .= tableRowCreate("(anons_shiki.php) Получение данных с бд " . PREFIX . "_post", round(microtime(true) - $time_update_start,4));
 		}
-		if (isset($proverka['id']) && $proverka['id']) continue;
+		if (isset($proverka['id']) && $proverka['id']) {
+			$db->query("INSERT INTO ".PREFIX."_shikimori_posts set post_id=".$proverka['id'].", shiki_id=".$result['id']."");	
+			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 
+				$debugger_table_row .= tableRowCreate("(anons_shiki.php) Добавление записи если их не было в " . PREFIX . "_shikimori_posts", round(microtime(true) - $time_update_start,4));
+			}
+			continue;
+		}
 		$checked_id[] = $id_shiki;
 		unset($id_shiki);
 	}
 
 	$shiki_id = $checked_id[0];
+	if (!isset($shiki_id) && $shiki_id == "") die("Обратитесь к разработчикам модуля Kodik, так как в базе Shikimori возникли ошибки");
 	$parse_action = 'parse';
 	$parse_type = 'grabbing';
 	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/shikimori.php'));
