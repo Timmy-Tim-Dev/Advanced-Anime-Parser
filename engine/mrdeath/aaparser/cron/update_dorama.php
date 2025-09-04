@@ -112,6 +112,11 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 		$md_rat = $anime_check['material_data']['mydramalist_rating'];
 		$md_gol = $anime_check['material_data']['mydramalist_votes'];
 		
+		if ( $anime_check['material_data']['next_episode_at'] ) {
+			$next_episode_at = strtotime($anime_check['material_data']['next_episode_at']);
+			$xfields_post[$aaparser_config['settings']['next_episode_date_new']] = date("d.m.Y H:i:s", $next_episode_at);
+		} else $xfields_post[$aaparser_config['settings']['next_episode_date_new']] = '';
+		
 		$kp_rat = $anime_check['material_data']['kinopoisk_rating'];
 		$kp_gol = $anime_check['material_data']['kinopoisk_votes'];
 		

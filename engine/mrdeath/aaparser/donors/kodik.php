@@ -164,6 +164,8 @@ if ($parse_action == 'search') {
 	$xfields_data['kodik_other_title'] = isset($kodik_data['other_title']) ? $kodik_data['other_title'] : '';
 	$xfields_data['kodik_year'] = isset($kodik_data['year']) ? $kodik_data['year'] : '';
 	$xfields_data['kodik_worldart_link'] = isset($kodik_data['worldart_link']) ? $kodik_data['worldart_link'] : '';
+	$xfields_data['kodik_next_episode_at'] = isset($kodik_data['material_data']['next_episode_at']) ? $kodik_data['material_data']['next_episode_at'] : '';
+	if ($xfields_data['kodik_next_episode_at'] !== '') $next_episode_date = date("d.m.Y H:i:s", strtotime($xfields_data['kodik_next_episode_at']));
 	$xfields_data['kodik_mydramalist_tags'] = isset($kodik_data['material_data']['mydramalist_tags']) ? implode(', ', $kodik_data['material_data']['mydramalist_tags']) : '';
 	if ( $xfields_data['kodik_mydramalist_tags'] && isset($aaparser_config['settings']['tags_tolower']) && $aaparser_config['settings']['tags_tolower'] == 1 ) $xfields_data['kodik_mydramalist_tags'] = mb_strtolower($xfields_data['kodik_mydramalist_tags'], 'UTF-8');
 	if ( $xfields_data['kodik_mydramalist_tags'] && isset($aaparser_config['settings']['translate_tags']) && $aaparser_config['settings']['translate_tags'] == 1 ) {
