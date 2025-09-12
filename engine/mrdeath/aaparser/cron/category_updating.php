@@ -202,6 +202,9 @@ if ($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger'][
     
     if ( $xfields_data['shikimori_status_ru'] ) $tags_array[] = $xfields_data['shikimori_status_ru'];
     elseif ( $xfields_data['kodik_status_ru'] ) $tags_array[] = $xfields_data['kodik_status_ru'];
+	
+    if ( $xfields_data['shikimori_status'] ) $tags_array[] = $xfields_data['shikimori_status'];
+    elseif ( $xfields_data['kodik_status_en'] ) $tags_array[] = $xfields_data['kodik_status_en'];
     
     if ( $movie_kind ) $tags_array[] = $movie_kind;
     

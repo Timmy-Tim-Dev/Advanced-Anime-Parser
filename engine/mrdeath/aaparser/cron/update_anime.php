@@ -111,6 +111,11 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 		$serial_status_k = $anime_check['material_data']['anime_status'];
 		$serial_status_ru_k = $status_type[$anime_check['material_data']['anime_status']];
 		
+		if ( $anime_check['material_data']['next_episode_at'] ) {
+			$next_episode_at = strtotime($anime_check['material_data']['next_episode_at']);
+			$xfields_post[$aaparser_config['settings']['next_episode_date_new']] = date("d.m.Y H:i:s", $next_episode_at);
+		} else $xfields_post[$aaparser_config['settings']['next_episode_date_new']] = '';
+		
 		$sh_rat = $anime_check['material_data']['shikimori_rating'];
 		$sh_gol = $anime_check['material_data']['shikimori_votes'];
 		
@@ -529,7 +534,6 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
                     $next_episode_at = strtotime($shikimori_temp['nextEpisodeAt']);
                     $xfields_post[$aaparser_config['settings']['next_episode_date_new']] = date("d.m.Y H:i:s", $next_episode_at);
                 }
-                else $xfields_post[$aaparser_config['settings']['next_episode_date_new']] = '';
                 unset($shikimori_temp);
             }
             

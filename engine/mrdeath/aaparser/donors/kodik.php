@@ -164,6 +164,8 @@ if ($parse_action == 'search') {
 	$xfields_data['kodik_other_title'] = isset($kodik_data['other_title']) ? $kodik_data['other_title'] : '';
 	$xfields_data['kodik_year'] = isset($kodik_data['year']) ? $kodik_data['year'] : '';
 	$xfields_data['kodik_worldart_link'] = isset($kodik_data['worldart_link']) ? $kodik_data['worldart_link'] : '';
+	$xfields_data['kodik_next_episode_at'] = isset($kodik_data['material_data']['next_episode_at']) ? $kodik_data['material_data']['next_episode_at'] : '';
+	if ($xfields_data['kodik_next_episode_at'] !== '') $next_episode_date = date("d.m.Y H:i:s", strtotime($xfields_data['kodik_next_episode_at']));
 	$xfields_data['kodik_mydramalist_tags'] = isset($kodik_data['material_data']['mydramalist_tags']) ? implode(', ', $kodik_data['material_data']['mydramalist_tags']) : '';
 	if ( $xfields_data['kodik_mydramalist_tags'] && isset($aaparser_config['settings']['tags_tolower']) && $aaparser_config['settings']['tags_tolower'] == 1 ) $xfields_data['kodik_mydramalist_tags'] = mb_strtolower($xfields_data['kodik_mydramalist_tags'], 'UTF-8');
 	if ( $xfields_data['kodik_mydramalist_tags'] && isset($aaparser_config['settings']['translate_tags']) && $aaparser_config['settings']['translate_tags'] == 1 ) {
@@ -710,6 +712,23 @@ if ($parse_action == 'search') {
 		
 		if (isset($xfields_data['image']) && $xfields_data['image'] && strpos($xfields_data['image'], "missing_original") == true) {
 			$xfields_data['image'] = rtrim($config['http_home_url'], '/') . $aaparser_config['main_fields']['poster_empty'];
+		}
+	}
+} elseif ( $parse_action == 'takescreens' ) {
+	if ( !isset($xfields_data) && !$xfields_data ) $xfields_data = [];
+    
+	if ( $shiki_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&shikimori_id='.$shiki_id.'&with_episodes=true&with_material_data=true');
+    elseif ( $mdl_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_episodes=true&with_material_data=true');
+	if ( isset( $kodik['results'] ) && $kodik['results']) {
+		$kodik_data = array_shift($kodik['results']);
+		$xfields_data['kodik_title'] = isset($kodik_data['title']) ? $kodik_data['title'] : '';
+		$xfields_data['kodik_title_orig'] = isset($kodik_data['title_orig']) ? $kodik_data['title_orig'] : '';
+		if ( isset($kodik_data['screenshots']) ) {
+			$xfields_data['kadr_1'] = $kodik_data['screenshots'][0];
+			$xfields_data['kadr_2'] = $kodik_data['screenshots'][1];
+			$xfields_data['kadr_3'] = $kodik_data['screenshots'][2];
+			$xfields_data['kadr_4'] = $kodik_data['screenshots'][3];
+			$xfields_data['kadr_5'] = $kodik_data['screenshots'][4];
 		}
 	}
 }
