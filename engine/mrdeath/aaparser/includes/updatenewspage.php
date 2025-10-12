@@ -58,6 +58,22 @@ echo <<<HTML
 	            </div>
 	            <div class="update-status__msg" id="result-msg-update-metas">Запустите проставление...После запуска не закрывайте данную страницу пока проставление не будет полностью готово!</div>
             </div>
+			<table class="table table-striped">
+			<tr>
+				<td>
+				Если необходимо кроном сбросить очередь обновление доп полей, то можно воспользоваться следующей ссылкой<br/>	
+				<b>Желательно ставить раз в две недели.</b>
+				<textarea style="width:100%;height:50px;" disabled="">{$config['http_home_url']}engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear&action=update_xfields</textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				Если необходимо кроном сбросить очередь обновление категории, то можно воспользоваться следующей ссылкой<br/>	
+				<b>Желательно ставить раз в две недели.</b>
+				<textarea style="width:100%;height:50px;" disabled="">{$config['http_home_url']}engine/ajax/controller.php?mod=anime_grabber&module=aaparser_clear&action=update_cats</textarea>
+				</td>
+			</tr>
+			</table>
 		</div>
 	</div>
 HTML;
