@@ -680,6 +680,7 @@ HTML;
 			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/main4.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
+		<operation action="before">
 			<searchcode><![CDATA[$tpl->set ( '{AJAX}', $ajax );]]></searchcode>
 			<replacecode><![CDATA[if ($tpl->result['rooms_found'] == 1)
 {
