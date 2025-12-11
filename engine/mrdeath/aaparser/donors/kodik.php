@@ -594,7 +594,7 @@ if ($parse_action == 'search') {
 		if (empty($keys)) die('Значения не найдены в JSON');
 		$countries_add = '&countries=' . rawurlencode(implode(',', $keys));
 		unset($file_path,$keys,$values_to_find);
-	} else $countries_add = '&countries='. rawurlencode('Корея+Южная,Китай,Япония,Таиланд,Тайвань,Филиппины');
+	} else $countries_add = '&countries='. rawurlencode('Корея+Южная,Корея Южная,Китай,Япония,Таиланд,Тайвань,Филиппины');
 	
     //sort
 	$film_sort_by = "";

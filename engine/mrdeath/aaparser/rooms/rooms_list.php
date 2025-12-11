@@ -47,6 +47,15 @@ if ( $member_id['user_group'] != 5 ) {
 	    $sql_count = "SELECT COUNT(*) as count FROM " . PREFIX . "_rooms_list r LEFT JOIN " . PREFIX . "_rooms_visitors rv ON (r.url=rv.room_url AND r.leader=rv.login) LEFT JOIN " . PREFIX . "_post p ON (r.news_id=p.id) WHERE p.approve=1 AND r.public = 0 AND r.leader_last_login>'".($_TIME-$activetime)."'";
     }
 
+	$rooms_count = $db->super_query($sql_count);
+	$rooms_count = $rooms_count['count'];
+	$tpl->result['info'] = "&nbsp;";
+	$tpl->result['rooms_found'] = 0;
+	$tpl->result['rooms_notfound'] = 0;
+
+	if ($rooms_count == 0)$tpl->result['rooms_notfound'] = 1;
+	if ($rooms_count > 0)$tpl->result['rooms_found'] = 1;
+
 	include_once (DLEPlugins::Check(ENGINE_DIR . '/modules/show.short.php'));
 				
 	if (!$config['allow_quick_wysiwyg']) $allow_comments_ajax = false;

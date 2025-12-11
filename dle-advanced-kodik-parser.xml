@@ -680,6 +680,36 @@ HTML;
 			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/main4.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
+			<searchcode><![CDATA[$tpl->set ( '{AJAX}', $ajax );]]></searchcode>
+			<replacecode><![CDATA[if ($tpl->result['rooms_found'] == 1)
+{
+ $tpl->set("[rooms_found]", "");
+ $tpl->set("[/rooms_found]", "");
+}
+else
+{
+  $tpl->set_block( "'\\[rooms_found\\](.*?)\\[/rooms_found\\]'si", "" );
+}
+
+if ($tpl->result['rooms_notfound'] == 1)
+{
+ $tpl->set("[rooms_notfound]", "");
+ $tpl->set("[/rooms_notfound]", "");  
+}
+else
+{
+ $tpl->set_block( "'\\[rooms_notfound\\](.*?)\\[/rooms_notfound\\]'si", "" );
+}]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
+		<operation action="before">
+			<searchcode><![CDATA[echo $tpl->result['main'];]]></searchcode>
+			<replacecode><![CDATA[$tpl->result['main'] = str_replace ( "[rooms_found]", "", $tpl->result['main'] );
+$tpl->result['main'] = str_replace ( "[/rooms_found]", "", $tpl->result['main'] );
+$tpl->result['main'] = str_replace ( "[rooms_notfound]", "", $tpl->result['main'] );
+$tpl->result['main'] = str_replace ( "[/rooms_notfound]", "", $tpl->result['main'] );]]></replacecode>
+			<enabled>1</enabled>
+		</operation>
 	</file>
 	<file name="engine/modules/show.full.php">
 		<operation action="before">
