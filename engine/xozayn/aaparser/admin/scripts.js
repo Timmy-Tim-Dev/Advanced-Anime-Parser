@@ -1,0 +1,834 @@
+function hideElement(id) {
+	const element = document.getElementById(id);
+	if (element) element.style.display = 'none';
+}
+
+function ChangeOption(obj, selectedOption) {
+    $('#option_menu li').removeClass('active');
+    $(obj).parent().addClass('active');
+    const sections = [
+        'settings', 'grabbing', 'updates', 'update_news', 'integration', 
+        'xfields', 'categories', 'images', 'cronik', 'anonsik', 'faq', 'modules'
+    ];
+    sections.forEach(section => hideElement(section));
+    const selectedElement = document.getElementById(selectedOption);
+    if (selectedElement) selectedElement.style.display = '';
+    return false;
+}
+
+function ChangeOptionModules(obj, selectedOption) {
+    $('#option_menu_modules li').removeClass('active');
+    $(obj).parent().addClass('active');
+    const sections = [
+        'player', 'calendar', 'updates_block', 'push', 'rooms',
+        'gindexing', 'tgposting', 'personajes', 'debugger'
+    ];
+    sections.forEach(section => hideElement(section));
+    const selectedElement = document.getElementById(selectedOption);
+    if (selectedElement) selectedElement.style.display = '';
+    return false;
+}
+
+
+$(document).ready(function() {
+    $( "#connect-base" ).click(function() {
+		$.ajax({
+			url: '/index.php?controller=ajax&mod=anime_grabber&module=aaparser_clear',
+			data: {action: "connect_base_get", user_hash: dle_login_hash},
+			response: 'json',
+			success: function (data) {
+				getIdNewsFromBase(data);
+			}
+		});		
+	});
+	// Массовое обновление доп полей
+	$( "#mass-update" ).click(function() {
+	    DLEconfirm("Данное действие необратимо. Сделайте резервную копию базы данных. Вы уверены что хотите запустить массовое проставление данных в доп. поля?", "Подтвердите действие", function YesImReady() {
+		    $.ajax({
+			    url: '/index.php?controller=ajax&mod=anime_grabber&module=kodik_mass_update',
+			    data: {action: "update_news_get", user_hash: dle_login_hash},
+			    response: 'json',
+			    success: function (data) {
+				    DoNewsUpdate(data);
+			    }
+		    });
+	    });
+	});
+	// Массовое обновление картинок
+	$( "#mass-update-images" ).click(function() {
+	    DLEconfirm("Данное действие необратимо. Сделайте резервную копию базы данных. Вы уверены что хотите запустить массовое проставление данных в доп. поля?", "Подтвердите действие", function YesImReady() {
+		    $.ajax({
+			    url: '/index.php?controller=ajax&mod=anime_grabber&module=kodik_mass_update',
+				type: 'POST',
+			    data: {action: "update_news_get", user_hash: dle_login_hash},
+			    response: 'json',
+			    success: function (data) {
+				    DoNewsUpdateImages(data);
+			    }
+		    });
+	    });
+	});
+	// Массовое обновление скриншотов
+	$( "#mass-update-screens" ).click(function() {
+	    DLEconfirm("Данное действие необратимо. Сделайте резервную копию базы данных. Вы уверены что хотите запустить массовое проставление данных в доп. поля?", "Подтвердите действие", function YesImReady() {
+		    $.ajax({
+			    url: '/index.php?controller=ajax&mod=anime_grabber&module=kodik_mass_update',
+				type: 'POST',
+			    data: {action: "update_news_get", user_hash: dle_login_hash},
+			    response: 'json',
+			    success: function (data) {
+				    DoNewsUpdateScreens(data);
+			    }
+		    });
+	    });
+	});
+	// Массовое обновление метатегов
+	$( "#mass-update-metas" ).click(function() {
+	    DLEconfirm("Данное действие необратимо. Сделайте резервную копию базы данных. Вы уверены что хотите запустить массовое проставление данных в доп. поля?", "Подтвердите действие", function YesImReady() {
+		    $.ajax({
+			    url: '/index.php?controller=ajax&mod=anime_grabber&module=kodik_mass_update',
+			    data: {action: "update_news_get", user_hash: dle_login_hash},
+			    response: 'json',
+			    success: function (data) {
+				    DoNewsUpdateMetas(data);
+			    }
+		    });
+	    });
+	});
+	// Создание базы данных заново
+	$( "#external-create-bd" ).click(function() {
+	    DLEconfirm("Данное действие необратимо. Сделайте резервную копию базы данных. Вы уверены что хотите запустить создания базы данных заново?", "Подтвердите действие", function YesImReady() {
+		    ShowLoading('');
+			$.ajax({
+			    url: '/index.php?controller=ajax&mod=anime_grabber&module=kodik_mass_update',
+			    data: {action: "external_create_bd", user_hash: dle_login_hash},
+			    response: 'json',
+			    success: function (data) {
+				    if ( data == "ok" ) {
+                	DLEPush.info('Проверьте сайт и убедитесь что всё нормально');
+					HideLoading('');
+					return false;
+				}
+			    }
+		    });
+	    });
+	});
+});
+
+function senddata(ind, list_news, current_upd, current) {
+	var temp = list_news[ind];
+	all_news = list_news.length;
+	if (ind >= list_news.length) {
+		console.log('Готово');
+		return;
+	}
+	
+	$.ajax({		
+		url: '/index.php?controller=ajax&mod=anime_grabber&module=aaparser_clear',
+		data: {'newsid': temp['id'], 'shikiid': temp['shikimori_id'], 'mdlid': temp['mdl_id'], action: "connect_base", user_hash: dle_login_hash},
+		response: 'text',
+	}).then(function(result){
+		var good = true;
+		if (result != 'error') {
+			try {
+				result_list = JSON.parse(result);
+				current_upd++;
+				$('#current-update').html(current_upd);
+				$('#result-msg').prepend('NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'] + '<br/>');
+			} catch (error) {
+				good = false;
+			}
+		} else {
+			$('#result-msg').prepend('Новость ' + temp['id'] + ' не была связана. Возможно в новости указан не существующий id Shikimori/MyDramaList.' + '<br/>');
+		}
+		if (good) {
+			current++;
+			current_percent = Math.ceil((current / all_news) * 100, 1);	
+			$('#connect-current').html(current_percent + '%');
+			$('#connect-bar').css('width', current_percent + '%');
+			senddata(ind+1, list_news, current_upd, current);
+		} else {
+			$('#result-msg').prepend('NewsID: ' + temp['id'] + ' - <font color="red">произошла ошибка, пробуем снова</font><br/>');
+			senddata(ind, list_news, current_upd, current)							
+		}
+	}).fail(function(){
+		$('#result-msg').prepend('<font color="red">NewsID: ' + temp['id'] + ' - произошла ошибка, пробуем снова</font><br/>');
+		senddata(ind, list_news, current_upd, current)
+	})
+}
+
+function getIdNewsFromBase(data) {
+	if (!data) 
+		return false;
+	var list_news = JSON.parse(data), all_news = 0, current_percent = 0 , current = 0, current_upd = 0, result_list;
+	if (list_news['error']) {
+		alert(list_news['error']);
+		return false;
+	}
+	all_news = list_news.length;
+	$('#news-count').html(all_news);
+
+	senddata(0, list_news, 0 ,0);
+}
+
+function DoNewsUpdate(data) {
+	if (!data) 
+		return false;
+	var list_news = JSON.parse(data), all_news = 0, current_percent = 0 , current = 0, current_upd = 0, result_list;
+	if (list_news['error']) {
+		alert(list_news['error']);
+		return false;
+	}
+	all_news = list_news.length;
+	$('#news-count-update').html(all_news);
+	promise = $.when();
+	$.each(list_news, function(index, temp){
+		promise = promise.then(function(){
+			return $.ajax({			
+				url: '/index.php?controller=ajax&mod=anime_grabber&module=kodik_mass_update',
+				data: {'newsid': temp['id'], 'shikiid': temp['shikimori_id'], 'mdlid': temp['mdl_id'], action: "update_news", user_hash: dle_login_hash},
+				response: 'text',
+			})
+		}).then(function(result){
+			if (result != 'error') {
+				result_list = JSON.parse(result);
+				current_upd++;
+				$('#current-updated-news').html(current_upd);
+				document.getElementById('result-msg-update').innerHTML += '<br/>'+'NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];				
+			} else {
+				document.getElementById('result-msg-update').innerHTML += '<br/>'+'Данные в новости ' + temp['id'] + ' не были проставлены. Возможно в новости указан не существующий id Shikimori/MyDramaList.';
+			}
+			current++;
+			current_percent = Math.ceil((current / all_news) * 100, 1);			
+			$('#updated-current').html(current_percent + '%');
+			$('#updated-bar').css('width', current_percent + '%');
+		});	
+	});
+}
+
+function DoNewsUpdateImages(data) {
+	if (!data) 
+		return false;
+	var list_news = JSON.parse(data), all_news = 0, current_percent = 0 , current = 0, current_upd = 0, result_list;
+	if (list_news['error']) {
+		alert(list_news['error']);
+		return false;
+	}
+	all_news = list_news.length;
+	$('#news-img-count-update').html(all_news);
+	promise = $.when();
+	$.each(list_news, function(index, temp){
+		promise = promise.then(function(){
+			return $.ajax({			
+				url: '/index.php?controller=ajax&mod=anime_grabber&module=kodik_mass_update',
+				data: {'newsid': temp['id'], 'shikiid': temp['shikimori_id'], 'mdlid': temp['mdl_id'], action: "update_news_img", user_hash: dle_login_hash},
+				response: 'text',
+			})
+		}).then(function(result){
+			if (result.includes('Empty reply from server')) {
+				// console.log('Пропуск: Empty reply from server');
+				current++;
+				current_upd++;
+				current_percent = Math.ceil((current / all_news) * 100, 1);			
+				$('#updated-current-img').html(current_percent + '%');
+				$('#updated-bar-img').css('width', current_percent + '%');
+				document.getElementById('result-msg-update-img').innerHTML += '<br/>'+'NewsID: ' + temp['id'] + ' Пропуск Empty reply from server';
+				return;
+			}
+			if (result != 'error') {
+				result_list = JSON.parse(result);
+				// console.log(result);
+				current_upd++;
+				$('#current-updated-news-img').html(current_upd);
+				document.getElementById('result-msg-update-img').innerHTML += '<br/>'+'NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];				
+			} else {
+				document.getElementById('result-msg-update-img').innerHTML += '<br/>'+'Данные в новости ' + temp['id'] + ' не были проставлены. Возможно в новости указан не существующий id Shikimori/MyDramaList.';
+			}
+			current++;
+			current_percent = Math.ceil((current / all_news) * 100, 1);			
+			$('#updated-current-img').html(current_percent + '%');
+			$('#updated-bar-img').css('width', current_percent + '%');
+		});	
+	});
+}
+
+
+function DoNewsUpdateScreens(data) {
+	if (!data) 
+		return false;
+	var list_news = JSON.parse(data), all_news = 0, current_percent = 0 , current = 0, current_upd = 0, result_list;
+	if (list_news['error']) {
+		alert(list_news['error']);
+		return false;
+	}
+	all_news = list_news.length;
+	$('#news-screens-count-update').html(all_news);
+	promise = $.when();
+	$.each(list_news, function(index, temp){
+		promise = promise.then(function(){
+			return $.ajax({			
+				url: '/index.php?controller=ajax&mod=anime_grabber&module=kodik_mass_update',
+				data: {'newsid': temp['id'], 'shikiid': temp['shikimori_id'], 'mdlid': temp['mdl_id'], action: "update_news_screens", user_hash: dle_login_hash},
+				response: 'text',
+			})
+		}).then(function(result){
+			if (result.includes('Empty reply from server')) {
+				// console.log('Пропуск: Empty reply from server');
+				current++;
+				current_upd++;
+				current_percent = Math.ceil((current / all_news) * 100, 1);			
+				$('#updated-current-screens').html(current_percent + '%');
+				$('#updated-bar-screens').css('width', current_percent + '%');
+				document.getElementById('result-msg-update-screens').innerHTML += '<br/>'+'NewsID: ' + temp['id'] + ' Пропуск Empty reply from server';
+				return;
+			}
+			if (result != 'error') {
+				result_list = JSON.parse(result);
+				// console.log(result);
+				current_upd++;
+				$('#current-updated-news-screens').html(current_upd);
+				document.getElementById('result-msg-update-screens').innerHTML += '<br/>'+'NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];				
+			} else {
+				document.getElementById('result-msg-update-screens').innerHTML += '<br/>'+'Данные в новости ' + temp['id'] + ' не были проставлены. Возможно в новости указан не существующий id Shikimori/MyDramaList.';
+			}
+			current++;
+			current_percent = Math.ceil((current / all_news) * 100, 1);			
+			$('#updated-current-screens').html(current_percent + '%');
+			$('#updated-bar-screens').css('width', current_percent + '%');
+		});	
+	});
+}
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function DoNewsUpdateMetas(data) {
+    if (!data) return false;
+
+    let list_news;
+    try {
+        list_news = JSON.parse(data);
+    } catch (e) {
+        alert('Ошибка обработки данных (JSON.parse)');
+        return false;
+    }
+
+    if (list_news['error']) {
+        alert(list_news['error']);
+        return false;
+    }
+
+    let all_news = list_news.length;
+    let current = 0, current_percent = 0, current_upd = 0;
+
+    $('#news-metas-count-update').html(all_news);
+    let promise = $.when();
+
+    $.each(list_news, function(index, temp) {
+        promise = promise.then(function() {
+            return delay(300).then(() => {
+                return $.ajax({
+                    url: '/index.php?controller=ajax&mod=anime_grabber&module=kodik_mass_update',
+                    type: 'POST',
+                    data: {
+                        newsid: temp['id'],
+                        shikiid: temp['shikimori_id'],
+                        mdlid: temp['mdl_id'],
+                        action: "update_news_metas",
+                        user_hash: dle_login_hash
+                    },
+                    response: 'text'
+                }).then(function(result) {
+                    try {
+                        if (result !== 'error') {
+                            let result_list = JSON.parse(result);
+                            current_upd++;
+                            $('#current-updated-news-metas').html(current_upd);
+                            document.getElementById('result-msg-update-metas').innerHTML +=
+                                '<br/>NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];
+                        } else {
+                            document.getElementById('result-msg-update-metas').innerHTML +=
+                                '<br/>Данные в новости ' + temp['id'] + ' не были проставлены. Возможно указан неверный ID.';
+                        }
+                    } catch (err) {
+                        document.getElementById('result-msg-update-metas').innerHTML +=
+                            '<br/>Ошибка при обработке ответа для NewsID: ' + temp['id'];
+                    }
+
+                    current++;
+                    current_percent = Math.ceil((current / all_news) * 100);
+                    $('#updated-current-metas').html(current_percent + '%');
+                    $('#updated-bar-metas').css('width', current_percent + '%');
+                }).fail(function(xhr) {
+                    document.getElementById('result-msg-update-metas').innerHTML +=
+                        `<br/>Ошибка ${xhr.status}: ${xhr.statusText} при NewsID: ${temp['id']}`;
+                    current++;
+                    current_percent = Math.ceil((current / all_news) * 100);
+                    $('#updated-current-metas').html(current_percent + '%');
+                    $('#updated-bar-metas').css('width', current_percent + '%');
+                });
+            });
+        });
+    });
+}
+
+
+function update_queue() {
+	DLEconfirm("Данное действие необратимо. Вы уверены что хотите очистить базу данных, обновив очередь на граббинг?", "Подтвердите действие", function YesImReady() {
+		ShowLoading('');
+		$.ajax({
+			url: "/index.php?controller=ajax&mod=anime_grabber&module=aaparser_clear",
+			data:{action: "update", user_hash: dle_login_hash},
+			dataType: "json",
+			cache: false,
+			success: function(data) {
+				if ( data.status == "ok" ) {
+                	DLEPush.info('Теперь вам потребуется добавить аниме в очередь на граббинг');
+					HideLoading('');
+					return false;
+				}
+			}
+		});
+	});
+}
+
+function update_all_xfields() {
+	DLEconfirm("Вы уверены что хотите дать крону команду на перезапись доп полей в аниме?", "Подтвердите действие", function YesImReady() {
+		ShowLoading('');
+		$.ajax({
+			url: "/index.php?controller=ajax&mod=anime_grabber&module=aaparser_clear",
+			data:{action: "update_xfields", user_hash: dle_login_hash},
+			dataType: "json",
+			cache: false,
+			success: function(data) {
+				if ( data.status == "ok" ) {
+                	DLEPush.info('Не забудьте добавить задачу в крон');
+					HideLoading('');
+					return false;
+				}
+			}
+		});
+	});
+}
+
+function update_all_cats() {
+	DLEconfirm("Вы уверены что хотите дать крону команду на полную перезапись категорий в аниме?", "Подтвердите действие", function YesImReady() {
+		ShowLoading('');
+		$.ajax({
+			url: "/index.php?controller=ajax&mod=anime_grabber&module=aaparser_clear",
+			data:{action: "update_cats", user_hash: dle_login_hash},
+			dataType: "json",
+			cache: false,
+			success: function(data) {
+				if ( data.status == "ok" ) {
+                	DLEPush.info('Не забудьте добавить задачу в крон');
+					HideLoading('');
+					return false;
+				}
+			}
+		});
+	});
+}
+
+function update_countries() {
+	ShowLoading('');
+	$.ajax({
+		url: "/index.php?controller=ajax&mod=anime_grabber&module=aaparser_clear",
+		data:{action: "update_countries", user_hash: dle_login_hash},
+		dataType: "json",
+		cache: false,
+		success: function(data) {
+			if ( data.status == "ok" ) {
+                DLEPush.info('Список стран был обновлён. Перезагрузите страницу');
+				HideLoading('');
+				return false;
+			}
+			else {
+			    DLEPush.error(data.error_desc);
+				HideLoading('');
+				return false;
+			}
+		}
+	});
+}
+
+function update_translations() {
+	ShowLoading('');
+	$.ajax({
+		url: "/index.php?controller=ajax&mod=anime_grabber&module=aaparser_clear",
+		data:{action: "update_translations", user_hash: dle_login_hash},
+		dataType: "json",
+		cache: false,
+		success: function(data) {
+			if ( data.status == "ok" ) {
+                DLEPush.info('Список озвучек был обновлён. Перезагрузите страницу');
+				HideLoading('');
+				return false;
+			}
+			else {
+			    DLEPush.error(data.error_desc);
+				HideLoading('');
+				return false;
+			}
+		}
+	});
+}
+
+function update_translations_dorama() {
+	ShowLoading('');
+	$.ajax({
+		url: "/index.php?controller=ajax&mod=anime_grabber&module=aaparser_clear",
+		data:{action: "update_translations_dorama", user_hash: dle_login_hash},
+		dataType: "json",
+		cache: false,
+		success: function(data) {
+			if ( data.status == "ok" ) {
+                DLEPush.info('Список озвучек был обновлён. Перезагрузите страницу');
+				HideLoading('');
+				return false;
+			}
+			else {
+			    DLEPush.error(data.error_desc);
+				HideLoading('');
+				return false;
+			}
+		}
+	});
+}
+
+function ShowOrHideCatStatus(value) {
+	if( value == '1' ) {
+		$("#cat_check_status").show();
+		$("#cat_check_all").hide();
+	} else if(value == '2') {
+		$("#cat_check_status").hide();
+		$("#cat_check_all").show();
+	} else {
+	    $("#cat_check_status").hide();
+		$("#cat_check_all").hide();
+	}
+}
+
+function ShowOrHideAnime() {
+	$(".dorama-settings").hide();
+	$(".dorama-info").hide();
+	$(".anime-settings").show();
+	$(".anime-info").show();
+	$(".all-info").hide();
+}
+
+function ShowOrHideDorama() {
+	$(".dorama-settings").show();
+	$(".dorama-info").show();
+	$(".anime-settings").hide();
+	$(".anime-info").hide();
+	$(".all-info").hide();
+}
+
+function ShowOrHideAll() {
+	$(".dorama-settings").show();
+	$(".dorama-info").show();
+	$(".anime-settings").show();
+	$(".anime-info").show();
+	$(".all-info").show();
+}
+
+function ShowOrHideMode(value) {
+	
+	if( value == '1' ) ShowOrHideDorama();
+	else if(value == '2') ShowOrHideAll();
+	else ShowOrHideAnime();
+	
+	setTimeout(function () {
+		if( value == '1' ) ShowOrHideDorama();
+		else if(value == '2') ShowOrHideAll();
+		else ShowOrHideAnime();
+	},300);
+	
+	setTimeout(function () {
+		if( value == '1' ) ShowOrHideDorama();
+		else if(value == '2') ShowOrHideAll();
+		else ShowOrHideAnime();
+	},600);
+	
+}
+
+function ShowOrHideXfStatus(value) {
+	if( value == '1' ) {
+		$("#xf_check_status").show();
+		$("#xf_check_all").hide();
+	} else if(value == '2') {
+		$("#xf_check_status").hide();
+		$("#xf_check_all").show();
+	} else {
+	    $("#xf_check_status").hide();
+		$("#xf_check_all").hide();
+	}
+}
+
+function ShowOrHidePlayer() {
+    var checkbox = document.getElementById("player_on_off");
+	if( checkbox.checked === true ) $("#show-hide-player").show();
+	else $("#show-hide-player").hide();
+}
+
+function ShowOrHidePush() {
+    var checkbox = document.getElementById("push_on_off");
+	if( checkbox.checked === true ) $("#show-hide-push").show();
+	else $("#show-hide-push").hide();
+}
+
+function ShowOrHideCalendar() {
+    var checkbox = document.getElementById("calendar_on_off");
+	if( checkbox.checked === true ) $("#show-hide-calendar").show();
+	else $("#show-hide-calendar").hide();
+}
+
+function ShowOrHideUpdblock() {
+    var checkbox = document.getElementById("updblock_on_off");
+	if( checkbox.checked === true ) $("#show-hide-updblock").show();
+	else $("#show-hide-updblock").hide();
+}
+
+function ShowOrHideRooms() {
+    var checkbox = document.getElementById("rooms_on_off");
+	if( checkbox.checked === true ) $("#show-hide-rooms").show();
+	else $("#show-hide-rooms").hide();
+}
+
+function ShowOrHideTg() {
+    var checkbox = document.getElementById("tg_on_off");
+	if( checkbox.checked === true ) $("#show-hide-tgposting").show();
+	else $("#show-hide-tgposting").hide();
+}
+
+function ShowOrHideGindexing() {
+    var elements = [
+        'gindexing-settings', 'gindexing-status-info', 'gindexing-status', 'gindexing-mass-info',
+        'gindexing-mass', 'gindexing-guide-info', 'gindexing-guide'
+    ];
+    var action = document.getElementById("google_indexing").checked ? 'show' : 'hide';
+    elements.forEach(id => {$("#" + id)[action]();});
+}
+
+function ShowOrHideDebugger() {
+    var checkbox = document.getElementById("debugger_on_off");
+	if( checkbox.checked === true ) $("#show-hide-debugger").show();
+	else $("#show-hide-debugger").hide();
+}
+
+function saveAcc(acc) {
+	$.post('/index.php?controller=ajax&mod=anime_grabber&module=gindexing', {acc: acc, action: 'save', user_hash: dle_login_hash}, function(data) {
+	    data = jQuery.parseJSON(data);
+		if (!data.success) {
+			DLEPush.error('Повторите позже');
+		} else {
+			DLEPush.info('Сервисный аккаунт изменён');
+		}
+	});
+	return false;
+}
+
+function ClearLogs() {
+    DLEconfirm( 'Вы уверены что хотите очистить логи?', 'Подтвердите', function () {
+    	$.post('/index.php?controller=ajax&mod=anime_grabber&module=gindexing', {action: 'clear_logs', user_hash: dle_login_hash}, function(data) {
+	        data = jQuery.parseJSON(data);
+		    if (!data.success) {
+			    DLEPush.error('Повторите позже');
+		    } else {
+		        var new_logs = '<div style="display: table;min-height:100px;width:100%;"><div class="text-center" style="display: table-cell;vertical-align:middle;">Список логов пустой!</div></div>';
+		        $('#logs-list').html(new_logs);
+			    DLEPush.info('Логи были успешно очищены');
+		    }
+	    });
+    });
+	return false;
+}
+
+function CheckSingle() {
+    var single_link = document.getElementById("single_link").value;
+    if (single_link == "") return false;
+	$.post('/index.php?controller=ajax&mod=anime_grabber&module=gindexing', {url: single_link, action: 'check', user_hash: dle_login_hash}, function(data) {
+	    data = jQuery.parseJSON(data);
+		if (!data.success) {
+			DLEPush.error('Ошибка получения статуса ссылки, скорей всего она не отправлялась на индексацию в Google Indexing или ещё не была проиндексирована');
+		} else {
+		    var result_check = '<br>Статус: '+data.result.status+'<br>Ссылка: '+data.result.link+'<br>Дата: '+data.result.date+'<br>Тип: '+data.result.type+'<br>';
+		    $('#check_single').html(result_check);
+		}
+	});
+	return false;
+}
+
+function SendMass(acc) {
+    var e = document.getElementById("indexing-kind");
+    var kind = e.options[e.selectedIndex].text;
+    var textArea = document.getElementById("url-list").value;
+    if (textArea == "") return false;
+	$.post('/index.php?controller=ajax&mod=anime_grabber&module=gindexing', {kind: kind, urls: textArea, action: 'mass', user_hash: dle_login_hash}, function(data) {
+	    data = jQuery.parseJSON(data);
+		if (!data.success) {
+			DLEPush.error('Повторите позже');
+		} else {
+			DLEPush.info('Обновите страницу для просмотра логов');
+		}
+	});
+	return false;
+}
+
+function LogsPage(page, el) {
+    if ( el.classList.contains('active') ) {
+        return false;
+    }
+	$.post('/index.php?controller=ajax&mod=anime_grabber&module=gindexing', {page: page, action: 'logspage', user_hash: dle_login_hash}, function(data) {
+	    data = jQuery.parseJSON(data);
+	    $('#logs-result').html(data.result);
+	    $("li").removeClass("active");
+	    $(el).addClass( "active" );
+	});
+	return false;
+}
+
+function clear_player_cache() {
+	DLEconfirm( 'Вы уверены что хотите очистить кеш плейлистов?', 'Подтвердите', function () {
+	$.ajax({
+		url: "/index.php?controller=ajax&mod=anime_grabber&module=aaparser_clear",
+		data:{action: "clear_player_cache", user_hash: dle_login_hash},
+		dataType: "json",
+		cache: false,
+		success: function(data) {
+			if ( data.status == "ok" ) {
+			    $('#pl-cache-size').html('0 КБ');
+                DLEPush.info('Кеш был успешно очищен');
+				return false;
+			}
+			else {
+			    DLEPush.error('Повторите позже');
+				return false;
+			}
+		}
+	});
+	});
+}
+
+function clear_chars_cache() {
+	DLEconfirm( 'Вы уверены что хотите очистить кеш персонажей и персон?', 'Подтвердите', function () {
+	$.ajax({
+		url: "/index.php?controller=ajax&mod=anime_grabber&module=aaparser_clear",
+		data:{action: "clear_personajes_cache", user_hash: dle_login_hash},
+		dataType: "json",
+		cache: false,
+		success: function(data) {
+			if ( data.status == "ok" ) {
+			    $('#chars-cache-size').html('0 КБ');
+                DLEPush.info('Кеш был успешно очищен');
+				return false;
+			}
+			else {
+			    DLEPush.error('Повторите позже');
+				return false;
+			}
+		}
+	});
+	});
+}
+
+function clear_actors_cache() {
+	DLEconfirm( 'Вы уверены что хотите очистить кеш актёров?', 'Подтвердите', function () {
+	$.ajax({
+		url: "/index.php?controller=ajax&mod=anime_grabber&module=aaparser_clear",
+		data:{action: "clear_personajes_cache", user_hash: dle_login_hash},
+		dataType: "json",
+		cache: false,
+		success: function(data) {
+			if ( data.status == "ok" ) {
+			    $('#actors-cache-size').html('0 КБ');
+                DLEPush.info('Кеш был успешно очищен');
+				return false;
+			}
+			else {
+			    DLEPush.error('Повторите позже');
+				return false;
+			}
+		}
+	});
+	});
+}
+
+function clear_page_cache() {
+	DLEconfirm( 'Вы уверены что хотите очистить кеш страниц персонажей и авторов?', 'Подтвердите', function () {
+	$.ajax({
+		url: "/index.php?controller=ajax&mod=anime_grabber&module=aaparser_clear",
+		data:{action: "clear_page_cache", user_hash: dle_login_hash},
+		dataType: "json",
+		cache: false,
+		success: function(data) {
+			if ( data.status == "ok" ) {
+			    $('#page-cache-size').html('0 КБ');
+                DLEPush.info('Кеш был успешно очищен');
+				return false;
+			}
+			else {
+			    DLEPush.error('Повторите позже');
+				return false;
+			}
+		}
+	});
+	});
+}
+
+$(document).ready(function(){
+	$(".rcol-2col-header").click (function(){
+		$(this).next(".rcol-2col-body").stop().slideToggle(300);
+		if ($(this).children('.show-hide').text() == 'Show') {
+			$(this).children('.show-hide').text('Hide');
+		} else {
+			$(this).children('.show-hide').text('Show');
+		}
+	});
+   
+	var shiki = $('#dynamic_field_shiki').find('div').length;
+	$("#add_shiki").click(function(){
+		shiki++;
+		$('#dynamic_field_shiki').append('<div style="display: flex;height: 40px;margin-bottom: 5px;" id="row'+shiki+'"><input type="text" autocomplete="off" style="float: right;height: 40px;" name="blacklist_shikimori[]" placeholder="id Shikimori" class="form-control"/><button type="button" name="remove_shiki" id="'+shiki+'" class="btn btn-danger btn_remove_shiki">X</button></div>');  
+	});
+
+	$(document).on('click', '.btn_remove_shiki', function(){  
+	  var button_id = $(this).attr("id");     
+	  $('#row'+button_id+'').remove();  
+	});
+
+	var mdl = $('#dynamic_field_mdl').find('div').length;
+	$("#add_mdl").click(function(){
+		mdl++;
+		$('#dynamic_field_mdl').append('<div style="display: flex;height: 40px;margin-bottom: 5px;" id="rowmdl'+mdl+'"><input type="text" autocomplete="off" style="float: right;height: 40px;" name="blacklist_mdl[]" placeholder="id MyDramaList" class="form-control"/><button type="button" name="remove_mdl" id="'+mdl+'" class="btn btn-danger btn_remove_mdl">X</button></div>');  
+	});
+
+	$(document).on('click', '.btn_remove_mdl', function(){  
+	  var button_id = $(this).attr("id");     
+	  $('#rowmdl'+button_id+'').remove();  
+	});
+	
+	$('.faq-quest').click(function(){
+		if ($(this).parent().hasClass('faq-open')) {
+			$(this).parent().removeClass('faq-open');
+			$(this).parent().children('.faq-answer').slideUp(200);
+		} else {
+			$(this).parent().addClass('faq-open');
+			$(this).parent().children('.faq-answer').slideDown(200);
+		}
+	});
+	
+	$(".faq_find").click(function () {
+		ChangeOption($("ul.nav.navbar-nav li[data-original-title='FAQ']"), 'faq');
+		var targetId = "#" + $(this).attr('class').split(' ')[1];
+		if ($(targetId).hasClass('faq-open')) {
+			$(targetId).removeClass('faq-open');
+			$(targetId).children('.faq-answer').slideUp(200);
+		} else {
+			$(targetId).addClass('faq-open');
+			$(targetId).children('.faq-answer').slideDown(200);
+		}
+	});
+});
