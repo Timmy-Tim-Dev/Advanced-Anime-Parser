@@ -1,4 +1,22 @@
 <h1 align="center">Advanced Anime Parser</h1>
+<table style="width:100%;display:table;">
+	<thead>
+		<tr>
+			<th>Версия модуля</th>
+			<th>Ссылка для ветки</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>DLE 19.0 и ниже</td>
+			<td><a href="https://github.com/Timmy-Tim-Dev/Advanced-Anime-Parser/tree/main">Нажми на ссылку</a></td>
+		</tr>
+		<tr>
+			<td>DLE 19.1 и выше</td>
+			<td><a href="https://github.com/Timmy-Tim-Dev/Advanced-Anime-Parser/tree/DLE-19.1-and-Upper">Нажми на ссылку</a></td>
+		</tr>
+	</tbody>
+</table>
 <p><b>DLE Advanced Kodik Parser</b> - многофункциональный модуль для ручного парсинга и автоматического граббинга аниме и дорам с базы Kodik, сайта Shikimori а так же World-Art, с возможностью обновлять новости при выходе новой серии сериала или лучшего качества фильма.</p>
 <ul>
 	<li>Модуль умеет заполнять доп. поля огромным количеством данных (подробнее в описании модуля в архиве)</li>
