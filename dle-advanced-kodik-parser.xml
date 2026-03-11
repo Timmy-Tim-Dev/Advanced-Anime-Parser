@@ -3,8 +3,8 @@
 	<name>Advanced Kodik Parser</name>
 	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, парсинг анонсов аниме, обновление новостей при выходе новой серии или лучшего качества, тонкие настройки работы cron.</description>
 	<icon>uploads/advanced-anime-parser-icon.png</icon>
-	<version>4.6.1</version>
-	<dleversion>15.0</dleversion>
+	<version>5.0.0</version>
+	<dleversion>19.1</dleversion>
 	<versioncompare>greater</versioncompare>
 	<upgradeurl>https://storage.kodik.biz/files/advanced-anime-parser/last_version.json</upgradeurl>
 	<filedelete>0</filedelete>
@@ -148,11 +148,11 @@ DROP TABLE IF EXISTS `{prefix}_raspisanie_ongoingov`;
 DROP TABLE IF EXISTS `{prefix}_shikimori_posts`;
 DROP TABLE IF EXISTS `{prefix}_subscribe_info`;
 DROP TABLE IF EXISTS `{prefix}_telegram_sender`;]]></mysqldelete>
-	<phpinstall><![CDATA[$filePath = ENGINE_DIR . '/mrdeath/aaparser/data/version.php';
+	<phpinstall><![CDATA[$filePath = ENGINE_DIR . '/xozayn/aaparser/data/version.php';
 if (!file_exists($filePath)) {
-   	if (!is_dir(ENGINE_DIR . '/mrdeath')) mkdir(ENGINE_DIR . '/mrdeath', 0777, true);
- 	if (!is_dir(ENGINE_DIR . '/mrdeath/aaparser')) mkdir(ENGINE_DIR . '/mrdeath/aaparser', 0777, true);
-	if (!is_dir(ENGINE_DIR . '/mrdeath/aaparser/data')) mkdir(ENGINE_DIR . '/mrdeath/aaparser/data', 0777, true);
+   	if (!is_dir(ENGINE_DIR . '/xozayn')) mkdir(ENGINE_DIR . '/xozayn', 0777, true);
+ 	if (!is_dir(ENGINE_DIR . '/xozayn/aaparser')) mkdir(ENGINE_DIR . '/xozayn/aaparser', 0777, true);
+	if (!is_dir(ENGINE_DIR . '/xozayn/aaparser/data')) mkdir(ENGINE_DIR . '/xozayn/aaparser/data', 0777, true);
   	$plugin_info = $db->super_query( "SELECT * FROM " . PREFIX . "_plugins WHERE name = 'Advanced Kodik Parser'" );
 	$actual_module_version = $plugin_info['version'];
     $fp = fopen($filePath, "w+");
@@ -168,7 +168,8 @@ if (!file_exists($filePath)) {
 	<phpenable><![CDATA[]]></phpenable>
 	<phpdisable><![CDATA[]]></phpdisable>
 	<phpdelete><![CDATA[]]></phpdelete>
-	<notice><![CDATA[<b>Список дополнительных модулей в комплекте:</b>
+	<notice><![CDATA[<b><i>Только для версии старше 19.1</i></b>
+<b>Список дополнительных модулей в комплекте:</b>
 [ol=1]
 [*]Ajax плейлист с запоминанием серий
 [*]Расписание выхода серий (только для аниме сайтов)
@@ -188,13 +189,15 @@ if (!file_exists($filePath)) {
 			<enabled>1</enabled>
 		</operation>
 		<operation action="after">
-			<searchcode><![CDATA[echo $categoryfilter;]]></searchcode>
-			<replacecode><![CDATA[require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/addeditnews.php'));
+			<searchcode><![CDATA[$xf_root = $xf_tabs = $xf_tabs_body = array();]]></searchcode>
+			<replacecode><![CDATA[require_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/addeditnews.php'));
 
 $kodik_xf_field = $aaparser_config['main_fields']['xf_player'];
 $xf_shikimori_id = $aaparser_config['main_fields']['xf_shikimori_id'];
 $xf_mdl_id = $aaparser_config['main_fields']['xf_mdl_id'];]]></replacecode>
 			<enabled>1</enabled>
+			<dleversion>19.1</dleversion>
+			<versioncompare>greater</versioncompare>
 		</operation>
 		<operation action="after">
 			<searchcode><![CDATA[<span id="related_news"></span>]]></searchcode>
@@ -228,10 +231,8 @@ function updateKodikPlayer(xf)
 			<enabled>1</enabled>
 		</operation>
 		<operation action="after">
-			<searchcode><![CDATA[$xfieldsaction = "init";
-$xf_existing = array();
-include (DLEPlugins::Check(ENGINE_DIR . '/inc/xfields.php'));]]></searchcode>
-			<replacecode><![CDATA[$xf_temp_fields = xfieldsdataload($filecontents);
+			<searchcode><![CDATA[$metatags = create_metatags($all_xf_content);]]></searchcode>
+			<replacecode><![CDATA[$xf_temp_fields = DLEXFields::xfieldsdataload($filecontents);
 $inserter_tag = $inserter_val = '';
 if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
   if ( isset($xf_temp_fields[$aaparser_config['main_fields']['xf_shikimori_id']]) ) {
@@ -241,24 +242,19 @@ if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
   }
 }]]></replacecode>
 			<enabled>1</enabled>
+			<dleversion>19.1</dleversion>
+			<versioncompare>greater</versioncompare>
 		</operation>
 		<operation action="replace">
 			<searchcode><![CDATA[allow_br, symbol, tags, metatitle) values (]]></searchcode>
 			<replacecode><![CDATA[allow_br, symbol, tags, metatitle ".$inserter_tag.") values (]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
-		<operation action="replace">
-			<searchcode><![CDATA['$allow_br', '$catalog_url', '{$_POST['tags']}', '{$metatags['title']}')" );]]></searchcode>
-			<replacecode><![CDATA['$allow_br', '$catalog_url', '{$_POST['tags']}', '{$metatags['title']}' ".$inserter_val.")" );]]></replacecode>
-			<enabled>1</enabled>
-			<dleversion>17.3</dleversion>
-			<versioncompare>less</versioncompare>
-		</operation>
 		<operation action="after">
 			<searchcode><![CDATA[$id = $db->insert_id();]]></searchcode>
 			<replacecode><![CDATA[if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
   	if ( isset($xf_temp_fields[$aaparser_config['main_fields']['xf_shikimori_id']]) ) {
-      	require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/module.php'));
+      	require_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/functions/module.php'));
       	$shikimori_id = $xf_temp_fields[$aaparser_config['main_fields']['xf_shikimori_id']];
       	$base_check_db = $db->super_query( "SELECT shikimori_id, news_id FROM " . PREFIX . "_anime_list WHERE shikimori_id='{$shikimori_id}'" );
       	if ( $base_check_db['shikimori_id'] == $shikimori_id && $base_check_db['news_id'] != $id )
@@ -279,7 +275,7 @@ if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
 }
 elseif ( isset($aaparser_config['main_fields']['xf_mdl_id']) ) {
   	if ( isset($xf_temp_fields[$aaparser_config['main_fields']['xf_mdl_id']]) ) {
-      	require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/module.php'));
+      	require_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/functions/module.php'));
       	$mdl_id = $xf_temp_fields[$aaparser_config['main_fields']['xf_mdl_id']];
       	$base_check_db = $db->super_query( "SELECT mdl_id, news_id FROM " . PREFIX . "_anime_list WHERE mdl_id='{$mdl_id}'" );
       	if ( $base_check_db['mdl_id'] == $mdl_id && $base_check_db['news_id'] != $id )
@@ -333,21 +329,14 @@ $tlg_sender = isset( $_POST['tlg_sender'] ) ? intval( $_POST['tlg_sender'] ) : 0
 	$indexing_action = 'send';
 	$indexing_type = 'URL_UPDATED';
 	$indexing_url = $full_link;
-	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/indexing.php'));
+	include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/google_indexing/indexing.php'));
 }
 if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparser_config['push_notifications']['tg_addnews'] == 1 && $tlg_sender == 1 ) {
   	$tlg_news_id = $id;
   	$tlg_template = 'addnews';
-	require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_init.php'));
+	require_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/telegram_sender/telegramsend_init.php'));
 }]]></replacecode>
 			<enabled>1</enabled>
-		</operation>
-		<operation action="replace">
-			<searchcode><![CDATA['0', '$catalog_url', '{$_POST['tags']}', '{$metatags['title']}')" );]]></searchcode>
-			<replacecode><![CDATA['0', '$catalog_url', '{$_POST['tags']}', '{$metatags['title']}' ".$inserter_val.")" );]]></replacecode>
-			<enabled>1</enabled>
-			<dleversion>18.0</dleversion>
-			<versioncompare>==</versioncompare>
 		</operation>
 		<operation action="replace">
 			<searchcode><![CDATA['0', '{$catalog_url}', '{$_POST['tags']}', '{$metatags['title']}')" );]]></searchcode>
@@ -358,21 +347,16 @@ if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparse
 		</operation>
 	</file>
 	<file name="engine/inc/editnews.php">
-		<operation action="before">
-			<searchcode><![CDATA[<button onclick="find_relates(); return false;"]]></searchcode>
-			<replacecode><![CDATA[<button onClick="parser_search(); return false;" class="btn bg-info-800 btn-sm btn-raised legitRipple position-left">Поиск на Kodik</button>]]></replacecode>
-			<enabled>1</enabled>
-			<dleversion>16.1</dleversion>
-			<versioncompare>less</versioncompare>
-		</operation>
 		<operation action="after">
-			<searchcode><![CDATA[echo $categoryfilter;]]></searchcode>
-			<replacecode><![CDATA[require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/addeditnews.php'));
+			<searchcode><![CDATA[$xf_root = $xf_tabs = $xf_tabs_body = array();]]></searchcode>
+			<replacecode><![CDATA[require_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/addeditnews.php'));
 
 $kodik_xf_field = $aaparser_config['main_fields']['xf_player'];
 $xf_shikimori_id = $aaparser_config['main_fields']['xf_shikimori_id'];
 $xf_mdl_id = $aaparser_config['main_fields']['xf_mdl_id'];]]></replacecode>
 			<enabled>1</enabled>
+			<dleversion>19.1</dleversion>
+			<versioncompare>greater</versioncompare>
 		</operation>
 		<operation action="after">
 			<searchcode><![CDATA[<span id="related_news"></span>]]></searchcode>
@@ -433,7 +417,7 @@ if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparse
 }
 else $tlg_sender = "";
 
-if ( !isset($aaparser_config) ) include_once ENGINE_DIR . '/mrdeath/aaparser/data/config.php';
+if ( !isset($aaparser_config) ) include_once ENGINE_DIR . '/xozayn/aaparser/data/config.php';
 if ( $aaparser_config['integration']['ksep'] == 1 ) {
 	$generate_button = "<div class=\"form-group\">
 		<label class=\"control-label col-sm-2\">Генерация серий и сезонов</label>
@@ -472,12 +456,12 @@ $tlg_sender = isset( $_POST['tlg_sender'] ) ? intval( $_POST['tlg_sender'] ) : 0
 	$indexing_action = 'send';
 	$indexing_type = 'URL_UPDATED';
 	$indexing_url = $full_link;
-	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/indexing.php'));
+	include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/google_indexing/indexing.php'));
 }
 if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparser_config['push_notifications']['tg_editnews'] == 1 && $tlg_sender == 1 ) {
   	$tlg_news_id = $id;
   	$tlg_template = 'editnews';
-	require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_init.php'));
+	require_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/telegram_sender/telegramsend_init.php'));
 }]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
@@ -507,7 +491,7 @@ if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparse
 	$indexing_action = 'send';
 	$indexing_type = 'URL_DELETED';
 	$indexing_url = $full_link;
-	include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/gindexing/indexing.php'));
+	include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/gindexing/indexing.php'));
 }]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
@@ -524,7 +508,7 @@ if ( $aaparser_config['push_notifications']['enable_tgposting'] == 1 && $aaparse
 		</operation>
 		<operation action="after">
 			<searchcode><![CDATA[} else $thistime = date( "Y-m-d H:i:s", $added_time );]]></searchcode>
-			<replacecode><![CDATA[$xf_temp_fields = xfieldsdataload($filecontents);
+			<replacecode><![CDATA[$xf_temp_fields = DLEXFields::xfieldsdataload($filecontents);
 $inserter = '';
 if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
   if ( isset($xf_temp_fields[$aaparser_config['main_fields']['xf_shikimori_id']]) ) {
@@ -533,13 +517,6 @@ if ( isset($aaparser_config['main_fields']['xf_shikimori_id']) ) {
   }
 }]]></replacecode>
 			<enabled>1</enabled>
-		</operation>
-		<operation action="replace">
-			<searchcode><![CDATA[allow_br='{$allow_br}', symbol='{$catalog_url}', tags='{$_POST['tags']}',]]></searchcode>
-			<replacecode><![CDATA[allow_br='{$allow_br}', " . $inserter . " symbol='{$catalog_url}', tags='{$_POST['tags']}',]]></replacecode>
-			<enabled>1</enabled>
-			<dleversion>17.3</dleversion>
-			<versioncompare>less</versioncompare>
 		</operation>
 		<operation action="replace">
 			<searchcode><![CDATA[allow_br='0', symbol='{$catalog_url}', tags='{$_POST['tags']}',]]></searchcode>
@@ -561,7 +538,7 @@ if (!$user_group[$member_id['user_group']]['admin_complaint']) {
 	msg('error', $lang['index_denied'], $lang['index_denied']);
 }
 
-include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/admin/index.php'));
+include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/admin/index.php'));
 
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -575,24 +552,24 @@ if( !defined('DATALIFEENGINE' ) ) {
 	die('Hacking attempt!');
 }
 
-if (isset($_GET['module']) == false) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/grabber.php'));
+if (isset($_GET['module']) == false) include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/ajax/grabber.php'));
 else {
   	if ($user_group[$member_id['user_group']]['admin_complaint']) {
-      	if ($_GET['module'] == "anime_parser") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/parser.php'));
-        if ($_GET['module'] == "aaparser_save") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/admin/ajax/save_config.php'));
-        if ($_GET['module'] == "aaparser_clear") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/update_queue.php'));
-      	if ($_GET['module'] == "kodik_mass_update") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/mass_update.php'));
-      	if ($_GET['module'] == "gindexing" && file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php')) {
-            include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/ajax/save.php'));
+      	if ($_GET['module'] == "anime_parser") include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/ajax/parser.php'));
+        if ($_GET['module'] == "aaparser_save") include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/admin/ajax/save_config.php'));
+        if ($_GET['module'] == "aaparser_clear") include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/ajax/update_queue.php'));
+      	if ($_GET['module'] == "kodik_mass_update") include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/ajax/mass_update.php'));
+      	if ($_GET['module'] == "gindexing" && file_exists(ENGINE_DIR.'/xozayn/aaparser/google_indexing/indexing.php')) {
+            include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/google_indexing/ajax/save.php'));
         }
   	}
-  	if ($_GET['module'] == "kodik_playlist_ajax") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist.php'));
-  	if ($_GET['module'] == "kodik_playlist_ajax_new") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist_new.php'));
-  	if ($_GET['module'] == "kodik_playlist_ajax_screen") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/playlist_screen.php'));
-  	if ($_GET['module'] == "telegram_sender") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/telegram_sender/telegramsend_cron.php'));
-  	if ($_GET['module'] == "push_subscribe") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/push_subscribe.php'));
-  	if ($_GET['module'] == "kodik_watched") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/save_watched.php'));
-  	if ($_GET['module'] == "persons") include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/ajax/persons.php'));
+  	if ($_GET['module'] == "kodik_playlist_ajax") include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/ajax/playlist.php'));
+  	if ($_GET['module'] == "kodik_playlist_ajax_new") include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/ajax/playlist_new.php'));
+  	if ($_GET['module'] == "kodik_playlist_ajax_screen") include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/ajax/playlist_screen.php'));
+  	if ($_GET['module'] == "telegram_sender") include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/telegram_sender/telegramsend_cron.php'));
+  	if ($_GET['module'] == "push_subscribe") include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/ajax/push_subscribe.php'));
+  	if ($_GET['module'] == "kodik_watched") include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/ajax/save_watched.php'));
+  	if ($_GET['module'] == "persons") include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/ajax/persons.php'));
 }
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -601,31 +578,31 @@ else {
 	<file name="engine/classes/uploads/upload.class.php">
 		<operation action="replace">
 			<searchcode><![CDATA[if (!$this->tmp_name || !is_uploaded_file($this->tmp_name) ) {
-			die( json_encode(array('error' => 'File not send to server' ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
+			die( json_encode(array('error' => $lang['file_def_1'] ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
 		}]]></searchcode>
 			<replacecode><![CDATA[if ((!$this->tmp_name || !is_uploaded_file($this->tmp_name)) && !$this->module ) {
-			die( json_encode(array('error' => 'File not send to server' ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
+			die( json_encode(array('error' => $lang['file_def_1'] ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
 		}]]></replacecode>
 			<enabled>1</enabled>
-			<dleversion>15.3</dleversion>
+			<dleversion>19.1</dleversion>
 			<versioncompare>greater</versioncompare>
 		</operation>
 		<operation action="replace">
 			<searchcode><![CDATA[if ( !$this->name ){
-			die( json_encode(array('error' => 'File not send to server' ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
+			die( json_encode(array('error' => $lang['file_def_1'] ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
         }]]></searchcode>
 			<replacecode><![CDATA[if ( !$this->name && !$this->module ){
-			die( json_encode(array('error' => 'File not send to server' ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
+			die( json_encode(array('error' => $lang['file_def_1'] ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
         }]]></replacecode>
 			<enabled>1</enabled>
-			<dleversion>15.3</dleversion>
+			<dleversion>19.1</dleversion>
 			<versioncompare>greater</versioncompare>
 		</operation>
 		<operation action="after">
-			<searchcode><![CDATA[$this->size = $_FILES['qqfile']['size'];]]></searchcode>
+			<searchcode><![CDATA[$this->size = isset($_FILES['qqfile']['size']) ? $_FILES['qqfile']['size'] : 0;]]></searchcode>
 			<replacecode><![CDATA[$this->module = isset($_REQUEST['module']) ? $_REQUEST['module'] : false;]]></replacecode>
 			<enabled>1</enabled>
-			<dleversion>15.3</dleversion>
+			<dleversion>19.1</dleversion>
 			<versioncompare>greater</versioncompare>
 		</operation>
 		<operation action="replace">
@@ -642,11 +619,13 @@ else {
 	<file name="engine/modules/main.php">
 		<operation action="before">
 			<searchcode><![CDATA[echo $tpl->result['main'];]]></searchcode>
-			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/main.php'));]]></replacecode>
+			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/main.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="before">
-			<searchcode><![CDATA[if (stripos ( $tpl->copy_template, "{jsfiles}" ) !== false) {]]></searchcode>
+			<searchcode><![CDATA[if ($allow_comments_ajax AND $dle_module != "addnews") {
+	$js_array[] = "public/editor/tiny_mce/tinymce.min.js";
+}]]></searchcode>
 			<replacecode><![CDATA[if ( $aaparser_config['push_notifications']['enable'] && $is_logged) {
 	$metatags .= <<<HTML
 <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
@@ -664,20 +643,24 @@ else {
 HTML;
 }]]></replacecode>
 			<enabled>1</enabled>
+			<dleversion>19.1</dleversion>
+			<versioncompare>greater</versioncompare>
 		</operation>
 		<operation action="before">
-			<searchcode><![CDATA[$js_array = build_css($css_array, $config)."\n".build_js($js_array, $config);]]></searchcode>
-			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/main2.php'));]]></replacecode>
+			<searchcode><![CDATA[$js_array = build_css($css_array, $config) . "\n" . build_js($js_array, $config);]]></searchcode>
+			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/main2.php'));]]></replacecode>
 			<enabled>1</enabled>
+			<dleversion>19.1</dleversion>
+			<versioncompare>greater</versioncompare>
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[$tpl->set ( '{content}', $tpl->result['content'] );]]></searchcode>
-			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/main3.php'));]]></replacecode>
+			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/main3.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[echo $tpl->result['main'];]]></searchcode>
-			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/main4.php'));]]></replacecode>
+			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/main4.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="before">
@@ -715,7 +698,7 @@ $tpl->result['main'] = str_replace ( "[/rooms_notfound]", "", $tpl->result['main
 	<file name="engine/modules/show.full.php">
 		<operation action="before">
 			<searchcode><![CDATA[$tpl->set( '{short-story}', $row['short_story'] );]]></searchcode>
-			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/show.full.php'));]]></replacecode>
+			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/show.full.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -834,7 +817,7 @@ else]]></replacecode>
 		<operation action="before">
 			<searchcode><![CDATA[if ( $build_navigation ) {]]></searchcode>
 			<replacecode><![CDATA[if( preg_match( "#idshiki=['\"](.+?)['\"]#i", $param_str, $match ) ) {
-    if ( !$aaparser_config ) require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
+    if ( !$aaparser_config ) require_once ENGINE_DIR.'/xozayn/aaparser/data/config.php';
     $match[1] = explode (',', $match[1]);
     $temp_array = array();
     foreach ($match[1] as $value) {
@@ -854,7 +837,7 @@ else]]></replacecode>
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[function totranslit]]></searchcode>
-			<replacecode><![CDATA[if ( file_exists(ENGINE_DIR . '/mrdeath/aaparser/data/config.php') ) require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
+			<replacecode><![CDATA[if ( file_exists(ENGINE_DIR . '/xozayn/aaparser/data/config.php') ) require_once ENGINE_DIR.'/xozayn/aaparser/data/config.php';
 else $aaparser_config = [];
 function DLE_Send_Onesignal ( $params ) {
   	global $aaparser_config;
@@ -943,22 +926,12 @@ function DLE_Send_Push ( $title, $notification, $url = false, $image = false, $u
 		</operation>
 		<operation action="before">
 			<searchcode><![CDATA[function custom_print( $matches=array() ) {]]></searchcode>
-			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/functions.php'));]]></replacecode>
+			<replacecode><![CDATA[include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/functions.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 		<operation action="replace">
 			<searchcode><![CDATA[p.id, p.autor, p.date, p.short_story]]></searchcode>
 			<replacecode><![CDATA[p.id, p.autor, p.date, p.short_story, p.franchise_aap]]></replacecode>
-			<enabled>1</enabled>
-		</operation>
-		<operation action="replace">
-			<searchcode><![CDATA[	foreach ( $xfieldsdata as $xfielddata ) {
-		list ( $xfielddataname, $xfielddatavalue ) = explode( "|", $xfielddata );
-]]></searchcode>
-			<replacecode><![CDATA[	foreach ( $xfieldsdata as $xfielddata ) {
-		list ( $xfielddataname, $xfielddatavalue ) = explode( "|", $xfielddata );
-		if ($xfielddataname == null || $xfielddatavalue == null) continue;
-]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -1018,7 +991,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/subscribe_page.php'));]]></replacecode>
+include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/subscribe_page.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -1041,7 +1014,7 @@ if($_GET['user_hash'] == "" OR $_GET['user_hash'] != $dle_login_hash)
 	die('Hacking attempt!');
 }
 
-include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/rooms/create_room.php'));
+include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/rooms/create_room.php'));
 
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -1057,7 +1030,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/rooms/enter_room.php'));
+include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/rooms/enter_room.php'));
 
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -1082,7 +1055,7 @@ if($_GET['user_hash'] == "" OR $_GET['user_hash'] != $dle_login_hash)
 	die('Hacking attempt!');
 }
 
-include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/rooms/message_room.php'));
+include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/rooms/message_room.php'));
 
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -1098,7 +1071,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/rooms/rooms_list.php'));
+include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/rooms/rooms_list.php'));
 
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -1115,8 +1088,8 @@ include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/rooms/rooms_list
 		<operation action="before">
 			<searchcode><![CDATA[if (stripos ( $content, "android]" ) !== false) {]]></searchcode>
 			<replacecode><![CDATA[if (stripos ( $content, "{kodik_updates_block}" ) !== false) {
-if (file_exists(ENGINE_DIR.'/mrdeath/aaparser/data/updates_history.json')) {
-    $updates_history = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/updates_history.json' ), true );
+if (file_exists(ENGINE_DIR.'/xozayn/aaparser/data/updates_history.json')) {
+    $updates_history = json_decode( file_get_contents( ENGINE_DIR .'/xozayn/aaparser/data/updates_history.json' ), true );
     if ( is_array($updates_history) && $updates_history ) {
         $kodik_updates_block = '';
         $first_block_styles = 'show';
@@ -1205,7 +1178,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-include (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/rooms/rooms_custom.php'));
+include (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/rooms/rooms_custom.php'));
 
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -1221,7 +1194,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/raspisanie_ongoingov.php'));]]></replacecode>
+include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/raspisanie_ongoingov.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -1254,7 +1227,7 @@ include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/raspi
 			$indexing_url[] = $full_link;
 		}
 		$indexing_type = 'URL_UPDATED';
-		include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/google_indexing/indexing_multiple.php'));
+		include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/google_indexing/indexing_multiple.php'));
 		msg("success", "Ссылки отправлены", "Выбранные вами ссылки отправлены в Google Indexing", $_SESSION['admin_referrer']);
     }
   		else msg("success", "Google Indexing отключён", "Вы отключили работу Google Indexing в админке модуля Advanced Kodik Parser", $_SESSION['admin_referrer']);
@@ -1272,7 +1245,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/continue_watch.php'));]]></replacecode>
+include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/continue_watch.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
 	</file>
@@ -1286,7 +1259,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
   
-include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/characters.php'));
+include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/characters.php'));
 		
 ?>]]></replacecode>
 			<enabled>1</enabled>
@@ -1328,13 +1301,13 @@ include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/file_edits/chara
 	$this->priority = $this->stat_priority;
 	$this->changefreq = $this->stat_changefreq;
 	
-	$data = file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/people.dat");
+	$data = file_get_contents(ENGINE_DIR."/xozayn/aaparser/data/people.dat");
 	$data = unserialize($data);	
 	if (!is_array($data)) return;
 
 	$this->sitemap->links('people.xml', function($map) {
 		
-		$data = file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/people.dat");
+		$data = file_get_contents(ENGINE_DIR."/xozayn/aaparser/data/people.dat");
 		$data = unserialize($data);	
 		
 		foreach ($data as $item)
@@ -1347,13 +1320,13 @@ function generate_characters() {
 	$this->priority = $this->stat_priority;
 	$this->changefreq = $this->stat_changefreq;
 	
-	$data = file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/characters.dat");
+	$data = file_get_contents(ENGINE_DIR."/xozayn/aaparser/data/characters.dat");
 	$data = unserialize($data);	
 	if (!is_array($data)) return;
 
 	$this->sitemap->links('characters.xml', function($map) {
 		
-		$data = file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/characters.dat");
+		$data = file_get_contents(ENGINE_DIR."/xozayn/aaparser/data/characters.dat");
 		$data = unserialize($data);	
 		
 		foreach ($data as $item)
@@ -1366,13 +1339,13 @@ function generate_persons() {
 	$this->priority = $this->stat_priority;
 	$this->changefreq = $this->stat_changefreq;
 	
-	$data = file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/persons.dat");
+	$data = file_get_contents(ENGINE_DIR."/xozayn/aaparser/data/persons.dat");
 	$data = unserialize($data);	
 	if (!is_array($data)) return;
 
 	$this->sitemap->links('persons.xml', function($map) {
 		
-		$data = file_get_contents(ENGINE_DIR."/mrdeath/aaparser/data/persons.dat");
+		$data = file_get_contents(ENGINE_DIR."/xozayn/aaparser/data/persons.dat");
 		$data = unserialize($data);	
 		
 		foreach ($data as $item)
@@ -1394,7 +1367,7 @@ $this->generate_persons();]]></replacecode>
 	<file name="engine/inc/include/functions.inc.php">
 		<operation action="before">
 			<searchcode><![CDATA[function totranslit]]></searchcode>
-			<replacecode><![CDATA[if ( file_exists(ENGINE_DIR . '/mrdeath/aaparser/data/config.php') ) require_once ENGINE_DIR.'/mrdeath/aaparser/data/config.php';
+			<replacecode><![CDATA[if ( file_exists(ENGINE_DIR . '/xozayn/aaparser/data/config.php') ) require_once ENGINE_DIR.'/xozayn/aaparser/data/config.php';
 else $aaparser_config = [];]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
