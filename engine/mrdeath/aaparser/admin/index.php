@@ -352,7 +352,8 @@ elseif ( $action == 'dbupgrade' ) {
 			'4.4.0',
 			'4.5.0',
 			'4.6.0',
-			'4.6.1'
+			'4.6.1',
+			'4.6.2'
 		];
 		
 		$versions = array_filter($versions, function ($verik) use ($log_module_version) {
