@@ -68,7 +68,7 @@ elseif ( $news_id ) {
     $news_row = $db->super_query( "SELECT id, xfields FROM " . PREFIX . "_post WHERE id={$news_id}" );
     if ( !$news_row['id'] ) die('stop');
     
-    $post_fields = DLEXFields::DLEXFields::xfieldsdataload($news_row['xfields']);
+    $post_fields = DLEXFields::xfieldsdataload($news_row['xfields']);
     
     $translations_priority = $aaparser_config['player']['translations_priority'] ? '&prioritize_translations='.$aaparser_config['player']['translations_priority'] : '';
     $translations_unpriority = $aaparser_config['player']['translations_unpriority'] ? '&unprioritize_translations='.$aaparser_config['player']['translations_unpriority'] : '';
