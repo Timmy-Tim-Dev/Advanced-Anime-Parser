@@ -269,6 +269,14 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 
 $id_news = 0;
 
+if ($xfields_data['image'] && strpos($xfields_data['image'], 'shikimori') !== false) {
+	$xfields_data['image'] = preg_replace(
+        '#https?://[^/]*?(shikimori\.[^/]+)/#i',
+        rtrim($shikimori_image_domain, '/') . '/',
+        $xfields_data['image']
+    );
+}
+
 $_REQUEST['module'] = 'aaparser';
 include_once(DLEPlugins::Check(ENGINE_DIR . '/classes/uploads/upload.class.php'));
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
@@ -462,7 +470,6 @@ $delete_xf = ['title', 'short_story', 'full_story', 'alt_name', 'tags', 'meta_ti
 foreach ( $delete_xf as $check_value ) {
 	if( array_key_exists($check_value, $xfields_list) ) unset($xfields_list[$check_value]);
 }
-
 if ( $aaparser_config['main_fields']['xf_shikimori_id'] && $xfields_data['shikimori_id'] ) $xfields_list[$aaparser_config['main_fields']['xf_shikimori_id']] = $xfields_data['shikimori_id'];
 if ( $aaparser_config['main_fields']['xf_mdl_id'] && $xfields_data['mydramalist_id'] ) $xfields_list[$aaparser_config['main_fields']['xf_mdl_id']] = $xfields_data['mydramalist_id'];
 if ( $aaparser_config['images']['xf_poster'] && $xfields_data['image']) $xfields_list[$aaparser_config['images']['xf_poster']] = $xfields_data['image'];
