@@ -552,7 +552,7 @@ function change_tags_img($type, $needVal, $nameTag, $defaultImage = '', $dorama 
         $type->set("[" . $nameTag . "]", "");
         $type->set("[/" . $nameTag . "]", "");
 		if ($dorama) $fullUrl = $needVal;
-		else $fullUrl = 'https://' . $shikimori_url_domain . $needVal;
+		else $fullUrl = $needVal;
         $type->set("{" . $nameTag . "}", $fullUrl);
         $type->set_block("'\\[not_" . $nameTag . "\\](.*?)\\[/not_" . $nameTag . "\\]'si", "");
     } elseif ($defaultImage) {

@@ -73,6 +73,7 @@ if ( isset($aaparser_config['player']['player_method']) && $aaparser_config['pla
     else $tpl->set( '{kodik_playlist}', '<div id="kodik_player_ajax" data-news_id="'.$row['id'].'" data-has_cache="no" '.$sw_player_cookie.'></div>' );
 }
 
+$xfieldsdata = DLEXFields::xfieldsdataload($row['xfields']);
 if ( isset($aaparser_config['persons']['personas_on']) && $aaparser_config['persons']['personas_on'] == 1 && isset($aaparser_config['main_fields']['xf_shikimori_id']) && isset($xfieldsdata[$aaparser_config['main_fields']['xf_shikimori_id']]) && $xfieldsdata[$aaparser_config['main_fields']['xf_shikimori_id']] ) {
     if ( $aaparser_config['persons']['main_characters'] == 1 ) $tpl->set( '{kodik_main_characters}', '<div id="main_characters_block" data-sh_id="'.strip_tags($xfieldsdata[$aaparser_config['main_fields']['xf_shikimori_id']]).'">Загрузка...</div>' );
     else $tpl->set( '{kodik_main_characters}', '' );
