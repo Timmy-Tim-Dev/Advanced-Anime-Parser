@@ -269,6 +269,14 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 
 $id_news = 0;
 
+if ($xfields_data['image'] && strpos($xfields_data['image'], 'shikimori') !== false) {
+	$xfields_data['image'] = preg_replace(
+        '#https?://[^/]*?(shikimori\.[^/]+)/#i',
+        rtrim($shikimori_image_domain, '/') . '/',
+        $xfields_data['image']
+    );
+}
+
 $_REQUEST['module'] = 'aaparser';
 include_once(DLEPlugins::Check(ENGINE_DIR . '/classes/uploads/upload.class.php'));
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['add_material'] == 1 ) { 
