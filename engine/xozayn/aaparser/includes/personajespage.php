@@ -457,10 +457,11 @@ echo <<<HTML
 	</div>
 </div></textarea>
 			<hr/>
-			<i>Правила для <b>ЧПУ</b><br><b><font color="red">Обязательно правила ставить в самый вверх</font></b></i>
-			<textarea style="width:100%;height:50px;" disabled>
-Ссылка ЧПУ "/characters/{char_id}[/]" Реальная ссылка "/index.php?do=characters&type=characters&id={char_id}"
-Ссылка ЧПУ "/people/{char_id}[/]" Реальная ссылка "/index.php?do=characters&type=people&id={char_id}"</textarea>
+			<i>Правила для <b>ЧПУ</b><br><b><font color="red">Обязательно правила ставить в самый вверх</font></b></i><br>
+			Ссылка ЧПУ <input style="width:37%;height:25px;" disabled value="/characters/{char_id}[/]"> 
+			Реальная ссылка <input style="width:37%;height:25px;" disabled value="/index.php?do=characters&type=characters&id={char_id}"><br>
+			Ссылка ЧПУ <input style="width:37%;height:25px;" disabled value="/people/{char_id}[/]"> 
+			Реальная ссылка <input style="width:37%;height:25px;" disabled value="/index.php?do=characters&type=people&id={char_id}">
 			<hr/>
 			<i>Правила для <b>NGINX</b></i>
 			<textarea style="width:100%;height:25px;" disabled>rewrite ^/characters(\d*?).xml$ /uploads/characters$1.xml last;</textarea><hr/>
@@ -618,8 +619,9 @@ echo <<<HTML
 	</div>
 </div></textarea>
 			<hr/>
-			<i>Правила для <b>ЧПУ</b><br><b><font color="red">Обязательно правила ставить в самый вверх</font></b></i>
-			<textarea style="width:100%;height:25px;" disabled>Ссылка ЧПУ "/persons/{char_id}[/]" Реальная ссылка "/index.php?do=characters&type=persons&id={char_id}"</textarea>
+			<i>Правила для <b>ЧПУ</b><br><b><font color="red">Обязательно правила ставить в самый вверх</font></b></i><br>
+			Ссылка ЧПУ <input style="width:37%;height:25px;" disabled value="/persons/{char_id}[/]"> 
+			Реальная ссылка <input style="width:37%;height:25px;" disabled value="/index.php?do=characters&type=persons&id={char_id}">
 		</div>
 	</div>
 </div>

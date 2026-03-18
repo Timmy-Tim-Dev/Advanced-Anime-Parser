@@ -9,7 +9,10 @@ showRow('Включить функционал расписания выхода
 echo <<<HTML
             </table>
             <div id="show-hide-calendar">
-                <div class="alert alert-info alert-styled-left alert-arrow-left alert-component">Инструкция по настройке расписания:<br>1. <b>Если ваш сервер работает на apache</b>, то добавляем следующее правило ниже строчки <b>RewriteEngine On</b><br><textarea style="width:100%;height:50px;" disabled>RewriteRule ^schedule(/?)+$ index.php?do=schedule [L]</textarea><br><b>Если ваш сервер работает на nginx</b>, то добавляем следующее правило<br><textarea style="width:100%;height:50px;" disabled>rewrite "^/schedule(/?)+$" /index.php?do=schedule break;</textarea><br>
+                <div class="alert alert-info alert-styled-left alert-arrow-left alert-component">Инструкция по настройке расписания:<br>
+				1. <i>Правила для <b>ЧПУ</b><br><b><font color="red">Обязательно правила ставить в самый вверх</font></b></i><br>
+				<div>Ссылка ЧПУ <input style="width:37%;height:25px;" disabled value="/schedule/">  
+				 Реальная ссылка <input style="width:37%;height:25px;" disabled value="/index.php?do=schedule"></div><br>
                 2. Создайте в корне папки с шаблоном файл <b>schedule.tpl</b> с таким содержимым:<br><textarea style="width:100%;height:300px;" disabled><div>
 	<h1 class="main-title">Расписание выхода тайтла</h1>
 	<div class="top-description">
