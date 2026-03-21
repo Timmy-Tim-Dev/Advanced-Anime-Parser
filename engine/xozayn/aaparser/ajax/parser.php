@@ -51,7 +51,7 @@ if (!$member_id) {
 }
 
 if ( isset($aaparser_config['settings']['kodik_api_domain']) ) $kodik_api_domain = $aaparser_config['settings']['kodik_api_domain'];
-else $kodik_api_domain = 'https://kodikapi.com/';
+else $kodik_api_domain = 'https://kodik-api.com/';
 
 if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
     $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];

@@ -3,7 +3,7 @@
 	<name>Advanced Kodik Parser</name>
 	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, парсинг анонсов аниме, обновление новостей при выходе новой серии или лучшего качества, тонкие настройки работы cron.</description>
 	<icon>uploads/advanced-anime-parser-icon.png</icon>
-	<version>5.0.0</version>
+	<version>5.0.1</version>
 	<dleversion>19.1</dleversion>
 	<versioncompare>greater</versioncompare>
 	<upgradeurl>https://storage.kodik.biz/files/advanced-anime-parser/last_version.json</upgradeurl>
@@ -1187,13 +1187,6 @@ include (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/rooms/rooms_custom.php
 	<file name="engine/modules/raspisanie_ongoingov.php">
 		<operation action="create">
 			<replacecode><![CDATA[<?php
-
-if( !defined('DATALIFEENGINE') ) {
-	header( "HTTP/1.1 403 Forbidden" );
-	header ( 'Location: ../../' );
-	die( "Hacking attempt!" );
-}
-
 include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/raspisanie_ongoingov.php'));]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
@@ -1252,15 +1245,7 @@ include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/contin
 	<file name="engine/modules/characters.php">
 		<operation action="create">
 			<replacecode><![CDATA[<?php
-
-if( !defined('DATALIFEENGINE') ) {
-	header( "HTTP/1.1 403 Forbidden" );
-	header ( 'Location: ../../' );
-	die( "Hacking attempt!" );
-}
-  
-include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/characters.php'));
-		
+include_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/file_edits/characters.php'));	
 ?>]]></replacecode>
 			<enabled>1</enabled>
 		</operation>
