@@ -3,7 +3,7 @@
 	<name>Advanced Kodik Parser</name>
 	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, парсинг анонсов аниме, обновление новостей при выходе новой серии или лучшего качества, тонкие настройки работы cron.</description>
 	<icon>uploads/advanced-anime-parser-icon.png</icon>
-	<version>5.0.1</version>
+	<version>5.0.2</version>
 	<dleversion>19.1</dleversion>
 	<versioncompare>greater</versioncompare>
 	<upgradeurl>https://storage.kodik.biz/files/advanced-anime-parser/last_version.json</upgradeurl>
