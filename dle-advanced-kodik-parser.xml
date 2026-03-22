@@ -6,7 +6,7 @@
 	<version>5.0.2</version>
 	<dleversion>19.1</dleversion>
 	<versioncompare>greater</versioncompare>
-	<upgradeurl>https://storage.kodik.biz/files/advanced-anime-parser/last_version.json</upgradeurl>
+	<upgradeurl>https://storage.kodikres.com/files/advanced-anime-parser/last_version.json</upgradeurl>
 	<filedelete>0</filedelete>
 	<needplugin></needplugin>
 	<mnotice>1</mnotice>
