@@ -2,7 +2,7 @@
 
 /*
 =====================================================
- Copyright (c) 2022-2024 MrDeath && Timmy
+ Copyright (c) 2022-2026 Timmy
 =====================================================
  This code is protected by copyright
 =====================================================
@@ -101,7 +101,7 @@ elseif ( !isset($_GET['key']) ) die('Cron secret key is empty');
 $cron_log = json_decode( file_get_contents( ENGINE_DIR .'/mrdeath/aaparser/data/cron.log' ), true );
 if ( $cron_log['time'] && ($cron_log['time']+$aaparser_config['settings']['cron_time']) > $_TIME ) die('Сработала защита от повторного запуска крон');
 
-$kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $aaparser_config['settings']['kodik_api_domain'] : 'https://kodikapi.com/';
+$kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $aaparser_config['settings']['kodik_api_domain'] : 'https://kodik-api.com/';
 
 if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
     $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];

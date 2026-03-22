@@ -2,7 +2,7 @@
 
 /*
 =====================================================
- Copyright (c) 2022-2024 MrDeath && Timmy
+ Copyright (c) 2022-2026 Timmy
 =====================================================
  This code is protected by copyright
 =====================================================
@@ -13,7 +13,7 @@ if( !defined('DATALIFEENGINE' ) ) {
 }
 
 if ($_REQUEST['action'] == "download-autoinstall") { 
-$fileUrl = 'https://storage.kodik.biz/files/advanced-anime-parser/auto-install/auto-install-1.0.0.xml';
+$fileUrl = 'https://storage.kodikres.com/files/advanced-anime-parser/auto-install/auto-install-1.0.0.xml';
 header('Content-Type: application/xml');
 header('Content-Disposition: attachment; filename="autoinstall.xml"');
 readfile($fileUrl);

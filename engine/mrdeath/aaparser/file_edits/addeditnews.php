@@ -2,7 +2,7 @@
 
 /*
 =====================================================
- Copyright (c) 2022-2024 MrDeath && Timmy
+ Copyright (c) 2022-2026 Timmy
 =====================================================
  This code is protected by copyright
 =====================================================
@@ -224,7 +224,7 @@ span.material-info {
 							else results += "<td> </td>";
 							if ( item.shiki_id && item.shiki_id != 0 ) results += "<td><div class=\"id-link\"><a title=\"Shikimori ID\" class=\"btn btn-success btn-xs\" target=\"_blank\" href=\"" + item.shiki_link + "\">" + item.shiki_id + "</a><div class=\"copy-id\" title=\"Копировать\" onclick=\"CopyItForMe('" + item.shiki_id + "')\"></div></div></td>";
 							else results += "<td> </td>";
-							if ( item.kodik_exists ) results += "<td><span class=\"pntr\" data-balloon-length=\"medium\" aria-label=\"Есть в базе Kodik\" data-balloon-pos=\"up\"><b><img src=\"https://bd.kodik.biz/packages/images/favicon.png\"></b></span></td>";
+							if ( item.kodik_exists ) results += "<td><span class=\"pntr\" data-balloon-length=\"medium\" aria-label=\"Есть в базе Kodik\" data-balloon-pos=\"up\"><b><img src=\"https://bd.kodikres.com/packages/images/favicon.png\"></b></span></td>";
 							else results += "<td> </td>";
 							if (item.find_id == 'est') {
 							    results += "<td><span class=\"text-success pntr\" data-balloon-length=\"medium\" aria-label=\"Есть на сайте\" data-balloon-pos=\"up\"><b><i class=\"fa fa-check-circle\"></i></b></span></td>";

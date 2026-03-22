@@ -2,7 +2,7 @@
 
 /*
 =====================================================
- Copyright (c) 2022-2024 MrDeath && Timmy
+ Copyright (c) 2022-2026 Timmy
 =====================================================
  This code is protected by copyright
 =====================================================
@@ -55,7 +55,7 @@ if(isset($aaparser_config['player']['sw_setting']) && $aaparser_config['player']
 else $sw_player_cookie = "data-player_cookie='0'";
 
 if ( isset($aaparser_config['settings']['kodik_api_domain']) ) $kodik_api_domain = $aaparser_config['settings']['kodik_api_domain'];
-else $kodik_api_domain = 'https://kodikapi.com/';
+else $kodik_api_domain = 'https://kodik-api.com/';
     
 if ( isset($aaparser_config['player']['custom_cache']) && $aaparser_config['player']['custom_cache'] == 1 ) $playlist = kodik_cache('playlist_'.$news_id, false, 'player');
 else $playlist = dle_cache('kodik_playlist', $news_id, false);

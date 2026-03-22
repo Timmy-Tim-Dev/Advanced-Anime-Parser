@@ -2,7 +2,7 @@
 
 /*
 =====================================================
- Copyright (c) 2022-2024 MrDeath && Timmy
+ Copyright (c) 2022-2026 Timmy
 =====================================================
  This code is protected by copyright
 =====================================================
@@ -17,7 +17,7 @@ require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/module.p
 require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/public.php'));
 
 $kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : '9a3a536a8be4b3d3f9f7bd28c1b74071';
-$kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $aaparser_config['settings']['kodik_api_domain'] : 'https://kodikapi.com/';
+$kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $aaparser_config['settings']['kodik_api_domain'] : 'https://kodik-api.com/';
 if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
     $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
     $shikimori_image_domain = 'https://'.clean_url($shikimori_api_domain);

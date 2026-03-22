@@ -2,7 +2,7 @@
 
 /*
 =====================================================
- Copyright (c) 2022-2024 MrDeath && Timmy
+ Copyright (c) 2022-2026 Timmy
 =====================================================
  This code is protected by copyright
 =====================================================
@@ -29,7 +29,7 @@ $text = <<<HTML
   array (
 	'first_time' => 1,
     'kodik_api_key' => '',
-    'kodik_api_domain' => 'https://kodikapi.com/',
+    'kodik_api_domain' => 'https://kodik-api.com/',
     'shikimori_api_domain' => 'https://shikimori.one/',
     'parse_authors' => 1,
     'parse_franshise' => 1,
@@ -353,7 +353,8 @@ elseif ( $action == 'dbupgrade' ) {
 			'4.5.0',
 			'4.6.0',
 			'4.6.1',
-			'4.6.2'
+			'4.6.2',
+			'4.7.0'
 		];
 		
 		$versions = array_filter($versions, function ($verik) use ($log_module_version) {
