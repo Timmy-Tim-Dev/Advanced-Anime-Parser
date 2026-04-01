@@ -51,7 +51,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 		}
     } else $send_to_google_indexing = false;
 	
-	$kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : '9a3a536a8be4b3d3f9f7bd28c1b74071';
+	$kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : die("Нету API ключа kodik, пожалуйста, укажите в настройках");
 	
 	$status_type = array( 'anons' => 'Анонс', 'ongoing' => 'Онгоинг', 'released' => 'Завершён' );
 	

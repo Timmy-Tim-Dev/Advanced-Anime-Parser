@@ -103,6 +103,24 @@ echo <<<HTML
 				$('body button[type=submit]').css("pointer-events","unset").css("background","#009688").html('<i class="fa fa-floppy-o position-left"></i> Сохранить');
 				return false;
 		    }
+			if ( document.querySelector('[name="settings[kodik_api_domain]"]').value == "" ) {
+		        DLEPush.error('Поле с API доменом Kodik не может быть пустым. Заполните его');
+				HideLoading("");
+				$('body button[type=submit]').css("pointer-events","unset").css("background","#009688").html('<i class="fa fa-floppy-o position-left"></i> Сохранить');
+				return false;
+		    }
+			if ( document.querySelector('[name="settings[kodik_api_player]"]').value == "" ) {
+		        DLEPush.error('Поле с API плеером Kodik не может быть пустым. Заполните его');
+				HideLoading("");
+				$('body button[type=submit]').css("pointer-events","unset").css("background","#009688").html('<i class="fa fa-floppy-o position-left"></i> Сохранить');
+				return false;
+		    }
+			if ( document.querySelector('[name="settings[kodik_site]"]').value == "" ) {
+		        DLEPush.error('Поле с доменом Kodik не может быть пустым. Заполните его');
+				HideLoading("");
+				$('body button[type=submit]').css("pointer-events","unset").css("background","#009688").html('<i class="fa fa-floppy-o position-left"></i> Сохранить');
+				return false;
+		    }
 		    if ( document.querySelector('[name="xfields[title]"]').value == "" ) {
 		        DLEPush.error('Поле с заголовком новости не может быть пустым. Заполните его');
 				HideLoading("");

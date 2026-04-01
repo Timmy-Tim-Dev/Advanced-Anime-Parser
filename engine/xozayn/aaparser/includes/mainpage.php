@@ -6,8 +6,12 @@ echo <<<HTML
 			<table class="table table-striped">
 HTML;
 
-showRow('Ваш API-токен в балансере Kodik', 'Обязательное поле, необходимое для работы модуля. Взять api токен можно <a href="https://bd.kodikres.com/users/profile" target="_blank">по ссылке</a>', showInput(['settings[kodik_api_key]', 'text', $aaparser_config['settings']['kodik_api_key']]));
+showRow('Ваш API-токен в балансере Kodik', 'Обязательное поле, необходимое для работы модуля. Взять api токен можно <a href="' . $aaparser_config['settings']['kodik_site'] . 'users/profile" target="_blank">по ссылке</a>', showInput(['settings[kodik_api_key]', 'text', $aaparser_config['settings']['kodik_api_key']]));
+
+showRow('Домен Kodik', 'По умолчанию <b>https://bd.kodikres.com/</b>, замените в случае переезда/замены домена Kodik. Указываем с https в начале и со слешем в конце', showInput(['settings[kodik_site]', 'text', $aaparser_config['settings']['kodik_site']]));
+showRow('Домен Kodik для плеера', 'По умолчанию <b>https://kodikplayer.com/</b>, замените в случае переезда/замены домена Kodik для плеера. Указываем с https в начале и со слешем в конце', showInput(['settings[kodik_api_player]', 'text', $aaparser_config['settings']['kodik_api_player']]));
 showRow('Домен Kodik для запросов к api', 'По умолчанию <b>https://kodik-api.com/</b>, замените в случае переезда/замены домена Kodik для запросов к api. Указываем с https в начале и со слешем в конце', showInput(['settings[kodik_api_domain]', 'text', $aaparser_config['settings']['kodik_api_domain']]));
+
 showRow('Режим работы модуля', 'Выберите режим работы модуля соответствующий тематике вашего сайта - только аниме, только дорамы, аниме и дорамы', makeDropDown( $working_mode, "settings[working_mode]", $aaparser_config['settings']['working_mode'], 'ShowOrHideMode'));
 showRow('Разделенная отправка запроса MYSQL', 'Если у Вас часто выходит ошибка <b>Mysql server has gone away</b>, то попробуйте поработать с разделенной отправкой запросов в MYSQL', makeCheckBox('settings[weak_mysql]', $aaparser_config['settings']['weak_mysql']));
 showRow('Количество символов для деления запроса', 'Если у Вас включен режим разделенной отправки запросов в MYSQL, то укажите количество символов для деления. Допустим если запрос состоит из 2000 символов, то делить его по 1000 символов, тогда 2 запроса будет. Стандарт 512-1024. Если оно пустое, то будет делится на 1024', showInput(['settings[weak_mysql_count]', 'text', $aaparser_config['settings']['weak_mysql_count']]));

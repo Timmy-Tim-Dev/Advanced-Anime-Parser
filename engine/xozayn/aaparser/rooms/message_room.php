@@ -144,10 +144,10 @@ if ( $action == 'send' ) {
   	else $translation = 0;
   	
   	if ( $aaparser_config['settings']['kodik_api_key'] ) $kodik_apikey = $aaparser_config['settings']['kodik_api_key'];
-    else $kodik_apikey = '9a3a536a8be4b3d3f9f7bd28c1b74071';
+	else die(json_encode(array( 'status' => 'error, К сожалению нету API ключа' )));
     
     if ( isset($aaparser_config['settings']['kodik_api_domain']) ) $kodik_api_domain = $aaparser_config['settings']['kodik_api_domain'];
-    else $kodik_api_domain = 'https://kodik-api.com/';
+    else die(json_encode(array( 'status' => 'error, К сожалению нету API домена' )));
     
     if ( $shikimori_id ) $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&shikimori_id='.$shikimori_id.'&with_material_data=true&translation_id='.$translation.'&with_episodes_data=true');
     else $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_material_data=true&translation_id='.$translation.'&with_episodes_data=true');
