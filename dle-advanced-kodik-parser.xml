@@ -3,7 +3,7 @@
 	<name>Advanced Kodik Parser</name>
 	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, парсинг анонсов аниме, обновление новостей при выходе новой серии или лучшего качества, тонкие настройки работы cron.</description>
 	<icon>uploads/advanced-anime-parser-icon.png</icon>
-	<version>4.7.0</version>
+	<version>4.7.1</version>
 	<dleversion>15.0</dleversion>
 	<versioncompare>greater</versioncompare>
 	<upgradeurl>https://storage.kodikres.com/files/advanced-anime-parser/last_version.json</upgradeurl>
@@ -287,7 +287,7 @@ elseif ( isset($aaparser_config['main_fields']['xf_mdl_id']) ) {
       	else {
 
           	if ( isset($aaparser_config['settings']['kodik_api_key']) ) $kodik_apikey = $aaparser_config['settings']['kodik_api_key'];
-			else $kodik_apikey = '9a3a536a8be4b3d3f9f7bd28c1b74071';
+			else die("Нету API ключа kodik, пожалуйста, укажите в настройках");
 
 	        $kodik = request($aaparser_config['settings']['kodik_api_domain'].'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_material_data=true');
 

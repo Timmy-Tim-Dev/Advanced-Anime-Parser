@@ -7,7 +7,8 @@
  This code is protected by copyright
 =====================================================
 */
-$kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : '9a3a536a8be4b3d3f9f7bd28c1b74071';
+$kodikDomain = preg_replace('#^(https?://)?(bd\.)?#', '', rtrim($aaparser_config['settings']['kodik_site'], '/'));
+$kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : die("Нету API ключа kodik, пожалуйста, укажите в настройках");
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
 	$debugger_table_row .= tableRowCreate("(other_actions.php) Начинаем обновление расписания и совместного  просмотра", round(microtime(true) - $time_update_start,4));
 }
@@ -26,7 +27,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 			}
         }
 		if ( $aaparser_config['settings']['working_mode'] !== 0 ) {
-			$json = request('https://dumps.kodikres.com/calendar-drama.json?token='.$kodik_apikey);
+			$json = request('https://dumps.' . $kodikDomain . '/calendar-drama.json?token=' . $kodik_apikey);
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
 				$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных с KODIK API CALENDAR MYDRAMALIST", round(microtime(true) - $time_update_start,4));
 				$debugger_table_row .= tableRowCreate("(other_actions.php) Начинаем обработку данных с KODIK API CALENDAR MYDRAMALIST", round(microtime(true) - $time_update_start,4));
@@ -87,7 +88,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 			}
 		} 
 		if ($aaparser_config['settings']['working_mode'] == 0 || $aaparser_config['settings']['working_mode'] == 2) {
-			$kodik_api = request('https://dumps.kodikres.com/calendar.json?token='.$kodik_apikey);
+			$kodik_api = request('https://dumps.' . $kodikDomain . '/calendar.json?token=' . $kodik_apikey);
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
 				$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных с KODIK API CALENDAR SHIKIMORI", round(microtime(true) - $time_update_start,4));
 			}

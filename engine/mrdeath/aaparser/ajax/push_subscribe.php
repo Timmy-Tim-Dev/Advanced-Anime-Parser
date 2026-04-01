@@ -13,7 +13,8 @@ if( !defined('DATALIFEENGINE' ) ) {
 }
 
 if ($_REQUEST['action'] == "download-autoinstall") { 
-$fileUrl = 'https://storage.kodikres.com/files/advanced-anime-parser/auto-install/auto-install-1.0.0.xml';
+$fileUrl = 'https://storage.' . preg_replace('#^(https?://)?(bd\.)?#', '', rtrim($aaparser_config['settings']['kodik_site'], '/')) . 
+    '/files/advanced-anime-parser/auto-install/auto-install-1.0.0.xml';
 header('Content-Type: application/xml');
 header('Content-Disposition: attachment; filename="autoinstall.xml"');
 readfile($fileUrl);

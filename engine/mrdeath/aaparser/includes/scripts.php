@@ -106,6 +106,33 @@ echo <<<HTML
 				$('body button[type=submit]').css("pointer-events","unset").css("background","#009688").html('<i class="fa fa-floppy-o position-left"></i> Сохранить');
 				return false;
 		    }
+			if ( document.querySelector('[name="settings[kodik_api_domain]"]').value == "" ) {
+		        Growl.error({
+					title: 'Внимание!',
+					text: 'Поле с api доменом от базы Kodik не может быть пустым. Заполните его'
+				});
+				HideLoading("");
+				$('body button[type=submit]').css("pointer-events","unset").css("background","#009688").html('<i class="fa fa-floppy-o position-left"></i> Сохранить');
+				return false;
+		    }
+			if ( document.querySelector('[name="settings[kodik_api_player]"]').value == "" ) {
+		        Growl.error({
+					title: 'Внимание!',
+					text: 'Поле с api плеером от базы Kodik не может быть пустым. Заполните его'
+				});
+				HideLoading("");
+				$('body button[type=submit]').css("pointer-events","unset").css("background","#009688").html('<i class="fa fa-floppy-o position-left"></i> Сохранить');
+				return false;
+		    }
+			if ( document.querySelector('[name="settings[kodik_site]"]').value == "" ) {
+		        Growl.error({
+					title: 'Внимание!',
+					text: 'Поле с доменом от базы Kodik не может быть пустым. Заполните его'
+				});
+				HideLoading("");
+				$('body button[type=submit]').css("pointer-events","unset").css("background","#009688").html('<i class="fa fa-floppy-o position-left"></i> Сохранить');
+				return false;
+		    }
 		    if ( document.querySelector('[name="xfields[title]"]').value == "" ) {
 		        Growl.error({
 					title: 'Внимание!',
