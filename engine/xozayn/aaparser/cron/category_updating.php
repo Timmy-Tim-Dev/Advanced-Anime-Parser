@@ -12,7 +12,7 @@ if ($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger'][
 }
 	$kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : die("Нету API ключа kodik, пожалуйста, укажите в настройках");
 	$kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $aaparser_config['settings']['kodik_api_domain'] : die("Нету API домена kodik, пожалуйста, укажите в настройках");
-	$shikimori_api_domain = isset($aaparser_config['settings']['shikimori_api_domain']) ? $aaparser_config['settings']['shikimori_api_domain'] : 'https://shikimori.one/';
+	$shikimori_api_domain = isset($aaparser_config['settings']['shikimori_api_domain']) ? $aaparser_config['settings']['shikimori_api_domain'] : '//shikimori.one/';
 
     if ( !$aaparser_config['update_news']['cat_check'] ) die('Обновление категорий отключено в настройках');
     elseif ( $aaparser_config['update_news']['cat_check'] == 1 ) {
@@ -43,7 +43,7 @@ if ($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger'][
 							}
 						}'
 					];
-					$shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
+					$shikimori = request('//shikimori.one/api/graphql', 1, $postfields);
 					$shikimori = $shikimori['data']['animes']['0'];
 					
 					if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['category_material'] == 1 ) { 
@@ -93,7 +93,7 @@ if ($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger'][
                         }
                     }
                 } elseif ( $will_check['mdl_id'] ) {
-                    $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&mdl_id='.$will_check['mdl_id'].'&with_material_data=true');
+                    $kodik = request("//".$kodik_api_domain.'/search?token='.$kodik_apikey.'&mdl_id='.$will_check['mdl_id'].'&with_material_data=true');
 					if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['category_material'] == 1 ) { 
 						$debugger_table_row .= tableRowCreate("(category_updating.php) Получение данных mdl id (".$will_check['mdl_id'].") с API kodik", round(microtime(true) - $time_update_start, 4));
 					}

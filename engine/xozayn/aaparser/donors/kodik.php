@@ -32,13 +32,13 @@ $kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser
 
 if ($parse_action == 'search') {
 	if ( $search_name ) {
-	    if ( isset( $aaparser_config['settings']['working_mode'] ) && $aaparser_config['settings']['working_mode'] == 1 ) $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&title='.$search_name.'&types=foreign-movie,foreign-serial&with_material_data=true&limit=50');
-	    else $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&title='.$search_name.'&with_material_data=true&limit=50');
+	    if ( isset( $aaparser_config['settings']['working_mode'] ) && $aaparser_config['settings']['working_mode'] == 1 ) $kodik = request("https://".$kodik_api_domain.'/search?token='.$kodik_apikey.'&title='.$search_name.'&types=foreign-movie,foreign-serial&with_material_data=true&limit=50');
+	    else $kodik = request("https://".$kodik_api_domain.'/search?token='.$kodik_apikey.'&title='.$search_name.'&with_material_data=true&limit=50');
     }
     else {
-        if ( isset( $aaparser_config['settings']['working_mode'] ) && $aaparser_config['settings']['working_mode'] == 1 ) $kodik = request($kodik_api_domain.'list?token='.$kodik_apikey.'&types=foreign-movie,foreign-serial&with_material_data=true&sort=created_at&limit=100');
-        elseif ( isset( $aaparser_config['settings']['working_mode'] ) && $aaparser_config['settings']['working_mode'] == 2 ) $kodik = request($kodik_api_domain.'list?token='.$kodik_apikey.'&types=foreign-movie,foreign-serial,anime,anime-serial&with_material_data=true&sort=created_at&limit=100');
-	    else $kodik = request($kodik_api_domain.'list?token='.$kodik_apikey.'&types=anime,anime-serial&with_material_data=true&sort=created_at&limit=100');
+        if ( isset( $aaparser_config['settings']['working_mode'] ) && $aaparser_config['settings']['working_mode'] == 1 ) $kodik = request("https://".$kodik_api_domain.'/list?token='.$kodik_apikey.'&types=foreign-movie,foreign-serial&with_material_data=true&sort=created_at&limit=100');
+        elseif ( isset( $aaparser_config['settings']['working_mode'] ) && $aaparser_config['settings']['working_mode'] == 2 ) $kodik = request("https://".$kodik_api_domain.'/list?token='.$kodik_apikey.'&types=foreign-movie,foreign-serial,anime,anime-serial&with_material_data=true&sort=created_at&limit=100');
+	    else $kodik = request("https://".$kodik_api_domain.'/list?token='.$kodik_apikey.'&types=anime,anime-serial&with_material_data=true&sort=created_at&limit=100');
     }
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 		$debugger_table_row .= tableRowCreate("(kodik.php) Поиск list по API", round(microtime(true) - $time_update_start,4));
@@ -106,8 +106,8 @@ if ($parse_action == 'search') {
 } elseif ($parse_action == 'parse') {
     if ( !isset($xfields_data) && !$xfields_data ) $xfields_data = [];
     
-	if ( $shiki_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&shikimori_id='.$shiki_id.'&with_episodes=true&with_material_data=true');
-    elseif ( $mdl_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_episodes=true&with_material_data=true');
+	if ( $shiki_id )  $kodik = request("https://".$kodik_api_domain.'/search?token='.$kodik_apikey.'&shikimori_id='.$shiki_id.'&with_episodes=true&with_material_data=true');
+    elseif ( $mdl_id )  $kodik = request("https://".$kodik_api_domain.'/search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_episodes=true&with_material_data=true');
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 		$debugger_table_row .= tableRowCreate("(kodik.php) Поиск search по API", round(microtime(true) - $time_update_start,4));
 	}
@@ -455,7 +455,7 @@ if ($parse_action == 'search') {
 	//
 	$kodik_log = json_decode( file_get_contents( ENGINE_DIR .'/xozayn/aaparser/data/kodik.log' ), true );
 	if ( $kodik_log[$kind] ) $grab_url = $kodik_log[$kind];
-	else $grab_url = $kodik_api_domain.'list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100&types=anime,anime-serial'.$anime_kind_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add.$translators_block.$countries_add;
+	else $grab_url = "https://".$kodik_api_domain.'/list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100&types=anime,anime-serial'.$anime_kind_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add.$translators_block.$countries_add;
 	
     $grab = request($grab_url.$film_sort_by);
     if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
@@ -602,7 +602,7 @@ if ($parse_action == 'search') {
 	//
 	$kodik_log = json_decode( file_get_contents( ENGINE_DIR .'/xozayn/aaparser/data/kodik.log' ), true );
 	if ( $kodik_log[$kind] ) $grab_url = $kodik_log[$kind];
-	else $grab_url = $kodik_api_domain.'list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100'.$kind_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add.$translators_block.$countries_add;
+	else $grab_url = "https://".$kodik_api_domain.'/list?token='.$kodik_apikey.'&with_episodes=true&with_material_data=true&limit=100'.$kind_add.$camrip_add.$lgbt_add.$years_add.$genres_add.$translators_add.$translators_block.$countries_add;
     
     $grab = request($grab_url.$film_sort_by);
     if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
@@ -679,8 +679,8 @@ if ($parse_action == 'search') {
 } elseif ( $parse_action == 'takeimage' ) {
 	if ( !isset($xfields_data) && !$xfields_data ) $xfields_data = [];
     
-	if ( $shiki_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&shikimori_id='.$shiki_id.'&with_episodes=true&with_material_data=true');
-    elseif ( $mdl_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_episodes=true&with_material_data=true');
+	if ( $shiki_id )  $kodik = request("https://".$kodik_api_domain.'/search?token='.$kodik_apikey.'&shikimori_id='.$shiki_id.'&with_episodes=true&with_material_data=true');
+    elseif ( $mdl_id )  $kodik = request("https://".$kodik_api_domain.'/search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_episodes=true&with_material_data=true');
 	if ( isset( $kodik['results'] ) && $kodik['results']) {
 		$kodik_data = array_shift($kodik['results']);
 		$xfields_data['kodik_title'] = isset($kodik_data['title']) ? $kodik_data['title'] : '';
@@ -717,8 +717,8 @@ if ($parse_action == 'search') {
 } elseif ( $parse_action == 'takescreens' ) {
 	if ( !isset($xfields_data) && !$xfields_data ) $xfields_data = [];
     
-	if ( $shiki_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&shikimori_id='.$shiki_id.'&with_episodes=true&with_material_data=true');
-    elseif ( $mdl_id )  $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_episodes=true&with_material_data=true');
+	if ( $shiki_id )  $kodik = request("https://".$kodik_api_domain.'/search?token='.$kodik_apikey.'&shikimori_id='.$shiki_id.'&with_episodes=true&with_material_data=true');
+    elseif ( $mdl_id )  $kodik = request("https://".$kodik_api_domain.'/search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_episodes=true&with_material_data=true');
 	if ( isset( $kodik['results'] ) && $kodik['results']) {
 		$kodik_data = array_shift($kodik['results']);
 		$xfields_data['kodik_title'] = isset($kodik_data['title']) ? $kodik_data['title'] : '';

@@ -57,7 +57,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 	
 	$max_news = isset($aaparser_config['updates']['max_check']) ? $aaparser_config['updates']['max_check'] : 50;
 	
-	$kodik_updates_api = request($kodik_api_domain."list?token=".$kodik_apikey."&has_field=shikimori_id&with_episodes=true&with_material_data=true&limit=".$max_news);
+	$kodik_updates_api = request("//".$kodik_api_domain."/list?token=".$kodik_apikey."&has_field=shikimori_id&with_episodes=true&with_material_data=true&limit=".$max_news);
 	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 
 		$debugger_table_row .= tableRowCreate("(update_anime.php) Получение списка новых материалов для проверки", round(microtime(true) - $time_update_start,4));
 	}
@@ -524,7 +524,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 						}
 					}'
 				];
-				$shikimori_temp = request('https://shikimori.one/api/graphql', 1, $postfields);
+				$shikimori_temp = request('//shikimori.one/api/graphql', 1, $postfields);
 				$shikimori_temp = $shikimori['data']['animes'];
 				
 				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 

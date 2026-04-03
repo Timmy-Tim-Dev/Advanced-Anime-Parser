@@ -252,8 +252,8 @@ if ( $action == "update_news_get" ) {
 	$news_row = $db->super_query( "SELECT id, xfields, title FROM " . PREFIX . "_post WHERE id='{$news_id}'" );
 	if ( !$news_row['xfields'] ) return;
 	$xfields_post = DLEXFields::xfieldsdataload( $news_row['xfields'] );
-	if ($shiki_id && !$mdl_id) $kodik_updates_api = request($kodik_api_domain."search?token=". $kodik_apikey . $shiki_id ."&with_episodes=true&with_material_data=true");
-	if ($mdl_id && !$shiki_id) $kodik_updates_api = request($kodik_api_domain."search?token=". $kodik_apikey . $mdl_id ."&with_episodes=true&with_material_data=true");
+	if ($shiki_id && !$mdl_id) $kodik_updates_api = request("//".$kodik_api_domain."/search?token=". $kodik_apikey . $shiki_id ."&with_episodes=true&with_material_data=true");
+	if ($mdl_id && !$shiki_id) $kodik_updates_api = request("//".$kodik_api_domain."/search?token=". $kodik_apikey . $mdl_id ."&with_episodes=true&with_material_data=true");
 	if (!is_array($kodik_updates_api) || !isset($kodik_updates_api['results']) || !is_array($kodik_updates_api['results'])) {
 		exit(json_encode([
 			'news_id' => $news_id,

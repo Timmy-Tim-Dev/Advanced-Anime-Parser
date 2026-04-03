@@ -3,10 +3,10 @@
 	<name>Advanced Kodik Parser</name>
 	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, парсинг анонсов аниме, обновление новостей при выходе новой серии или лучшего качества, тонкие настройки работы cron.</description>
 	<icon>uploads/advanced-anime-parser-icon.png</icon>
-	<version>5.0.3</version>
+	<version>5.0.4</version>
 	<dleversion>19.1</dleversion>
 	<versioncompare>greater</versioncompare>
-	<upgradeurl>https://storage.kodikres.com/files/advanced-anime-parser/last_version.json</upgradeurl>
+	<upgradeurl>//storage.kodikres.com/files/advanced-anime-parser/last_version.json</upgradeurl>
 	<filedelete>0</filedelete>
 	<needplugin></needplugin>
 	<mnotice>1</mnotice>
@@ -285,7 +285,7 @@ elseif ( isset($aaparser_config['main_fields']['xf_mdl_id']) ) {
           	if ( isset($aaparser_config['settings']['kodik_api_key']) ) $kodik_apikey = $aaparser_config['settings']['kodik_api_key'];
 			else die("Нету API ключа kodik, пожалуйста, укажите в настройках");
 
-	        $kodik = request($aaparser_config['settings']['kodik_api_domain'].'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_material_data=true');
+	        $kodik = request("//".$aaparser_config['settings']['kodik_api_domain'].'/search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_material_data=true');
 
 	        if ( $kodik['results'][0]['year'] ) $year = $kodik['results'][0]['year'];
 	        else $year = 0;
@@ -628,7 +628,7 @@ else {
 }]]></searchcode>
 			<replacecode><![CDATA[if ( $aaparser_config['push_notifications']['enable'] && $is_logged) {
 	$metatags .= <<<HTML
-<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+<script src="//cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
 <script>
 	var OneSignal = window.OneSignal || [];
 	OneSignal.push(function() {
@@ -842,7 +842,7 @@ else $aaparser_config = [];
 function DLE_Send_Onesignal ( $params ) {
   	global $aaparser_config;
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, 'https://onesignal.com/api/v1/notifications');
+    curl_setopt($ch, CURLOPT_URL, '//onesignal.com/api/v1/notifications');
     curl_setopt(
         $ch,
         CURLOPT_HTTPHEADER,

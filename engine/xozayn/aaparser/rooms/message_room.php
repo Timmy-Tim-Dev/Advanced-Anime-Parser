@@ -149,8 +149,8 @@ if ( $action == 'send' ) {
     if ( isset($aaparser_config['settings']['kodik_api_domain']) ) $kodik_api_domain = $aaparser_config['settings']['kodik_api_domain'];
     else die(json_encode(array( 'status' => 'error, К сожалению нету API домена' )));
     
-    if ( $shikimori_id ) $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&shikimori_id='.$shikimori_id.'&with_material_data=true&translation_id='.$translation.'&with_episodes_data=true');
-    else $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_material_data=true&translation_id='.$translation.'&with_episodes_data=true');
+    if ( $shikimori_id ) $kodik = request("//".$kodik_api_domain.'/search?token='.$kodik_apikey.'&shikimori_id='.$shikimori_id.'&with_material_data=true&translation_id='.$translation.'&with_episodes_data=true');
+    else $kodik = request("//".$kodik_api_domain.'/search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_material_data=true&translation_id='.$translation.'&with_episodes_data=true');
     
     $kodik_result = array_shift($kodik['results']);
     if ( $kodik_result['type'] == "anime-serial" || $kodik_result['type'] == "foreign-serial" ) $visitors_link = $kodik_result['seasons'][$season_num]['episodes'][$episode_num]['link'];

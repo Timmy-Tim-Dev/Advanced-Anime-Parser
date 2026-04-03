@@ -235,9 +235,9 @@ if ($aaparser_config['settings']['working_mode'] == 1) {
 	if (!file_exists(ENGINE_DIR."/xozayn/aaparser/data/translators_name_dorama.json") || filectime(ENGINE_DIR."/xozayn/aaparser/data/translators_name_dorama.json") < $c_time) {
 		//dorama
 		if ($aaparser_config['settings']['kodik_api_domain'] != '') {
-			$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");
+			$cont = file_get_contents("//".$aaparser_config['settings']['kodik_api_domain']."/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");
 		} else {
-			$cont = file_get_contents("https://kodik-api.com/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");
+			$cont = file_get_contents("//kodik-api.com/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");
 		}
 		$cont = json_decode($cont, true);
 		$translators_name = $translators = [];
@@ -255,9 +255,9 @@ if ($aaparser_config['settings']['working_mode'] == 1) {
 	if (!file_exists(ENGINE_DIR."/xozayn/aaparser/data/translators_name.json") || !file_exists(ENGINE_DIR."/xozayn/aaparser/data/translators_name_dorama.json") || filectime(ENGINE_DIR."/xozayn/aaparser/data/translators_name.json") < $c_time || filectime(ENGINE_DIR."/xozayn/aaparser/data/translators_name_dorama.json") < $c_time) {
 		//dorama
 		if ($aaparser_config['settings']['kodik_api_domain'] != '') {
-			$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");
+			$cont = file_get_contents("//".$aaparser_config['settings']['kodik_api_domain']."/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");
 		} else {
-			$cont = file_get_contents("https://kodik-api.com/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");	
+			$cont = file_get_contents("//kodik-api.com/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");	
 		}
 		$cont = json_decode($cont, true);
 		$translators_name = $translators = [];
@@ -272,9 +272,9 @@ if ($aaparser_config['settings']['working_mode'] == 1) {
 		unset ($translators_name, $translators, $cont);
 		//anime
 		if ($aaparser_config['settings']['kodik_api_domain'] != '') {
-			$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
+			$cont = file_get_contents("//".$aaparser_config['settings']['kodik_api_domain']."/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
 		} else {
-			$cont = file_get_contents("https://kodik-api.com/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
+			$cont = file_get_contents("//kodik-api.com/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
 		}
 		$cont = json_decode($cont, true);
 		$translators_name = $translators = [];
@@ -292,9 +292,9 @@ if ($aaparser_config['settings']['working_mode'] == 1) {
 	if (!file_exists(ENGINE_DIR."/xozayn/aaparser/data/translators_name.json") || filectime(ENGINE_DIR."/xozayn/aaparser/data/translators_name.json") < $c_time) {
 		//anime
 		if ($aaparser_config['settings']['kodik_api_domain'] != '') {
-			$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
+			$cont = file_get_contents("//".$aaparser_config['settings']['kodik_api_domain']."/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
 		} else {
-			$cont = file_get_contents("https://kodik-api.com/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
+			$cont = file_get_contents("//kodik-api.com/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
 		}
 		$cont = json_decode($cont, true);
 		$translators_name = $translators = [];
@@ -312,9 +312,9 @@ if ($aaparser_config['settings']['working_mode'] == 1) {
 
 if (!file_exists(ENGINE_DIR."/xozayn/aaparser/data/countries_name.json") || filectime(ENGINE_DIR."/xozayn/aaparser/data/countries_name.json") < $c_time) {
 	if ($aaparser_config['settings']['kodik_api_domain'] != '') {
-		$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."countries?token=".$aaparser_config['settings']['kodik_api_key']);
+		$cont = file_get_contents("//".$aaparser_config['settings']['kodik_api_domain']."/countries?token=".$aaparser_config['settings']['kodik_api_key']);
 	} else {
-		$cont = file_get_contents("https://kodik-api.com/countries?token=".$aaparser_config['settings']['kodik_api_key']);
+		$cont = file_get_contents("//kodik-api.com/countries?token=".$aaparser_config['settings']['kodik_api_key']);
 	}
 	$cont = json_decode($cont, true);
 	$countries_name = [];
@@ -364,25 +364,25 @@ else $translators_array_dorama = [];
 
 if (!file_exists(ENGINE_DIR."/xozayn/aaparser/data/mydramalist.json") || filectime(ENGINE_DIR."/xozayn/aaparser/data/mydramalist.json") < $c_time || file_get_contents(ENGINE_DIR."/xozayn/aaparser/data/mydramalist.json") == '') {
 	if ($aaparser_config['settings']['kodik_api_domain'] != '') {
-		$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=mydramalist");
+		$cont = file_get_contents("//".$aaparser_config['settings']['kodik_api_domain']."/genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=mydramalist");
 	} else {
-		$cont = file_get_contents("https://kodik-api.com/genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=mydramalist");
+		$cont = file_get_contents("//kodik-api.com/genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=mydramalist");
 	}
 	file_put_contents(ENGINE_DIR."/xozayn/aaparser/data/mydramalist.json", $cont);
 }
 if (!file_exists(ENGINE_DIR."/xozayn/aaparser/data/shikimori.json") || filectime(ENGINE_DIR."/xozayn/aaparser/data/shikimori.json") < $c_time || file_get_contents(ENGINE_DIR."/xozayn/aaparser/data/shikimori.json") == '') {
 	if ($aaparser_config['settings']['kodik_api_domain'] != '') {
-		$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=shikimori");
+		$cont = file_get_contents("//".$aaparser_config['settings']['kodik_api_domain']."/genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=shikimori");
 	} else {
-		$cont = file_get_contents("https://kodik-api.com/genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=shikimori");
+		$cont = file_get_contents("//kodik-api.com/genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=shikimori");
 	}
 	file_put_contents(ENGINE_DIR."/xozayn/aaparser/data/shikimori.json", $cont);	
 }
 if (!file_exists(ENGINE_DIR."/xozayn/aaparser/data/kinopoisk.json") || filectime(ENGINE_DIR."/xozayn/aaparser/data/kinopoisk.json") < $c_time || file_get_contents(ENGINE_DIR."/xozayn/aaparser/data/kinopoisk.json") == '') {
 	if ($aaparser_config['settings']['kodik_api_domain'] != '') {
-		$cont = file_get_contents($aaparser_config['settings']['kodik_api_domain']."genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=kinopoisk");
+		$cont = file_get_contents("//".$aaparser_config['settings']['kodik_api_domain']."/genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=kinopoisk");
 	} else {
-		$cont = file_get_contents("https://kodik-api.com/genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=kinopoisk");
+		$cont = file_get_contents("//kodik-api.com/genres?token=".$aaparser_config['settings']['kodik_api_key']."&genres_type=kinopoisk");
 	}
 	file_put_contents(ENGINE_DIR."/xozayn/aaparser/data/kinopoisk.json", $cont);	
 }

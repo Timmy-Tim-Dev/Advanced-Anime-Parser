@@ -36,8 +36,8 @@ $status_type = [
 $kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : '9a3a536a8be4b3d3f9f7bd28c1b74071';
 if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
     $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
-    $shikimori_image_domain = 'https://'.clean_url($shikimori_api_domain);
-} else $shikimori_api_domain = $shikimori_image_domain = 'https://shikimori.me/';
+    $shikimori_image_domain = '//'.clean_url($shikimori_api_domain);
+} else $shikimori_api_domain = $shikimori_image_domain = '//shikimori.me/';
 
 if ( $parse_action == 'search' ) {
     $postfields = [
@@ -54,7 +54,7 @@ if ( $parse_action == 'search' ) {
 			}
 		}'
 	];
-    $shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
+    $shikimori = request('//shikimori.one/api/graphql', 1, $postfields);
 	$shikimori = $shikimori['data']['animes'];
     
     if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
@@ -93,7 +93,7 @@ if ( $parse_action == 'search' ) {
 	    	    $edit_link = '';
 	    	}
 	    	
-	    	$kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&shikimori_id='.$id_shiki);
+	    	$kodik = request("//".$kodik_api_domain.'/search?token='.$kodik_apikey.'&shikimori_id='.$id_shiki);
 	    	if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 				$debugger_table_row .= tableRowCreate("(shikimori.php) Сделали поиск по базам kodik API", round(microtime(true) - $time_update_start, 4));
 			}
@@ -194,7 +194,7 @@ if ( $parse_action == 'search' ) {
 				}
 			}'
 		];
-		$shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
+		$shikimori = request('//shikimori.one/api/graphql', 1, $postfields);
 		$shikimori = $shikimori['data']['animes']['0'];
 	}
 	
@@ -439,7 +439,7 @@ if ( $parse_action == 'search' ) {
 					}
 				}'
 			];
-			$shiki_api = request('https://shikimori.one/api/graphql', 1, $postfields_chrono);
+			$shiki_api = request('//shikimori.one/api/graphql', 1, $postfields_chrono);
 			$shiki_api = $shiki_api['data']['animes']['0'];
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 				$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск хронологии по API", round(microtime(true) - $time_update_start, 4));
@@ -578,7 +578,7 @@ if ( $parse_action == 'search' ) {
 		//Парсинг с jikan
 		$jikan_poster = 0;
 		if ( $shiki_id && isset($aaparser_config['settings']['parse_jikan']) && $aaparser_config['settings']['parse_jikan'] == 1) {
-			$jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
+			$jikan_api = request('//api.jikan.moe/v4/anime/'.$shiki_id);
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) {
 				$debugger_table_row .= tableRowCreate("(shikimori.php) Парсинг с jikan.moe", round(microtime(true) - $time_update_start, 4));
 			}
@@ -612,7 +612,7 @@ if ( $parse_action == 'search' ) {
 			}
 		}'
 	];
-	$shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
+	$shikimori = request('//shikimori.one/api/graphql', 1, $postfields);
 	$shikimori = $shikimori['data']['animes']['0'];
 	if ( isset($shikimori['poster']['originalUrl']) && $shikimori['poster']['originalUrl'] && strpos($shikimori['poster']['originalUrl'], "missing_original") !== false) $xfields_data['image'] = $shikimori['poster']['originalUrl'];
 	else unset($xfields_data['image']);
@@ -621,7 +621,7 @@ if ( $parse_action == 'search' ) {
 	
 	$jikan_poster = 0;
 	if ( $shiki_id && isset($aaparser_config['settings']['parse_jikan']) && $aaparser_config['settings']['parse_jikan'] == 1) {
-		$jikan_api = request('https://api.jikan.moe/v4/anime/'.$shiki_id);
+		$jikan_api = request('//api.jikan.moe/v4/anime/'.$shiki_id);
 		if (isset( $jikan_api['data']['images']['jpg']['large_image_url'] ) && $jikan_api['data']['images']['jpg']['large_image_url'] ) 
 			$xfields_data['image'] = $jikan_api['data']['images']['jpg']['large_image_url'];
 			$jikan_poster = 1;
@@ -645,7 +645,7 @@ if ( $parse_action == 'search' ) {
 			}
 		}'
 	];
-	$shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
+	$shikimori = request('//shikimori.one/api/graphql', 1, $postfields);
 	$shikimori = $shikimori['data']['animes']['0'];
 	if ( isset($shikimori['screenshots']) ) {
 		$xfields_data['kadr_1'] = $shikimori['screenshots'][0]['originalUrl'];

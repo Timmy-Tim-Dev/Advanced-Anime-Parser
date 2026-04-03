@@ -34,11 +34,11 @@ if ($exclude_ids != "") $exclude_ids = ', excludeIds: "'.$exclude_ids.'"';
 if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
     $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
     $shikimori_image_domain = 'https://'.clean_url($shikimori_api_domain);
-} else $shikimori_api_domain = $shikimori_image_domain = 'https://shikimori.me/';
+} else $shikimori_api_domain = $shikimori_image_domain = '//shikimori.me/';
 
 
 $postfields = ['query' => '{ animes(status: "anons", limit: 50, rating: "!rx" '.$exclude_ids . $kinder . $ordering.') { id }}'];
-$shikimori_anons = request('https://shikimori.one/api/graphql', 1, $postfields);
+$shikimori_anons = request('//shikimori.one/api/graphql', 1, $postfields);
 $shikimori_anons = $shikimori_anons['data']['animes'];
 
 if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['anons_material'] == 1 ) { 

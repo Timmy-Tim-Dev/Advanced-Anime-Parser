@@ -24,7 +24,7 @@ $newid = explode('-', $id)[0];
 require_once (DLEPlugins::Check(ENGINE_DIR.'/xozayn/aaparser/functions/module.php'));
 require_once (DLEPlugins::Check(ENGINE_DIR.'/xozayn/aaparser/functions/kodik_cache.php'));
 if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
-else $shikimori_api_domain = 'https://shikimori.one/';
+else $shikimori_api_domain = '//shikimori.one/';
 $shikimori_url_domain = clean_url($shikimori_api_domain);
 $site_url_domain = clean_url($config['http_home_url']);
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https" : "http";
@@ -42,12 +42,12 @@ if ($type == "persons") {
 		
 		// Парсим актёров
 	    if (isset($aaparser_config['persons']['personas_other_dorama_api']) && $aaparser_config['persons']['personas_other_dorama_api'] == 1) {		
-			$mdl_url = "https://api.allorigins.win/get?url=https://mydramalist.com/people/".$id;
+			$mdl_url = "//api.allorigins.win/get?url=//mydramalist.com/people/".$id;
 			$pers_request = mdl_request($mdl_url);
 			$pers_request = json_decode($pers_request, true);
 			$json = $pers_request['contents'];
 		} else {
-			$mdl_url = "https://mydramalist.com/people/".$id;
+			$mdl_url = "//mydramalist.com/people/".$id;
 			$json = mdl_request($mdl_url);
 		}
 		$actors = [];
@@ -259,7 +259,8 @@ if ($type == "characters") {
 	change_tags_img($tpl, $json['image']['preview'], "image_prev", $aaparser_config['persons']['default_image']);
 	change_tags_img($tpl, $json['image']['x96'], "image_x96", $aaparser_config['persons']['default_image']);
 	change_tags_img($tpl, $json['image']['x48'], "image_x48", $aaparser_config['persons']['default_image']);
-	
+		
+
 	$tpl->compile('content');
 	
 	// Карта сайта
@@ -307,13 +308,12 @@ if ($type == "persons") {
 		$metatags['keywords'] = check_if($aaparser_config['persons']['metakeyw_dorama'], $metajson);
 	}
 	
-	$canonical = $siteloc = $protocol . '://' . $site_url_domain .'/persons/'. $id;
-	if ($current_url != $siteloc) {
-		header("Location: $siteloc", true, 301);
-		exit();
-	}
+	$canonical = $siteloc = $protocol . '://' . $site_url_domain .'/persons/'. $id . "/";
+	// if ($current_url != $siteloc) {
+		// header("Location: $siteloc", true, 301);
+		// exit();
+	// }
 } else {
-		
 	// Микроразметка
 	$metajson['id'] = isset($json['id']) ? $json['id'] : '';
 	$metajson['name'] = isset($json['name']) ? $json['name'] : '';
@@ -338,12 +338,18 @@ if ($type == "persons") {
 	if ( isset($aaparser_config['persons']['metakeyw']) && $aaparser_config['persons']['metakeyw'] != '') {
 		$metatags['keywords'] = check_if($aaparser_config['persons']['metakeyw'], $metajson);
 	}
-
-	$canonical = $siteloc = $protocol . '://' . $site_url_domain . $json['url'];
-	if ($current_url != $siteloc) {
-		header("Location: $siteloc", true, 301);
-		exit();
-	}
+	$canonical = $siteloc = $protocol . '://' . $site_url_domain . $json['url'] . "/";
+	// echo "current url -> " . $current_url;
+	// echo "<br>siteloc -> " . $siteloc;
+	// die("HAHAHHAAHAH");
+	
+	
+	// if ($current_url != $siteloc) {
+		// header("Location: $siteloc", true, 301);
+		// exit();
+	// }
+	
+		// die("HAHAHHAAHAH");
 }
 	
 ?>
