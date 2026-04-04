@@ -196,7 +196,7 @@ span.material-info {
 .progress .bar{float:left;width:0;height:100%;font-size:12px;color:#fff;text-align:center;text-shadow:0 -1px 0 rgba(0,0,0,0.25);background-color:#0e90d2;background-image:-moz-linear-gradient(top,#149bdf,#0480be);background-image:-webkit-gradient(linear,0 0,0 100%,from(#149bdf),to(#0480be));background-image:-webkit-linear-gradient(top,#149bdf,#0480be);background-image:-o-linear-gradient(top,#149bdf,#0480be);background-image:linear-gradient(to bottom,#149bdf,#0480be);background-repeat:repeat-x;filter:progid:dximagetransform.microsoft.gradient(startColorstr='#ff149bdf',endColorstr='#ff0480be',GradientType=0);-webkit-box-shadow:inset 0 -1px 0 rgba(0,0,0,0.15);-moz-box-shadow:inset 0 -1px 0 rgba(0,0,0,0.15);box-shadow:inset 0 -1px 0 rgba(0,0,0,0.15);-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;-webkit-transition:width .6s ease;-moz-transition:width .6s ease;-o-transition:width .6s ease;transition:width .6s ease}
 .progress-success .bar,.progress .bar-success{background-color:#5eb95e;background-image:-moz-linear-gradient(top,#62c462,#57a957);background-image:-webkit-gradient(linear,0 0,0 100%,from(#62c462),to(#57a957));background-image:-webkit-linear-gradient(top,#62c462,#57a957);background-image:-o-linear-gradient(top,#62c462,#57a957);background-image:linear-gradient(to bottom,#62c462,#57a957);background-repeat:repeat-x;filter:progid:dximagetransform.microsoft.gradient(startColorstr='#ff62c462',endColorstr='#ff57a957',GradientType=0)}
 </style>
-<link rel="stylesheet" href="https://unpkg.com/balloon-css/balloon.min.css">
+<link rel="stylesheet" href="//unpkg.com/balloon-css/balloon.min.css">
 <script type="text/javascript">
 
     function parser_search(){
@@ -220,11 +220,11 @@ span.material-info {
 							results += "<td class=\"year\">" + item.year + "</td>";
 							results += "<td class=\"short-td\"><span class=\"episodes-data-2 one-season\">" + item.last_season + "</span></td>";
 							results += "<td><span class=\"episodes-data-2\">" + item.last_episode + "</span></td>";
-							if ( item.mdl_id ) results += "<td><div class=\"id-link\"><a title=\"MyDramaList ID\" class=\"btn btn-success btn-xs\" target=\"_blank\" href=\"https://mydramalist.com/" + item.mdl_id + "/\">" + item.mdl_id + "</a><div class=\"copy-id\" title=\"Копировать\" onclick=\"CopyItForMe('" + item.mdl_id + "')\"></div></div></td>";
+							if ( item.mdl_id ) results += "<td><div class=\"id-link\"><a title=\"MyDramaList ID\" class=\"btn btn-success btn-xs\" target=\"_blank\" href=\"//mydramalist.com/" + item.mdl_id + "/\">" + item.mdl_id + "</a><div class=\"copy-id\" title=\"Копировать\" onclick=\"CopyItForMe('" + item.mdl_id + "')\"></div></div></td>";
 							else results += "<td> </td>";
 							if ( item.shiki_id && item.shiki_id != 0 ) results += "<td><div class=\"id-link\"><a title=\"Shikimori ID\" class=\"btn btn-success btn-xs\" target=\"_blank\" href=\"" + item.shiki_link + "\">" + item.shiki_id + "</a><div class=\"copy-id\" title=\"Копировать\" onclick=\"CopyItForMe('" + item.shiki_id + "')\"></div></div></td>";
 							else results += "<td> </td>";
-							if ( item.kodik_exists ) results += "<td><span class=\"pntr\" data-balloon-length=\"medium\" aria-label=\"Есть в базе Kodik\" data-balloon-pos=\"up\"><b><img src=\"https://bd.<?php echo $aaparser_config['settings']['kodik_site'] ?>packages/images/favicon.png\"></b></span></td>";
+							if ( item.kodik_exists ) results += "<td><span class=\"pntr\" data-balloon-length=\"medium\" aria-label=\"Есть в базе Kodik\" data-balloon-pos=\"up\"><b><img src=\"//bd.<?php echo $aaparser_config['settings']['kodik_site'] ?>packages/images/favicon.png\"></b></span></td>";
 							else results += "<td> </td>";
 							if (item.find_id == 'est') {
 							    results += "<td><span class=\"text-success pntr\" data-balloon-length=\"medium\" aria-label=\"Есть на сайте\" data-balloon-pos=\"up\"><b><i class=\"fa fa-check-circle\"></i></b></span></td>";

@@ -15,12 +15,13 @@
 
 require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/module.php'));
 
-
-$kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : die("Нету API ключа kodik, пожалуйста, укажите в настройках");
-$kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $aaparser_config['settings']['kodik_api_domain'] : die("Нету API домена kodik, пожалуйста, укажите в настройках");
-$shikimori_api_domain = isset($aaparser_config['settings']['shikimori_api_domain']) ? $aaparser_config['settings']['shikimori_api_domain'] : 'https://shikimori.one/';
-
 $action = isset($_GET['action']) ? $_GET['action'] : null;
+if ( $action !== "update_module" ) {
+	$kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : die("Нету API ключа kodik, пожалуйста, укажите в настройках");
+	$kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $aaparser_config['settings']['kodik_api_domain'] : die("Нету API домена kodik, пожалуйста, укажите в настройках");
+	$shikimori_api_domain = isset($aaparser_config['settings']['shikimori_api_domain']) ? $aaparser_config['settings']['shikimori_api_domain'] : '//shikimori.one/';
+}
+
 
 $is_logged = false;
 
@@ -62,7 +63,7 @@ if ( $action == "update" ) {
 	    )));
     }
     
-    $kodik = request($kodik_api_domain."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
+    $kodik = request("//".$kodik_api_domain."/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=anime,anime-serial");
     $translators_name = $translators = [];
     foreach ( $kodik['results'] as $result ) {
         $translators_name[] = $result['title'];
@@ -96,7 +97,7 @@ if ( $action == "update" ) {
 	    )));
     }
     
-    $kodik = request($kodik_api_domain."translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");
+    $kodik = request("//".$kodik_api_domain."/translations/v2?token=".$aaparser_config['settings']['kodik_api_key']."&types=foreign-movie,foreign-serial");
     $translators_name = $translators = [];
     foreach ( $kodik['results'] as $result ) {
         $translators_name[] = $result['title'];
@@ -132,7 +133,7 @@ if ( $action == "update" ) {
 	    )));
     }
     
-    $kodik = request($kodik_api_domain."countries?token=".$aaparser_config['settings']['kodik_api_key']);
+    $kodik = request("//".$kodik_api_domain."/countries?token=".$aaparser_config['settings']['kodik_api_key']);
     $countries_name = $countries = [];
     foreach ( $kodik['results'] as $result ) {
         $countries_name[] = $result['title'];
@@ -233,7 +234,7 @@ if ( $action == "update" ) {
 					}
 				}'
 			];
-			$shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
+			$shikimori = request('//shikimori.one/api/graphql', 1, $postfields);
 			$shikimori = $shikimori['data']['animes'];
 	        if ( $shikimori['airedOn']['date'] ) {
 		        $aired = explode('-', $shikimori['airedOn']['date']);
@@ -272,7 +273,7 @@ if ( $action == "update" ) {
 		    $result = json_encode($result_work);
 		    echo $result;
 	    } else {
-	        $kodik = request($kodik_api_domain.'search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_material_data=true');
+	        $kodik = request("//".$kodik_api_domain.'/search?token='.$kodik_apikey.'&mdl_id='.$mdl_id.'&with_material_data=true');
 	        
 	        if ( $kodik['results'][0]['year'] ) $year = $kodik['results'][0]['year'];
 	        else $year = 0;

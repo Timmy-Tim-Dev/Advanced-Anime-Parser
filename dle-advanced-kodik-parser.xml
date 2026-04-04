@@ -3,10 +3,10 @@
 	<name>Advanced Kodik Parser</name>
 	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, парсинг анонсов аниме, обновление новостей при выходе новой серии или лучшего качества, тонкие настройки работы cron.</description>
 	<icon>uploads/advanced-anime-parser-icon.png</icon>
-	<version>4.7.1</version>
+	<version>4.7.2</version>
 	<dleversion>15.0</dleversion>
 	<versioncompare>greater</versioncompare>
-	<upgradeurl>https://storage.kodikres.com/files/advanced-anime-parser/last_version.json</upgradeurl>
+	<upgradeurl>//storage.kodikres.com/files/advanced-anime-parser/last_version.json</upgradeurl>
 	<filedelete>0</filedelete>
 	<needplugin></needplugin>
 	<mnotice>1</mnotice>
@@ -649,7 +649,7 @@ else {
 			<searchcode><![CDATA[if (stripos ( $tpl->copy_template, "{jsfiles}" ) !== false) {]]></searchcode>
 			<replacecode><![CDATA[if ( $aaparser_config['push_notifications']['enable'] && $is_logged) {
 	$metatags .= <<<HTML
-<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+<script src="//cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
 <script>
 	var OneSignal = window.OneSignal || [];
 	OneSignal.push(function() {
@@ -859,7 +859,7 @@ else $aaparser_config = [];
 function DLE_Send_Onesignal ( $params ) {
   	global $aaparser_config;
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, 'https://onesignal.com/api/v1/notifications');
+    curl_setopt($ch, CURLOPT_URL, '//onesignal.com/api/v1/notifications');
     curl_setopt(
         $ch,
         CURLOPT_HTTPHEADER,
