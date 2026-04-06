@@ -12,7 +12,11 @@ if (!function_exists('request')) {
     function request($url, $type = 0, $postfields = []){
 		global $aaparser_config, $debugger_table_row, $time_update_start;
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Делаем запрос: (".$url.")", round(microtime(true) - $time_update_start, 4));
-
+		$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+		
+		if (strpos($url, "//") === 0) $url = $protocol . ltrim($url, '/');
+		elseif (!preg_match('#^https?://#', $url)) $url = $protocol . $url;
+		
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -638,7 +642,11 @@ if (!function_exists('mdl_request')) {
 	function mdl_request($url) {
 		global $aaparser_config, $debugger_table_row, $time_update_start;
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['requests'] == 1 ) $debugger_table_row .= tableRowCreate("(module.php) Делаем запрос: (".$url.")", round(microtime(true) - $time_update_start, 4));
-
+		$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+		
+		if (strpos($url, "//") === 0) $url = $protocol . ltrim($url, '/');
+		elseif (!preg_match('#^https?://#', $url)) $url = $protocol . $url;
+		
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL,$url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

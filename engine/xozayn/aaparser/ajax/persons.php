@@ -18,7 +18,7 @@ if ($aaparser_config['persons']['personas_on'] == 1 && isset($_POST['sh_id']) &&
 	require_once (DLEPlugins::Check(ENGINE_DIR.'/xozayn/aaparser/functions/kodik_cache.php'));
 	
 	if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
-	else $shikimori_api_domain = 'https://shikimori.one/';
+	else $shikimori_api_domain = '//shikimori.one/';
 	
 	$shikimori_url_domain = clean_url($shikimori_api_domain);
 	$site_url_domain = clean_url($config['http_home_url']);
@@ -61,7 +61,7 @@ if ($aaparser_config['persons']['personas_on'] == 1 && isset($_POST['sh_id']) &&
 				}
 			}'
 		];
-		$shikimori = request('https://shikimori.one/api/graphql', 1, $postfields);
+		$shikimori = request('//shikimori.one/api/graphql', 1, $postfields);
 		$shiki_request = $shikimori['data']['animes']['0'];
 			
 		if ( !$shikimori['message'] || !$shikimori['code'] || !$shikimori['error']) {
@@ -312,7 +312,11 @@ elseif ($aaparser_config['persons']['personas_on_dorama'] == 1 && isset($_POST['
 	
     if (!function_exists('mdl_request')) {
         function mdl_request($url) {
-        
+			$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+		
+			if (strpos($url, "//") === 0) $url = $protocol . ltrim($url, '/');
+			elseif (!preg_match('#^https?://#', $url)) $url = $protocol . $url;
+		
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL,$url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -356,12 +360,12 @@ elseif ($aaparser_config['persons']['personas_on_dorama'] == 1 && isset($_POST['
 	    
 	    //Парсим актёров
 	    if (isset($aaparser_config['persons']['personas_other_dorama_api']) && $aaparser_config['persons']['personas_other_dorama_api'] == 1) {		
-			$mdl_url = "https://api.allorigins.win/get?url=https://mydramalist.com/".$mdl_id;
+			$mdl_url = "//api.allorigins.win/get?url=https://mydramalist.com/".$mdl_id;
 			$mdl_request = mdl_request($mdl_url);
 			$mdl_request = json_decode($mdl_request, true);
 			$mdl_request = $mdl_request['contents'];
 		} else {
-			$mdl_url = "https://mydramalist.com/".$mdl_id;
+			$mdl_url = "//mydramalist.com/".$mdl_id;
 			$mdl_request = mdl_request($mdl_url);
 		}
 		$actors = [];

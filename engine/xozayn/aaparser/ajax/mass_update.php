@@ -20,8 +20,8 @@ $kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser
 $kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $aaparser_config['settings']['kodik_api_domain'] : die("Нету API домена kodik, пожалуйста, укажите в настройках");
 if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
     $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
-    $shikimori_image_domain = 'https://'.clean_url($shikimori_api_domain);
-} else $shikimori_api_domain = $shikimori_image_domain = 'https://shikimori.me/'; 
+    $shikimori_image_domain = '//'.clean_url($shikimori_api_domain);
+} else $shikimori_api_domain = $shikimori_image_domain = '//shikimori.me/'; 
 
 function get_param($key) {
     return $_POST[$key] ?? $_GET[$key] ?? null;
