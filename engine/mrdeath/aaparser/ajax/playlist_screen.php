@@ -20,6 +20,10 @@ header('Content-Type: text/html; charset=utf-8');
 
 function kodik_api($url) {
 	if ( $curl = curl_init()) {
+		$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+		
+		if (strpos($url, "//") === 0) $url = $protocol . ltrim($url, '/');
+		elseif (!preg_match('#^https?://#', $url)) $url = $protocol . $url;
 		$headers = array(
         	'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.2924.87 Safari/537.36',
         	'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',

@@ -105,8 +105,8 @@ $kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $a
 
 if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
     $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
-    $shikimori_image_domain = 'https://'.clean_url($shikimori_api_domain);
-} else  $shikimori_api_domain = $shikimori_image_domain = 'https://shikimori.me/';
+    $shikimori_image_domain = '//'.clean_url($shikimori_api_domain);
+} else  $shikimori_api_domain = $shikimori_image_domain = '//shikimori.me/';
 
 $cron_log['time'] = $_TIME;
 file_put_contents( ENGINE_DIR .'/mrdeath/aaparser/data/cron.log', json_encode( $cron_log ));

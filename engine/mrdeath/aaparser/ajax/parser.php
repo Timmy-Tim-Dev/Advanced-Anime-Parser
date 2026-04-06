@@ -55,8 +55,8 @@ else die("Нету API домена, пожалуйста укажите это 
 
 if ( isset($aaparser_config['settings']['shikimori_api_domain']) ) {
     $shikimori_api_domain = $aaparser_config['settings']['shikimori_api_domain'];
-    $shikimori_image_domain = 'https://'.clean_url($shikimori_api_domain);
-} else $shikimori_api_domain = $shikimori_image_domain = 'https://shikimori.me/'; 
+    $shikimori_image_domain = '//'.clean_url($shikimori_api_domain);
+} else $shikimori_api_domain = $shikimori_image_domain = '//shikimori.me/'; 
 
 if ( $action == "parser_search" ) {
     

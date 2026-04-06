@@ -3,7 +3,7 @@
 	<name>Advanced Kodik Parser</name>
 	<description>Модуль для парсинга и граббинга аниме/дорам с сайта Shikimori, базы Kodik, а так же World-Art, парсинг анонсов аниме, обновление новостей при выходе новой серии или лучшего качества, тонкие настройки работы cron.</description>
 	<icon>uploads/advanced-anime-parser-icon.png</icon>
-	<version>4.7.2</version>
+	<version>4.7.3</version>
 	<dleversion>15.0</dleversion>
 	<versioncompare>greater</versioncompare>
 	<upgradeurl>//storage.kodikres.com/files/advanced-anime-parser/last_version.json</upgradeurl>
@@ -858,6 +858,12 @@ else]]></replacecode>
 else $aaparser_config = [];
 function DLE_Send_Onesignal ( $params ) {
   	global $aaparser_config;
+	$url = "//onesignal.com/api/v1/notifications";
+	$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+		
+	if (strpos($url, "//") === 0) $url = $protocol . ltrim($url, '/');
+	elseif (!preg_match('#^https?://#', $url)) $url = $protocol . $url;
+	
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, '//onesignal.com/api/v1/notifications');
     curl_setopt(
