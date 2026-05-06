@@ -524,7 +524,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 						}
 					}'
 				];
-				$shikimori_temp = request('//shikimori.one/api/graphql', 1, $postfields);
+				$shikimori_temp = request($aaparser_config['settings']['shikimori_api_domain'].'api/graphql', 1, $postfields);
 				$shikimori_temp = $shikimori['data']['animes'];
 				
 				if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['update_material'] == 1 ) { 

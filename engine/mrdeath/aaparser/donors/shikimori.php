@@ -54,7 +54,7 @@ if ( $parse_action == 'search' ) {
 			}
 		}'
 	];
-    $shikimori = request('//shikimori.one/api/graphql', 1, $postfields);
+    $shikimori = request($aaparser_config['settings']['shikimori_api_domain'].'api/graphql', 1, $postfields);
 	$shikimori = $shikimori['data']['animes'];
     
     if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
@@ -194,7 +194,7 @@ if ( $parse_action == 'search' ) {
 				}
 			}'
 		];
-		$shikimori = request('//shikimori.one/api/graphql', 1, $postfields);
+		$shikimori = request($aaparser_config['settings']['shikimori_api_domain'].'api/graphql', 1, $postfields);
 		$shikimori = $shikimori['data']['animes']['0'];
 	}
 	
@@ -439,7 +439,7 @@ if ( $parse_action == 'search' ) {
 					}
 				}'
 			];
-			$shiki_api = request('//shikimori.one/api/graphql', 1, $postfields_chrono);
+			$shiki_api = request($aaparser_config['settings']['shikimori_api_domain'].'api/graphql', 1, $postfields_chrono);
 			$shiki_api = $shiki_api['data']['animes']['0'];
 			if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['donors'] == 1 ) { 
 				$debugger_table_row .= tableRowCreate("(shikimori.php) Поиск хронологии по API", round(microtime(true) - $time_update_start, 4));
@@ -612,7 +612,7 @@ if ( $parse_action == 'search' ) {
 			}
 		}'
 	];
-	$shikimori = request('//shikimori.one/api/graphql', 1, $postfields);
+	$shikimori = request($aaparser_config['settings']['shikimori_api_domain'].'api/graphql', 1, $postfields);
 	$shikimori = $shikimori['data']['animes']['0'];
 	if ( isset($shikimori['poster']['originalUrl']) && $shikimori['poster']['originalUrl'] && strpos($shikimori['poster']['originalUrl'], "missing_original") !== false) $xfields_data['image'] = $shikimori['poster']['originalUrl'];
 	else unset($xfields_data['image']);
@@ -645,7 +645,7 @@ if ( $parse_action == 'search' ) {
 			}
 		}'
 	];
-	$shikimori = request('//shikimori.one/api/graphql', 1, $postfields);
+	$shikimori = request($aaparser_config['settings']['shikimori_api_domain'].'api/graphql', 1, $postfields);
 	$shikimori = $shikimori['data']['animes']['0'];
 	if ( isset($shikimori['screenshots']) ) {
 		$xfields_data['kadr_1'] = $shikimori['screenshots'][0]['originalUrl'];
