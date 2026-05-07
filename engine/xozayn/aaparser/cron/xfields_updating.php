@@ -112,18 +112,35 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 	            $newpostedxfields = DLEXFields::xfieldsdataload($new_xfields);
                 $xf_search_words = array();
     
-                foreach (xfieldsload() as $name => $value) {
-                    if ( $value[6] AND !empty($newpostedxfields[$value[0]]) ) {
-			            $temp_array = explode( ",", $newpostedxfields[$value[0]] );
-			            foreach ($temp_array as $value2) {
-				            $value2 = trim($value2);
-				            if($value2) {
-					            if ( $aaparser_config['integration']['latin_xfields'] == 1 ) $xf_search_words[] = array( $db->safesql($value[0]), $db->safesql($value2), ($value[31]) ? $db->safesql(totranslit($value2, true, false)) : '' );
-					            else $xf_search_words[] = array( $db->safesql($value[0]), $db->safesql($value2) );
-				            }
-			            }
-		            }
-                }
+                foreach (DLEXFields::GetFieldsNames() as $field_name) {
+
+					if (!empty($newpostedxfields[$field_name])) {
+
+						$temp_array = explode(",", $newpostedxfields[$field_name]);
+
+						foreach ($temp_array as $value2) {
+
+							$value2 = trim($value2);
+
+							if ($value2) {
+
+								if ($aaparser_config['integration']['latin_xfields'] == 1) {
+									$xf_search_words[] = array(
+										$db->safesql($field_name),
+										$db->safesql($value2),
+										$db->safesql(totranslit($value2, true, false))
+									);
+								} else {
+									$xf_search_words[] = array(
+										$db->safesql($field_name),
+										$db->safesql($value2)
+									);
+								}
+
+							}
+						}
+					}
+				}
 	            if ( count($xf_search_words) ) {
 		
 		            $temp_array = array();
@@ -263,18 +280,35 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 	            $newpostedxfields = DLEXFields::xfieldsdataload($new_xfields);
                 $xf_search_words = array();
     
-                foreach (xfieldsload() as $name => $value) {
-                    if ( $value[6] AND !empty($newpostedxfields[$value[0]]) ) {
-			            $temp_array = explode( ",", $newpostedxfields[$value[0]] );
-			            foreach ($temp_array as $value2) {
-				            $value2 = trim($value2);
-				            if($value2) {
-					            if ( $aaparser_config['integration']['latin_xfields'] == 1 ) $xf_search_words[] = array( $db->safesql($value[0]), $db->safesql($value2), ($value[31]) ? $db->safesql(totranslit($value2, true, false)) : '' );
-					            else $xf_search_words[] = array( $db->safesql($value[0]), $db->safesql($value2) );
-				            }
-			            }
-		            }
-                }
+                foreach (DLEXFields::GetFieldsNames() as $field_name) {
+
+					if (!empty($newpostedxfields[$field_name])) {
+
+						$temp_array = explode(",", $newpostedxfields[$field_name]);
+
+						foreach ($temp_array as $value2) {
+
+							$value2 = trim($value2);
+
+							if ($value2) {
+
+								if ($aaparser_config['integration']['latin_xfields'] == 1) {
+									$xf_search_words[] = array(
+										$db->safesql($field_name),
+										$db->safesql($value2),
+										$db->safesql(totranslit($value2, true, false))
+									);
+								} else {
+									$xf_search_words[] = array(
+										$db->safesql($field_name),
+										$db->safesql($value2)
+									);
+								}
+
+							}
+						}
+					}
+				}
 	            if ( count($xf_search_words) ) {
 		            $temp_array = array();
 		
