@@ -171,13 +171,28 @@ function getIdNewsFromBase(data) {
 }
 
 function DoNewsUpdate(data) {
-	if (!data) 
-		return false;
-	var list_news = JSON.parse(data), all_news = 0, current_percent = 0 , current = 0, current_upd = 0, result_list;
+	if (!data) return false;
+
+	var list_news = JSON.parse(data),
+		all_news = 0,
+		current_percent = 0,
+		current = 0,
+		current_upd = 0,
+		result_list;
+
+	var start_from = parseInt($('input[name="news-start-update"]').val()) || 0;
+	
 	if (list_news['error']) {
 		alert(list_news['error']);
 		return false;
 	}
+	
+	if (start_from > 0) {
+		list_news = list_news.filter(function(item) {
+			return parseInt(item.id) >= start_from;
+		});
+	}
+	
 	all_news = list_news.length;
 	$('#news-count-update').html(all_news);
 	promise = $.when();
@@ -185,7 +200,13 @@ function DoNewsUpdate(data) {
 		promise = promise.then(function(){
 			return $.ajax({			
 				url: '/engine/ajax/controller.php?mod=anime_grabber&module=kodik_mass_update',
-				data: {'newsid': temp['id'], 'shikiid': temp['shikimori_id'], 'mdlid': temp['mdl_id'], action: "update_news", user_hash: dle_login_hash},
+				data: {
+					'newsid': temp['id'],
+					'shikiid': temp['shikimori_id'],
+					'mdlid': temp['mdl_id'],
+					action: "update_news",
+					user_hash: dle_login_hash
+				},
 				response: 'text',
 			})
 		}).then(function(result){
@@ -193,9 +214,9 @@ function DoNewsUpdate(data) {
 				result_list = JSON.parse(result);
 				current_upd++;
 				$('#current-updated-news').html(current_upd);
-				document.getElementById('result-msg-update').innerHTML += '<br/>'+'NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];				
+				document.getElementById('result-msg-update').innerHTML += '<br/>NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];				
 			} else {
-				document.getElementById('result-msg-update').innerHTML += '<br/>'+'Данные в новости ' + temp['id'] + ' не были проставлены. Возможно в новости указан не существующий id Shikimori/MyDramaList.';
+				document.getElementById('result-msg-update').innerHTML += '<br/>Данные в новости ' + temp['id'] + ' не были проставлены. Возможно в новости указан не существующий id Shikimori/MyDramaList.';
 			}
 			current++;
 			current_percent = Math.ceil((current / all_news) * 100, 1);			
@@ -206,13 +227,28 @@ function DoNewsUpdate(data) {
 }
 
 function DoNewsUpdateImages(data) {
-	if (!data) 
-		return false;
-	var list_news = JSON.parse(data), all_news = 0, current_percent = 0 , current = 0, current_upd = 0, result_list;
+	if (!data) return false;
+
+	var list_news = JSON.parse(data),
+		all_news = 0,
+		current_percent = 0,
+		current = 0,
+		current_upd = 0,
+		result_list;
+
+	var start_from = parseInt($('input[name="news-img-start-update"]').val()) || 0;
+
 	if (list_news['error']) {
 		alert(list_news['error']);
 		return false;
 	}
+
+	if (start_from > 0) {
+		list_news = list_news.filter(function(item) {
+			return parseInt(item.id) >= start_from;
+		});
+	}
+	
 	all_news = list_news.length;
 	$('#news-img-count-update').html(all_news);
 	promise = $.when();
@@ -220,7 +256,13 @@ function DoNewsUpdateImages(data) {
 		promise = promise.then(function(){
 			return $.ajax({			
 				url: '/engine/ajax/controller.php?mod=anime_grabber&module=kodik_mass_update',
-				data: {'newsid': temp['id'], 'shikiid': temp['shikimori_id'], 'mdlid': temp['mdl_id'], action: "update_news_img", user_hash: dle_login_hash},
+				data: {
+					'newsid': temp['id'],
+					'shikiid': temp['shikimori_id'],
+					'mdlid': temp['mdl_id'],
+					action: "update_news_img",
+					user_hash: dle_login_hash
+				},
 				response: 'text',
 			})
 		}).then(function(result){
@@ -231,7 +273,7 @@ function DoNewsUpdateImages(data) {
 				current_percent = Math.ceil((current / all_news) * 100, 1);			
 				$('#updated-current-img').html(current_percent + '%');
 				$('#updated-bar-img').css('width', current_percent + '%');
-				document.getElementById('result-msg-update-img').innerHTML += '<br/>'+'NewsID: ' + temp['id'] + ' Пропуск Empty reply from server';
+				document.getElementById('result-msg-update-img').innerHTML += '<br/>NewsID: ' + temp['id'] + ' Пропуск Empty reply from server';
 				return;
 			}
 			if (result != 'error') {
@@ -239,9 +281,9 @@ function DoNewsUpdateImages(data) {
 				// console.log(result);
 				current_upd++;
 				$('#current-updated-news-img').html(current_upd);
-				document.getElementById('result-msg-update-img').innerHTML += '<br/>'+'NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];				
+				document.getElementById('result-msg-update-img').innerHTML += '<br/>NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];				
 			} else {
-				document.getElementById('result-msg-update-img').innerHTML += '<br/>'+'Данные в новости ' + temp['id'] + ' не были проставлены. Возможно в новости указан не существующий id Shikimori/MyDramaList.';
+				document.getElementById('result-msg-update-img').innerHTML += '<br/>Данные в новости ' + temp['id'] + ' не были проставлены. Возможно в новости указан не существующий id Shikimori/MyDramaList.';
 			}
 			current++;
 			current_percent = Math.ceil((current / all_news) * 100, 1);			
@@ -253,13 +295,28 @@ function DoNewsUpdateImages(data) {
 
 
 function DoNewsUpdateScreens(data) {
-	if (!data) 
-		return false;
-	var list_news = JSON.parse(data), all_news = 0, current_percent = 0 , current = 0, current_upd = 0, result_list;
+	if (!data) return false;
+
+	var list_news = JSON.parse(data),
+		all_news = 0,
+		current_percent = 0,
+		current = 0,
+		current_upd = 0,
+		result_list;
+
+	var start_from = parseInt($('input[name="news-screens-start-update"]').val()) || 0;
+
 	if (list_news['error']) {
 		alert(list_news['error']);
 		return false;
 	}
+
+	if (start_from > 0) {
+		list_news = list_news.filter(function(item) {
+			return parseInt(item.id) >= start_from;
+		});
+	}
+	
 	all_news = list_news.length;
 	$('#news-screens-count-update').html(all_news);
 	promise = $.when();
@@ -267,7 +324,13 @@ function DoNewsUpdateScreens(data) {
 		promise = promise.then(function(){
 			return $.ajax({			
 				url: '/engine/ajax/controller.php?mod=anime_grabber&module=kodik_mass_update',
-				data: {'newsid': temp['id'], 'shikiid': temp['shikimori_id'], 'mdlid': temp['mdl_id'], action: "update_news_screens", user_hash: dle_login_hash},
+				data: {
+					'newsid': temp['id'],
+					'shikiid': temp['shikimori_id'],
+					'mdlid': temp['mdl_id'],
+					action: "update_news_screens",
+					user_hash: dle_login_hash
+				},
 				response: 'text',
 			})
 		}).then(function(result){
@@ -278,7 +341,7 @@ function DoNewsUpdateScreens(data) {
 				current_percent = Math.ceil((current / all_news) * 100, 1);			
 				$('#updated-current-screens').html(current_percent + '%');
 				$('#updated-bar-screens').css('width', current_percent + '%');
-				document.getElementById('result-msg-update-screens').innerHTML += '<br/>'+'NewsID: ' + temp['id'] + ' Пропуск Empty reply from server';
+				document.getElementById('result-msg-update-screens').innerHTML += '<br/>NewsID: ' + temp['id'] + ' Пропуск Empty reply from server';
 				return;
 			}
 			if (result != 'error') {
@@ -286,9 +349,9 @@ function DoNewsUpdateScreens(data) {
 				// console.log(result);
 				current_upd++;
 				$('#current-updated-news-screens').html(current_upd);
-				document.getElementById('result-msg-update-screens').innerHTML += '<br/>'+'NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];				
+				document.getElementById('result-msg-update-screens').innerHTML += '<br/>NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];				
 			} else {
-				document.getElementById('result-msg-update-screens').innerHTML += '<br/>'+'Данные в новости ' + temp['id'] + ' не были проставлены. Возможно в новости указан не существующий id Shikimori/MyDramaList.';
+				document.getElementById('result-msg-update-screens').innerHTML += '<br/>Данные в новости ' + temp['id'] + ' не были проставлены. Возможно в новости указан не существующий id Shikimori/MyDramaList.';
 			}
 			current++;
 			current_percent = Math.ceil((current / all_news) * 100, 1);			
@@ -312,14 +375,24 @@ function DoNewsUpdateMetas(data) {
         alert('Ошибка обработки данных (JSON.parse)');
         return false;
     }
-
+	
+	let start_from = parseInt($('input[name="news-metas-start-update"]').val()) || 0;
+	
     if (list_news['error']) {
         alert(list_news['error']);
         return false;
     }
+	
+	if (start_from > 0) {
+        list_news = list_news.filter(function(item) {
+            return parseInt(item.id) >= start_from;
+        });
+    }
 
     let all_news = list_news.length;
-    let current = 0, current_percent = 0, current_upd = 0;
+	let current = 0,
+		current_percent = 0,
+		current_upd = 0;
 
     $('#news-metas-count-update').html(all_news);
     let promise = $.when();
@@ -344,15 +417,12 @@ function DoNewsUpdateMetas(data) {
                             let result_list = JSON.parse(result);
                             current_upd++;
                             $('#current-updated-news-metas').html(current_upd);
-                            document.getElementById('result-msg-update-metas').innerHTML +=
-                                '<br/>NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];
+                            document.getElementById('result-msg-update-metas').innerHTML += '<br/>NewsID: ' + result_list['news_id'] + ' - ' + result_list['status'];
                         } else {
-                            document.getElementById('result-msg-update-metas').innerHTML +=
-                                '<br/>Данные в новости ' + temp['id'] + ' не были проставлены. Возможно указан неверный ID.';
+                            document.getElementById('result-msg-update-metas').innerHTML += '<br/>Данные в новости ' + temp['id'] + ' не были проставлены. Возможно указан неверный ID.';
                         }
                     } catch (err) {
-                        document.getElementById('result-msg-update-metas').innerHTML +=
-                            '<br/>Ошибка при обработке ответа для NewsID: ' + temp['id'];
+                        document.getElementById('result-msg-update-metas').innerHTML += '<br/>Ошибка при обработке ответа для NewsID: ' + temp['id'];
                     }
 
                     current++;
@@ -360,8 +430,7 @@ function DoNewsUpdateMetas(data) {
                     $('#updated-current-metas').html(current_percent + '%');
                     $('#updated-bar-metas').css('width', current_percent + '%');
                 }).fail(function(xhr) {
-                    document.getElementById('result-msg-update-metas').innerHTML +=
-                        `<br/>Ошибка ${xhr.status}: ${xhr.statusText} при NewsID: ${temp['id']}`;
+                    document.getElementById('result-msg-update-metas').innerHTML += `<br/>Ошибка ${xhr.status}: ${xhr.statusText} при NewsID: ${temp['id']}`;
                     current++;
                     current_percent = Math.ceil((current / all_news) * 100);
                     $('#updated-current-metas').html(current_percent + '%');

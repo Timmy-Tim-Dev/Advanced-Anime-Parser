@@ -18,6 +18,7 @@ echo <<<HTML
 			<table class="table table-striped">
 HTML;
 showRow( 'Активация массового проставления картинок', 'Перед тем как запустить проставление убедитесь что вы корректно настроили модуль. Обращаем ваше внимание на то, что <font style="color:red">старые картинки будут заменены на новые.</font> ', '<button type="button" class="btn bg-slate-600 btn-raised legitRipple" id="mass-update-images"><i class="fa fa-wrench position-left"></i>Запуск проставления</button>', "", "" );
+showRow( 'Начать с определенной новости', 'Начинает с указанного ID новости, если нужно с начала, то просто укажите 0.', showInput(['news-img-start-update', 'text', "0"]), "", "" );
 showRow( 'Новостей для проставления', 'Общее кол-во полученных новостей для проставления', '<span id="news-img-count-update">0</span>', "", "" );
 showRow( 'Обработано новостей', 'Кол-во новостей, которые были обработаны', '<span id="current-updated-news-img">0</span>', "", "" );
 echo <<<HTML
@@ -47,6 +48,7 @@ echo <<<HTML
 			<table class="table table-striped">
 HTML;
 showRow( 'Активация массового проставления картинок', 'Перед тем как запустить проставление убедитесь что вы корректно настроили модуль. Обращаем ваше внимание на то, что <font style="color:red">старые скриншоты будут заменены на новые.</font> ', '<button type="button" class="btn bg-slate-600 btn-raised legitRipple" id="mass-update-screens"><i class="fa fa-wrench position-left"></i>Запуск проставления</button>', "", "" );
+showRow( 'Начать с определенной новости', 'Начинает с указанного ID новости, если нужно с начала, то просто укажите 0.', showInput(['news-screens-start-update', 'text', "0"]), "", "" );
 showRow( 'Новостей для проставления', 'Общее кол-во полученных новостей для проставления', '<span id="news-screens-count-update">0</span>', "", "" );
 showRow( 'Обработано новостей', 'Кол-во новостей, которые были обработаны', '<span id="current-updated-news-screens">0</span>', "", "" );
 echo <<<HTML

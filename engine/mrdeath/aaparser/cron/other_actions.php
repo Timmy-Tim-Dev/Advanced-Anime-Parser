@@ -13,7 +13,7 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 	$debugger_table_row .= tableRowCreate("(other_actions.php) Начинаем обновление расписания и совместного  просмотра", round(microtime(true) - $time_update_start,4));
 }
     if ( isset($aaparser_config['calendar_settings']['enable_schedule']) && $aaparser_config['calendar_settings']['enable_schedule'] && ($aaparser_config['main_fields']['xf_shikimori_id'] || $aaparser_config['main_fields']['xf_mdl_id'])) {
-        $no_poster = '/templates/'.$config['theme'].'/dleimages/no_image.jpg';
+        $no_poster = $aaparser_config['main_fields']['poster_empty'];
         $sql = "SELECT * FROM " . PREFIX . "_raspisanie_ongoingov";
 		if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) {
 			$debugger_table_row .= tableRowCreate("(other_actions.php) Получение данных с бд " . PREFIX . "_raspisanie_ongoingov", round(microtime(true) - $time_update_start,4));
