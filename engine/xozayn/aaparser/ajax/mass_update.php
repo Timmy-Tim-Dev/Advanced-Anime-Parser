@@ -316,22 +316,26 @@ if ( $action == "update_news_get" ) {
 	if ( $kodik_updates[0]['translation']['type'] ) $update_fields['translation_type_ru'] = $translation_type[$kodik_updates[0]['translation']['type']];
 	else $update_fields['translation_type_ru'] = '';
 
+	$update_array = [];
 	if (isset($aaparser_config['updates']['metatitle'])) {
-		$and_metatitle = $db->safesql( check_if($aaparser_config['updates']['metatitle'], $update_fields) );
-		$set_metatitle = "metatitle='".$and_metatitle."'";
-	} else $set_metatitle = '';
-	
+		$and_metatitle = $db->safesql(check_if($aaparser_config['updates']['metatitle'], $update_fields));
+		$update_array[] = "metatitle='{$and_metatitle}'";
+	}
+
 	if (isset($aaparser_config['updates']['metadescr'])) {
-		$and_metadescr = $db->safesql( check_if($aaparser_config['updates']['metadescr'], $update_fields) );
-		$set_metadescr = ", descr='".$and_metadescr."'";
-	} else $set_metadescr = '';
-	
+		$and_metadescr = $db->safesql(check_if($aaparser_config['updates']['metadescr'], $update_fields));
+		$update_array[] = "descr='{$and_metadescr}'";
+	}
+
 	if (isset($aaparser_config['updates']['metakeywords'])) {
-		$and_metakeywords = $db->safesql( check_if($aaparser_config['updates']['metakeywords'], $update_fields) );
-		$set_metakeywords = ", keywords='".$and_metakeywords."'";
-	} else $set_metakeywords = '';
-	
-	$db->query( "UPDATE " . PREFIX . "_post SET {$set_metatitle}{$set_metadescr}{$set_metakeywords} WHERE id='{$news_id}'" );
+		$and_metakeywords = $db->safesql(check_if($aaparser_config['updates']['metakeywords'], $update_fields));
+		$update_array[] = "keywords='{$and_metakeywords}'";
+	}
+
+	if (!empty($update_array)) {
+		$update_sql = implode(", ", $update_array);
+		$db->query("UPDATE " . PREFIX . "_post SET {$update_sql} WHERE id='{$news_id}'");
+	}
 	
 	clear_cache( array('news_', 'full_'.$news_id) );
 	
