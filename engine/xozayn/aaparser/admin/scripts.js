@@ -692,7 +692,7 @@ function ShowOrHideDebugger() {
 
 function saveAcc(acc) {
 	$.post('/index.php?controller=ajax&mod=anime_grabber&module=gindexing', {acc: acc, action: 'save', user_hash: dle_login_hash}, function(data) {
-	    data = jQuery.parseJSON(data);
+	    data = JSON.parse(data);
 		if (!data.success) {
 			DLEPush.error('Повторите позже');
 		} else {
@@ -705,7 +705,7 @@ function saveAcc(acc) {
 function ClearLogs() {
     DLEconfirm( 'Вы уверены что хотите очистить логи?', 'Подтвердите', function () {
     	$.post('/index.php?controller=ajax&mod=anime_grabber&module=gindexing', {action: 'clear_logs', user_hash: dle_login_hash}, function(data) {
-	        data = jQuery.parseJSON(data);
+	        data = JSON.parse(data);
 		    if (!data.success) {
 			    DLEPush.error('Повторите позже');
 		    } else {
@@ -722,7 +722,7 @@ function CheckSingle() {
     var single_link = document.getElementById("single_link").value;
     if (single_link == "") return false;
 	$.post('/index.php?controller=ajax&mod=anime_grabber&module=gindexing', {url: single_link, action: 'check', user_hash: dle_login_hash}, function(data) {
-	    data = jQuery.parseJSON(data);
+	    data = JSON.parse(data);
 		if (!data.success) {
 			DLEPush.error('Ошибка получения статуса ссылки, скорей всего она не отправлялась на индексацию в Google Indexing или ещё не была проиндексирована');
 		} else {
@@ -739,7 +739,7 @@ function SendMass(acc) {
     var textArea = document.getElementById("url-list").value;
     if (textArea == "") return false;
 	$.post('/index.php?controller=ajax&mod=anime_grabber&module=gindexing', {kind: kind, urls: textArea, action: 'mass', user_hash: dle_login_hash}, function(data) {
-	    data = jQuery.parseJSON(data);
+	    data = JSON.parse(data);
 		if (!data.success) {
 			DLEPush.error('Повторите позже');
 		} else {
@@ -754,7 +754,7 @@ function LogsPage(page, el) {
         return false;
     }
 	$.post('/index.php?controller=ajax&mod=anime_grabber&module=gindexing', {page: page, action: 'logspage', user_hash: dle_login_hash}, function(data) {
-	    data = jQuery.parseJSON(data);
+	    data = JSON.parse(data);
 	    $('#logs-result').html(data.result);
 	    $("li").removeClass("active");
 	    $(el).addClass( "active" );

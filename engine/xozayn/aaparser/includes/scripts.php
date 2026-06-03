@@ -136,7 +136,7 @@ echo <<<HTML
 			
 			var data_form = $('form').serialize();
 			$.post('/index.php?controller=ajax&mod=anime_grabber&module=aaparser_save', {data_form: data_form, action: 'options', user_hash: '{$dle_login_hash}'}, function(data) {
-				data = jQuery.parseJSON(data);
+				data = JSON.parse(data);
 				
 				if (!data.success) {
 					DLEPush.error('Проверьте права доступа к файлу настроек');
