@@ -292,6 +292,15 @@ if ( $need_poster === true ) {
 	elseif ( $xfields_data['kodik_title'] ) $poster_file = totranslit_it($xfields_data['kodik_title'], true, false);
 	else $poster_file = totranslit_it($xfields_data['kodik_title_orig'], true, false);
 	$poster = setPoster($xfields_data['image'], $poster_file, 'poster', $aaparser_config['images']['xf_poster'], $id_news);
+	
+	if (!isset($poster['xfvalue'])){
+		$poster = setPoster($xfields_data['image'], $poster_file, 'poster', $aaparser_config['images']['xf_poster'], $id_news);
+		if (!isset($poster['xfvalue']) && !empty($kodik_data['material_data']['poster_url'])) {
+			$xfields_data['image'] = $kodik_data['material_data']['poster_url'];
+			$poster = setPoster($kodik_data['material_data']['poster_url'], $poster_file, 'poster', $aaparser_config['images']['xf_poster'], $id_news);
+		}
+	}
+	
 	if ( isset($poster) && is_array($poster) ) {
 		if ( $aaparser_config['images']['xf_poster'] ) $xfields_data['image'] = $poster['xfvalue'];
 		else $xfields_data['image'] = $poster['link'];
