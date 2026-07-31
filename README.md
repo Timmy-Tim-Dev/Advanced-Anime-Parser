@@ -43,3 +43,25 @@
 	<li>Минимальная версия DLE: 15.2 и Выше</li>
 	<li>Модуль не совместим с модулями <b>Kodik Serials</b>, <b>Kodik Ajax Playlist</b> и <b>Kodik Grabber</b>, так как большое количество функционала модулей пересекается. В случае его установки данные модули нужно удалить с сайта.</li>
 </ol>
+<h2>Благодарности</h2>
+<p>
+Если Вы хотите поддержать модуль, то можете пожертвовать по нижеуказанным реквизитам
+</p>
+<table style="width:100%;display:table;">
+	<thead>
+		<tr>
+			<th>Тип</th>
+			<th>Данные</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>Bitcoin</td>
+			<td>15JNxkqHxZSSc8jZmP1BkRHYrLhxSWKpqt</td>
+		</tr>
+		<tr>
+			<td>UDST (TRC20)</td>
+			<td>TRQPEtZ6jYVpQWhqro51xRwDs3bJxCPYHu</td>
+		</tr>
+	</tbody>
+</table>

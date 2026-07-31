@@ -110,46 +110,70 @@ if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['
 		);
 		
   	    $spisok_raspisaniy = [];
-  	    foreach ( $today_id as $today_name => $today_date ) {
-      	    $temp_num = 0;
-  		    foreach ( $merged_data as $api_anime ) {
-          	    if ( strpos($api_anime['next_episode_at'], $today_date) !== false ) {
-					if ($api_anime['dorama'] == 1) $where_xf = "xfields REGEXP '(^|\\\\|)" . $aaparser_config['main_fields']['xf_mdl_id'] . "\\\\|" . $api_anime['anime']['id'] . "(\\\\||$)'";
-					else $where_xf = "xfields REGEXP '(^|\\\\|)" . $aaparser_config['main_fields']['xf_shikimori_id'] ."\\\\|".$api_anime['anime']['id']. "(\\\\||$)'";
+		$news_index = [];
 
-              	    $news_row = $db->super_query( "SELECT id, alt_name, date, title, category, xfields FROM " . PREFIX . "_post WHERE approve=1 AND ". $where_xf);
-              	    if ( !$news_row['id'] ) {
-                  	    unset($news_row);
-                  	    continue;
-                    }
-              	    $news_row['category'] = intval( $news_row['category'] );
-  				    $news_row['date'] = strtotime( $news_row['date'] );
-  				    if( $config['allow_alt_url'] ) {
-					    if( $config['seo_type'] == 1 OR $config['seo_type'] == 2 ) {
-						    if( $news_row['category'] and $config['seo_type'] == 2 ) {
-							    $full_link = "/" . get_url( $news_row['category'] ) . "/" . $news_row['id'] . "-" . $news_row['alt_name'] . ".html";
-						    } else $full_link ="/" . $news_row['id'] . "-" . $news_row['alt_name'] . ".html";
-					    } else $full_link = "/" . date( 'Y/m/d/', $news_row['date'] ) . $news_row['alt_name'] . ".html";
-				    } else $full_link = "/" . "index.php?newsid=" . $news_row['id'];
-              	    $temp_xfields = DLEXFields::xfieldsdataload($news_row['xfields']);
-              	    $spisok_raspisaniy[$today_name][$temp_num]['news_id'] = $news_row['id'];
-              	    $spisok_raspisaniy[$today_name][$temp_num]['shikimori_id'] = $api_anime['anime']['id'];
-              	    $spisok_raspisaniy[$today_name][$temp_num]['russian'] = stripslashes($news_row['title']);
-              	    $spisok_raspisaniy[$today_name][$temp_num]['original'] = $api_anime['anime']['name'];
-              	    $spisok_raspisaniy[$today_name][$temp_num]['full_link'] = $full_link;
-              	    if ( isset( $aaparser_config['main_fields']['xf_poster'] ) && $temp_xfields[$aaparser_config['main_fields']['xf_poster']] ) $spisok_raspisaniy[$today_name][$temp_num]['image'] = $temp_xfields[$aaparser_config['main_fields']['xf_poster']];
-              	    else $spisok_raspisaniy[$today_name][$temp_num]['image'] = $no_poster;
-              	    $spisok_raspisaniy[$today_name][$temp_num]['next_episode'] = $api_anime['next_episode'];
-              	    $spisok_raspisaniy[$today_name][$temp_num]['next_date'] = $api_anime['next_episode_at'];
-              	    unset($news_row, $full_link, $temp_xfields, $where_xf);
-              	    $temp_num++;
-					if($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1 ) { 
-						$debugger_table_row .= tableRowCreate("(other_actions.php) Формирование данных для записи", round(microtime(true) - $time_update_start,4));
-					}
-                }
-            }
-        }
-  
+		$db->query("SELECT id, alt_name, date, title, category, xfields FROM " . PREFIX . "_post WHERE approve='1'");
+
+		while ($row = $db->get_row()) {
+			$xf = DLEXFields::xfieldsdataload($row['xfields']);
+
+			// Обычные аниме
+			if (!empty($aaparser_config['main_fields']['xf_shikimori_id']) && !empty($xf[$aaparser_config['main_fields']['xf_shikimori_id']])) {
+				$news_index['anime_' . $xf[$aaparser_config['main_fields']['xf_shikimori_id']]] = $row;
+			}
+
+			// Дорамы
+			if (!empty($aaparser_config['main_fields']['xf_mdl_id']) && !empty($xf[$aaparser_config['main_fields']['xf_mdl_id']])) {
+				$news_index['dorama_' . $xf[$aaparser_config['main_fields']['xf_mdl_id']]] = $row;
+			}
+		}
+
+		$db->free();
+  	    foreach ($today_id as $today_name => $today_date) {
+			$temp_num = 0;
+			foreach ($merged_data as $api_anime) {
+				if (strpos($api_anime['next_episode_at'], $today_date) === false) continue;
+
+				if ($api_anime['dorama'] == 1) $index = 'dorama_' . $api_anime['anime']['id'];
+				else $index = 'anime_' . $api_anime['anime']['id'];
+
+				if (!isset($news_index[$index])) continue;
+
+				$news_row = $news_index[$index];
+
+				$news_row['category'] = intval($news_row['category']);
+				$news_row['date'] = strtotime($news_row['date']);
+
+				if ($config['allow_alt_url']) {
+					if ($config['seo_type'] == 1 || $config['seo_type'] == 2) {
+						if ($news_row['category'] && $config['seo_type'] == 2) $full_link = "/" . get_url($news_row['category']) . "/" . $news_row['id'] . "-" . $news_row['alt_name'] . ".html";
+						else $full_link = "/" . $news_row['id'] . "-" . $news_row['alt_name'] . ".html";
+					} else $full_link = "/" . date('Y/m/d/', $news_row['date']) . $news_row['alt_name'] . ".html";
+				} else $full_link = "/index.php?newsid=" . $news_row['id'];
+
+				$temp_xfields = DLEXFields::xfieldsdataload($news_row['xfields']);
+
+				$spisok_raspisaniy[$today_name][$temp_num]['news_id'] = $news_row['id'];
+				$spisok_raspisaniy[$today_name][$temp_num]['shikimori_id'] = $api_anime['anime']['id'];
+				$spisok_raspisaniy[$today_name][$temp_num]['russian'] = stripslashes($news_row['title']);
+				$spisok_raspisaniy[$today_name][$temp_num]['original'] = $api_anime['anime']['name'];
+				$spisok_raspisaniy[$today_name][$temp_num]['full_link'] = $full_link;
+
+				if (isset($aaparser_config['main_fields']['xf_poster']) && !empty($temp_xfields[$aaparser_config['main_fields']['xf_poster']])) {
+					$spisok_raspisaniy[$today_name][$temp_num]['image'] = $temp_xfields[$aaparser_config['main_fields']['xf_poster']];
+				} else $spisok_raspisaniy[$today_name][$temp_num]['image'] = $no_poster;
+
+				$spisok_raspisaniy[$today_name][$temp_num]['next_episode'] = $api_anime['next_episode'];
+				$spisok_raspisaniy[$today_name][$temp_num]['next_date'] = $api_anime['next_episode_at'];
+
+				$temp_num++;
+
+				if ($aaparser_config['debugger']['enable'] == 1 && $aaparser_config['debugger']['other_material'] == 1) {
+					$debugger_table_row .= tableRowCreate("(other_actions.php) Формирование данных для записи", round(microtime(true) - $time_update_start, 4));
+				}
+			}
+		}
+		
   	    foreach ( $spisok_raspisaniy as $rname => $rdata ) {
       	    if ( $rdata ) {
           	    $rdate = $today_id[$rname];
