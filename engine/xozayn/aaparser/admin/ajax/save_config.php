@@ -45,8 +45,7 @@ if ($action == 'options') {
 	echo json_encode(['success' => 'Ok']);
 }
 $php_version = intval(str_replace(array(".",","),"",substr(PHP_VERSION,0,3)));
-if ($php_version >= 74 && file_exists(ENGINE_DIR.'/xozayn/aaparser/google_indexing/indexing.php') && $aaparser_config['push_notifications']['google_indexing'] = "1") {
-
+if ($php_version >= 74 && file_exists(ENGINE_DIR.'/xozayn/aaparser/google_indexing/indexing.php') && $aaparser_config['push_notifications']['google_indexing'] == "1") {
 	require_once ENGINE_DIR.'/xozayn/aaparser/data/config.php';
 	if ( file_exists(ENGINE_DIR.'/xozayn/aaparser/google_indexing/data/indexing.json') ) {
 		$mod_settings = file_get_contents(ENGINE_DIR.'/xozayn/aaparser/google_indexing/data/indexing.json');

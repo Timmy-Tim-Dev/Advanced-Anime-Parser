@@ -19,7 +19,7 @@ if( !defined('DATALIFEENGINE') ) {
 ini_set("memory_limit","256M");
 ini_set('max_execution_time',300);
 $type = $_GET['type'];
-$id = $_GET['id'];
+$id = preg_replace('/[^a-zA-Z0-9_-]/', '', $_GET['id']);
 $newid = explode('-', $id)[0];
 require_once (DLEPlugins::Check(ENGINE_DIR.'/xozayn/aaparser/functions/module.php'));
 require_once (DLEPlugins::Check(ENGINE_DIR.'/xozayn/aaparser/functions/kodik_cache.php'));

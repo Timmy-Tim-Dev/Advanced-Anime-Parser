@@ -16,7 +16,10 @@
 require_once (DLEPlugins::Check(ENGINE_DIR.'/xozayn/aaparser/functions/module.php'));
 
 $action = isset($_GET['action']) ? $_GET['action'] : null;
+
 if ( $action !== "update_module" ) {
+	if ( isset($_GET['key']) && $_GET['key'] != $aaparser_config['settings']['cron_key'] ) die('Ключ крона не совпадает тем что есть');
+	elseif ( !isset($_GET['key']) ) die('Ключ крона не совпадает тем что есть');
 	$kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : die("Нету API ключа kodik, пожалуйста, укажите в настройках");
 	$kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $aaparser_config['settings']['kodik_api_domain'] : die("Нету API домена kodik, пожалуйста, укажите в настройках");
 	$shikimori_api_domain = isset($aaparser_config['settings']['shikimori_api_domain']) ? $aaparser_config['settings']['shikimori_api_domain'] : '//shikimori.one/';
@@ -307,7 +310,8 @@ if ( $action == "update" ) {
 	$row = $db->super_query("SHOW TABLE STATUS WHERE Name = '" . PREFIX . "_post'");
 	$storage_engine = $row['Engine'];
 	
-	if( file_exists( ENGINE_DIR . "/xozayn/aaparser/includes/upgrade/".$_GET['version'].".php" ) ) include ( ENGINE_DIR . "/xozayn/aaparser/includes/upgrade/".$_GET['version'].".php" );
+	$upgrade_version = preg_replace('/[^a-zA-Z0-9._-]/', '', $_GET['version']);
+	if( $upgrade_version !== '' && file_exists( ENGINE_DIR . "/xozayn/aaparser/includes/upgrade/".$upgrade_version.".php" ) ) include ( ENGINE_DIR . "/xozayn/aaparser/includes/upgrade/".$upgrade_version.".php" );
 	else  include ( ENGINE_DIR . "/xozayn/aaparser/includes/upgrade/universal.php" );
 }
 

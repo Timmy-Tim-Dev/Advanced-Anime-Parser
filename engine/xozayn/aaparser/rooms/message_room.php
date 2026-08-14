@@ -15,16 +15,22 @@ if( !defined('DATALIFEENGINE') ) {
 }
 
 $action = $_GET['action'];
-$room_id = $_GET['room_id'];
-
+$room_id = preg_replace('/[^a-zA-Z0-9]/', '', $_GET['room_id']);
+$control_actions = array('set_pause', 'set_speed', 'set_play', 'set_episode', 'room_status');
+if ( in_array($action, $control_actions) ) {
+	$room_leader_check = $db->super_query("SELECT leader FROM " . PREFIX . "_rooms_list WHERE url='{$room_id}'");
+	if ( !$room_leader_check || $room_leader_check['leader'] != $member_id['name'] ) {
+		die(json_encode(array('status' => 'error', 'message' => 'Только лидер может управлять комнатой')));
+	}
+}
 if ( $action == 'send' ) {
-  	$message = $_GET['message'];
+  	$message = strip_tags($_GET['message']);
   	if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
   	$message_area = '<div class="room-chat__message system">
                <div class="room-chat__avatar">
                   <img src="'.$member_id['foto'].'" alt="Аватарка">
                </div>
-               <div class="room-chat__text">'.$message.'</div>
+				<div class="room-chat__text">'.htmlspecialchars($message, ENT_QUOTES, $config['charset']).'</div>
                <div class="room-chat__time">'.date("H:i", $_TIME).'</div>
             </div>';
   
@@ -41,7 +47,7 @@ if ( $action == 'send' ) {
 	)));
 } elseif ( $action == 'check' ) {
     
-  	$room_leader = $_GET['room_leader'];
+  	$room_leader = $db->safesql($_GET['room_leader']);
   	$room_msg = $room_visitors = [];
     $last_chat_id = 0;
   	$db->query("SELECT * FROM " . PREFIX . "_rooms_chat WHERE room_url='{$room_id}' ORDER BY id DESC");
@@ -51,7 +57,7 @@ if ( $action == 'send' ) {
                <div class="room-chat__avatar">
                   <img src="'.$room_msg_row['avatar'].'" alt="Аватарка">
                </div>
-               <div class="room-chat__text">'.$room_msg_row['message'].'</div>
+               <div class="room-chat__text">'.htmlspecialchars($room_msg_row['message'], ENT_QUOTES, $config['charset']).'</div>
                <div class="room-chat__time">'.date("H:i", $room_msg_row['time']).'</div>
             </div>';
     }
@@ -110,7 +116,7 @@ if ( $action == 'send' ) {
 		'last_chat_id' => $last_chat_id
 	)));
 } elseif ( $action == 'update_time' ) {
-  	$room_time = $_GET['time']+1;
+  	$room_time = intval($_GET['time'])+1;
   	$db->query( "UPDATE " . PREFIX . "_rooms_list SET time='{$room_time}', leader_last_login='{$_TIME}' WHERE url='{$room_id}'" );
   	die(json_encode(array( 'status' => 'updated' )));
 } elseif ( $action == 'set_pause' ) {
@@ -119,7 +125,7 @@ if ( $action == 'send' ) {
   	$db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_id['name']}', '{$member_id['foto']}', '{$_TIME}', 'Поставил на паузу')" );
   	die(json_encode(array( 'status' => 'paused' )));
 } elseif ( $action == 'set_speed' ) {
-	$val_speed = $_GET['speed'];
+	$val_speed = floatval($_GET['speed']);
     if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
   	$db->query( "UPDATE " . PREFIX . "_rooms_list SET speed='{$val_speed}', leader_last_login='{$_TIME}' WHERE url='{$room_id}'" );
   	die(json_encode(array( 'speed' => $val_speed )));
@@ -133,14 +139,14 @@ if ( $action == 'send' ) {
     require_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/functions/module.php'));
     
   	$room_episode = $_GET['episode'];
-  	$shikimori_id = $_GET['shikimori_id'];
-  	$mdl_id = $_GET['mdl_id'];
+  	$shikimori_id = intval($_GET['shikimori_id']);
+  	$mdl_id = intval($_GET['mdl_id']);
   
-  	if ( $room_episode['episode'] ) $episode_num = $room_episode['episode'];
+  	if ( $room_episode['episode'] ) $episode_num = intval($room_episode['episode']);
   	else $episode_num = 0;
-  	if ( $room_episode['season'] ) $season_num = $room_episode['season'];
+  	if ( $room_episode['season'] ) $season_num = intval($room_episode['season']);
   	else $season_num = 0;
-  	if ( $room_episode['translation']['id'] ) $translation = $room_episode['translation']['id'];
+  	if ( $room_episode['translation']['id'] ) $translation = intval($room_episode['translation']['id']);
   	else $translation = 0;
   	
   	if ( $aaparser_config['settings']['kodik_api_key'] ) $kodik_apikey = $aaparser_config['settings']['kodik_api_key'];

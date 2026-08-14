@@ -27,19 +27,14 @@ echo <<<HTML
                 <tbody>
                     <tr>
                         <td style="width:100%">
-                            1. Если у вас apache, то открываем .htaccess в корне сайта и ниже строчки <b>RewriteEngine On</b> вставляем правила<br>
-                            <textarea style="width:100%;height:100px;" disabled>
-
-RewriteRule ^room/([^/]*)(/?)+$ index.php?do=enter_room&hash=$1 [L]
-RewriteRule ^rooms/page/([0-9]+)(/?)+$ index.php?do=rooms_list&cstart=$1 [B,L]
-RewriteRule ^rooms(/?)+$ index.php?do=rooms_list [L]
-                            </textarea>
-                            <br>Если у вас сайт работает на nginx то правила такие<br>
-                            <textarea style="width:100%;height:100px;" disabled>
-rewrite "^/room/([^/]*)(/?)+$" /index.php?do=enter_room&hash=$1 break;
-rewrite ^/rooms/page/([0-9]+)(/?)+$ /index.php?do=rooms_list&cstart=$1 last;
-rewrite ^/rooms(/?)+$ /index.php?do=rooms_list last;
-                            </textarea>
+						
+						1. <i>Правила для <b>ЧПУ</b><br><b><font color="red">Обязательно правила ставить в самый вверх</font></b></i><br>
+						<div>Ссылка ЧПУ <input style="width:37%;height:25px;" disabled value="/room/{room_hash}/">  
+						 Реальная ссылка <input style="width:37%;height:25px;" disabled value="/index.php?do=enter_room&hash={room_hash}"></div><br>
+						 <div>Ссылка ЧПУ <input style="width:37%;height:25px;" disabled value="/rooms/page/{rooms_page}/">  
+						 Реальная ссылка <input style="width:37%;height:25px;" disabled value="/index.php?do=rooms_list&cstart={rooms_page}"></div><br>
+						 <div>Ссылка ЧПУ <input style="width:37%;height:25px;" disabled value="/rooms/">  
+						 Реальная ссылка <input style="width:37%;height:25px;" disabled value="/index.php?do=rooms_list"></div><br>
                         </td>
                     </tr>
                     <tr>

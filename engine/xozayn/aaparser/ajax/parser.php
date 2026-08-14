@@ -11,15 +11,18 @@
 
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 $title = isset($_GET['title']) ? htmlspecialchars(addslashes($_GET['title'])) : '';
-$shiki_id = isset($_GET['shiki_id']) ? $_GET['shiki_id'] : 0;
-$mdl_id = isset($_GET['mdl_id']) ? $_GET['mdl_id'] : 0;
-$id_news = isset($_GET['id_news']) ? $_GET['id_news'] : 0;
+$shiki_id = isset($_GET['shiki_id']) ? intval($_GET['shiki_id']) : 0;
+$mdl_id = isset($_GET['mdl_id']) ? intval($_GET['mdl_id']) : 0;
+$id_news = isset($_GET['id_news']) ? intval($_GET['id_news']) : 0;
 $mode = isset($_GET['mode']) ? $_GET['mode'] : '';
 
 $is_logged = false;
 
 require_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/functions/module.php'));
 require_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/functions/public.php'));
+
+if ( isset($_GET['key']) && $_GET['key'] != $aaparser_config['settings']['cron_key'] ) die('Ключ крона не совпадает тем что есть');
+elseif ( !isset($_GET['key']) ) die('Ключ крона не совпадает тем что есть');
 
 @header('Content-type: text/html; charset=' . $config['charset']);
 

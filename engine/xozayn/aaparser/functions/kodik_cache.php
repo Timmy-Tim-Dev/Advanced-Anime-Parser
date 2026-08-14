@@ -20,7 +20,7 @@ function kodik_cache($prefix, $cache_id = false, $cache_folder = "trash") {
         @chmod( ENGINE_DIR . "/xozayn/aaparser/cache/" . $cache_folder . "/", 0777 );
     }
 	
-	if( ! $cache_id ) $key = $prefix;
+	if( ! $cache_id ) $key = preg_replace('/[^a-zA-Z0-9_.-]/', '', $key);
 	else {
 		$cache_id = md5( $cache_id );
 		$key = $prefix . "_" . $cache_id;
@@ -45,7 +45,7 @@ function kodik_create_cache($prefix, $cache_text, $cache_id = false, $cache_fold
         @chmod( ENGINE_DIR . "/xozayn/aaparser/cache/" . $cache_folder . "/", 0777 );
     }
 	
-	if( ! $cache_id ) $key = $prefix;
+	if( ! $cache_id ) $key = preg_replace('/[^a-zA-Z0-9_.-]/', '', $key);
 	else {
 		$cache_id = md5( $cache_id );
 		$key = $prefix . "_" . $cache_id;
