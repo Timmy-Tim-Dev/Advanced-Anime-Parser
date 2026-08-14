@@ -17,18 +17,18 @@ if( !defined('DATALIFEENGINE') ) {
 function room_hash($length) {
     $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     $result = '';
-    for ($i = 0; $i <= $length; $i++)
-        $result .= $characters[mt_rand(0, 61)];
+    for ($i = 0; $i < $length; $i++)
+        $result .= $characters[random_int(0, 61)];
     return $result;
 }
 
-$news_id = $_GET['news_id'];
-$iframe = $_GET['iframe'];
-$title = $_GET['title'];
-$poster = $_GET['poster'];
-if ( $_GET['shikimori_id'] ) $shikimori_id = $_GET['shikimori_id'];
+$news_id = intval($_GET['news_id']);
+$iframe = $db->safesql(strip_tags($_GET['iframe']));
+$title = $db->safesql(strip_tags($_GET['title']));
+$poster = $db->safesql(strip_tags($_GET['poster']));
+if ( $_GET['shikimori_id'] ) $shikimori_id = intval($_GET['shikimori_id']);
 else $shikimori_id = '';
-if ( $_GET['mdl_id'] ) $mdl_id = $_GET['mdl_id'];
+if ( $_GET['mdl_id'] ) $mdl_id = intval($_GET['mdl_id']);
 else $mdl_id = '';
 
 if ( $aaparser_config['settings']['rooms_limit'] == 1 ) {

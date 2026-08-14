@@ -24,7 +24,7 @@ if ($aaparser_config['persons']['personas_on'] == 1 && isset($_POST['sh_id']) &&
 	$site_url_domain = clean_url($config['http_home_url']);
 	$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https" : "http";
 	
-	$shiki_id = isset($_POST['sh_id']) ? $_POST['sh_id'] : '';
+	$shiki_id = isset($_POST['sh_id']) ? preg_replace('/[^a-zA-Z0-9_-]/', '', $_POST['sh_id']) : '';
 	
 	if ($shiki_id == '') die('Не был передан Shikimori id');
 	
@@ -61,7 +61,7 @@ if ($aaparser_config['persons']['personas_on'] == 1 && isset($_POST['sh_id']) &&
 				}
 			}'
 		];
-		$shikimori = request('//shikimori.one/api/graphql', 1, $postfields);
+		$shikimori = request($aaparser_config['settings']['shikimori_api_domain'].'/api/graphql', 1, $postfields);
 		$shiki_request = $shikimori['data']['animes']['0'];
 			
 		if ( !$shikimori['message'] || !$shikimori['code'] || !$shikimori['error']) {
@@ -343,7 +343,7 @@ elseif ($aaparser_config['persons']['personas_on_dorama'] == 1 && isset($_POST['
     
 	require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/kodik_cache.php'));
 	
-	$mdl_id = isset($_POST['mdl_id']) ? $_POST['mdl_id'] : '';
+	$mdl_id = isset($_POST['mdl_id']) ? preg_replace('/[^a-zA-Z0-9_-]/', '', $_POST['mdl_id']) : '';
 	
 	if ($mdl_id == '') die('Не был передан Mydramalist id');
 	

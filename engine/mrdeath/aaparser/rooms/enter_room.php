@@ -14,7 +14,7 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
-$room_id = $_GET['hash'];
+$room_id = preg_replace('/[^a-zA-Z0-9]/', '', $_GET['hash']);
 
 $disable_index = 1;
 
@@ -77,7 +77,7 @@ if ( $room_row ) {
                <div class="room-chat__avatar">
                   <img src="'.$room_msg_row['avatar'].'" alt="Аватарка">
                </div>
-               <div class="room-chat__text">'.$room_msg_row['message'].'</div>
+               <div class="room-chat__text">'.htmlspecialchars($room_msg_row['message'], ENT_QUOTES, $config['charset']).'</div>
                <div class="room-chat__time">'.date("H:i", $room_msg_row['time']).'</div>
             </div>';
     }
