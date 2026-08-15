@@ -27,10 +27,9 @@ function get_param($key) {
     return $_POST[$key] ?? $_GET[$key] ?? null;
 }
 $action = get_param('action');
-if ( $action !== "update_module" ) {
-	if ( isset($_GET['key']) && $_GET['key'] != $aaparser_config['settings']['cron_key'] ) die('Ключ крона не совпадает тем что есть');
-	elseif ( !isset($_GET['key']) ) die('Ключ крона не совпадает тем что есть');
-}
+if ( isset($_GET['key']) && $_GET['key'] != $aaparser_config['settings']['cron_key'] ) die('Ключ крона не совпадает тем что есть');
+elseif ( !isset($_GET['key']) ) die('Ключ крона не совпадает тем что есть');
+
 $is_logged = false;
 
 @header('Content-type: text/html; charset=' . $config['charset']);

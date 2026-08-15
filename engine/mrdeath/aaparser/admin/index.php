@@ -221,7 +221,7 @@ if ( !file_exists(ENGINE_DIR.'/mrdeath/aaparser/google_indexing/indexing.php') )
 	}
 }
 
-if($is_loged_in AND version_compare($log_module_version , $actual_module_version , '<') && $action != 'dbupgrade' ) {
+if($is_logged AND version_compare($log_module_version , $actual_module_version , '<') && $action != 'dbupgrade' ) {
 
 	if( $member_id['user_group'] == 1 ) {
 		
