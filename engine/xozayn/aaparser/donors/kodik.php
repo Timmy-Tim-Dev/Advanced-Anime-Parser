@@ -395,7 +395,8 @@ if ($parse_action == 'search') {
         else $anime_kind_add = '&anime_kind=music';
     }
     if ( !$aaparser_config['grabbing']['if_camrip'] ) $camrip_add = '&camrip=false';
-    if ( !$aaparser_config['grabbing']['if_lgbt'] ) $lgbt_add = '&lgbt=false';
+    if ( $aaparser_config['grabbing']['if_lgbt'] && $aaparser_config['grabbing']['if_lgbt_find'] ) $lgbt_add = '&lgbt=true';
+	elseif ( !$aaparser_config['grabbing']['if_lgbt'] ) $lgbt_add = '&lgbt=false';
     if ( $aaparser_config['grabbing']['years'] ) $years_add = '&year='.rawurlencode($aaparser_config['grabbing']['years']);
     if ( $aaparser_config['grabbing']['genres'] ) $genres_add = '&all_genres='.rawurlencode($aaparser_config['grabbing']['genres']);
 	
@@ -544,7 +545,8 @@ if ($parse_action == 'search') {
     if ( !$kind_add ) die('Вы не выбрали в настройках модуля ни одного типа дорам - сериал или фильм');
     
     if ( !$aaparser_config['grabbing_doram']['if_camrip'] ) $camrip_add = '&camrip=false';
-    if ( !$aaparser_config['grabbing_doram']['if_lgbt'] ) $lgbt_add = '&lgbt=false';
+    if ( $aaparser_config['grabbing_doram']['if_lgbt'] && $aaparser_config['grabbing_doram']['if_lgbt_find'] ) $lgbt_add = '&lgbt=true';
+	elseif ( !$aaparser_config['grabbing_doram']['if_lgbt'] ) $lgbt_add = '&lgbt=false';
     if ( $aaparser_config['grabbing_doram']['years'] ) $years_add = '&year='.rawurlencode($aaparser_config['grabbing_doram']['years']);
     if ( $aaparser_config['grabbing_doram']['genres'] ) $genres_add = '&all_genres='.rawurlencode($aaparser_config['grabbing_doram']['genres']);
 	
