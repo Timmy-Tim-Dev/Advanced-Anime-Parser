@@ -16,9 +16,7 @@
 require_once (DLEPlugins::Check(ENGINE_DIR.'/mrdeath/aaparser/functions/module.php'));
 
 $action = isset($_GET['action']) ? $_GET['action'] : null;
-if ( $action !== "update_module" ) {
-	if ( isset($_GET['key']) && $_GET['key'] != $aaparser_config['settings']['cron_key'] ) die('Ключ крона не совпадает тем что есть');
-	elseif ( !isset($_GET['key']) ) die('Ключ крона не совпадает тем что есть');
+if ( $action !== "update_module" && $action !== "update" ) {
 	$kodik_apikey = isset($aaparser_config['settings']['kodik_api_key']) ? $aaparser_config['settings']['kodik_api_key'] : die("Нету API ключа kodik, пожалуйста, укажите в настройках");
 	$kodik_api_domain = isset($aaparser_config['settings']['kodik_api_domain']) ? $aaparser_config['settings']['kodik_api_domain'] : die("Нету API домена kodik, пожалуйста, укажите в настройках");
 	$shikimori_api_domain = isset($aaparser_config['settings']['shikimori_api_domain']) ? $aaparser_config['settings']['shikimori_api_domain'] : '//shikimori.one/';

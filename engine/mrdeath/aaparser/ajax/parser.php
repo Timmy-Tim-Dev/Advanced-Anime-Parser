@@ -21,9 +21,6 @@ $is_logged = false;
 require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/module.php'));
 require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/public.php'));
 
-if ( isset($_GET['key']) && $_GET['key'] != $aaparser_config['settings']['cron_key'] ) die('Ключ крона не совпадает тем что есть');
-elseif ( !isset($_GET['key']) ) die('Ключ крона не совпадает тем что есть');
-
 @header('Content-type: text/html; charset=' . $config['charset']);
 
 date_default_timezone_set($config['date_adjust']);
