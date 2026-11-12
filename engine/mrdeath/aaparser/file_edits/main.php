@@ -16,12 +16,18 @@ if( !defined('DATALIFEENGINE') ) {
 
 if ( $dle_module == 'enter_room' ) {
 
+	require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/module.php'));
+	$room_js_last_message = intval($last_chat_id);
+	$room_js_leader_time = intval($leader_time);
+	$room_js_leader_iframe = aap_room_js((string)$leader_iframe);
+	$room_js_member_name = aap_room_js((string)$member_id['name']);
+
   	$kodik_player_js = <<<HTML
 <script>
 let iframe = null;
-let last_message = {$last_chat_id};
-let leader_time = Number({$leader_time});
-let leader_iframe = '{$leader_iframe}';
+let last_message = {$room_js_last_message};
+let leader_time = Number({$room_js_leader_time});
+let leader_iframe = {$room_js_leader_iframe};
 
 $('body').on('click', '.anime-player__fullscreen-btn, .anime-player__fullscreen-btn-close', function() {
 	$('body').toggleClass('room--full');
@@ -223,7 +229,7 @@ function kodikMessageListener(message) {
     var room_leader = $('#room-data').attr("data-leader");
     var shikimori_id = $('#room-data').attr("data-shikimori_id");
     var mdl_id = $('#room-data').attr("data-mdl_id");
-    if ( room_leader == '{$member_id['name']}' ) {
+    if ( room_leader == {$room_js_member_name} ) {
     	if (message.data.key == 'kodik_player_time_update') {
         	leader_time = message.data.value;
     		$.get(dle_root + "engine/ajax/controller.php?mod=message_room", { room_id: room_id, action: 'update_time', time: message.data.value, user_hash: dle_login_hash }, function(data){

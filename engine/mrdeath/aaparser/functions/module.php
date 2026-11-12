@@ -531,6 +531,7 @@ if (!function_exists('RenameGenres')) {
     }
 }
 
+if (!function_exists('change_tags')) {
 function change_tags ($type, $needVal, $nameTag, $urlPrefix = '') {
     global $shikimori_url_domain;
     
@@ -547,7 +548,9 @@ function change_tags ($type, $needVal, $nameTag, $urlPrefix = '') {
         $type->set("{" . $nameTag . "}", '');
     }
 }
+}
 
+if (!function_exists('change_tags_img')) {
 function change_tags_img($type, $needVal, $nameTag, $defaultImage = '', $dorama = false) {
     global $shikimori_url_domain, $aaparser_config;
     
@@ -569,6 +572,7 @@ function change_tags_img($type, $needVal, $nameTag, $defaultImage = '', $dorama 
         $type->set_block("'\\[" . $nameTag . "\\](.*?)\\[/" . $nameTag . "\\]'si", "");
         $type->set("{" . $nameTag . "}", "");
     }
+}
 }
 
 if (!function_exists('CheckGenres')) {
@@ -680,5 +684,64 @@ if (!function_exists('mdl_request')) {
 		curl_close ($ch);
 
 		return $mdl_page;
+	}
+}
+
+if (!function_exists('aap_clean_translation')) {
+	function aap_clean_translation($title) {
+		if (!is_scalar($title)) return '';
+		$title = strip_tags((string)$title);
+		$title = preg_replace('/[\x00-\x1F\x7F<>"\'`\\\\]/u', '', $title);
+		if (!is_string($title)) return '';
+		$title = trim(preg_replace('/\s+/u', ' ', $title));
+		return mb_substr($title, 0, 100, 'UTF-8');
+	}
+}
+
+if (!function_exists('aap_voicerate_filter')) {
+	function aap_voicerate_filter($voice_cache) {
+		$clean = [];
+		if (!is_array($voice_cache)) return $clean;
+		foreach ($voice_cache as $voice_title => $voice_count) {
+			$voice_title = (string)$voice_title;
+			if ($voice_title === '' || aap_clean_translation($voice_title) !== $voice_title) continue;
+			$voice_count = intval($voice_count);
+			if ($voice_count > 0) $clean[$voice_title] = $voice_count;
+		}
+		return $clean;
+	}
+}
+
+if ( !defined('AAP_ROOMS_IFRAME_HOSTS') ) define('AAP_ROOMS_IFRAME_HOSTS', '/(^|\.)(kodik[a-z0-9-]*|aniqit)\.[a-z]{2,}$/i');
+
+if ( !function_exists('aap_room_escape') ) {
+	function aap_room_escape($value) {
+		if ( !is_scalar($value) ) return '';
+		return htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false);
+	}
+}
+
+if ( !function_exists('aap_room_js') ) {
+	function aap_room_js($value) {
+		return json_encode($value, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+	}
+}
+
+if ( !function_exists('aap_room_url') ) {
+	function aap_room_url($url, $hosts_regex = false, $max_length = 255) {
+		if ( !is_scalar($url) ) return '';
+		$url = trim((string)$url);
+		if ( $url === '' || strlen($url) > $max_length ) return '';
+		if ( preg_match('/[\x00-\x20\x7F"\'<>`\\\\]/', $url) ) return '';
+
+		if ( preg_match('#^(?:https?:)?//([a-z0-9.-]+)(?::\d{1,5})?(?:[/?\#]|$)#i', $url, $match) ) {
+			$host = strtolower($match[1]);
+			if ( strpos($host, '..') !== false || $host[0] === '.' || $host[0] === '-' ) return '';
+			if ( $hosts_regex && !preg_match($hosts_regex, $host) ) return '';
+			return $url;
+		}
+
+		if ( !$hosts_regex && preg_match('#^/(?!/)#', $url) ) return $url;
+		return '';
 	}
 }

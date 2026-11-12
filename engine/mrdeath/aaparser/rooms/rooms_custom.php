@@ -14,6 +14,8 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
+require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/module.php'));
+
 $i = 0;
 
 $rooms_found = false;
@@ -23,10 +25,13 @@ while ( $row = $db->get_row( $sql_result ) ) {
     
 	$rooms_found = true;
 	$i ++;
+	
+	$row['poster'] = aap_room_url($row['poster'], false, 2048);
+	$row['title'] = strip_tags($row['title']);
   
   	foreach ( $list_tags as $tag_name ) {
         if ( $row[$tag_name] ) {
-        	$tpl->set( "{".$tag_name."}", $row[$tag_name] );
+        	$tpl->set( "{".$tag_name."}", aap_room_escape($row[$tag_name]) );
 			$tpl->set( "[".$tag_name."]", "" );
 			$tpl->set( "[/".$tag_name."]", "" );
 			$tpl->set_block( "'\\[not-".$tag_name."\\](.*?)\\[/not-".$tag_name."\\]'si", "" );

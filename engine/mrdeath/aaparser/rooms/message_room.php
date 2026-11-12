@@ -14,6 +14,8 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
+require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/module.php'));
+
 $action = $_GET['action'];
 $room_id = preg_replace('/[^a-zA-Z0-9]/', '', $_GET['room_id']);
 $control_actions = array('set_pause', 'set_speed', 'set_play', 'set_episode', 'room_status');
@@ -23,13 +25,16 @@ if ( in_array($action, $control_actions) ) {
 		die(json_encode(array('status' => 'error', 'message' => 'Только лидер может управлять комнатой')));
 	}
 }
+if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
+$member_name_sql = $db->safesql($member_id['name']);
+$member_foto_sql = $db->safesql($member_id['foto']);
 
 if ( $action == 'send' ) {
   	$message = strip_tags($_GET['message']);
   	if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
   	$message_area = '<div class="room-chat__message system">
                <div class="room-chat__avatar">
-                  <img src="'.$member_id['foto'].'" alt="Аватарка">
+                  <img src="'.aap_room_escape($member_id['foto']).'" alt="Аватарка">
                </div>
                <div class="room-chat__text">'.htmlspecialchars($message, ENT_QUOTES, $config['charset']).'</div>
                <div class="room-chat__time">'.date("H:i", $_TIME).'</div>
@@ -37,7 +42,7 @@ if ( $action == 'send' ) {
   
   	$message = $db->safesql( $message );
   
-  	$db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_id['name']}', '{$member_id['foto']}', '{$_TIME}', '{$message}')" );
+  	$db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_name_sql}', '{$member_foto_sql}', '{$_TIME}', '{$message}')" );
 
   	$last_chat_id = $db->insert_id();
   
@@ -56,7 +61,7 @@ if ( $action == 'send' ) {
   	    if ( $room_msg_row['id'] > $last_chat_id ) $last_chat_id = $room_msg_row['id'];
       	$room_msg[] = '<div class="room-chat__message system">
                <div class="room-chat__avatar">
-                  <img src="'.$room_msg_row['avatar'].'" alt="Аватарка">
+                  <img src="'.aap_room_escape($room_msg_row['avatar']).'" alt="Аватарка">
                </div>
                <div class="room-chat__text">'.htmlspecialchars($room_msg_row['message'], ENT_QUOTES, $config['charset']).'</div>
                <div class="room-chat__time">'.date("H:i", $room_msg_row['time']).'</div>
@@ -65,7 +70,7 @@ if ( $action == 'send' ) {
   	$db->free();
   	$room_msg = implode('', $room_msg);
   
-  	$db->query( "UPDATE " . PREFIX . "_rooms_visitors SET time='{$_TIME}' WHERE room_url='{$room_id}' AND login='{$member_id['name']}'" );
+  	$db->query( "UPDATE " . PREFIX . "_rooms_visitors SET time='{$_TIME}' WHERE room_url='{$room_id}' AND login='{$member_name_sql}'" );
   	
   	if ( $aaparser_config['settings']['leader_afk'] == 1 && $room_leader == $member_id['name'] )
   	    $db->query( "UPDATE " . PREFIX . "_rooms_list SET leader_last_login='{$_TIME}' WHERE url='{$room_id}' AND leader='{$room_leader}'" );
@@ -77,10 +82,10 @@ if ( $action == 'send' ) {
       	if ( $room_online_row['login'] == $room_leader )
       		$room_visitors[] = '<div class="room-user">
             <div class="room-user__avatar">
-               <img src="'.$room_online_row['avatar'].'" alt="Аватар">
+               <img src="'.aap_room_escape($room_online_row['avatar']).'" alt="Аватар">
             </div>
             <div class="room-user__name">
-               '.$room_online_row['login'].'
+               '.aap_room_escape($room_online_row['login']).'
             </div>
             <div class="room-user__role">
                <i class="'.$aaparser_config['push_notifications']['fa_icons_rooms'].' fa-crown"></i>
@@ -89,10 +94,10 @@ if ( $action == 'send' ) {
       	else
       		$room_visitors[] = '<div class="room-user">
             <div class="room-user__avatar">
-               <img src="'.$room_online_row['avatar'].'" alt="Аватар">
+               <img src="'.aap_room_escape($room_online_row['avatar']).'" alt="Аватар">
             </div>
             <div class="room-user__name">
-               '.$room_online_row['login'].'
+               '.aap_room_escape($room_online_row['login']).'
             </div>
          </div>';
     }
@@ -112,7 +117,7 @@ if ( $action == 'send' ) {
 		'episode' => $room_row['episode_num'],
 		'season' => $room_row['season_num'],
 		'translation' => $room_row['translation'],
-		'visitors_iframe' => $room_row['visitors_iframe'].'?translations=false',
+		'visitors_iframe' => aap_room_url($room_row['visitors_iframe'], false, 2048).'?translations=false',
 		'pause' => $room_row['pause'],
 		'last_chat_id' => $last_chat_id
 	)));
@@ -123,7 +128,7 @@ if ( $action == 'send' ) {
 } elseif ( $action == 'set_pause' ) {
     if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
   	$db->query( "UPDATE " . PREFIX . "_rooms_list SET pause=1, leader_last_login='{$_TIME}' WHERE url='{$room_id}'" );
-  	$db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_id['name']}', '{$member_id['foto']}', '{$_TIME}', 'Поставил на паузу')" );
+  	$db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_name_sql}', '{$member_foto_sql}', '{$_TIME}', 'Поставил на паузу')" );
   	die(json_encode(array( 'status' => 'paused' )));
 } elseif ( $action == 'set_speed' ) {
 	$val_speed = floatval($_GET['speed']);
@@ -133,12 +138,10 @@ if ( $action == 'send' ) {
 } elseif ( $action == 'set_play' ) {
     if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
   	$db->query( "UPDATE " . PREFIX . "_rooms_list SET pause=0, leader_last_login='{$_TIME}' WHERE url='{$room_id}'" );
-  	$db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_id['name']}', '{$member_id['foto']}', '{$_TIME}', 'Продолжил просмотр')" );
+  	$db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_name_sql}', '{$member_foto_sql}', '{$_TIME}', 'Продолжил просмотр')" );
   	die(json_encode(array( 'status' => 'play' )));
 } elseif ( $action == 'set_episode' ) {
     if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
-    require_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/functions/module.php'));
-    
   	$room_episode = $_GET['episode'];
   	$shikimori_id = intval($_GET['shikimori_id']);
   	$mdl_id = intval($_GET['mdl_id']);
@@ -162,9 +165,10 @@ if ( $action == 'send' ) {
     $kodik_result = array_shift($kodik['results']);
     if ( $kodik_result['type'] == "anime-serial" || $kodik_result['type'] == "foreign-serial" ) $visitors_link = $kodik_result['seasons'][$season_num]['episodes'][$episode_num]['link'];
     else $visitors_link = $kodik_result['link'];
+    $visitors_link = $db->safesql(aap_room_url($visitors_link, false, 2048));
   
   	$db->query( "UPDATE " . PREFIX . "_rooms_list SET episode_num='{$episode_num}', season_num='{$season_num}', translation='{$translation}', visitors_iframe ='{$visitors_link}', leader_last_login = '{$_TIME}' WHERE url='{$room_id}'" );
-  	if ( $episode_num > 0 ) $db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_id['name']}', '{$member_id['foto']}', '{$_TIME}', 'Переключил на {$episode_num} серию')" );
+  	if ( $episode_num > 0 ) $db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_name_sql}', '{$member_foto_sql}', '{$_TIME}', 'Переключил на {$episode_num} серию')" );
   	die(json_encode(array(
 		'status' => 'complete',
       	'episode' => $episode_num
