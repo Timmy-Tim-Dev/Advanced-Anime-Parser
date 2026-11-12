@@ -14,6 +14,8 @@ if( !defined('DATALIFEENGINE') ) {
 	die( "Hacking attempt!" );
 }
 
+require_once (DLEPlugins::Check(ENGINE_DIR . '/xozayn/aaparser/functions/module.php'));
+
 $room_id = preg_replace('/[^a-zA-Z0-9]/', '', $_GET['hash']);
 
 $disable_index = 1;
@@ -21,32 +23,37 @@ $disable_index = 1;
 $room_row = $db->super_query("SELECT * FROM " . PREFIX . "_rooms_list WHERE url='{$room_id}'");
 
 if ( $room_row ) {
-    
+
+    $room_row['iframe'] = aap_room_url($room_row['iframe'], AAP_ROOMS_IFRAME_HOSTS, 2048);
+    $room_row['visitors_iframe'] = aap_room_url($room_row['visitors_iframe'], false, 2048);
+    $room_row['poster'] = aap_room_url($room_row['poster'], false, 2048);
+    $room_title = aap_room_escape(strip_tags($room_row['title']));
+
     $canonical = $config['http_home_url'].'room/'.$room_row['url'].'/';
-  	
-  	$metatags['title'] = 'Совместный просмотр '.$room_row['title'].' на растоянии';
-  
-  	$page_description = $metatags_description = 'Смотри '.$room_row['title'].' с друзьями одновременно на расстоянии. Комнаты для просмотра '.$room_row['title'].' с чатом.';
-  
+
+  	$metatags['title'] = 'Совместный просмотр '.$room_title.' на растоянии';
+
+  	$page_description = $metatags_description = 'Смотри '.$room_title.' с друзьями одновременно на расстоянии. Комнаты для просмотра '.$room_title.' с чатом.';
+
   	$tpl->load_template( 'rooms.tpl' );
-    
+
   	if ( $room_row['leader'] != $member_id['name'] ) $its_leader = false;
   	else $its_leader = true;
-  	
-  	$leader_time = $room_row['time'];
+
+  	$leader_time = intval($room_row['time']);
   	$leader_iframe = $room_row['visitors_iframe'].'?translations=false';
-  
-  	$tpl->set( '{poster}', $room_row['poster'] );
-  	$tpl->set( '{title}', $room_row['title'] );
-  	if ( $room_row['leader'] != $member_id['name'] && $room_row['visitors_iframe'] ) $tpl->set( '{iframe}', $room_row['visitors_iframe'].'?translations=false' );
-  	elseif ( $room_row['leader'] != $member_id['name'] ) $tpl->set( '{iframe}', $room_row['iframe'].'?translations=false' );
-  	else $tpl->set( '{iframe}', $room_row['iframe'] );
-  	$tpl->set( '{episode_num}', $room_row['episode_num'] );
-  	$tpl->set( '{leader}', $room_row['leader'] );
+
+  	$tpl->set( '{poster}', aap_room_escape($room_row['poster']) );
+  	$tpl->set( '{title}', $room_title );
+  	if ( $room_row['leader'] != $member_id['name'] && $room_row['visitors_iframe'] ) $tpl->set( '{iframe}', aap_room_escape($room_row['visitors_iframe'].'?translations=false') );
+  	elseif ( $room_row['leader'] != $member_id['name'] ) $tpl->set( '{iframe}', aap_room_escape($room_row['iframe'] ? $room_row['iframe'].'?translations=false' : '') );
+  	else $tpl->set( '{iframe}', aap_room_escape($room_row['iframe']) );
+  	$tpl->set( '{episode_num}', intval($room_row['episode_num']) );
+  	$tpl->set( '{leader}', aap_room_escape($room_row['leader']) );
   	$tpl->set( '{link}', $config['http_home_url']."room/".$room_row['url']."/" );
   	$tpl->set( '{id}', $room_row['url'] );
-  	$tpl->set( '{shikimori_id}', $room_row['shikimori_id'] );
-  	$tpl->set( '{mdl_id}', $room_row['mdl_id'] );
+  	$tpl->set( '{shikimori_id}', aap_room_escape($room_row['shikimori_id']) );
+  	$tpl->set( '{mdl_id}', aap_room_escape($room_row['mdl_id']) );
   	if ( $room_row['public'] == 1 ) {
   	    $tpl->set( '{public}', "checked" );
   	    $tpl->set( '[public]', "" );
@@ -75,7 +82,7 @@ if ( $room_row ) {
   	    if ( $room_msg_row['id'] > $last_chat_id ) $last_chat_id = $room_msg_row['id'];
       	$room_msg[] = '<div class="room-chat__message system">
                <div class="room-chat__avatar">
-                  <img src="'.$room_msg_row['avatar'].'" alt="Аватарка">
+                  <img src="'.aap_room_escape($room_msg_row['avatar']).'" alt="Аватарка">
                </div>
                <div class="room-chat__text">'.htmlspecialchars($room_msg_row['message'], ENT_QUOTES, $config['charset']).'</div>
                <div class="room-chat__time">'.date("H:i", $room_msg_row['time']).'</div>
@@ -96,10 +103,10 @@ if ( $room_row ) {
       	if ( $room_online_row['login'] == $room_row['leader'] )
       		$room_visitors[] = '<div class="room-user">
             <div class="room-user__avatar">
-               <img src="'.$room_online_row['avatar'].'" alt="Аватар">
+               <img src="'.aap_room_escape($room_online_row['avatar']).'" alt="Аватар">
             </div>
             <div class="room-user__name">
-               '.$room_online_row['login'].'
+               '.aap_room_escape($room_online_row['login']).'
             </div>
             <div class="room-user__role">
                <i class="'.$aaparser_config['push_notifications']['fa_icons_rooms'].' fa-crown"></i>
@@ -108,10 +115,10 @@ if ( $room_row ) {
       	else
       		$room_visitors[] = '<div class="room-user">
             <div class="room-user__avatar">
-               <img src="'.$room_online_row['avatar'].'" alt="Аватар">
+               <img src="'.aap_room_escape($room_online_row['avatar']).'" alt="Аватар">
             </div>
             <div class="room-user__name">
-               '.$room_online_row['login'].'
+               '.aap_room_escape($room_online_row['login']).'
             </div>
          </div>';
     }
@@ -121,8 +128,10 @@ if ( $room_row ) {
   	
   	if ( $not_first_visit === false ) {
       	if ( !$member_id['foto'] ) $member_id['foto'] = '/templates/'.$config['skin'].'/dleimages/noavatar.png';
-      	$db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$member_id['name']}', '{$member_id['foto']}', '{$_TIME}', 'Вошел в комнату')" );
-      	$db->query( "INSERT INTO " . PREFIX . "_rooms_visitors (room_url, login, avatar, time) values ('{$room_id}', '{$member_id['name']}', '{$member_id['foto']}', '{$_TIME}')" );
+      	$visitor_name = $db->safesql($member_id['name']);
+      	$visitor_foto = $db->safesql($member_id['foto']);
+      	$db->query( "INSERT INTO " . PREFIX . "_rooms_chat (room_url, login, avatar, time, message) values ('{$room_id}', '{$visitor_name}', '{$visitor_foto}', '{$_TIME}', 'Вошел в комнату')" );
+      	$db->query( "INSERT INTO " . PREFIX . "_rooms_visitors (room_url, login, avatar, time) values ('{$room_id}', '{$visitor_name}', '{$visitor_foto}', '{$_TIME}')" );
     }
   	
   	$tpl->compile( 'content' );

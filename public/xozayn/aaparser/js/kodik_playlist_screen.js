@@ -325,38 +325,36 @@ function voicerate_take (news_take) {
 		dataType: "json",
 		data: {news_id:news_take,action:'voicerate_take'},
 		success: function(data) {
-			if (data != 'Нету кэша') {
-				var total = 0;
-				var sortedKeys = Object.keys(data).sort(function(a, b) {
-					return data[b] - data[a];
+			var voicerate_box = $("#voicerate_mod");
+			var counts = {};
+			var total = 0;
+			if (data && typeof data === 'object') {
+				Object.keys(data).forEach(function(key) {
+					var value = parseInt(data[key], 10);
+					if (value > 0) {
+						counts[key] = value;
+						total += value;
+					}
+				});
+			}
+			if (total > 0) {
+				var sortedKeys = Object.keys(counts).sort(function(a, b) {
+					return counts[b] - counts[a];
 				});
 				
-				var sortedData = {};
-				sortedKeys.forEach(function(key) {
-					sortedData[key] = data[key];
-				});
-				
-				$("#voicerate_mod").empty();
-
-				Object.values(data).forEach(function(value) {
-					total += value;
-				});
+				voicerate_box.empty();
 
 				sortedKeys.forEach(function(key) {
-					var percentage = (data[key] / total * 100).toFixed(1);
-					var listItem = $(`
-						<div class='voicerate_item'>
-							<div class='voicerate_title'>${key}</div>
-							<div class='voicerate_prgbar'>
-								<div class='voicerate_prgbar_width' style='width: ${percentage}%'></div>
-							</div>
-							<div class='voicerate_count'>${data[key]} (${percentage}%)</div>
-						</div>
-					`);
-					$("#voicerate_mod").append(listItem);
+					var percentage = (counts[key] / total * 100).toFixed(1);
+					var listItem = $('<div class="voicerate_item"></div>');
+					$('<div class="voicerate_title"></div>').text(key).appendTo(listItem);
+					var progressBar = $('<div class="voicerate_prgbar"></div>').appendTo(listItem);
+					$('<div class="voicerate_prgbar_width"></div>').css('width', percentage + '%').appendTo(progressBar);
+					$('<div class="voicerate_count"></div>').text(counts[key] + ' (' + percentage + '%)').appendTo(listItem);
+					voicerate_box.append(listItem);
 				});
 			} else {
-				$("#voicerate_mod").html("В данный момент нет рейтинга озвучек");
+				voicerate_box.html("В данный момент нет рейтинга озвучек");
 			}
 		}
 
