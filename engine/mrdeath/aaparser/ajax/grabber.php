@@ -123,8 +123,7 @@ if ( $action == 'grabbing' ) {
     
     $parse_action = 'grab';
     include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/donors/kodik.php'));
-} elseif ( $action == 'update' && $kind == 'anime' ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/update_anime.php'));
-elseif ( $action == 'update' && $kind == 'dorama' ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/update_dorama.php'));
+} elseif ( $action == 'update' && ( $kind == 'anime' || $kind == 'dorama' ) ) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/update_material.php'));
 elseif ( $action == 'add') {
 	if (isset($aaparser_config['settings']['grab_on'])) include_once (DLEPlugins::Check(ENGINE_DIR . '/mrdeath/aaparser/cron/add_material.php'));
 	else echo "Функционал граббинга отключен, пожалуйста включите это в настройках модуля!";
